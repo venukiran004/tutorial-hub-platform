@@ -361,56 +361,31 @@ rf = RandomForestClassifier(500, min_samples_leaf=20).fit(X, y)                 
     questions: [
       {
         stem: "Why does information gain favour a feature with many distinct values, and how does C4.5 correct it?",
-        options: [
-          "It does not; all features are treated equally",
-          "Splitting into many small children makes each child purer for free — a customer-id column produces 989 pure leaves and maximal gain while predicting nothing. C4.5 divides the gain by the split's own entropy (split information), so a many-way split must earn its purity; CART limits the damage with binary splits but its impurity importances still inherit the bias (random id 0.175)",
-          "Because entropy is undefined for continuous features",
-          "Because many-valued features are usually informative"
-        ],
+        options: ["It does not; every feature is treated equally", "Many small children are purer for free; C4.5 normalises", "Because entropy is undefined for continuous features", "Because many-valued features are usually informative"],
         answer: 1,
         why: "The same bias appears as many candidate thresholds for a continuous column: among many random thresholds one always looks good on the training rows."
       },
       {
         stem: "What does cost-complexity pruning minimise, and how do you set α?",
-        options: [
-          "Training error alone",
-          "R_α(T) = R(T) + α·|leaves|: the tree's total leaf impurity plus a price per leaf. Each subtree has an α at which its impurity saving stops paying for its leaves (486 for the regression example); the pruning path lists those thresholds, and you pick α by cross-validation — 0.004 gave a four-leaf tree with AUC 0.660 against the full tree's 0.520",
-          "The number of leaves alone",
-          "The depth of the tree"
-        ],
+        options: ["Training error alone, with α set to zero", "Leaf impurity plus α per leaf; choose α by CV", "The number of leaves alone, with α as a cap", "The depth of the tree, with α as maximum depth"],
         answer: 1,
         why: "Post-pruning sees splits that only pay off through their children; a depth cap cannot."
       },
       {
         stem: "A depth-2 tree scored 0.613 on XOR and depth 3 scored 0.892. Why did depth 2 fail when XOR needs only two splits?",
-        options: [
-          "The data were not scaled",
-          "Every single-feature split of XOR has almost zero gain (parent Gini 0.499, best children 0.500 and 0.436), so the greedy root picks an arbitrary threshold that is not the one the ideal two-split tree needs; the second level then cannot repair it and a third is needed. Greedy search cannot see two moves ahead — trees find interactions unless the interaction hides every marginal effect",
-          "Depth 2 has too few leaves",
-          "Gini cannot detect XOR; entropy can"
-        ],
+        options: ["The data were not scaled before fitting", "Greedy splits on XOR show no gain at the root", "A depth-2 tree has too few leaves for XOR", "Gini cannot detect XOR, though entropy can"],
         answer: 1,
         why: "The rotated-feature trick applies here too: the product x₁x₂ as a feature makes XOR a depth-1 problem."
       },
       {
         stem: "Why does a single decision tree not need feature scaling, and why can it not extrapolate?",
-        options: [
-          "It scales internally; it extrapolates linearly",
-          "Splits are threshold comparisons on one feature at a time, and the same threshold exists in any monotone rescaling, so scale is irrelevant (0.6619 vs 0.6621). A leaf predicts a constant, so beyond the last threshold on any feature the prediction is flat: 156.2 at tenure 60, 80 and 120",
-          "It needs scaling for Gini; it extrapolates with the leaf slope",
-          "It ignores continuous features"
-        ],
+        options: ["It scales internally and extrapolates linearly", "Thresholds ignore scale; constant leaves stay flat", "It needs scaling for Gini and uses the leaf slope", "It ignores continuous features entirely"],
         answer: 1,
         why: "Flat extrapolation is safe compared with a polynomial's, and useless for a trend that continues."
       },
       {
         stem: "When is a single tree the right model?",
-        options: [
-          "Whenever accuracy matters",
-          "When the rules must be read and audited (a pruned tree of 4–8 leaves), when the truth is thresholds and interactions on unscaled mixed features, or as the building block of an ensemble; not as the final scoring model when accuracy matters, because its variance (root moved in 6 of 10 resamples, AUC 0.674 vs a forest or logistic model's 0.74+) is the price of its readability",
-          "When the data are small",
-          "When the features are categorical"
-        ],
+        options: ["Whenever accuracy is the top priority", "When rules must be read, or inside an ensemble", "Whenever the dataset is relatively small", "Whenever most of the features are categorical"],
         answer: 1,
         why: "Trees are the most interpretable model and the most unstable; ensembles trade the first for the second."
       }

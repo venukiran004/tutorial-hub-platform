@@ -368,56 +368,31 @@ report MAE per level vs base and vs bottom-up`,
     questions: [
       {
         stem: "A marketing team wants to include next month's web traffic in a VAR with sales. Is a VAR the right tool?",
-        options: [
-          "Yes — VAR handles multiple series",
-          "No — a VAR forecasts traffic and sales jointly from their own past, so it adds a second forecasting problem; if traffic will be known in advance, use it as an exogenous regressor (SARIMAX or boosting); if it will not, 10.5 showed the honest version is worse than no regressor",
-          "Yes, provided the series are differenced",
-          "No — VAR only works for two series"
-        ],
+        options: ["Yes, because VAR handles multiple series", "No: use known traffic as a regressor instead", "Yes, provided both series are differenced", "No, because VAR only works for two series"],
         answer: 1,
         why: "The practical hierarchy: known-future series go into X; series known only up to now that genuinely lead can justify a VAR's k²p parameters; the decision is made by a Granger screen and then a backtest. Next month's traffic is not known now, and a VAR would forecast it with its own error."
       },
       {
         stem: "Two commodity prices are each a random walk and their ratio has been stable for a decade. A colleague differences both and fits a VAR. What has been lost?",
-        options: [
-          "Nothing — differencing is required for stationarity",
-          "The cointegrating relationship: the log-ratio is stationary and mean-reverting, and a VECM's error-correction term would use departures from it to forecast both series, which a model in differences cannot see",
-          "The seasonality",
-          "The trend"
-        ],
+        options: ["Nothing; differencing is required for stationarity", "The cointegrating relation a VECM would exploit", "The seasonality in the two price series", "The trend shared by the two price series"],
         answer: 1,
         why: "Differencing is the right move for a single unit-root series; for a cointegrated pair it throws away the one stationary, forecastable quantity. Johansen's test decides the rank, and the executed VECM beat the VAR-in-differences on both the level and the spread."
       },
       {
         stem: "Why is top-down reconciliation the worst method at the store level in the executed comparison (24.75 versus 22.36 for store A)?",
-        options: [
-          "Because the total's forecast was too high",
-          "Because top-down replaces each store's own forecast — which carries the store's dynamics, including store C's level shift — with a fixed share of the total's forecast, so every store inherits the total's error and loses its own information",
-          "Because the proportions were computed on the test period",
-          "Because top-down is not coherent"
-        ],
+        options: ["Because the total's forecast was too high", "Each store loses its own dynamics", "The shares were computed on the test period", "Because top-down is not coherent"],
         answer: 1,
         why: "Top-down is coherent by construction and cheap, and it is right when the leaves are too noisy to model — thousands of low-volume products — and wrong when the leaves have structure of their own. Store C's post-shift level is exactly what a historical proportion cannot know. MinT uses the leaf forecasts and the total's, weighted by their errors."
       },
       {
         stem: "A GARCH fit on daily returns gives α = 0.05 and β = 0.96. What does α + β = 1.01 mean?",
-        options: [
-          "A very persistent, well-behaved volatility",
-          "The variance process is non-stationary: shocks never decay, the long-run variance ω/(1 − α − β) is undefined, and the fit should be constrained (IGARCH) or the sample re-examined for a structural break in volatility",
-          "The model is over-fitted",
-          "Nothing unusual — α + β is often above 1"
-        ],
+        options: ["Very persistent but well-behaved volatility", "Non-stationary variance; constrain or recheck", "The GARCH model is over-fitted", "Nothing unusual; α + β often exceeds 1"],
         answer: 1,
         why: "Real markets show α + β of 0.95 to 0.99 — high persistence with mean reversion. At or above 1 the unconditional variance does not exist and multi-step variance forecasts grow without bound. A break in the volatility regime (a crisis in the sample) often produces this; the executed simulation with α + β = 0.95 was recovered at 0.946."
       },
       {
         stem: "CUSUM on the deseasonalised level of store C alarmed nineteen times before the real changepoint. What was the error and the fix?",
-        options: [
-          "The threshold was too high",
-          "The input was not stationary: the yearly cycle and the slow trend accumulate like a shift; detect on a residual that is stationary before the change — the seasonal-naive residual gave zero false alarms and caught the shift in four days",
-          "CUSUM cannot be used on daily data",
-          "The drift should have been negative"
-        ],
+        options: ["The alarm threshold was set too high", "The input was not stationary; use a residual", "CUSUM cannot be used on daily data", "The drift parameter should have been negative"],
         answer: 1,
         why: "CUSUM assumes the reference distribution is constant until the change; a slow drift violates that and accumulates steadily. The same principle as 9.4's outlier rule on seasonal data: the detector must see a series whose 'normal' is actually stable, which means a model residual, not the raw level."
       }

@@ -367,56 +367,31 @@ and only (a) shows skill -- kappa 0.333, MCC 0.370 -- despite the lowest accurac
     questions: [
       {
         stem: "Precision fell from 0.305 to 0.227 and recall rose from 0.812 to 0.875 when the threshold dropped from 0.5 to 0.35. Why do they move in opposite directions?",
-        options: [
-          "A bug in the threshold",
-          "Lowering the threshold flags more customers: some of the new flags are churners (TP up, FN down — recall rises) but more are stayers (FP up much more — precision falls); the two metrics count the same new flags from different rows of the matrix",
-          "Recall and precision are independent",
-          "The model was retrained"
-        ],
+        options: ["A bug in how the new threshold was applied", "The new flags add some churners but many more stayers", "Recall and precision move independently of each other", "The model was retrained between the two thresholds"],
         answer: 1,
         why: "3 rows moved FN → TP and 54 moved TN → FP. Every threshold is a point on this trade; the curve of all of them is 2.2 and the choice among them is 2.3."
       },
       {
         stem: "Why does Cohen's kappa read 0 for a model that flags everyone?",
-        options: [
-          "Because its accuracy is 0",
-          "Because kappa subtracts the agreement expected from the marginals alone: a predictor that says 'churn' to everyone agrees with the truth exactly as often as chance given its marginals, so p_o = p_e",
-          "Because it has no true negatives",
-          "Kappa is undefined there"
-        ],
+        options: ["Because its accuracy is exactly 0", "It agrees no more than chance given its marginals", "Because it has no true negatives at all", "Kappa is undefined when everyone is flagged"],
         answer: 1,
         why: "Chance-corrected agreement is what kappa and MCC add over accuracy and F1 — and F1 gave the same predictor 0.278."
       },
       {
         stem: "Macro recall is 0.646 and micro recall 0.697 on the three-plan problem. What explains the gap?",
-        options: [
-          "Rounding",
-          "The smallest class (pro, 43 rows) has recall 0.512; macro gives it a third of the weight, micro gives it 43/297 — so micro hides the badly handled class",
-          "Micro recall is always higher",
-          "The classes are balanced"
-        ],
+        options: ["Rounding differences between the two averages", "Macro weights the poor 'pro' class equally; micro hides it", "Micro recall is always higher than macro recall", "The classes are balanced, so the gap is noise"],
         answer: 1,
         why: "When macro is well below micro, look for a small class with a low per-class score. That is the diagnostic use of reporting both."
       },
       {
         stem: "A screening programme wants to weight missed cases four times as heavily as false alarms. Which metric?",
-        options: [
-          "F1",
-          "F2 — F-beta with β = 2 weights recall β² = 4 times precision; or better, a cost-weighted threshold with the actual costs (2.3)",
-          "Precision",
-          "Specificity"
-        ],
+        options: ["F1, which weights precision and recall equally", "F2, which weights recall four times precision", "Precision, since false alarms are the cost to watch", "Specificity, since it counts true negatives"],
         answer: 1,
         why: "F-beta encodes a ratio of importance, not of cost. When the costs are known in money or harm, use them directly."
       },
       {
         stem: "Which pair of metrics is unaffected by the base rate?",
-        options: [
-          "Precision and NPV",
-          "Recall and specificity — each is a rate within one true class, so changing how many positives exist does not change it; precision and NPV mix the classes and shift with prevalence",
-          "Accuracy and F1",
-          "Kappa and accuracy"
-        ],
+        options: ["Precision and negative predictive value", "Recall and specificity", "Accuracy and F1", "Cohen's kappa and accuracy"],
         answer: 1,
         why: "This is why ROC curves (recall against FPR = 1 − specificity) are prevalence-independent and precision–recall curves are not (2.2)."
       }

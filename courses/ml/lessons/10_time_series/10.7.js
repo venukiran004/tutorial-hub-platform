@@ -294,56 +294,31 @@ report(pinball_or_crps, coverage_by_h, width_by_h)                     # weekly`
     questions: [
       {
         stem: "An ARIMA(0,1,0) forecast for a series with residual sd 4 is reported with a 95 % interval of ±7.84 at every horizon from 1 to 30 days. What is wrong?",
-        options: [
-          "Nothing — the interval is correct for a random walk",
-          "The random walk's h-step variance is hσ², so the half-width must grow as 1.96σ√h: 7.84 at h = 1, 42.9 at h = 30; a constant band understates the far horizon by a factor of √30",
-          "The interval should shrink with the horizon",
-          "The interval should be ±4"
-        ],
+        options: ["Nothing; the interval is right for a random walk", "Variance grows as hσ², so the band must widen", "The interval should shrink as the horizon grows", "The interval should be ±4, one residual sd"],
         answer: 1,
         why: "Each future step adds an independent shock; the errors accumulate and the standard deviation grows with the square root of the horizon — verified at 95 % coverage in 20,000 simulated walks. A band that is right at h = 1 and constant thereafter will cover far fewer than 95 % of outcomes a month out."
       },
       {
         stem: "Three quantile models (τ = 0.1, 0.5, 0.9) are fitted independently and the 0.9 prediction falls below the 0.5 prediction on some rows. What should be done?",
-        options: [
-          "Discard those rows",
-          "Sort the predicted quantiles row-wise (or use a model with a monotone constraint across quantiles): crossing is an artefact of fitting each quantile separately, and the executed run had 3 of 150 rows crossed",
-          "Refit with more trees",
-          "Average the three predictions"
-        ],
+        options: ["Discard the rows where the quantiles cross", "Sort the quantiles per row; crossing is an artefact", "Refit each quantile model with more trees", "Average the three quantile predictions"],
         answer: 1,
         why: "Nothing in three separate optimisations forces the outputs to be ordered; on rows with few similar training examples they can invert. Sorting is a valid post-processing step that cannot worsen the pinball loss; joint quantile models and monotone constraints prevent it at source."
       },
       {
         stem: "What does split conformal prediction guarantee, and under what condition?",
-        options: [
-          "Exact coverage for every point",
-          "Marginal coverage of at least 1 − α on new points, for any model and any error distribution, provided the calibration and test errors are exchangeable — which a level shift breaks, as the 59.5 % post-shift coverage showed",
-          "Coverage only for normal errors",
-          "Coverage only for linear models"
-        ],
+        options: ["Exact coverage at every single new point", "Marginal coverage, if errors are exchangeable", "Coverage only when the errors are normal", "Coverage only when the model is linear"],
         answer: 1,
         why: "The guarantee is distribution-free and model-free but marginal (on average over days, not per day) and conditional on exchangeability. Time series violate it through autocorrelated errors and drift; calibrating on the recent block handles the first in practice, and adaptive conformal or EnbPI handle the second."
       },
       {
         stem: "Two probabilistic forecasters have CRPS 15.4 and 15.9. The first covers 87 % with a nominal 80 % band; the second covers 79 %. Which is preferable for a planner?",
-        options: [
-          "The first — lower CRPS",
-          "It depends on what the decision needs: the second's band is honest at its label, while the first is sharper on average but its 80 % band is too wide by construction; report both numbers, and choose by the horizon and the cost of stock-outs versus excess",
-          "The second — coverage matters more than CRPS",
-          "Neither — CRPS and coverage cannot disagree"
-        ],
+        options: ["The first, because its CRPS is lower", "It depends on the decision; report both", "The second, as coverage beats CRPS", "Neither, since the two cannot disagree"],
         answer: 1,
         why: "CRPS rewards sharpness and calibration together across all quantiles; coverage checks one band. A planner sizing an order at the 90th percentile needs that quantile to be right, which is a coverage question at that level and that horizon. This is why the lesson insists on reporting loss, coverage and width per horizon rather than one of them."
       },
       {
         stem: "Why does CRPS reduce to MAE for a point forecast?",
-        options: [
-          "Because CRPS is defined as MAE",
-          "Because CRPS = E|X − y| − ½E|X − X′| and for a degenerate distribution the second term is zero while the first is |ŷ − y|; the executed collapse of the ETS paths to their median gave CRPS 20.53 = the median path's MAE",
-          "Because the median minimises both",
-          "Because CRPS is symmetric"
-        ],
+        options: ["Because CRPS is defined as the MAE", "A point forecast zeroes the spread term", "Because the median minimises both", "Because CRPS is a symmetric score"],
         answer: 1,
         why: "The second term rewards spread — a wider distribution pays E|X − X′|/2 — and the first penalises distance from the outcome; a well-calibrated distribution's CRPS (15.4) is below its median's MAE (20.5) because on days it misses, part of its mass was closer. A point forecast can never beat a calibrated distribution on CRPS."
       }

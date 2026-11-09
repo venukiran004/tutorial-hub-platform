@@ -315,56 +315,31 @@ each column is a coefficient to estimate; 23,426 columns from 863 rows is 4.3's 
     questions: [
       {
         stem: "Is polynomial regression a linear or a non-linear model?",
-        options: [
-          "Non-linear: it fits curves",
-          "Linear in the parameters and non-linear in the input: ŷ = β₀ + β₁x + β₂x² + … is a linear combination of fixed transformations of x, so it is solved by OLS on the expanded design matrix and inherits OLS's closed form, inference and diagnostics",
-          "Non-linear: it uses gradient descent",
-          "Linear only at degree 1"
-        ],
+        options: ["Non-linear, because it fits a curve to the data", "Linear in the parameters, non-linear in the input", "Non-linear, because it is fitted by gradient descent", "Linear only when the degree is exactly one"],
         answer: 1,
         why: "'Linear model' means linear in β. The same is true of splines, Fourier bases and any fixed feature map."
       },
       {
         stem: "Why did the 5-fold CV error explode at degree 12 (4.6) while the test error was still 0.124?",
-        options: [
-          "CV is unreliable",
-          "Shuffled folds hold out points at the edges of the range, and a degree-12 polynomial fitted without them swings there (Runge); CV is measuring a little extrapolation that the interior-heavy test set averages away. CV is the honest one — a deployed model is asked about the edges",
-          "The test set was larger",
-          "The folds were not shuffled"
-        ],
+        options: ["Cross-validation is unreliable for polynomials", "CV holds out edge points, where degree 12 swings", "The test set was larger than each CV fold", "The folds were not shuffled before splitting"],
         answer: 1,
         why: "The exercise shows the same divergence: degree 15's CV MSE of 84 against a grid-truth MSE of 0.065."
       },
       {
         stem: "What does `PolynomialFeatures(3)` produce from 50 inputs, and what follows?",
-        options: [
-          "150 columns",
-          "C(53, 3) = 23,426 columns — far more than the rows, so only a penalised fit exists at all, and each column is a coefficient to estimate; above a handful of inputs, expansion is the wrong tool and a tree ensemble finds interactions without enumerating them",
-          "50 columns cubed",
-          "2,500 columns"
-        ],
+        options: ["150 columns, one per power of each input", "23,426 columns, more than there are rows", "125,000 columns, 50 cubed", "2,500 columns, all pairwise products"],
         answer: 1,
         why: "Degree 2 on 50 inputs is already 1,326 columns. The combinatorics, not the maths, is the limit."
       },
       {
         stem: "Why did one engineered column beat a 56-column degree-3 polynomial on the spend model (MAE 6.34 versus 10.04)?",
-        options: [
-          "The polynomial was underfitted",
-          "The true form is a product with a kink, fee × min(tenure, 12) × (1 − discount); the engineered column *is* that form, so a single coefficient reaches the noise floor, while a polynomial approximates the kink with a curve and the product with many cross-terms — expansion is what you do when you do not know the form, and it is never better than knowing it",
-          "The polynomial needed a higher degree",
-          "Ridge shrank it too much"
-        ],
+        options: ["The polynomial was underfitted at degree 3 here", "The column was the true form; a polynomial only nears it", "The polynomial needed a higher degree to fit well", "Ridge shrank the polynomial's many terms too much"],
         answer: 1,
         why: "The polynomial's coefficients — tenure² at −22, tenure × fee at 5.8 — are the clue to the form, which is their best use."
       },
       {
         stem: "A stakeholder asks for the model's prediction at a dose 40 % above the largest tested. What do you say?",
-        options: [
-          "Report the polynomial's value",
-          "That no model trained on the range can know the answer, that a polynomial's guess grows like xᵈ in an arbitrary direction (degree 10 gave −6,649 two units past the range), and that if an answer must be given it should come from a model with bounded extrapolation — a spline with constant or linear tails — labelled as an extrapolation",
-          "That splines extrapolate correctly",
-          "Refuse to answer"
-        ],
+        options: ["Report the polynomial's prediction at that dose", "No model of the range knows; polynomials explode", "That splines will extrapolate correctly there", "Refuse to answer the question at all"],
         answer: 1,
         why: "Bounded, labelled and hedged beats confidently absurd; the range check from 3.1 belongs in the serving path."
       }

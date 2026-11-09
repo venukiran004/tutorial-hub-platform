@@ -271,56 +271,31 @@ offline: NDCG@10, hit rate, coverage;  online: interleaving / A/B on clicks and 
     questions: [
       {
         stem: "Why is item-based collaborative filtering preferred to user-based in most production systems?",
-        options: [
-          "It is more accurate on every dataset",
-          "Item–item similarities are stable and can be precomputed offline over many co-raters, while users' tastes change and the user–user matrix is far larger; item-based recommendations are also explainable ('because you liked …')",
-          "It handles cold items",
-          "It does not need mean-centring"
-        ],
+        options: ["It is more accurate on every dataset", "Item similarities are stable and precomputable", "It handles brand-new items with no ratings", "It does not need ratings to be mean-centred"],
         answer: 1,
         why: "The choice is operational as much as statistical: a catalogue of 100,000 items has a tractable similarity matrix and users a billion pairs. Item-based CF still fails on new items and on sparse pairs — the worked example's ±1 similarities from two co-raters — which minimum support and shrinkage address."
       },
       {
         stem: "A team fits matrix factorisation with k = 64 and λ = 0.01 on 20 ratings per user and reports a training RMSE of 0.3. What has happened?",
-        options: [
-          "They have found the true rank",
-          "They have over-fitted: 64 free factors per user against 20 ratings with almost no regularisation memorises the training entries; the held-out RMSE will be far worse, and the executed λ sweep showed the regulariser moving test error by 0.35 while the rank moved it by 0.24",
-          "The noise floor is 0.3",
-          "The biases are absorbing the signal"
-        ],
+        options: ["They have found the matrix's true rank", "They have over-fitted the training ratings", "The noise floor of the ratings is 0.3", "The bias terms are absorbing the signal"],
         answer: 1,
         why: "Training error on a factorisation is nearly meaningless; the held-out entries are the only test. Rank and regularisation are chosen together by validation, and the executed curve had its minimum at the generating rank with λ around 1–3, not at the largest rank."
       },
       {
         stem: "Which metric would you report for a home-page recommender that shows ten items and where a single good item is enough to keep the user?",
-        options: [
-          "RMSE of predicted ratings",
-          "Hit rate at 10 (the share of users with at least one relevant item in the list) alongside NDCG@10 — the first matches the product's success condition, the second rewards putting the hit near the top where it will be seen",
-          "MAP at 100",
-          "Precision at 1 only"
-        ],
+        options: ["RMSE of the predicted ratings", "Hit rate at 10, with NDCG@10", "Mean average precision at 100", "Precision at 1 and nothing else"],
         answer: 1,
         why: "Metrics encode the product's question. Hit rate is the right one when one good item suffices; NDCG adds position, which matters on a scrollable list. The executed WRMF reached a hit rate of 0.654, meaning two thirds of users would have found something; precision@10 of 0.10 says the other nine slots were misses, which for this product is fine."
       },
       {
         stem: "A new product launches tomorrow with no interactions. How should the recommender treat it on day one, and how does that change over the first weeks?",
-        options: [
-          "Do not recommend it until it has clicks",
-          "Score it by content on day one — content-based ranking reached 0.406 on cold items where every collaborative method was at chance — give it exploratory exposure so that clicks accumulate, and switch to the collaborative score once it has enough interactions; monitor its exposure so the loop does not starve it",
-          "Give it the global mean rating",
-          "Copy the vector of the most similar existing item permanently"
-        ],
+        options: ["Do not recommend it until it has clicks", "Rank by content, explore, then go collaborative", "Give it the global mean rating for good", "Copy the nearest item's vector permanently"],
         answer: 1,
         why: "The cold start has two parts: representing the item (content) and learning about it (exploration). Copying a similar item's vector is a reasonable content-based initialisation, but it must be updated as evidence arrives, and without exploration the evidence never comes."
       },
       {
         stem: "Offline evaluation ranks model B above model A on held-out clicks, but an A/B test shows A wins on engagement. Which result should the team trust, and why might they disagree?",
-        options: [
-          "The offline result — it uses more data",
-          "The A/B test: held-out clicks were generated under the old system's exposure, so offline metrics favour a model that reproduces what was shown, and a model that surfaces genuinely better items scores badly offline because users never had the chance to click them",
-          "Neither — rerun both",
-          "The offline result, because A/B tests are noisy"
-        ],
+        options: ["The offline result, because it uses more data", "The A/B test: logs reflect the old exposure", "Neither result; rerun both before deciding", "The offline result, since A/B tests are noisy"],
         answer: 1,
         why: "Exposure bias is structural in logged interaction data; counterfactual evaluation (inverse propensity weighting on logged exposure) narrows the gap, but the online test is the ground truth for a system whose training data it will generate. This is why 11.1's rollout stages exist for recommenders in particular."
       }

@@ -358,56 +358,31 @@ STL(np.log(s), period=7, robust=True)                   # multiplicative; streng
     questions: [
       {
         stem: "A colleague reports a 95 % confidence interval for a store's mean daily sales computed as mean ± 1.96 sd/√n over 200 days. The series has lag-1 autocorrelation of about 0.9. What is wrong?",
-        options: [
-          "Nothing — the central limit theorem applies",
-          "The interval is far too narrow: with φ = 0.9 the 200 days carry the information of about 10 independent observations, and the true standard error is roughly four times larger",
-          "The interval should use the median",
-          "Autocorrelation makes the mean biased"
-        ],
+        options: ["Nothing, because the central limit theorem applies", "Too narrow: φ = 0.9 leaves about 10 effective days", "The interval should be built around the median", "Autocorrelation makes the sample mean biased"],
         answer: 1,
         why: "The variance of a mean of autocorrelated observations is inflated by (1 + φ)/(1 − φ) relative to the i.i.d. case; simulated, the sd of the mean was 0.678 against the formula's 0.162. HAC standard errors or a block bootstrap are the fixes; the mean itself is unbiased."
       },
       {
         stem: "A raw feed arrives with three days loaded twice. Which is right: `groupby(date).sum()` or `drop_duplicates()`?",
-        options: [
-          "Always sum — it is the standard idiom",
-          "Always drop — duplicates are errors",
-          "It depends on what the duplication means: an ETL re-run of identical rows should be deduplicated, while several genuine partial records for one day should be summed; look before choosing",
-          "Neither — keep both rows"
-        ],
+        options: ["Always sum, since that is the standard idiom", "Always drop, since duplicates are errors", "It depends on what the duplication means", "Neither; keep both rows as they are"],
         answer: 2,
         why: "Check 3 exists because either default can be wrong: summing an accidental re-load doubles those days and the model learns a spike; dropping genuine partials halves them. The executed case was a re-run of identical rows, so keep-first was right. The fix is chosen from an inspection of the duplicated rows, not from habit."
       },
       {
         stem: "Why does the classical decomposition lose the first and last two quarters of a quarterly series?",
-        options: [
-          "The seasonal indices need two full years",
-          "The 2×4 centred moving average needs two observations on each side of t, so no trend estimate exists at t = 1, 2, 11, 12 — and without a trend there is no detrended value or remainder there",
-          "The first year is used to initialise the level",
-          "Quarterly data always has four missing values"
-        ],
+        options: ["The seasonal indices need two full years of data first", "The centred moving average needs two points on each side", "The first year is used to initialise the trend level", "Quarterly data always has four missing values at the ends"],
         answer: 1,
         why: "The centred window is symmetric by design so that the trend is not shifted in time, and the price is the ends. STL's LOESS trend extends to the edges, which matters most in forecasting, where the most recent points are exactly the ones a centred average discards."
       },
       {
         stem: "Which observation would argue for an *additive* model of the store data instead of the multiplicative one the lesson chose?",
-        options: [
-          "The stores have different levels",
-          "The Saturday-minus-Monday swing being about 97 units at every store regardless of level, rather than about 0.43 times the level",
-          "The weekly pattern repeating every seven days",
-          "Sales being positive"
-        ],
+        options: ["The stores operate at very different sales levels", "A weekly swing of fixed size, whatever the store's level", "The weekly pattern repeating exactly every seven days", "Every daily sales figure being strictly positive"],
         answer: 1,
         why: "Additive means the seasonal effect is a fixed number of units; multiplicative means a fixed proportion. The data showed swings of 96.9, 59.0 and 41.3 for levels of 230, 133 and 93 — proportional — which is why logs are taken. A constant swing in units across those levels would have said the opposite."
       },
       {
         stem: "The extract for the last day ran mid-afternoon, so 30 June shows 37 % of a normal Monday. If it is left in, what happens downstream?",
-        options: [
-          "Nothing — one day cannot matter",
-          "A model forecasts the drop forward, an outlier rule flags it as a −10 sd fault (it did), and the last point — the most influential one for any forecast — is wrong in every method",
-          "The seasonal indices absorb it",
-          "Only the MAPE is affected"
-        ],
+        options: ["Nothing, since one day cannot move a long-run model", "Models carry the drop forward from the key last point", "The seasonal indices absorb it without any harm", "Only the MAPE metric is affected by the drop"],
         answer: 1,
         why: "The end of the series is the anchor of every forecast: exponential smoothing's level, ARIMA's last residuals, a lag-1 feature. A partial period reads as a collapse and propagates into the whole horizon. Check 7 — drop the incomplete last bucket — is the cheapest check on the list and the one with the largest effect when skipped."
       }

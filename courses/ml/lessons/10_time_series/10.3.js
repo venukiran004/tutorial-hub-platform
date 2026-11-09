@@ -389,56 +389,31 @@ report(MASE, WAPE, bias, by=["h", "weekday", "store"], spread="sd across origins
     questions: [
       {
         stem: "A model's 28-day backtest MAE at store A is 24.1. Is it good?",
-        options: [
-          "Yes — it is small relative to the level of 229",
-          "It cannot be judged without the baseline: the four-week seasonal naive scored 26.9 on the same origins and horizon, so the model is a 10 % improvement, and whether that is worth its cost is the decision",
-          "No — the naive scored 53",
-          "Yes if its RMSE is also low"
-        ],
+        options: ["Yes, because it is small against a level of 229", "Only against the baseline: 10% better than naive", "No, because the naive baseline scored 53 there", "Yes, provided its RMSE is also low"],
         answer: 1,
         why: "A forecast error has no meaning in isolation; the seasonal naive is the free alternative, and MASE is literally the ratio to it. The plain naive is the wrong comparison on a weekly-seasonal series (it is wrong by a weekday most days). The forecast-value-added review in 10.9 makes this comparison the structure of the whole report."
       },
       {
         stem: "Which is the right window when the backtest shows the expanding-window model with a persistent positive bias after a known date?",
-        options: [
-          "Expanding — more data is always better",
-          "A sliding window (or a step regressor): the bias is the old regime being averaged into every forecast, and the backtest that revealed it is the evidence for the window length",
-          "A longer horizon",
-          "A different metric"
-        ],
+        options: ["Expanding, because more data is always better", "A sliding window, or a step regressor for the shift", "A longer forecast horizon for every origin", "A different evaluation metric for the backtest"],
         answer: 1,
         why: "After store C's shift the expanding window was 22.8 low on average and the four-week window 3.3 low. Data from before a regime change is not evidence about the present; how much history to keep is an empirical question the rolling backtest answers directly, and a one-directional bias is how it shows."
       },
       {
         stem: "Why is a gap of 7 not enough for a model with a 28-day rolling feature?",
-        options: [
-          "It is enough — the gap only needs to cover the horizon",
-          "With a gap of 7, 105 of 140 test rows still have their 28-day window reaching into the training period; the gap must be at least the longest feature window plus the data latency",
-          "Because TimeSeriesSplit requires gap ≥ test_size",
-          "Because the gap must equal the season length"
-        ],
+        options: ["It is enough; the gap only needs to cover the horizon", "Most test rows' windows still reach into training", "TimeSeriesSplit requires gap to be at least test_size", "The gap must always equal the season length"],
         answer: 1,
         why: "The gap exists so that no test row's features are computed from training rows in a way production could not reproduce, and so that features unavailable under the pipeline's latency are not used. Executed: gap 0 left 140 of 140 overlapping, gap 7 left 105, gap 28 left none."
       },
       {
         stem: "A product's forecast is evaluated by MAPE. Its actuals include several zero-sales days. What happens?",
-        options: [
-          "Those days are ignored automatically",
-          "MAPE is undefined (division by zero); the usual silent fix drops those days and rewards a model that under-forecasts everywhere else, since a low forecast can never be more than 100 % wrong while a high one is unbounded",
-          "MAPE becomes 100 % on those days",
-          "sMAPE fixes it"
-        ],
+        options: ["The zero-sales days are ignored automatically", "Undefined; dropping zeros rewards under-forecasting", "MAPE becomes exactly 100% on those days", "Switching to sMAPE removes the problem entirely"],
         answer: 1,
         why: "The executed store backtest had four closed days in its windows, on which MAPE could not be computed at all, and the ±30 comparison showed MAPE nearly indifferent between an under- and an over-forecast with MAEs of 40.7 and 35.3. sMAPE does not fix it: a 5-unit miss on a zero day scores 200 %. Use WAPE or MASE."
       },
       {
         stem: "You tune 200 configurations on a set of rolling folds and report the best one's MAE from those same folds. What is wrong and how large is the effect?",
-        options: [
-          "Nothing, if the folds are forward-only",
-          "The reported number is the winner of 200 draws on the same folds and is optimistic by roughly the amount of tuning; with 24 configurations the executed gap was small (0.09), and it grows with the number of configurations and the noise in the folds — report on folds or a block not used for selection",
-          "The effect is always exactly the standard error of the MAE",
-          "The problem is that rolling folds overlap"
-        ],
+        options: ["Nothing, as long as the folds are forward-only", "It is the best of 200 draws, so it is optimistic", "The bias always equals the MAE's standard error", "The only problem is that rolling folds overlap"],
         answer: 1,
         why: "Selecting the minimum over many noisy estimates biases the minimum downward — the winner's curse. Leak 10 in the catalogue. The fix is a nested scheme or a final untouched block; the executed comparison showed the selected configuration's clean-block score (20.78) and its selection score (22.40) differ, and only the former is the model's error."
       }

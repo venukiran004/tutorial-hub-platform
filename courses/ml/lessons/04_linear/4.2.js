@@ -355,56 +355,31 @@ for name, (yy, XX) in versions.items():
     questions: [
       {
         stem: "Which assumption failures bias the coefficients, and which only the standard errors?",
-        options: [
-          "All of them bias the coefficients",
-          "Non-linearity (omitted terms) and exogeneity failures bias the coefficients; heteroscedasticity and autocorrelation leave them unbiased but make the standard errors and p-values wrong; collinearity leaves predictions fine and makes individual coefficients unstable",
-          "Only normality biases them",
-          "Only collinearity biases them"
-        ],
+        options: ["Every assumption failure biases the coefficients", "Non-linearity and endogeneity bias; others hit SEs", "Only non-normal errors bias the coefficients", "Only collinearity between features biases them"],
         answer: 1,
         why: "This is the triage: change the model, or change the standard errors, or stop reading the coefficients."
       },
       {
         stem: "What does the Gauss–Markov theorem say, and what does it not require?",
-        options: [
-          "OLS is the best estimator of all",
-          "Among linear unbiased estimators, OLS has the smallest variance when errors have mean zero, equal variance and no correlation; it does not require normality, which is needed only for exact t and F tests — and it says nothing about biased or non-linear estimators, which ridge and trees are",
-          "OLS is unbiased whatever the errors do",
-          "OLS requires normal errors to be unbiased"
-        ],
+        options: ["OLS is the best estimator of any kind, full stop", "Best linear unbiased under its assumptions; no normality", "OLS stays unbiased whatever the errors do", "OLS needs normally distributed errors to be unbiased"],
         answer: 1,
         why: "'Best linear unbiased' has three qualifiers; ridge gives up 'unbiased' and often wins on total error (4.3)."
       },
       {
         stem: "A row has leverage 0.44 and a studentised residual of −0.3. How much does removing it change the fit?",
-        options: [
-          "Enormously; the leverage is high",
-          "Very little: influence needs both a high leverage and a large residual — a high-leverage point on the line pulls toward where the line already is (Cook's D 0.06 in the executed case)",
-          "It cannot be determined",
-          "It changes the intercept only"
-        ],
+        options: ["Enormously, because its leverage is high", "Very little: it lies close to the line", "It cannot be determined from these numbers", "It changes the intercept but not the slope"],
         answer: 1,
         why: "Cook's distance is roughly residual² × leverage/(1 − leverage); with a tiny residual the product is tiny."
       },
       {
         stem: "When should you use weighted least squares rather than robust standard errors?",
-        options: [
-          "Always; WLS is more accurate",
-          "When the variance pattern is known or well estimated — variance proportional to x, or to a group size — so that weighting by 1/Var gives a more efficient estimate with an honest se; when the pattern is unknown, HC3 gives honest SEs without changing the estimate",
-          "Only for time series",
-          "Never; they are equivalent"
-        ],
+        options: ["Always, because WLS is the more accurate method", "When the variance pattern is known or well estimated", "Only for time series with changing variance", "Never, because the two approaches are equivalent"],
         answer: 1,
         why: "WLS with weights 1/x² gave a slope closer to the truth with a 30 % smaller se in the executed run. Wrong weights, though, make things worse — hence HC3 as the safe default."
       },
       {
         stem: "Durbin–Watson is 2.09 on the churn spend residuals. What does it tell you?",
-        options: [
-          "The errors are independent",
-          "Nothing useful: Durbin–Watson tests autocorrelation of residuals in row order, and the rows are customers in id order with no time or spatial structure — 2.09 is the null value and would be even if the errors were correlated by region or by cohort. Dependence must be tested along the axis on which it could exist",
-          "There is positive autocorrelation",
-          "The model is well specified"
-        ],
+        options: ["That the errors are independent across customers", "Nothing: row order here carries no time structure", "That the residuals show positive autocorrelation", "That the model is correctly specified overall"],
         answer: 1,
         why: "For grouped data the check is cluster-robust standard errors or a mixed model; DW is a time-series tool."
       }

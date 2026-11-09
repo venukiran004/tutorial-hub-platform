@@ -284,56 +284,31 @@ BM25 index for 'similar tickets'; a transformer trial only if the gap on the bus
     questions: [
       {
         stem: "Why does multinomial Naive Bayes work with five training sentences when a linear SVM would not?",
-        options: [
-          "Because it does not use the words",
-          "Because it estimates one smoothed probability per word per class, which needs almost no data, and combines them by a product — its independence assumption is false and its probabilities are miscalibrated, but the argmax is often right; Laplace smoothing kept an unseen word from zeroing a class in the worked example",
-          "Because it uses TF-IDF",
-          "Because it has no hyperparameters"
-        ],
+        options: ["Because it does not use the words at all", "One smoothed rate per word needs little data", "Because it weights the words with TF-IDF", "Because it has no hyperparameters to tune"],
         answer: 1,
         why: "Naive Bayes is a high-bias, low-variance model: counts plus smoothing, no optimisation. It loses to a linear model once there are a few thousand documents (0.869 against 0.884 here) and wins on the first few hundred; complement NB, which counts the words of all other classes, fixes its bias toward wordy classes and won outright on this corpus."
       },
       {
         stem: "A TF-IDF vectoriser is fitted on the entire corpus before the train/test split. What leaks, and how much does it matter?",
-        options: [
-          "Nothing leaks — idf has no labels",
-          "The vocabulary and the idf weights are computed with the test documents' word statistics, so the test set has shaped the features; it involves no labels and its effect is small on a large corpus (identical accuracy in the executed check) but can be material on a small one, and it is the same discipline as every other fitted transformer: fit on train, inside the fold",
-          "The class priors leak",
-          "The test labels leak through max_df"
-        ],
+        options: ["Nothing, because the idf weights involve no labels", "Test statistics shape the features; often minor", "The class priors leak into the fitted features", "The test labels leak in through max_df"],
         answer: 1,
         why: "The rule is not about this leak's size but about not having to reason about it: the vectoriser is a fitted step of the pipeline, and the pipeline is what cross-validation refits. The executed grid did exactly that and found the defaults best."
       },
       {
         stem: "For a search box over support tickets, why prefer BM25 to cosine on TF-IDF?",
-        options: [
-          "BM25 uses embeddings",
-          "BM25 saturates term frequency (a term's credit is bounded by (k₁ + 1)·idf) and normalises length by a tunable b, so a long ticket that repeats a word does not dominate and a short ticket is not favoured for being short; on the executed queries both ranked sensibly but BM25's top 5 for 'goalie save playoff' were four hockey posts to cosine's three",
-          "BM25 does not need a vocabulary",
-          "Cosine cannot rank more than one query term"
-        ],
+        options: ["BM25 uses dense embeddings for ranking", "It saturates repetition and tunes length", "BM25 does not need a vocabulary at all", "Cosine cannot rank multi-term queries"],
         answer: 1,
         why: "Cosine on unit-normalised TF-IDF rewards concentration — a document about nothing but the query — and grows linearly with repetition unless sublinear_tf is set. BM25's two parameters encode decades of retrieval evaluation and remain the lexical baseline that dense retrievers are combined with rather than replace."
       },
       {
         stem: "LDA with K = 4 put 290 of 600 hockey posts and 286 of 593 space posts in the 'politics' topic. Is the model wrong?",
-        options: [
-          "Yes — LDA should recover the classes",
-          "No — LDA models word co-occurrence, not the labels: topic 0 is 'first-person argument' (think, people, don, just, know), a real pattern shared across groups; a topic model is a lens on the corpus, and K, the stop list and the pruning are choices judged by coherence and reading, not by agreement with labels it never saw",
-          "Yes — K should have been 3",
-          "No — the posts were mislabelled"
-        ],
+        options: ["Yes, because LDA should recover the classes", "No: it models co-occurrence, not the labels", "Yes, because K should have been set to 3", "No, because the posts were mislabelled"],
         answer: 1,
         why: "The executed result is typical: three clean topical clusters and one discourse cluster. Treating a topic model as a classifier is the mistake; using it to discover that half the corpus is argument rather than content is the point."
       },
       {
         stem: "When is a fine-tuned transformer worth its cost over a TF-IDF linear model?",
-        options: [
-          "Always — it is state of the art",
-          "When the measured gap matters: the linear model gives a number in half a second (0.884 here) and readable weights; a transformer typically adds several points at a thousand times the training cost and no inspectable weights, which pays when the task depends on word order, paraphrase or context (sentiment with negation, entailment, short ambiguous text) and the points translate into a business outcome",
-          "Never for classification",
-          "Only when the corpus is small"
-        ],
+        options: ["Always, because it is the state of the art", "When the measured gap justifies the cost", "Never, for any classification task", "Only when the corpus is small"],
         answer: 1,
         why: "The classical pipeline is the yardstick that makes the transformer's gain a measured quantity rather than an assumption, and its weights are the first check on the labels. On bag-of-words-friendly tasks — topic classification, spam, routing — the gap is small; on meaning-dependent tasks it is large, and that is where the cost is justified."
       }

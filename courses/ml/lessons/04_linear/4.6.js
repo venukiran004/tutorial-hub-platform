@@ -366,56 +366,31 @@ crossings = (hi < lo).sum()                                  # should be 0 or a 
     questions: [
       {
         stem: "What are the three components of a generalised linear model, and where do linear and logistic regression sit?",
-        options: [
-          "Features, weights and a bias",
-          "A random component (an exponential-family distribution for y with mean μ), a systematic component (the linear predictor η = xᵀβ) and a link g(μ) = η; linear regression is Normal with identity link, logistic is Bernoulli with logit link, Poisson regression is Poisson with log link",
-          "A loss, an optimiser and a regulariser",
-          "Mean, variance and link"
-        ],
+        options: ["Features, weights and a bias term", "Exponential-family y, linear predictor, link", "A loss, an optimiser and a regulariser", "A mean, a variance and a link function"],
         answer: 1,
         why: "The family fixes how the variance depends on the mean; the link fixes the scale on which effects are additive."
       },
       {
         stem: "Why not model a count with linear regression?",
-        options: [
-          "It always fails to converge",
-          "It can predict negative counts (the identity-link Poisson fitted a minimum mean of −0.75), it assumes constant variance where counts vary more at higher means, and its coefficients are additive where count effects are naturally multiplicative — Poisson with a log link fixes all three and gives rate ratios",
-          "Counts are not numeric",
-          "Because R² is undefined for counts"
-        ],
+        options: ["It always fails to converge on count data", "Negative predictions, wrong variance, additive effects", "Counts are not numeric, so OLS cannot fit them", "Because R² is undefined for count targets"],
         answer: 1,
         why: "On the tickets target linear regression happened to be harmless (min prediction 0.59) only because the mean is 0.8 and the effects are nil."
       },
       {
         stem: "A Poisson coefficient is 0.4 and the model has ln(exposure) as an offset. Interpret both.",
-        options: [
-          "Each unit of x adds 0.4 events",
-          "Each unit of x multiplies the expected *rate* (events per unit exposure) by e^{0.4} = 1.49, holding exposure and the other features fixed; the offset's coefficient is fixed at 1, so doubling the observation window doubles the expected count exactly",
-          "Each unit of x raises the probability by 40 %",
-          "The offset has coefficient 0.4"
-        ],
+        options: ["Each unit of x adds 0.4 events to the count", "x multiplies the rate by 1.49; offset fixed at 1", "Each unit of x raises the probability by 40%", "The offset's coefficient is 0.4, like x's"],
         answer: 1,
         why: "Rate ratio e^β, exposure multiplies the count — the two pieces of Poisson arithmetic every stakeholder will ask for."
       },
       {
         stem: "You need E[claim size] for reserving. Should you fit OLS on log(claim) and exponentiate?",
-        options: [
-          "Yes; it is equivalent to a Gamma GLM",
-          "No: exp(E[ln y]) is the geometric mean, which for a right-skewed target is below the mean — in the simulation total predictions came to 76 % of total claims. A Gamma (or Tweedie) GLM with a log link models E[y] directly, stays positive and recovers the multiplicative coefficients",
-          "Yes, if you add 0.5σ² to the prediction",
-          "No; use a decision tree"
-        ],
+        options: ["Yes, because it is equivalent to a Gamma GLM", "No: that gives the geometric mean, below E[y]", "Yes, as long as you add 0.5σ² afterwards", "No, because a decision tree should be used"],
         answer: 1,
         why: "The smearing correction (option 3) exists but assumes homoscedastic log-errors; the GLM needs no correction."
       },
       {
         stem: "When is Huber loss preferable to squared error, and what does it cost?",
-        options: [
-          "Always; it is strictly better",
-          "When residuals are heavy-tailed or contaminated: its gradient is capped at ±δ, so 5 % wild targets that quadrupled OLS's error left Huber's fit near the clean one (16.7 vs 62.3). Under clean Gaussian noise it is less efficient — slope variance 1/0.865 of OLS's in simulation — and with small ε it estimates something closer to the median than the mean",
-          "When the target is a count",
-          "When you need a prediction interval"
-        ],
+        options: ["Always, because it is strictly better than squared error", "With heavy tails; it costs efficiency on clean data", "When the target is a count rather than continuous", "When you need a prediction interval from the model"],
         answer: 1,
         why: "A loss is a belief about the residual distribution: squared error is Gaussian, Huber is Gaussian-with-Laplace-tails."
       }

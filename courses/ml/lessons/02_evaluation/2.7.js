@@ -356,56 +356,31 @@ means, table = compare({"logistic": logistic, "gbdt": gbdt, "forest": forest}, X
     questions: [
       {
         stem: "Why resample the same rows for both models when bootstrapping a difference?",
-        options: [
-          "To save computation",
-          "Because the models' errors are correlated — both find the same rows hard — so the difference on a common resample has much lower variance than the difference of two independent resamples; the paired interval is the honest one and it is narrower",
-          "It is not necessary",
-          "To make the intervals overlap"
-        ],
+        options: ["To save computation by drawing the resample only once", "Errors are correlated, so a paired difference is tighter", "It is not necessary for a valid confidence interval", "To make the two models' intervals overlap by design"],
         answer: 1,
         why: "Pairing removes shared variance. It is the same reason a paired t-test beats an unpaired one on before/after data."
       },
       {
         stem: "What does McNemar's test ignore, and why is that correct?",
-        options: [
-          "The false positives",
-          "The rows both models get right and the rows both get wrong — they carry no information about which model is better; only the discordant rows (right for one, wrong for the other) can distinguish them",
-          "The threshold",
-          "The positives"
-        ],
+        options: ["The false positives, which are too noisy to use", "Rows both models get right or both get wrong", "The decision threshold, which is fixed in advance", "The positives, which are rare in the test set"],
         answer: 1,
         why: "201 shared correct rows tell you the problem is mostly easy; 11 against 12 tells you the two models are interchangeable at that threshold."
       },
       {
         stem: "A slice of 58 rows with 7 positives shows AUC 0.756. What do you report?",
-        options: [
-          "AUC 0.756 for that slice",
-          "The number with its interval — [0.51, 0.96] — or 'insufficient', because seven positives cannot distinguish a coin toss from a near-perfect model; set a floor on positives per slice before reporting any slice metric",
-          "That the slice is under-performing",
-          "That the slice is fine"
-        ],
+        options: ["AUC 0.756 for that slice, as measured", "The interval [0.51, 0.96], or 'insufficient'", "That the slice is clearly under-performing", "That the slice is performing acceptably"],
         answer: 1,
         why: "Small slices generate extreme numbers in both directions. The interval, or a refusal to report, is the only honest option."
       },
       {
         stem: "How does the required test-set size scale with prevalence for a fixed AUC precision?",
-        options: [
-          "It does not depend on prevalence",
-          "The interval width scales with 1/√(positives), so rows needed scale with 1/prevalence: about 5,000 rows for ±0.02 at 16 %, about 80,000 at 1 %",
-          "Linearly with the number of negatives",
-          "It shrinks as prevalence falls"
-        ],
+        options: ["It does not depend on prevalence at all", "Rows needed scale with 1/prevalence", "Linearly with the number of negatives", "It shrinks as prevalence falls"],
         answer: 1,
         why: "Positives are the scarce resource in an AUC estimate. This is why rare-event models need large test sets and why 'the test set is too small' should be computed before the split."
       },
       {
         stem: "Offline, model B beats A on NDCG by a clear, corrected-significant margin. Why still run an online test?",
-        options: [
-          "Because offline metrics are always wrong",
-          "Because NDCG is a proxy for the business goal, computed on items past policies chose to show; the online test measures the goal itself on live traffic with a randomised control, and can reveal that the proxy improvement did not translate — or that it harmed a guardrail metric",
-          "To satisfy the reviewers",
-          "Because online tests are faster"
-        ],
+        options: ["Because offline metrics are always wrong", "NDCG is a proxy; online tests measure the goal", "To satisfy reviewers before the launch", "Because online tests finish faster than offline"],
         answer: 1,
         why: "Offline evaluation is necessary and never sufficient. The gap between a proxy and a goal is the most common reason a 'better' model fails to move anything."
       }

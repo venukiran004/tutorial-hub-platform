@@ -391,56 +391,31 @@ np.linalg.eigvalsh(Xu.T @ Xu / len(Xu))     # [0.083, 0.76, 6.1, 31.7, 84.3, 146
     questions: [
       {
         stem: "Why does momentum converge in 171 steps on the valley where plain gradient descent needs more than 400?",
-        options: [
-          "It uses a larger learning rate",
-          "Along the flat direction the gradient keeps the same sign, so the velocity accumulates to about 1/(1 − β) = 10× the step; along the steep direction the gradient alternates sign and the velocity cancels — accelerating where GD crawls and damping where GD zigzags",
-          "It computes the Hessian",
-          "It uses smaller batches"
-        ],
+        options: ["It quietly uses a larger learning rate than plain GD", "Velocity builds along the flat axis and cancels on the steep one", "It computes the Hessian and steps along its eigenvectors", "It uses smaller batches, so it takes more steps per epoch"],
         answer: 1,
         why: "On a quadratic this turns O(κ) iterations into O(√κ). Adam gets the same effect with per-coordinate scaling on top."
       },
       {
         stem: "When would you train with absolute error rather than squared error?",
-        options: [
-          "Always; it is more robust",
-          "When the target has outliers or heavy tails and you want the fit to track the typical value rather than be pulled toward extremes — absolute error's optimum is the median and every row's gradient has unit magnitude; Huber if you also want a smooth gradient near zero",
-          "When the target is categorical",
-          "When the data is small"
-        ],
+        options: ["Always, because absolute error is the more robust loss", "When outliers should not drag the fit off the median", "When the target is categorical rather than numeric", "Whenever the training set has fewer than 1,000 rows"],
         answer: 1,
         why: "On the five residuals, the outlier contributed 32 of a total 34.7 squared loss and 8 of 11.8 absolute loss. Which fit you want depends on whether the outlier is signal (2.4)."
       },
       {
         stem: "Which loss has zero gradient almost everywhere, and what follows?",
-        options: [
-          "Cross-entropy",
-          "The 0–1 loss (accuracy): a step function of the margin, so gradient descent cannot minimise it; convex surrogates — cross-entropy, hinge — are trained instead, and the metric is used for choosing thresholds and hyperparameters",
-          "Hinge loss",
-          "Huber loss"
-        ],
+        options: ["Cross-entropy, so it is replaced by accuracy", "0–1 loss, so a convex surrogate is trained instead", "Hinge loss, so SVMs cannot be fitted with gradients", "Huber loss, so it is replaced by squared error"],
         answer: 1,
         why: "This is the loss-versus-metric distinction: train on what has a gradient and is a proper score; report what the decision needs."
       },
       {
         stem: "SGD's loss is the lowest after five epochs yet it oscillates near the minimum. Why, and what fixes it?",
-        options: [
-          "SGD is broken",
-          "Each single-row gradient is a noisy estimate, so the iterate keeps jittering by about η × noise; a decaying learning rate, larger batches late in training, or averaging the iterates (Polyak) lets it settle",
-          "A larger learning rate",
-          "Fewer epochs"
-        ],
+        options: ["SGD is broken and should be replaced with full batches", "Single-row gradients are noisy; decay the step or average", "Use a larger learning rate to escape the oscillation", "Train for fewer epochs so it stops before oscillating"],
         answer: 1,
         why: "Noise is a feature early (it escapes saddles and poor basins) and a bug late; schedules are how you get both."
       },
       {
         stem: "Cross-entropy for a correct prediction at p = 0.9 is 0.105, not zero. What consequence does that have for logistic regression on separable data?",
-        options: [
-          "None",
-          "The loss keeps rewarding more confidence forever, so the weights grow without bound and never converge; regularisation (or early stopping) is what gives the problem a finite optimum",
-          "The model underfits",
-          "Accuracy falls"
-        ],
+        options: ["None, since logistic regression converges regardless", "Weights grow without bound unless you regularise", "The model underfits separable data at p = 0.9", "Accuracy falls as training continues on such data"],
         answer: 1,
         why: "Hinge loss, by contrast, is satisfied once the margin exceeds one — one reason SVMs and logistic regressions behave differently on clean, separable data."
       }

@@ -253,56 +253,31 @@ def auc_trapezoid(y, s):                                                        
     questions: [
       {
         stem: "An interviewer asks you to explain the bias–variance trade-off. Which answer includes the part most candidates leave out?",
-        options: [
-          "Bias is under-fitting and variance is over-fitting; use cross-validation",
-          "Expected error decomposes into bias², variance and irreducible noise; capacity moves along the curve; and the noise floor bounds what any model can do — so the diagnosis is the train–test gap against the noise level, and the remedies (regularisation, data, ensembling) target the term that is large, as weight decay did in 11.6 (train 1.000 → 0.930, test 0.851 → 0.874)",
-          "Bias is bad and variance is good",
-          "Deep networks have no bias"
-        ],
+        options: ["Bias underfits, variance overfits; cross-validate", "Bias², variance and the noise floor all bound it", "Bias is bad and variance is good", "Deep networks have no bias at all"],
         answer: 1,
         why: "The noise floor is the forgotten term: a model at the floor cannot improve and effort spent on it is wasted, which is why 10.9's value-added table and 11.4's 0.4 noise sd matter. The executed weight-decay sweep is the trade-off with numbers attached."
       },
       {
         stem: "Asked to implement k-means, you finish and the interviewer asks what could go wrong. Which answer is complete?",
-        options: [
-          "Nothing — the algorithm always converges",
-          "It converges to a local minimum that depends on the start (a bad start was 65 % worse in inertia), so use k-means++ and several restarts; k must be chosen by silhouette or a validation criterion, not by inertia, which always falls with k; and it assumes spherical clusters of similar size and is sensitive to scale and outliers",
-          "It needs the number of clusters, and that is all",
-          "It is too slow for large data"
-        ],
+        options: ["Nothing; the algorithm always converges", "Local minima, choosing k, spherical shapes", "It needs the number of clusters, and that is all", "It is too slow for large datasets"],
         answer: 1,
         why: "The follow-up is the real question. The from-scratch implementation proves the mechanics; the failure modes — initialisation, choosing k, the spherical assumption, scaling — are what module 7 measured and what a strong answer names unprompted."
       },
       {
         stem: "In the fraud case, the interviewer asks why you would keep an unsupervised scorer after you have labels. What is the evidence-based answer?",
-        options: [
-          "Unsupervised models are more accurate",
-          "Because a supervised model can only find the patterns its labels contain: in 9.5 a new fraud pattern was found by the isolation forest (193 of 240 rows) once its feature existed, while the supervised model with the same feature and no labels for the pattern found 2 — the unsupervised scorer is the detector for what has not been labelled yet",
-          "Because labels are always wrong",
-          "Because it is cheaper to serve"
-        ],
+        options: ["Unsupervised models are simply more accurate", "Labels only teach the patterns they contain", "Because the labels are always wrong", "Because it is cheaper to serve"],
         answer: 1,
         why: "Fraud is adversarial: patterns change faster than labels arrive. The loop in 9.5 — unsupervised queue, analyst labels, supervised model, rank-average, miss review, new features — is the design, and the executed contrast is the argument for its unsupervised half."
       },
       {
         stem: "A case begins 'we want to predict which customers will respond to an offer'. What is the first thing to establish?",
-        options: [
-          "Which model to use",
-          "Whether the business wants a prediction (who will buy) or an effect (whom the offer changes), because they are different questions with different data requirements: a response model targeted the sure things and was uncorrelated (−0.07) with the true effect in 11.7, while an uplift model from a randomised experiment found +3.8 per customer in the top half and a bottom decile the offer harmed",
-          "The size of the dataset",
-          "The deadline"
-        ],
+        options: ["Which model family is best suited", "Prediction of response, or causal effect", "How many rows the dataset contains", "When the project's deadline falls"],
         answer: 1,
         why: "Most 'predict who will respond' briefs are causal questions in disguise, and answering the predictive one well produces a targeting list that wastes the budget on customers who would have bought anyway. Establishing this first changes the data plan: a randomised holdout becomes the first deliverable."
       },
       {
         stem: "What does 'say the number' mean as a habit, and why does it matter in an interview?",
-        options: [
-          "Memorise benchmark scores",
-          "Attach an executed result to every claim — the baseline's WAPE, the leak's inflated score, the threshold and its cost, the monitor's null value — because a number shows the claim was tested rather than recited, and it turns 'I would check for leakage' into 'the shuffled split scored 22.3 against 31.3 forward-only, so I split by time'",
-          "Quote the paper",
-          "Always give a confidence interval"
-        ],
+        options: ["Memorise the benchmark scores", "Back every claim with a measured result", "Quote the original paper's figures", "Always give a confidence interval"],
         answer: 1,
         why: "Every lesson in this course produced its numbers by running the code, and the numbers are what make the reasoning checkable. In an interview they do the same job: they are evidence that you have done the work, and they make the conversation about the specifics that show judgement."
       }

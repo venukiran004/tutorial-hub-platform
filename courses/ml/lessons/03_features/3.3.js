@@ -347,56 +347,31 @@ for name, hide in versions.items():
     questions: [
       {
         stem: "What does mean imputation do to a column's variance and to its correlations with other columns?",
-        options: [
-          "Nothing; the mean is preserved",
-          "It preserves the mean but shrinks the variance (every gap becomes the same central value) and weakens correlations (the filled rows sit on a horizontal line); with 13 % filled, the imputed column had sd 0.00 across its gaps against 0.88 observed",
-          "It increases the variance",
-          "It strengthens correlations"
-        ],
+        options: ["Nothing, because the column's mean is preserved", "Keeps the mean, shrinks variance, weakens correlations", "It increases the variance by adding extra values", "It strengthens correlations with the other columns"],
         answer: 1,
         why: "This is why multiple imputation adds residual noise and averages over several fills — to restore the uncertainty that single imputation erases."
       },
       {
         stem: "Why can the MCAR test not distinguish MAR from MNAR?",
-        options: [
-          "It can, with enough data",
-          "Both mechanisms make missingness predictable from observed columns — under MNAR the hidden value is correlated with the observed ones, so its missingness is too; the test rejects MCAR and stops. Only knowledge of the process, a recovery sample or a sensitivity analysis goes further",
-          "The test only works for numeric columns",
-          "MNAR is undetectable in principle, so the test is useless"
-        ],
+        options: ["It can, once the sample of rows is large enough", "Both make missingness predictable from observed data", "The test only works for numeric columns, not text", "MNAR is undetectable, so the test is pointless"],
         answer: 1,
         why: "The test is one-sided. It is still worth running: a rejected MCAR is the signal to keep the indicator and treat deletion as forbidden."
       },
       {
         stem: "A tree booster is the model. Should you impute?",
-        options: [
-          "Yes, always with the median",
-          "Not necessarily: HistGradientBoosting, LightGBM, XGBoost and CatBoost learn a NaN direction at each split, which is a per-split indicator; imputation is needed only for a downstream linear model, a distance method or a network, or when the same pipeline must serve several model types",
-          "No; imputation harms trees",
-          "Only for categorical columns"
-        ],
+        options: ["Yes, always impute with the column median first", "Not necessarily: boosters learn a NaN direction", "No, because imputation always harms tree models", "Only for categorical columns, never numeric ones"],
         answer: 1,
         why: "On the churn table the booster with NaN passed through and with median imputation were within a thousandth of each other; the choice is about the rest of the pipeline."
       },
       {
         stem: "Sixty columns are each 15 % missing. Why is listwise deletion catastrophic?",
-        options: [
-          "It is slow",
-          "The probability a row is complete is roughly 0.85⁶⁰ ≈ 0.00006 if the gaps are independent — nearly every row has at least one gap, so deletion removes almost the whole table; per-column imputation with indicators, or a NaN-native model, keeps it",
-          "It biases toward the majority class",
-          "It is not catastrophic; 15 % is small"
-        ],
+        options: ["Because deletion is slow on wide tables", "Almost no row is complete, so nearly all are lost", "It biases the data toward the majority class", "It is not catastrophic, since 15% is small"],
         answer: 1,
         why: "Missingness compounds across columns. This is the scale case of 1.2, and the arithmetic is why 'drop rows with NaN' is never the answer at scale."
       },
       {
         stem: "Which fill is wrong for a time-series feature and why?",
-        options: [
-          "Forward-fill",
-          "Backward-fill: it copies a later value into an earlier row, so the feature at time t contains information from after t — temporal leakage; forward-fill carries the last known state, and interpolation between known points is acceptable only if it does not use future points at training-feature time",
-          "Interpolation",
-          "Constant fill"
-        ],
+        options: ["Forward-fill, which repeats the last known value", "Backward-fill, which copies a later value backwards", "Linear interpolation between two known points", "A constant fill with a sentinel such as −1"],
         answer: 1,
         why: "Any fill that uses rows after the as-of time is the centred-window leak of 1.6. Forward-fill is the only direction time allows."
       }

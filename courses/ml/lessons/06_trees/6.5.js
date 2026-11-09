@@ -341,56 +341,31 @@ StackingRegressor(estimators=..., final_estimator=RidgeCV(),
     questions: [
       {
         stem: "What does Condorcet's jury theorem say, and what is its condition?",
-        options: [
-          "More models are always better",
-          "If each voter is correct with probability p > 0.5 and the voters' errors are independent, the probability that the majority is correct rises toward 1 with the number of voters (0.6 → 0.753 at 11, 0.979 at 101). The condition is independence: eleven 60 % voters sharing a difficulty component reached 0.606; and for p < 0.5 the majority gets worse",
-          "Averaging removes bias",
-          "Ensembles need at least 100 members"
-        ],
+        options: ["Adding more models always improves the majority vote", "Majority accuracy rises to 1 if errors are independent", "Averaging many models removes their shared bias", "An ensemble needs at least 100 members to work"],
         answer: 1,
         why: "Every ensemble method is a technique for approximating the independence the theorem assumes."
       },
       {
         stem: "Why must stacking use out-of-fold predictions as meta-features?",
-        options: [
-          "To make training faster",
-          "Because a base model's predictions on its own training rows reflect how much it memorised, not how it generalises; a meta-model fitted on them trusts the most overfitted member (coefficients [0.97, 2.46, 4.61], ordered by training AUC) and generalises worse (0.712 vs 0.717). Out-of-fold predictions are the members' behaviour on unseen rows, which is what the combination should be learned from",
-          "Because the meta-model needs more rows",
-          "It is optional; scikit-learn does it for convenience"
-        ],
+        options: ["To make the meta-model faster to train", "In-sample predictions reward memorisation", "Because the meta-model needs more rows", "It is optional; scikit-learn adds it for ease"],
         answer: 1,
         why: "The same principle as 3.5's cross-fitting and 6.4's ordered statistics: a row's derived feature must not contain its own label."
       },
       {
         stem: "Hard versus soft voting: when does each make sense?",
-        options: [
-          "Hard voting is better for probabilities",
-          "Soft voting averages probabilities and keeps confidence, so a 99 %-sure member outweighs three at 51 %; it needs members on a comparable probability scale. Hard voting counts labels and is defensible only when members give no usable scores; at a 0.5 threshold on imbalanced data it becomes a majority-class predictor (recall 0.043). Rank averaging is the calibration-free middle ground",
-          "They are equivalent for binary problems",
-          "Hard voting is always preferred"
-        ],
+        options: ["Hard voting is better whenever members output probabilities", "Soft keeps confidence; hard only when scores are unusable", "They are equivalent for every binary classification problem", "Hard voting is always preferred because it ignores outliers"],
         answer: 1,
         why: "Voting is averaging with a threshold; the threshold must still be chosen from costs (2.3)."
       },
       {
         stem: "The spend stack gave the linear model weight −0.01 despite its errors being the least correlated with the other members'. Explain.",
-        options: [
-          "Ridge shrank it to zero by accident",
-          "Low correlation makes a member's errors cancel against the others', but its errors were three times larger (MAE 19.9 vs 7.3), so any positive weight adds more error than the cancellation removes; the ridge meta-model minimising the combination's squared error therefore sets it near zero, which an equal-weight average cannot do (8.70 vs 7.12)",
-          "Linear models cannot be stacked",
-          "The meta-model was overfitted"
-        ],
+        options: ["Ridge shrank its weight to zero by accident", "Its errors were too large for cancellation to pay", "Linear models cannot be stacked with trees", "The meta-model was overfitted to the folds"],
         answer: 1,
         why: "Diversity is necessary for a member to help; comparable accuracy is what makes the help outweigh the harm."
       },
       {
         stem: "Place bagging, boosting and stacking in the bias–variance frame.",
-        options: [
-          "All three reduce bias",
-          "Bagging averages independent high-variance learners: variance falls, bias unchanged. Boosting fits each learner to the current errors: bias falls, with shrinkage and subsampling for variance. Stacking learns a weighted combination of different families on out-of-fold predictions: it can reduce either, by weighting members whose errors differ and excluding those that do not — and it gains only when such members exist",
-          "Bagging reduces bias, boosting reduces variance",
-          "Stacking is bagging with a meta-model"
-        ],
+        options: ["All three methods mainly reduce bias", "Bagging cuts variance, boosting bias, stacking blends", "Bagging reduces bias and boosting reduces variance", "Stacking is bagging with a meta-model added"],
         answer: 1,
         why: "The same base learners, three different ways of manufacturing independent errors — rows, sequence, and family."
       }

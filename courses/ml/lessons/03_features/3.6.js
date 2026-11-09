@@ -394,56 +394,31 @@ allnan = pd.DataFrame([{c: np.nan for c in X.columns}]); assert 0 <= pl.predict_
     questions: [
       {
         stem: "Why use a Pipeline instead of applying transforms manually?",
-        options: [
-          "It is faster",
-          "Because it makes fit-on-train / transform-on-test automatic for every step, gives search and CV access to preprocessing hyperparameters, refits every step per fold so nothing leaks, and produces one artefact that serves the identical transforms — the manual version depends on nobody forgetting any of that",
-          "It is required by scikit-learn",
-          "It improves accuracy"
-        ],
+        options: ["Because pipelines make fitting faster", "Fit-on-train, no leaks, one artefact to serve", "Because scikit-learn requires a pipeline", "Because pipelines improve model accuracy"],
         answer: 1,
         why: "The scaler-outside-the-fold experiment moved the score by a thousandth; the target encoder by a third. The Pipeline removes the class of error, not one instance."
       },
       {
         stem: "What does `remainder='drop'` do in a ColumnTransformer, and why is it the safe default?",
-        options: [
-          "Drops rows with missing values",
-          "Discards any input column not assigned to a branch; safe because a column nobody listed — a leaked id, a post-outcome flag — cannot reach the model by accident. `passthrough` sends them through unchanged, which is convenient and dangerous",
-          "Drops constant columns",
-          "Drops the categorical columns"
-        ],
+        options: ["Drops every row that contains a missing value", "Drops unlisted columns so none reach the model", "Drops the columns whose values never change", "Drops the categorical columns from the input"],
         answer: 1,
         why: "Explicit column lists are a feature audit. Passthrough is how `refund_issued` gets into a churn model without anyone deciding it should."
       },
       {
         stem: "Which of these breaks the estimator contract?",
-        options: [
-          "Storing `self.lower = lower` in `__init__`",
-          "Computing derived state in `__init__` — for example `self.lower_ = np.percentile(...)` or validating and converting arguments there — because `clone` and `get_params` rely on the constructor storing its arguments unchanged and learning nothing until `fit`",
-          "Returning `self` from `fit`",
-          "Calling `check_is_fitted` in `transform`"
-        ],
+        options: ["Storing `self.lower = lower` unchanged in `__init__`", "Computing derived state in `__init__` instead of `fit`", "Returning `self` from `fit` so calls can be chained", "Calling `check_is_fitted` at the start of `transform`"],
         answer: 1,
         why: "`__init__` stores; `fit` learns; `transform` uses. `check_estimator` fails a class that computes in the constructor."
       },
       {
         stem: "A pipeline trained under scikit-learn 1.4 is loaded under 1.8 and gives different predictions without error. What happened, and what prevents it?",
-        options: [
-          "Nothing; predictions are always identical",
-          "Pickle restores attribute values, not behaviour: if a transformer's internals changed between versions, the old state is interpreted by new code. Pin the library versions with the artefact, and keep a known-row test whose expected score is checked on load",
-          "The random seed changed",
-          "joblib is not deterministic"
-        ],
+        options: ["Nothing; predictions are always identical across versions", "Pickle restores state, not code; pin versions, test a row", "The random seed changed between the two library versions", "joblib is not deterministic when it loads large objects"],
         answer: 1,
         why: "Persistence is a contract between two versions of the code. The version string in the artefact and the known-row test are how you enforce it."
       },
       {
         stem: "When does `memory=` caching in a Pipeline pay off?",
-        options: [
-          "Always",
-          "When an early transformer is expensive and the search varies only later steps — text vectorisation or PCA on wide data followed by a grid over the classifier; on the churn pipeline it cost time (0.31 s vs 0.21 s) because the preprocessing is trivial and the cache is disk I/O",
-          "Only with random forests",
-          "Never; it is deprecated"
-        ],
+        options: ["Always, for every pipeline and every search", "When an early step is costly and only later steps vary", "Only when the final estimator is a random forest", "Never, because the option has been deprecated"],
         answer: 1,
         why: "Measured on the course pipeline: slower. The tool is right for the expensive-preprocessing case and wrong by default."
       }

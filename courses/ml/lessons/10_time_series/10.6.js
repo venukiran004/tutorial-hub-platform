@@ -373,56 +373,31 @@ lo, mid, hi = torch.quantile(samples[0].float(),
     questions: [
       {
         stem: "A team builds one LightGBM model per product for 8,000 products, each with two years of daily history. Forecast quality is poor on new and low-volume products. What is the first change?",
-        options: [
-          "Add more lag features per product",
-          "Train one global model over all products with a product id and static attributes: cross-learning pools the shared weekly and yearly structure, gives new products a sensible forecast from the first week, and on the store data cut the error 11 % overall and 26 % where history was least informative",
-          "Switch to per-product ARIMA",
-          "Increase the number of trees"
-        ],
+        options: ["Add more lag features for each product", "Train one global model across all products", "Switch to a per-product ARIMA model", "Increase the number of trees per model"],
         answer: 1,
         why: "Per-series tree models have nothing to learn from on thin series; the global model is the mechanism by which boosting won the M5 competition. It is also cheaper: one model to tune, retrain and monitor instead of 8,000."
       },
       {
         stem: "Which target transformation is appropriate for a boosting model on a series with a strong upward trend, and why?",
-        options: [
-          "None — boosting handles trends",
-          "Model the difference or the ratio to a rolling level, or fit a linear trend and boost the residual: a tree's prediction is a leaf average and cannot exceed the training maximum, so the level forecast flattens (MAE 26.3 versus 4.3 for the hybrid)",
-          "Take logs only",
-          "Add the time index as a feature"
-        ],
+        options: ["None, since boosting handles trends by itself", "Model a difference or ratio; trees cannot extrapolate", "Take logs of the target and nothing more", "Add the time index as a numeric feature"],
         answer: 1,
         why: "The time index as a feature does not help: the tree splits it at thresholds it has seen and predicts the last leaf's average beyond them. Handing the extrapolation to a cumulative sum or a linear model is what lets the forecast leave the range; the executed maximum forecasts were 412.8, 486.1 and 469.6 against an actual 470.6."
       },
       {
         stem: "Why does the direct strategy's model for h = 28 use the calendar of day t + 28 rather than of day t?",
-        options: [
-          "It does not — direct models use only origin features",
-          "Because the target is y_{t+28} and the weekday, promotion flag and holiday of that day are known in advance; they are the covariates that explain it, and the recursive strategy can use them too by feeding them at each step — the leak would be using unknown values, not known ones",
-          "Because the calendar of day t is already in the lags",
-          "To avoid leakage"
-        ],
+        options: ["It does not; direct models use origin features only", "Its target is y at t+28, whose calendar is known", "Because day t's calendar is already in the lags", "To avoid leaking information from the future"],
         answer: 1,
         why: "The availability test is about whether the value is known at forecast time, not about whether the date is in the future: the calendar 28 days ahead is fixed. Both strategies in the executed run used the target day's known covariates; SARIMAX did the same through its exogenous matrix and won on this single series because the structure was linear on logs."
       },
       {
         stem: "A paper reports a transformer beating classical models on a benchmark. What should a practitioner check before adopting it for a single retail series?",
-        options: [
-          "Nothing — newer is better",
-          "Whether the comparison included a tuned linear model, a boosted feature table and the seasonal naive on the same folds; whether the benchmark has thousands of long series; and whether their own series has the covariates and volume that make a network's cost worthwhile — the executed LSTM scored 21.9 against 18.6 for boosting and 23.1 for the naive",
-          "Only the parameter count",
-          "Whether it supports GPUs"
-        ],
+        options: ["Nothing, because newer methods are better", "Whether strong baselines shared its folds", "Only the number of parameters it has", "Whether it supports training on GPUs"],
         answer: 1,
         why: "The M4/M5 results and the DLinear line of work found several transformer papers beaten by a one-layer linear model once the baselines were run properly. Deep models earn their place on many long series with covariates and quantile needs; on one series of 900 points they are an expensive way to lose to a seasonal naive."
       },
       {
         stem: "What is a foundation model for time series good for, and what can it not do?",
-        options: [
-          "It replaces the forecasting pipeline",
-          "A zero-shot baseline in an afternoon, a cold-start forecast with no history, and a sanity check on a bespoke model; it cannot see the covariates you own — promotions, prices, closures — which on the store were worth 29 % of the error, and it may never have seen your domain's regime",
-          "It is only for finance",
-          "It requires labelled anomalies"
-        ],
+        options: ["It replaces the forecasting pipeline entirely", "A quick baseline, blind to your own covariates", "It is designed only for financial series", "It requires labelled anomalies to train"],
         answer: 1,
         why: "Chronos, TimesFM, Moirai and similar models are pre-trained on billions of points and forecast unseen series without fitting; that makes them a strong default and a poor final answer when the drivers are in your calendar. If one beats your tuned model zero-shot, the information is about your feature engineering."
       }

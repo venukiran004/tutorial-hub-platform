@@ -358,56 +358,31 @@ plot_acf(w7); plot_pacf(w7)                       # ACF cuts at 7, PACF decays a
     questions: [
       {
         stem: "A dashboard reports that monthly revenue and monthly head-count have R² = 0.9 over five years. Both series trend upward. What can be concluded?",
-        options: [
-          "Head-count drives revenue",
-          "Almost nothing: two trending series correlate because they trend, and the simulated rate of a 'significant' slope between independent random walks was 83 %; difference both (or model them jointly with the trend) before reading any coefficient",
-          "Revenue drives head-count",
-          "The relationship is real because R² is high"
-        ],
+        options: ["Head-count drives revenue, given an R² of 0.9", "Almost nothing: trending series correlate anyway", "Revenue drives head-count, given an R² of 0.9", "The relationship is real because R² is so high"],
         answer: 1,
         why: "Spurious regression produces high R² and small p-values between unrelated non-stationary series as a matter of course. Differencing brought the rejection rate to the nominal 5 %. A relationship that survives in differences (or in a cointegration test, 10.8) is evidence; one that exists only in levels is the trend."
       },
       {
         stem: "Why is the seasonal difference taken before the regular difference?",
-        options: [
-          "Because seasonal patterns are larger",
-          "Because a seasonal difference of a series with a linear trend and a stable season removes both at once, leaving a constant; a regular difference first leaves the season in place and usually forces a second difference later",
-          "Because the library requires that order",
-          "Because it makes the ACF easier to read"
-        ],
+        options: ["Because seasonal patterns are larger than trends", "It removes trend and season at once, sparing a step", "Because the statistics library requires that order", "Because it makes the ACF plot easier to read"],
         answer: 1,
         why: "y_t − y_{t−m} cancels a repeating season exactly and turns a linear trend into a constant; the twelve numbers went to 6.0 in one step, and the store's log sales went from sd 0.217 to 0.146 with no short-lag structure left. Regular-first left the weekly pattern (lag-7 ACF 0.60) and a higher variance, and a further seasonal difference would then over-difference."
       },
       {
         stem: "A series of 100 points shows white noise before t = 50 and the same noise shifted up by three standard deviations after. What will ADF and KPSS say?",
-        options: [
-          "Both say stationary, because each half is white",
-          "ADF fails to reject a unit root (p ≈ 0.68) and KPSS rejects stationarity (p 0.01): a level shift is indistinguishable from a random walk to both tests, and the right treatment is a step regressor, not differencing",
-          "ADF rejects, KPSS does not",
-          "The tests cannot be run on a series with a break"
-        ],
+        options: ["Both say stationary, since each half is white noise", "Both read the break as a unit root; use a step regressor", "ADF rejects the unit root, while KPSS does not reject", "Neither test can be run on a series with a break"],
         answer: 1,
         why: "A step is one enormous 'shock' that never decays — exactly what a unit root looks like to a regression of Δy on y_{t−1}, and exactly what makes the KPSS partial sums explode. Perron's critique: unit-root tests over-find unit roots in the presence of breaks. Differencing would turn the step into a single outlier (or seven, seasonally) and the tests would then pass while the residuals carry it."
       },
       {
         stem: "The PACF of an MA(1) process decays with alternating sign while its ACF is zero beyond lag 1. Why does regressing out intermediate lags not make the partial correlation vanish?",
-        options: [
-          "Because the MA process is non-stationary",
-          "Because an MA(1) is an infinite-order autoregression (y_t = ε_t + θε_{t−1} inverts to ε_t = y_t − θy_{t−1} + θ²y_{t−2} − …), so every lag has a direct coefficient, decaying as (−θ)^k",
-          "Because the PACF uses a different sample",
-          "Because θ is positive"
-        ],
+        options: ["Because the MA(1) process is non-stationary", "An MA(1) inverts to an infinite autoregression", "Because the PACF is computed on a different sample", "Because the MA coefficient θ is positive"],
         answer: 1,
         why: "The two plots are dual: a finite AR has an infinite MA representation and a finite MA has an infinite AR one. The direct coefficients of the MA(1)'s AR form alternate and shrink, which is the executed PACF 0.441, −0.242, 0.141, −0.083 (theory) against 0.429, −0.244, 0.147, −0.085 (sample). A finite PACF means finite AR; a finite ACF means finite MA."
       },
       {
         stem: "After a seasonal difference, the store's series has ACF −0.46 at lag 7 and nothing elsewhere, and a PACF of −0.47, −0.31, −0.22, −0.12 at lags 7, 14, 21, 28. Which model does the table indicate?",
-        options: [
-          "An AR(7)",
-          "A seasonal MA(1) at period 7 on the seasonally differenced series — the ACF cuts off after one seasonal lag and the PACF decays across seasonal lags — that is, SARIMA(0,0,0)(0,1,1)₇",
-          "White noise, since the short lags are empty",
-          "A second seasonal difference"
-        ],
+        options: ["An AR(7) model on the differenced series", "A seasonal MA(1): SARIMA(0,0,0)(0,1,1)₇", "White noise, since the short lags are empty", "A second seasonal difference of the series"],
         answer: 1,
         why: "Cut-off in the ACF with decay in the PACF is the MA signature, and here it appears at multiples of the season, so the term is seasonal. The empty short lags mean no regular AR or MA terms are indicated. Ljung–Box (Q(7) = 199, p ≈ 10⁻³⁹) confirms the series is not white, so 'stop' is not an option; 10.5 fits this model and checks its residuals."
       }

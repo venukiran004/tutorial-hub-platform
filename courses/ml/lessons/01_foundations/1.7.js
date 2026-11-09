@@ -353,56 +353,31 @@ for d in [5, 20, 50, 200]:
     questions: [
       {
         stem: "Why does the PAC bound contain ln|H| rather than |H|?",
-        options: [
-          "Because logs are convenient",
-          "Because the probability that any one hypothesis looks good by luck decays exponentially in m, so the union bound over |H| hypotheses only needs m proportional to ln|H| to keep the total failure probability below δ",
-          "Because hypotheses are independent",
-          "Because |H| is always small"
-        ],
+        options: ["Because logarithms make the bound easier to write", "Luck decays exponentially, so a union bound needs ln|H|", "Because the hypotheses are assumed to be independent", "Because the hypothesis class is always small in practice"],
         answer: 1,
         why: "Exponential concentration for one hypothesis, union bound over all of them, logarithm to solve for m. Doubling the space costs one row per unit of 1/ε."
       },
       {
         stem: "Which of these has infinite VC dimension?",
-        options: [
-          "A linear classifier in 10 dimensions",
-          "1-nearest-neighbour — it reproduces any labelling of any finite training set exactly, so it shatters every set",
-          "A decision stump",
-          "Logistic regression with L2 regularisation"
-        ],
+        options: ["A linear classifier in 10 dimensions", "1-nearest-neighbour, which shatters any set", "A decision stump with one split on one feature", "Logistic regression with an L2 penalty on it"],
         answer: 1,
         why: "Infinite VC dimension means the bound gives nothing; such models generalise only through their smoothness assumption and the data's actual structure — and cross-validation is the only guarantee."
       },
       {
         stem: "What is an algorithm's inductive bias, and why is it necessary?",
-        options: [
-          "A bug that causes systematic error",
-          "The assumptions it uses to prefer some hypotheses over others on unseen inputs — linearity, locality, axis-aligned splits, independence; without any preference, every unseen input is equally likely to be anything, and no learning is possible",
-          "The bias term in the bias–variance decomposition",
-          "A property only of neural networks"
-        ],
+        options: ["A bug in the algorithm that causes systematic error", "Its assumptions for unseen inputs; without them, no learning", "The bias term in the bias-variance decomposition", "A property that only neural networks have"],
         answer: 1,
         why: "No free lunch is the formal version: averaged over all targets, all learners are equal. A learner wins on the targets its bias matches."
       },
       {
         stem: "Naive Bayes beat logistic regression at every training size on class-conditional cluster data and lost at every size on correlated-feature data. What does that show?",
-        options: [
-          "Naive Bayes is better for small data",
-          "The generative model wins when its assumption about how the data was generated is close to true, and loses — at any n — when it is not; the textbook 'generative early, discriminative late' crossover is not guaranteed",
-          "Logistic regression needs more features",
-          "The experiments were flawed"
-        ],
+        options: ["Naive Bayes is simply better whenever data is small", "The generative model wins only when its assumption holds", "Logistic regression needed more features to compete", "Both experiments were flawed and should be discarded"],
         answer: 1,
         why: "Measured, not assumed. The honest statement of Ng and Jordan's result is conditional on the generative assumption holding approximately."
       },
       {
         stem: "A KNN model on 50,000 rows fits in 3 ms and predicts 5,000 rows in 382 ms. Why, and what follows?",
-        options: [
-          "KNN is badly implemented",
-          "It is a lazy learner: fitting stores the data and prediction searches it, so serving cost grows with the training set — fine for batch scoring, a problem for a latency-bound request path",
-          "The features were not scaled",
-          "5,000 rows is too many"
-        ],
+        options: ["KNN is badly implemented in this library version", "It is lazy: serving cost grows with the training set", "The features were not scaled before fitting", "5,000 rows is too many to predict in one call"],
         answer: 1,
         why: "Eager learners pay once at training; lazy learners pay at every query. The choice is a deployment decision as much as a modelling one."
       }

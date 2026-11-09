@@ -462,56 +462,31 @@ output is a MARGIN, not a probability: 3.932`,
     questions: [
       {
         stem: "Derive the optimal leaf weight in XGBoost and say what λ does to it.",
-        options: [
-          "w = mean of the residuals in the leaf",
-          "Second-order expansion of the loss gives, per leaf, Gⱼw + ½(Hⱼ + λ)w² where G and H are the leaf's gradient and Hessian sums; minimising in w gives w* = −Gⱼ/(Hⱼ + λ). With λ = 0 it is the Newton step; λ > 0 shrinks it, most for leaves with small Hessian sums — few rows, or rows the model is already sure about",
-          "w = −G/H, independent of λ",
-          "w is chosen by line search"
-        ],
+        options: ["w is the mean of the residuals in the leaf", "w* = −G/(H + λ); λ shrinks small-Hessian leaves", "w = −G/H, and λ has no effect on it", "w is chosen by a line search each round"],
         answer: 1,
         why: "For the six-row example, rows {1, 2} have G = 1.0, H = 0.5 and w = −1/1.5 = −0.667, matching the dump."
       },
       {
         stem: "What is the difference between leaf-wise and depth-wise growth, and how should LightGBM's capacity be controlled?",
-        options: [
-          "They are the same with different names",
-          "Depth-wise splits every node at each level (balanced trees, depth = the dial); leaf-wise splits whichever leaf has the highest gain anywhere (fewer leaves for the same loss, deeper unbalanced trees — 16 leaves reached depth 7). LightGBM's dial is therefore `num_leaves`, bounded with `min_child_samples`; a `max_depth` cap overrides `num_leaves` silently (255 leaves with depth 4 gave 16 leaves)",
-          "Leaf-wise is always better",
-          "Depth-wise trees are deeper"
-        ],
+        options: ["They are the same method under different names", "Leaf-wise grows the best leaf; cap num_leaves", "Leaf-wise growth is always the better choice", "Depth-wise trees end up deeper than leaf-wise"],
         answer: 1,
         why: "Leaf-wise on small data chases a few high-loss points — regularise with num_leaves and min_child_samples."
       },
       {
         stem: "Why does naive target encoding of a high-cardinality column hurt, and what are the two standard fixes?",
-        options: [
-          "It creates too many columns",
-          "Each level's mean label includes the row's own label, so the encoded column is a noisy copy of the target: the booster reads it as the strongest feature (training AUC 0.82 on pure noise) and at test time it is noise (0.61, worse than no column). Fixes: cross-fitting (each row encoded by other folds' rows — `TargetEncoder(cv=)`) or CatBoost's ordered statistics (encode from earlier rows in a permutation, with a smoothing prior)",
-          "It ignores rare levels",
-          "It only works for binary targets"
-        ],
+        options: ["It creates too many columns for the booster", "It copies each row's own label; use out-of-fold", "It ignores the rare levels in the column", "It only works for binary targets"],
         answer: 1,
         why: "The rule: a row's derived feature must never contain its own label. Ordered boosting applies it to the gradients too."
       },
       {
         stem: "Why can CatBoost predict 50,000 rows in 0.02 s when XGBoost takes 0.11 s and HistGB 0.38 s for the same number of trees?",
-        options: [
-          "CatBoost uses fewer trees",
-          "Its trees are symmetric: every node at a level tests the same feature and threshold, so a depth-d tree is a lookup table indexed by d binary tests, evaluated with a handful of vectorised comparisons rather than a per-row path through the tree. The same constraint acts as a strong regulariser, which is part of why its defaults are hard to overfit",
-          "It compiles to C",
-          "It caches predictions"
-        ],
+        options: ["CatBoost grows far fewer trees for the same budget", "Symmetric trees evaluate as a vectorised lookup table", "CatBoost compiles each tree to native C at fit time", "CatBoost caches predictions for rows it has seen"],
         answer: 1,
         why: "Symmetric trees are weaker individually; CatBoost compensates with more iterations and ordered boosting."
       },
       {
         stem: "You have 3,000 rows, 12 features, two of them categorical. Which booster and settings, and what do you compare against?",
-        options: [
-          "XGBoost defaults; nothing to compare",
-          "A conservative configuration: HistGradientBoosting or CatBoost with learning rate 0.03–0.05, depth 2–3, λ ≥ 1, min_child_weight/min_samples_leaf ≥ 5–20, early stopping by CV; native categoricals. Compare against a regularised logistic regression and a random forest — on 989 rows the libraries' defaults lost to logistic regression (0.647–0.676 vs 0.741) and only the regularised or CatBoost fits came close",
-          "LightGBM with num_leaves 255",
-          "A random forest; boosting is only for big data"
-        ],
+        options: ["XGBoost defaults, with nothing to compare against", "Conservative boosting, compared with LR and a forest", "LightGBM with num_leaves 255 for maximum capacity", "A random forest, since boosting is for big data only"],
         answer: 1,
         why: "Boosting's edge is bias reduction through interactions; on small additive data there is little to remove and much noise to fit."
       }

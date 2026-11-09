@@ -358,56 +358,31 @@ print("bagged", decompose(lambda: BaggingRegressor(DecisionTreeRegressor(), n_es
     questions: [
       {
         stem: "Why does the cross term E[(f − f̂)ε] vanish in the derivation?",
-        options: [
-          "Because f̂ is unbiased",
-          "Because the noise on the new point is independent of the training set that produced f̂ and has mean zero, so the expectation factorises into E[f − f̂] · E[ε] = E[f − f̂] · 0",
-          "Because ε is Gaussian",
-          "It does not vanish; it is ignored"
-        ],
+        options: ["Because the estimator f-hat is assumed to be unbiased", "The new point's noise is independent with mean zero", "Because the noise term is assumed to be Gaussian", "It does not vanish; the derivation simply ignores it"],
         answer: 1,
         why: "Independence plus zero mean. No normality is needed; the decomposition holds for any zero-mean noise with finite variance."
       },
       {
         stem: "A model's training and validation errors are both high and nearly equal. Which action is wasted?",
-        options: [
-          "Adding a more flexible model",
-          "Collecting more training data — the symptom is bias, and the average of a too-simple family stays wrong however many rows it sees",
-          "Engineering better features",
-          "Reducing regularisation"
-        ],
+        options: ["Switching to a more flexible model family", "Collecting more training data for the same model", "Engineering better, more informative features", "Reducing the strength of the regularisation"],
         answer: 1,
         why: "More data shrinks variance by making the possible training sets alike. It cannot move the average fit toward a function the family cannot express."
       },
       {
         stem: "In the KNN run, k = 1 had bias² 0.0001 and variance 0.1007; k = 30 had bias² 0.5263 and variance 0.0181. What is k?",
-        options: [
-          "A regularisation strength with no effect on bias",
-          "A capacity dial in reverse: small k copies the nearest noisy point (no bias, high variance); k = n predicts the global mean everywhere (all bias, no variance); the best k sits between",
-          "The number of features",
-          "Irrelevant to the decomposition"
-        ],
+        options: ["A regularisation strength that leaves the bias untouched", "Capacity in reverse: small k low bias, large k low variance", "The number of input features the model is allowed to use", "A setting that plays no part in the bias-variance split"],
         answer: 1,
         why: "k = 3 gave the lowest total, 0.132. Every hyperparameter that controls flexibility is this dial under another name."
       },
       {
         stem: "What did the double-descent run show at p = n = 100 features?",
-        options: [
-          "The best test error",
-          "The worst: with exactly as many features as rows the minimum-norm solution must pass through every noisy training point, and test MSE spiked to 444 before descending to 1.75 at p = 3000",
-          "A numerical error",
-          "That more features always help"
-        ],
+        options: ["The best test error of any number of features tried", "The worst: test MSE spiked when features equalled rows", "A numerical error from an ill-conditioned matrix", "That adding more features always lowers the test error"],
         answer: 1,
         why: "The interpolation threshold is where variance explodes. Past it, the minimum-norm solution among the many that interpolate becomes smoother, and the error falls — the regime deep networks are trained in."
       },
       {
         stem: "How does bagging relate to the decomposition?",
-        options: [
-          "It reduces bias by combining different families",
-          "It builds the average prediction f̄ as a predictor: many fits on resampled training sets, averaged, which shrinks the variance term while leaving the bias of the base model almost unchanged",
-          "It reduces the noise term",
-          "It has no relation"
-        ],
+        options: ["It reduces bias by combining different model families", "It averages fits on resamples, cutting variance not bias", "It reduces the irreducible noise term in the target", "It has no relationship to the bias-variance decomposition"],
         answer: 1,
         why: "The exercise's bagged row shows it: the deep tree's bias with a fraction of its variance. 6.2 gives the formula with the correlation between trees."
       }

@@ -311,56 +311,31 @@ cross_val_score(logistic_on(X_leak), ...)          # executed: 0.749 leaked vs 0
     questions: [
       {
         stem: "Why is `drop='first'` sometimes wrong for a regularised model?",
-        options: [
-          "It always improves regularised models",
-          "With a level dropped, the reference level is the all-zeros row and its effect is absorbed into the intercept, which is usually unpenalised; the other levels' coefficients are penalised as deviations from it — an asymmetry that depends on which level was dropped. Keeping all levels treats every level the same, and the penalty resolves the collinearity",
-          "It causes the dummy trap",
-          "Regularised models cannot use one-hot"
-        ],
+        options: ["It always improves a regularised model's fit", "The dropped level sits in the unpenalised intercept", "It causes the dummy-variable trap in the model", "Regularised models cannot use one-hot features"],
         answer: 1,
         why: "The trap only bites unpenalised OLS. For everything else, symmetry is worth more than one fewer column."
       },
       {
         stem: "Target encoding a 2,000-level column on all rows, then cross-validating, inflates the score. What is the mechanism?",
-        options: [
-          "The encoder overfits the categories",
-          "Each row's encoded value is the mean label of its level, computed including that row's own label; with ten rows per level a tenth of each row's label is copied into its feature and carried into the validation fold — a noise column scored 0.836 this way in 1.6",
-          "Cross-validation is not stratified",
-          "Target encoding always inflates"
-        ],
+        options: ["The encoder overfits the rare categories", "Each row's encoding includes its own label", "Cross-validation was not stratified by class", "Target encoding always inflates any score"],
         answer: 1,
         why: "Cross-fitting (an inner cv) computes each row's value from folds that exclude it. The leak scales with 1 / rows-per-level, largest exactly where target encoding is used."
       },
       {
         stem: "When does the hashing trick earn its place?",
-        options: [
-          "For any column with more than 100 levels",
-          "When the vocabulary is unbounded or unknown at training time — text tokens, URLs, ids that appear daily — so a fixed-width, fit-free encoding that handles new values by construction is worth the collisions; on a known column with per-level signal it lost to one-hot by four points",
-          "As a faster one-hot",
-          "For ordered categories"
-        ],
+        options: ["For any column with more than 100 levels", "When the vocabulary is unbounded or unknown", "As a faster drop-in for one-hot encoding", "For ordered categories with a natural rank"],
         answer: 1,
         why: "Collisions average unrelated levels. That is acceptable when the alternative is no encoding at all, and unnecessary when the levels are known."
       },
       {
         stem: "A tree-based pipeline uses ordinal encoding on an unordered 300-level column. Is that a mistake?",
-        options: [
-          "Yes; always one-hot for trees",
-          "Not necessarily: a tree can isolate any level with threshold splits on the integer, so ordinal encoding is a compact, common choice for trees on high-cardinality columns; it would be a mistake for a linear model or a distance method, which would read the integers as an order",
-          "Yes; ordinal encoding is only for the target",
-          "It depends on the number of trees"
-        ],
+        options: ["Yes; trees always need one-hot encoding", "Not necessarily: a tree can isolate any level", "Yes; ordinal encoding is only for targets", "It depends on how many trees are used"],
         answer: 1,
         why: "The colour experiment: forest 0.972 either way, logistic 0.785 versus 0.972. The encoder's assumption only matters to models that use it."
       },
       {
         stem: "A new region appears in production. What happens with each encoder if unseen levels were not planned for?",
-        options: [
-          "All encoders assign the mean",
-          "One-hot with handle_unknown='ignore' gives all zeros; TargetEncoder gives the global mean; hashing maps it to a bucket by construction; LabelEncoder and a bare OrdinalEncoder raise an error and the pipeline fails on its first request",
-          "The model retrains automatically",
-          "Nothing; models ignore unknown categories"
-        ],
+        options: ["Every encoder quietly assigns the training mean", "Some degrade gracefully; LabelEncoder raises and fails", "The model detects the new level and retrains itself", "Nothing, because models ignore unknown categories"],
         answer: 1,
         why: "'What does an unseen level become' is a serving question with a per-encoder answer, and 'exception' is the default for two of them."
       }

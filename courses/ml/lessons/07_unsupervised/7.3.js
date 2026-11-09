@@ -301,56 +301,31 @@ sanity checks (executed):  relabel the clusters 1<->2: ARI 0.125 (labels are nom
     questions: [
       {
         stem: "Why is the Rand index adjusted, and what does ARI = 0 mean?",
-        options: [
-          "To make it range from 0 to 1",
-          "The raw Rand index counts row pairs on which two labellings agree, and random labellings already agree on about half of all pairs (0.50 measured), so a mediocre clustering looks decent (0.57). ARI subtracts the expected agreement under random labelling and rescales so that 0 means 'no better than chance', 1 identical, negative worse than chance; it is also invariant to relabelling the clusters",
-          "To penalise large k",
-          "Because the Rand index is undefined for unequal cluster counts"
-        ],
+        options: ["To rescale it so it runs from 0 to 1", "Random labels already agree on half of pairs", "To penalise solutions with a large k", "The raw index fails for unequal cluster counts"],
         answer: 1,
         why: "The two-row-swap example: Rand 0.571, ARI 0.125 — the adjustment is most of the story."
       },
       {
         stem: "A clustering with one row per cluster scores NMI 0.50 and homogeneity 1.0. What should you use to compare clusterings with different numbers of clusters?",
-        options: [
-          "NMI, since it is normalised",
-          "ARI or AMI, which are corrected for chance and give ≈ 0 to the one-row-per-cluster case; NMI and homogeneity reward purity, which over-splitting buys for free, and V-measure inherits the bias. When comparing different k, read completeness alongside homogeneity, or just use ARI",
-          "Homogeneity, since higher is better",
-          "The silhouette"
-        ],
+        options: ["NMI, because it is already normalised", "ARI or AMI, which are corrected for chance", "Homogeneity, because higher is always better", "The silhouette score of each clustering"],
         answer: 1,
         why: "Purity is the cheap half of agreement; pairs kept together are the expensive half."
       },
       {
         stem: "Stability rated k = 3 (0.971) above the true k = 4 (0.922) on four clean blobs. Is stability useless?",
-        options: [
-          "Yes; use the silhouette instead",
-          "No — it is necessary, not sufficient. Merging the two nearest blobs is a mistake every half-sample makes the same way, so it is stable; splitting a blob (k = 5, 0.708) is done differently every time, so instability correctly flags over-splitting. Read stability with the silhouette and the gap: high stability plus strong separation is structure; high stability alone is a reproducible convention",
-          "Yes; it depends on the random seed",
-          "No; it should be computed on the full data"
-        ],
+        options: ["Yes; use the silhouette score instead", "No: it is necessary but not sufficient", "Yes, because it depends on the random seed", "No, but it must be computed on the full data"],
         answer: 1,
         why: "On the churn continuum the 'most stable' k = 5 had a silhouette of 0.24 — stable cuts, not groups."
       },
       {
         stem: "Why must document clustering use cosine (or unit-normalised vectors), and what did the newsgroup clusters actually contain?",
-        options: [
-          "Because tf-idf values are negative",
-          "Because Euclidean distance on raw counts or unnormalised LSA coordinates measures document length as much as topic — long posts cluster with long posts (ARI 0.258 unnormalised vs 0.358 renormalised). And the clusters must be read: two were topics (hockey, Middle East politics), one was a 1,491-document catch-all of generic words, and one was 71 posts sharing an e-mail signature that tf-idf ranked as the corpus's most distinctive vocabulary",
-          "Because k-means cannot handle sparse matrices",
-          "Because cosine is faster"
-        ],
+        options: ["Because tf-idf values can be negative", "Euclidean distance also measures length", "Because k-means cannot handle sparse input", "Because cosine distance is faster to compute"],
         answer: 1,
         why: "A cluster is whatever the representation makes similar; a signature block is very similar to itself."
       },
       {
         stem: "When do cluster labels help as features for a supervised model?",
-        options: [
-          "Always; they add non-linearity",
-          "When the clustering used information the supervised model does not see — a different table, sequences, text, images. Derived from the model's own features they add nothing (churn AUC 0.7616 → 0.7596), because a tree or an interaction term recovers the same partition better. And fit the clustering inside the CV folds regardless: unsupervised fitting on test rows still leaks their distribution",
-          "Only for tree models",
-          "Never; clustering is unsupervised"
-        ],
+        options: ["Always, because they add non-linearity to the model", "When the clustering used data the model cannot see", "Only when the downstream model is a tree ensemble", "Never, because clustering is an unsupervised method"],
         answer: 1,
         why: "A segment id is a lossy transform of its inputs; new information is the only thing that helps."
       }

@@ -376,56 +376,31 @@ np.round(scores, 3)          # 0.852  0.740  0.413  0.545  0.624
     questions: [
       {
         stem: "Why is a 10-fold estimate less pessimistic than a 2-fold estimate, and why is its fold-to-fold sd not the whole uncertainty?",
-        options: [
-          "10-fold uses less data",
-          "Each 10-fold model trains on 90 % of the rows rather than 50 %, so it is closer to the final model's performance; but the ten training sets overlap heavily, so the fold scores are correlated and their sd understates the variance of the estimate",
-          "10-fold is always exact",
-          "2-fold is more accurate"
-        ],
+        options: ["Because 10-fold trains on less data than 2-fold", "Larger training folds, but overlapping, so sd understates", "Because 10-fold estimates are exact, not estimates", "Because 2-fold estimates are always more accurate"],
         answer: 1,
         why: "The executed run: means 0.748 → 0.757 with k, fold sd 0.014 → 0.059 while the sd of the CV mean fell 0.012 → 0.004. Bias falls with k; the naive fold sd is not a confidence interval."
       },
       {
         stem: "What is the signature of a group leak in a cross-validation result?",
-        options: [
-          "All models score badly",
-          "A flexible model (forest, boosting, KNN) scores implausibly well while a linear model does not, on data where an entity has several rows",
-          "The fold scores fall over time",
-          "The folds have different class rates"
-        ],
+        options: ["Every model scores badly across all of the folds", "Flexible models score implausibly well; linear ones do not", "The fold scores fall steadily from first to last", "The folds end up with different class proportions"],
         answer: 1,
         why: "Flexible models can memorise an entity from its other rows; a linear model cannot. The 0.995 came from a forest on five snapshots per customer."
       },
       {
         stem: "Time-ordered folds scored 0.764, 0.716, 0.609, 0.484, 0.619 while random folds averaged 0.708. What do you conclude?",
-        options: [
-          "Random folds are better because the number is higher",
-          "The relationship is drifting: the random score trains on the future and hides it; the falling time-ordered folds are the honest estimate of deployment and the case for scheduled retraining",
-          "The model is underfitting",
-          "TimeSeriesSplit is broken"
-        ],
+        options: ["Random folds are better, because their average is higher", "The relationship drifts; the time-ordered folds are honest", "The model is underfitting and needs more capacity", "TimeSeriesSplit is broken and should not be trusted"],
         answer: 1,
         why: "Training on the first 800 days and scoring the last 400 gave 0.473. The random score was never available to a model deployed in time."
       },
       {
         stem: "GridSearchCV reports best_score_ = 0.756. Nested CV on the same search gives 0.749 ± 0.05. Which do you report and why?",
-        options: [
-          "0.756; it is the best model",
-          "0.749 ± 0.05: the best_score_ is the maximum over eleven candidates on the folds that chose it, so it is optimistic; the outer folds took no part in the choice",
-          "Their average",
-          "0.756 with the sd from the nested run"
-        ],
+        options: ["0.756, because it belongs to the best model found", "0.749 ± 0.05, since best_score_ is optimistic", "The average of 0.756 and 0.749", "0.756, with the sd taken from the nested run"],
         answer: 1,
         why: "Any number that was used to make a choice is biased as a report of that choice. The gap here is small; with a large grid and a flexible model it is not."
       },
       {
         stem: "After 5-fold CV, which model do you deploy?",
-        options: [
-          "The fold model with the best score",
-          "The same pipeline and hyperparameters refitted on all the data: CV estimated the procedure's performance at ~80 % of the data, and the full-data fit is expected to do slightly better",
-          "An average of the five fold models",
-          "The fold model with the median score"
-        ],
+        options: ["The fold model that scored best during CV", "The same pipeline refitted on all the data", "An average of the five fold models' outputs", "The fold model with the median CV score"],
         answer: 1,
         why: "The five fold models are scaffolding. The estimate describes the procedure; the artefact is the procedure applied once more, to everything."
       }

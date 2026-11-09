@@ -339,56 +339,31 @@ for kept in [...]:   # the six columns from each selector
     questions: [
       {
         stem: "Why did selecting the top 10 of 500 noise columns by F-test, on all rows, give AUC 0.734?",
-        options: [
-          "The F-test is biased",
-          "Among 500 random columns some correlate with the label by chance; choosing those ten using every row's label puts label information into the features of every validation fold — the selection is a fit to the labels, done outside the fold",
-          "Logistic regression overfits noise",
-          "Ten features is too many for 300 rows"
-        ],
+        options: ["The F-test is biased toward noisy columns", "Choosing with every row's label leaks the labels", "Logistic regression always overfits noise", "Ten features is too many for 300 rows"],
         answer: 1,
         why: "The same selector inside the Pipeline scored 0.503. Any fitted step — and a selector is one — must see only the training fold."
       },
       {
         stem: "What does a VIF of 855 on a coefficient mean?",
-        options: [
-          "The feature is 855 times more important",
-          "That feature is almost perfectly predicted by the other features (R² ≈ 0.9988), so its coefficient's variance is 855 times what it would be alone: the model can shift weight between it and its copies freely, and the sign and size are not interpretable",
-          "The feature should be scaled",
-          "The model has 855 parameters"
-        ],
+        options: ["The feature is 855 times more important than the rest", "The others predict it almost perfectly; its sign is unreliable", "The feature needs to be standardised before fitting", "The model has 855 parameters to estimate in total"],
         answer: 1,
         why: "VIF is 1/(1 − R²) of the feature on the others. Prediction is unaffected; interpretation is impossible."
       },
       {
         stem: "Which selection method could find a feature that matters only through an interaction with another?",
-        options: [
-          "ANOVA F-test",
-          "A method that evaluates subsets with a model able to represent interactions — RFE or sequential selection with a tree model, or tree-based embedded importance; univariate filters test each column alone and cannot see it",
-          "Mutual information",
-          "Variance threshold"
-        ],
+        options: ["An ANOVA F-test applied to each column alone", "Subset search with an interaction-capable model", "Mutual information computed on each column alone", "A variance threshold applied to each column alone"],
         answer: 1,
         why: "MI sees non-linear univariate relationships, not interactions. Only multivariate evaluation with a suitable model can credit a feature that is useless alone."
       },
       {
         stem: "Lasso kept three noise columns and forward selection kept two. What does that tell you about the selected sets?",
-        options: [
-          "Both methods are unreliable and should not be used",
-          "That a selected set is a fit to the data like any other and carries noise; stability across resamples (does the same set come back?), a held-out check, and a nested score are how you tell the robust part from the lucky part",
-          "That the noise columns were informative",
-          "That regularisation was too weak"
-        ],
+        options: ["Both methods are unreliable and should be avoided", "A selected set is a noisy fit; check its stability", "The noise columns were informative after all", "The regularisation was too weak in both cases"],
         answer: 1,
         why: "Stability selection — rerunning the selector on bootstrap samples and keeping features chosen most of the time — is the formal version. The informal version is not to believe a single run."
       },
       {
         stem: "When is feature selection a waste of effort?",
-        options: [
-          "For linear models",
-          "For a tree ensemble on a moderately wide table, where noise columns cost little accuracy — the forest used all 51 features and beat every selected logistic regression; selection then buys only cost and interpretability, if those are wanted",
-          "For small datasets",
-          "When features are expensive"
-        ],
+        options: ["For linear models, which handle noise on their own", "For a tree ensemble on a moderately wide table", "For small datasets, where every feature counts", "When the features are expensive to compute"],
         answer: 1,
         why: "Trees ignore columns they never split on. Selection for them is about compute, storage and explanation, not accuracy."
       }

@@ -350,56 +350,31 @@ GradientBoostingClassifier(learning_rate=0.1, max_depth=2).estimators_[0, 0]
     questions: [
       {
         stem: "Explain the AdaBoost weight update and why α has the form ½ ln((1 − ε)/ε).",
-        options: [
-          "Weights are set to the residuals; α is arbitrary",
-          "After each round, every point's weight is multiplied by exp(−α y h(x)): correct points shrink by e^{−α}, wrong ones grow by e^{α}, then weights are normalised, so the next learner concentrates on the mistakes. α is the exact minimiser of the exponential loss for the new learner's contribution, giving zero vote at ε = 0.5, a large vote as ε → 0, and a negative one (invert the learner) for ε > 0.5",
-          "Weights are uniform; α is the accuracy",
-          "Weights double for wrong points; α = 1 − ε"
-        ],
+        options: ["Weights are set to residuals; α is arbitrary", "Mistakes gain weight by e^α; α minimises exp loss", "Weights stay uniform; α is the learner's accuracy", "Wrong points' weights double; α = 1 − ε"],
         answer: 1,
         why: "With ε = 0.3: α = 0.424, wrong points × 1.528, right × 0.655 — three points went from 30 % of the weight to 50 %."
       },
       {
         stem: "Why is it called *gradient* boosting, and what are the pseudo-residuals for log-loss?",
-        options: [
-          "Because it uses gradient descent to fit each tree's splits",
-          "Because each stage moves the model's predictions in the direction of the negative gradient of the loss with respect to those predictions — gradient descent in function space — and a tree is fitted to that gradient vector to extend it to new inputs. For log-loss the negative gradient is y − p: a churner rated 0.16 has residual +0.84. Any differentiable loss works the same way",
-          "Because the learning rate is a gradient",
-          "Because the residuals are always y − F"
-        ],
+        options: ["It uses gradient descent to choose each tree's splits", "Each stage steps along the loss's negative gradient", "Because the learning rate is itself a gradient", "Because the residuals are always y minus F"],
         answer: 1,
         why: "For squared loss the gradient happens to be the ordinary residual, which is why the method is often introduced as 'fit the residuals'."
       },
       {
         stem: "A colleague sets learning_rate = 1.0 and n_estimators = 1,000 'to be thorough'. What happens?",
-        options: [
-          "The model converges faster and better",
-          "It overfits severely: at ν = 1.0 the test AUC peaked at 30 trees (0.719) and fell to 0.596 by 1,000, because each full-size step fits the noise in the current residuals and later trees fit the noise of earlier ones. Use ν ≈ 0.05–0.1 with a large tree budget and early stopping on a validation slice, which chose 63 trees here",
-          "Nothing; more trees never hurt boosting",
-          "The training loss rises"
-        ],
+        options: ["The model converges faster and better", "It overfits: full steps fit the residual noise", "Nothing; more trees never hurt boosting", "The training loss starts to rise"],
         answer: 1,
         why: "Boosting is the ensemble where more trees *does* hurt; the forest is the one where it does not."
       },
       {
         stem: "Why did depth-1 trees beat depth-8 trees by 0.14 AUC on the churn target, and when would deeper trees win?",
-        options: [
-          "Stumps are always better in boosting",
-          "Tree depth is the interaction order the ensemble can express; the churn logit is additive, so stumps have exactly the right capacity and deep trees spend it fitting residual noise in the first thirty stages. Deeper trees (3–6) win when real interactions exist — the spend surface's product of fee and tenure — and depth is the second dial to search after the learning rate",
-          "Because deeper trees need more data",
-          "Because early stopping favours stumps"
-        ],
+        options: ["Stumps are always better in boosting", "Depth sets interaction order; churn is additive", "Because deeper trees need far more data", "Because early stopping favours stumps"],
         answer: 1,
         why: "Depth 8 stopped after 32 stages with test AUC 0.560: fast, confident, wrong."
       },
       {
         stem: "Which ensemble would you choose for data with substantial label noise, and why?",
-        options: [
-          "AdaBoost with deep trees; it corrects errors",
-          "A random forest (0.922 clean-test accuracy against AdaBoost's 0.895 and plain GB's 0.887): averaging never looks at its own errors, while boosting re-weights every mislabelled point until a tree is built for it — under the exponential loss the weight grows as e^{−margin} without bound. If boosting is required, use log-loss, stumps or shallow trees, subsampling (0.917) and early stopping",
-          "Gradient boosting with a large learning rate",
-          "A single deep tree"
-        ],
+        options: ["AdaBoost with deep trees, which corrects errors", "A random forest: averaging ignores its own errors", "Gradient boosting with a large learning rate", "A single deep tree that memorises the labels"],
         answer: 1,
         why: "The depth-3 AdaBoost fitted the noisy training labels to 100 % — every flip became a rule."
       }

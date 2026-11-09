@@ -270,56 +270,31 @@ if inputs are many and homogeneous, or representation matters: MLP / CNN in PyTo
     questions: [
       {
         stem: "Why does an MLP with the identity activation score exactly what logistic regression scores?",
-        options: [
-          "Because scikit-learn falls back to logistic regression",
-          "Because a composition of linear maps is a linear map: W₂(W₁x + b₁) + b₂ is one affine function of x, so however many identity layers are stacked the decision boundary is a hyperplane — the non-linearity is what makes the hidden layer add anything",
-          "Because the network had not converged",
-          "Because the data were standardised"
-        ],
+        options: ["Because scikit-learn falls back to logistic regression", "Stacked linear maps are still one linear map", "Because the network had not yet converged", "Because the input data were standardised"],
         answer: 1,
         why: "The executed identity network scored 0.845 against the logistic regression's 0.846, with the same number of hidden units that gave ReLU 0.942. Depth without non-linearity is a more expensive way to fit a line."
       },
       {
         stem: "Which statement about ReLU's advantage over the sigmoid is correct?",
-        options: [
-          "ReLU is bounded and the sigmoid is not",
-          "ReLU's derivative is 1 wherever the unit is active, so gradients pass through deep stacks undiminished, whereas each sigmoid layer scales the gradient by at most 0.25 and ten layers scale it by 10⁻⁶; ReLU's cost is 'dead' units with zero gradient, addressed by variants like leaky ReLU and by initialisation",
-          "ReLU is smooth and the sigmoid is not",
-          "ReLU outputs probabilities"
-        ],
+        options: ["ReLU is bounded while the sigmoid is not", "ReLU passes gradients undiminished when active", "ReLU is smooth while the sigmoid is not", "ReLU's outputs are probabilities"],
         answer: 1,
         why: "The worked backpropagation shows the mechanism: the gradient for the earlier weight carried an extra factor of 0.235. Sigmoids remain in the output layer (for probabilities) and in gates; in hidden layers ReLU and its relatives are the default because of exactly this arithmetic."
       },
       {
         stem: "Weight decay of 1.0 gave the best test accuracy on 200 points and the smallest weight norm. What is weight decay in the language of 4.3?",
-        options: [
-          "Early stopping",
-          "An L2 penalty on every weight, α‖W‖², which is ridge regression's penalty applied to the whole network; it shrinks the function toward smoother ones, and the executed sweep traded training accuracy (1.000 → 0.930) for test accuracy (0.851 → 0.874) as the norm fell from 54 to 5",
-          "A constraint that weights sum to one",
-          "Dropout applied to the weights"
-        ],
+        options: ["A form of early stopping", "An L2 penalty on every weight", "A rule that weights sum to one", "Dropout applied to the weights"],
         answer: 1,
         why: "Regularisation in networks is the same idea as in linear models with more parameters to apply it to. Decay, dropout, early stopping, batch normalisation and augmentation all reduce the effective capacity; the executed early-stopping run shows that a regulariser that depends on a validation set is only as good as the validation set."
       },
       {
         stem: "A team reports that their MLP matches gradient boosting on a 50,000-row customer table after two weeks of tuning. What should the review ask?",
-        options: [
-          "Whether the network could go deeper",
-          "What the two weeks bought: if the network only matches boosting on a heterogeneous table — the regime the executed churn result and the tabular benchmarks say favours trees — the cost of serving, explaining and retraining it must be justified by something boosting cannot do, such as embeddings shared with another model or a differentiable pipeline",
-          "Whether they used ReLU",
-          "Whether the batch size was 32"
-        ],
+        options: ["Whether the network could have gone deeper", "What two weeks of tuning bought over boosting", "Whether the hidden layers used ReLU", "Whether the batch size was set to 32"],
         answer: 1,
         why: "Matching a baseline at higher cost is not progress unless the network is a means to something else. The regime table names the cases where it is; on a plain table the honest outcome of the comparison is usually to ship the boosting model with SHAP."
       },
       {
         stem: "How would you verify a hand-written backward pass before training with it?",
-        options: [
-          "Train and see whether the loss falls",
-          "A gradient check: perturb each parameter by ±ε, compute the loss difference over 2ε, and compare with the analytic gradient — the executed check agreed to six decimals; a mismatch localises the bug to a layer, whereas a falling loss can hide a wrong gradient that is merely correlated with the right one",
-          "Compare with a different learning rate",
-          "Check that the weights are bounded"
-        ],
+        options: ["Train and check that the loss falls", "A finite-difference gradient check", "Compare runs at different learning rates", "Check that the weights stay bounded"],
         answer: 1,
         why: "Finite differences are slow (two forward passes per parameter) and exact enough; autograd frameworks make the hand-written case rare, but custom layers, losses and numerical tricks still get the check. A network can 'learn' with a gradient that is wrong by a sign in one layer and reach a bad plateau nobody diagnoses."
       }

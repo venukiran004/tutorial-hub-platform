@@ -457,56 +457,31 @@ majority_vote(scores)  # the conservative one`,
     questions: [
       {
         stem: "Why does the Isolation Forest's training cost not grow with the number of rows?",
-        options: [
-          "It uses a single pass over the data",
-          "Each tree is grown on a random subsample of 256 rows to a depth of at most 8, so the work per tree is fixed; only scoring is linear in n",
-          "It caches the split values",
-          "It only splits on a random subset of features"
-        ],
+        options: ["It makes a single pass over the full data", "Each tree uses a fixed 256-row subsample", "It caches split values between trees", "It splits on a random subset of features"],
         answer: 1,
         why: "The 2008 paper's insight is that a small subsample isolates anomalies better than the full data (swamping and masking are reduced) and costs a constant amount; the executed fit on 100,000 × 20 with 100 trees took 0.21 s. Scoring visits each tree once per row and is linear."
       },
       {
         stem: "A One-Class SVM is trained on last quarter's transactions, which contain about 2 % fraud, with ν = 0.01. What happens?",
-        options: [
-          "It flags about 2 % of new transactions",
-          "The boundary is drawn around all but 1 % of the training rows, so most of the 2 % fraud ends up inside it and is learned as normal",
-          "ν is automatically raised to match the contamination",
-          "It fails to converge"
-        ],
+        options: ["It flags about 2% of new transactions", "Most of the fraud is learned as normal", "ν is raised to match the contamination", "The optimiser fails to converge"],
         answer: 1,
         why: "ν is an upper bound on the training rows left outside the boundary; with ν below the true contamination, more than half of the anomalies must fall inside. The One-Class SVM is a novelty detector that assumes clean training data; with contaminated data, use a robust method or set ν well above the contamination rate."
       },
       {
         stem: "In the fraud system, the supervised model given the new `new_merch_last_day` feature still found 2 of 240 pattern-C rows while the unsupervised forest found 193. Why the difference?",
-        options: [
-          "The forest used more trees",
-          "Supervised learning can only use a feature to separate the classes it has examples of; with no pattern-C labels the feature carries no signal for it. The forest scores rarity, and the feature made pattern-C rows rare",
-          "The supervised model was overfitted",
-          "The forest was refitted on the later weeks"
-        ],
+        options: ["The forest used more trees than the model", "No labels for pattern C, so no supervised signal", "The supervised model was overfitted", "The forest was refitted on later weeks"],
         answer: 1,
         why: "A classifier fits P(fraud | x) from its labels, and pattern C is absent from them, so the model has no reason to score high where that feature is large. Rarity does not need labels: in week 1, p99 of the feature was 2 and pattern-C rows have a median of 6. This is the case for keeping an unsupervised scorer in the loop even after labels exist."
       },
       {
         stem: "The flag rate of a fitted Isolation Forest rises from 1.8 % to 4.8 % on this week's batch. What should the on-call engineer do?",
-        options: [
-          "Refit the detector on this week's data so the rate returns to 2 %",
-          "Treat the rise as an alarm: check which features moved and whether the pipeline changed; refit on the new window only once it is established that the change is real and not a fault",
-          "Lower the contamination parameter",
-          "Ignore it — anomaly rates fluctuate"
-        ],
+        options: ["Refit on this week's data so the rate returns to 2%", "Treat it as an alarm and find the cause first", "Lower the contamination parameter to compensate", "Ignore it, because anomaly rates fluctuate"],
         answer: 1,
         why: "The rise is exactly what a drift alarm is for, and it is ambiguous: a real shift in behaviour and a broken upstream feature look identical to the detector (the executed shift was one feature moved 1.5 sd). Refitting immediately makes a fault invisible; the executed refit brought the rate to 2.0 % on the shifted data. Diagnose first, refit second."
       },
       {
         stem: "Which is the honest way to compare three anomaly detectors on a table with no labels?",
-        options: [
-          "Pick the one with the highest mean score",
-          "Compare top-k overlap between them, top-k stability across seeds for each, and — the decisive measure — have reviewers label the top k of each and compare precision at depth",
-          "Use silhouette score on the flagged rows",
-          "Use the one with the fewest flagged rows"
-        ],
+        options: ["Pick the detector with the highest mean score", "Overlap, stability, and labelled precision at k", "Use silhouette score on the flagged rows", "Use the one that flags the fewest rows"],
         answer: 1,
         why: "Scores are not comparable across detectors, and no unsupervised metric certifies that a flagged row is anomalous in the sense that matters. Agreement and stability are cheap sanity checks (top-20 overlaps of 4 to 16, forest stability 18 of 20 across seeds); reviewed precision at depth is the only measure tied to the purpose, and it also starts the labelled set."
       }

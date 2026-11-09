@@ -335,56 +335,31 @@ s = silhouette_samples(Z, labels); pd.Series(s).groupby(labels).mean()
     questions: [
       {
         stem: "Why is the centroid the mean, and what does that imply about the clusters k-means finds?",
-        options: [
-          "Because the mean is easy to compute",
-          "For a fixed set of rows, the point minimising Σ‖x − μ‖² is their mean — so the update step is exact coordinate descent on WCSS. Because the criterion is squared Euclidean distance to a single point, the clusters are convex Voronoi cells of roughly equal extent: round, similar-sized blobs in the features' units. Crescents (ARI 0.25), rings (−0.002), a wide cluster next to a tight one (0.49) and unscaled features all violate that",
-          "Because k-means assumes Gaussian data",
-          "It is a convention; the median would work equally well"
-        ],
+        options: ["Because the mean is the cheapest point to compute", "The mean minimises squared distance, so clusters are convex", "Because k-means assumes every cluster is Gaussian", "It is a convention; the median would work equally well"],
         answer: 1,
         why: "k-medoids swaps the mean for an actual data point and any distance, at a cost in speed — the fix for outliers and non-Euclidean data."
       },
       {
         stem: "How would you choose k, and what would you conclude if the silhouette peaked at 0.29?",
-        options: [
-          "Use the elbow and report its k",
-          "Compute several rules over a range — silhouette, Davies–Bouldin, Calinski–Harabasz, the gap statistic — and look for agreement, as they all agreed on four clean blobs. A peak silhouette of 0.29 with a gap that never settles means weak or absent cluster structure: the data are a continuum, and any k is a convenience partition. Report that, choose k by usefulness, and describe the segments as cuts along the dominant axes",
-          "Pick the k with the lowest inertia",
-          "Pick k = √(n/2)"
-        ],
+        options: ["Use the elbow of the inertia curve and report its k", "Seek agreement across rules; 0.29 means weak structure", "Pick the k with the lowest inertia on the data", "Pick k = √(n/2), the textbook rule of thumb"],
         answer: 1,
         why: "Inertia always falls with k; the rules that can choose are the ones that penalise it."
       },
       {
         stem: "What does k-means++ do, and why is it the default?",
-        options: [
-          "It runs k-means k times",
-          "It picks the first seed at random and each subsequent seed with probability proportional to its squared distance from the nearest seed already chosen, so the starting centres are spread across the data rather than clumped in one region. On four blobs, 200 random starts found 21 distinct local optima (worst inertia 6,156 against 1,133); 200 k-means++ starts found the optimum every time. Combined with n_init it makes the result reproducible",
-          "It chooses k automatically",
-          "It standardises the features"
-        ],
+        options: ["It runs k-means k times and keeps the best run", "It spreads seeds by squared distance from chosen ones", "It chooses the number of clusters automatically", "It standardises the features before clustering"],
         answer: 1,
         why: "Seeding controls which basin the descent falls into; several seeds and keeping the best inertia is the second safeguard."
       },
       {
         stem: "Why did unscaled k-means on the churn customers produce tenure bins?",
-        options: [
-          "Because tenure is the most important feature",
-          "Squared Euclidean distance weights each feature by its variance: tenure (sd 17.5) contributes hundreds of times more to the distance than tickets (sd 0.9), so the centres separated only along tenure — centre spread 16.3 in tenure, 0.06 in fee. Standardising gives every feature equal say; deliberate weights give the say you intend. A feature's weight in k-means is its variance",
-          "Because k was too small",
-          "Because the data were not centred"
-        ],
+        options: ["Because tenure is the most predictive feature", "Unscaled, tenure's variance dominates the distance", "Because k was too small for the data", "Because the data were not mean-centred"],
         answer: 1,
         why: "The same lesson as KNN (5.1): distance-based methods are scale-based methods."
       },
       {
         stem: "Is k-means the right tool for a customer segmentation on 1 million rows with 200 features?",
-        options: [
-          "No; it does not scale",
-          "It scales fine — O(n·k·d) per iteration, mini-batch if memory is tight — but not on 200 raw features: reduce first (PCA, so correlated features are not double-counted), scale, use k-means++ with several starts, choose k with silhouette on a sample and the gap statistic, check stability across resamples, and report the strength of the structure alongside the segments. With mixed categorical features use k-prototypes or encode carefully; with irregular shapes or outliers use 7.2's methods",
-          "Yes, on all 200 features with k = 5",
-          "No; use hierarchical clustering instead"
-        ],
+        options: ["No, because k-means does not scale to a million rows", "Yes, after reducing and scaling the 200 features", "Yes, on all 200 raw features with k fixed at 5", "No; hierarchical clustering should be used instead"],
         answer: 1,
         why: "The workhorse for segmentation, with the preparation and the honesty the lesson describes."
       }

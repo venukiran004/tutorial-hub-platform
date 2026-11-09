@@ -396,56 +396,31 @@ converged (many iterations later):  μ = (1.5, 8.5),  σ = (0.408, 0.408),  π =
     questions: [
       {
         stem: "Classify a point as core, border or noise in DBSCAN, and explain how eps is chosen.",
-        options: [
-          "Core if it is a cluster centre; eps is set to 0.5",
-          "Core if at least min_samples points (itself included) lie within eps; border if not core but within eps of a core point; noise otherwise. Clusters are sets of core points connected through eps-neighbourhoods, with border points attached. eps is read from the k-distance plot — sort each point's distance to its (min_samples − 1)th neighbour and take the knee where the curve rises (0.12–0.16 on the moons, where eps 0.15 gave ARI 0.997)",
-          "Core if within eps of the mean; eps by cross-validation",
-          "Noise if farther than eps from any point; eps = the median distance"
-        ],
+        options: ["Core if it is a cluster centre; eps is fixed at 0.5", "Core by neighbour count within eps; eps from the k-distance plot", "Core if within eps of the mean; eps by cross-validation", "Noise if beyond eps of all points; eps is the median distance"],
         answer: 1,
         why: "Too small an eps shatters clusters into noise (36 clusters, 50 % noise at 0.05); too large bridges them (one cluster at 0.30)."
       },
       {
         stem: "Why does DBSCAN fail on clusters of different density, and what does HDBSCAN change?",
-        options: [
-          "DBSCAN cannot find more than two clusters",
-          "eps is one global density threshold: an eps right for a tight cluster (0.3) shatters a diffuse one into 41 % noise, and an eps right for the diffuse one (1.0) would merge tight clusters with their surroundings. HDBSCAN builds the hierarchy of DBSCAN solutions over every eps and keeps the clusters that persist longest, so each cluster is extracted at its own density; its parameter is the minimum cluster size (ARI 0.947 with no eps at all)",
-          "HDBSCAN uses k-means internally",
-          "HDBSCAN removes the noise label"
-        ],
+        options: ["DBSCAN cannot find more than two clusters", "One global eps cannot fit two densities", "HDBSCAN runs k-means internally instead", "HDBSCAN removes the noise label entirely"],
         answer: 1,
         why: "The price is time: 10.9 s against 1.0 s at 40,000 rows; the benefit is one setting for a city centre and its suburbs."
       },
       {
         stem: "Derive the E and M steps of EM for a Gaussian mixture and relate them to k-means.",
-        options: [
-          "E assigns each point to its nearest mean; M recomputes the means",
-          "E computes responsibilities rᵢₖ = πₖN(xᵢ | μₖ, Σₖ)/ΣⱼπⱼN(xᵢ | μⱼ, Σⱼ), the posterior that component k generated row i; M re-estimates πₖ = Nₖ/n, μₖ = Σᵢrᵢₖxᵢ/Nₖ and Σₖ as the responsibility-weighted covariance, with Nₖ = Σᵢrᵢₖ. Each iteration raises the log-likelihood (−16.09 → −14.94 over four hand iterations). With equal spherical covariances shrinking to zero the responsibilities become 0/1 and the steps are exactly Lloyd's: k-means is the hard, equal-variance special case",
-          "E samples cluster labels; M maximises accuracy",
-          "E computes BIC; M chooses k"
-        ],
+        options: ["E assigns each point to a mean; M recomputes means", "E: responsibilities; M: weighted π, μ, Σ re-estimates", "E samples cluster labels; M maximises accuracy", "E computes BIC for each k; M chooses the best k"],
         answer: 1,
         why: "The generative model is what buys soft memberships, elliptical clusters and a likelihood to choose k with."
       },
       {
         stem: "BIC on the churn customers fell from 2,498 at two components to −1,317 at five. Should you report five segments?",
-        options: [
-          "Yes; BIC's minimum is the answer",
-          "No: two of the five components had zero variance on the discount column, which is a point mass (686 rows at exactly 0), so their density there is unbounded and the likelihood is spurious. With a covariance floor (reg_covar 0.1) BIC shows a shallow minimum at three and no collapse. Columns with repeated exact values — counts, caps, encoded categories — need a floor, jitter, or exclusion from a mixture",
-          "Yes, but with diagonal covariance",
-          "No; BIC cannot be used for mixtures"
-        ],
+        options: ["Yes, because BIC's minimum is the answer", "No: zero-variance components made BIC spurious", "Yes, but switch to diagonal covariance first", "No, because BIC cannot be used for mixtures"],
         answer: 1,
         why: "A collapsing likelihood is the mixture's version of a leak: a number that looks like a discovery and is an artefact."
       },
       {
         stem: "Which clustering method for (i) two interleaved crescents, (ii) 200 customers with a hierarchy wanted for a report, (iii) elongated overlapping groups with soft memberships needed, (iv) a million rows of round blobs?",
-        options: [
-          "K-means for all four",
-          "(i) DBSCAN/HDBSCAN or spectral or single linkage — connected shapes; (ii) agglomerative with Ward, read the dendrogram by height ratios; (iii) a Gaussian mixture with full covariance, k by BIC, covariance floor if columns have point masses; (iv) k-means or mini-batch k-means, which alone scale linearly and assume exactly that shape",
-          "Hierarchical for all four",
-          "GMM for (i) and (ii), DBSCAN for (iii) and (iv)"
-        ],
+        options: ["K-means for all four datasets", "Density, Ward, full GMM, and k-means respectively", "Hierarchical clustering for all four datasets", "GMM for the first two, DBSCAN for the last two"],
         answer: 1,
         why: "Shape, density, size and the need for soft memberships or a hierarchy decide the method; the table in section 04 is the map."
       }

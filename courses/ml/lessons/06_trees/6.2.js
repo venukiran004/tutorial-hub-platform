@@ -312,56 +312,31 @@ cal = CalibratedClassifierCV(rf, method="isotonic", cv=5)              # probabi
     questions: [
       {
         stem: "What is the difference between bagging and a random forest, and why does it matter?",
-        options: [
-          "A forest uses more trees",
-          "Both average trees grown on bootstrap samples; a forest additionally restricts each split to a random subset of features. Bagged trees on a dataset with a dominant feature are near-copies (every root the same, ρ = 0.36), and averaging copies removes little; the subset decorrelates them (ρ = 0.24 at √p, 0.08 at one feature) so the average has a lower variance floor — on the churn data bagging scored 0.668 and the forest 0.694",
-          "A forest prunes its trees",
-          "Bagging uses boosting"
-        ],
+        options: ["A forest simply uses more trees than bagging", "A forest also samples features, decorrelating trees", "A forest prunes its trees and bagging does not", "Bagging uses boosting to weight its trees"],
         answer: 1,
         why: "ρσ² is the part of the variance no number of trees can remove; max_features is the dial on ρ."
       },
       {
         stem: "Does adding trees to a random forest ever hurt out-of-sample performance?",
-        options: [
-          "Yes, past the optimal number it overfits",
-          "No: each added tree is another draw from the same distribution, so the average converges to its expectation and the score rises monotonically to a plateau (0.543 → 0.697 from 1 to 1,000 trees). The cost is only time and memory. Capacity is set by leaf size and max_features, not by B",
-          "Yes, if max_features is too small",
-          "Only for regression"
-        ],
+        options: ["Yes: past an optimal count, the forest overfits", "No: more trees converge to a plateau", "Yes, when max_features is set too small", "Only for regression forests, not classifiers"],
         answer: 1,
         why: "The training AUC of 1.000 at every B is the unpruned trees reproducing their bootstraps, not a symptom."
       },
       {
         stem: "How does out-of-bag error work and when would you still cross-validate?",
-        options: [
-          "OOB is the training error of the forest",
-          "Each tree omits ~37 % of rows; each row is scored by only the trees that omitted it (~184 of 500), giving an out-of-sample estimate with no held-out data. Still cross-validate for the final reported number, for comparisons with non-forest models on identical folds, and whenever a preprocessing step must be refitted per fold — OOB cannot see outside the forest",
-          "OOB requires a separate validation set",
-          "OOB only works for regression"
-        ],
+        options: ["OOB error is the forest's training error", "Rows are scored by trees that left them out", "OOB needs a separate validation set to work", "OOB estimates only work for regression"],
         answer: 1,
         why: "OOB 0.7245 against CV 0.7120 here — close, mildly optimistic, and free."
       },
       {
         stem: "Why should you not report `feature_importances_` as the drivers of a forest's predictions?",
-        options: [
-          "Because forests have no importances",
-          "It is mean decrease in impurity on the training rows, and a many-valued column always finds impurity-reducing thresholds on small nodes: a random integer id ranked third of fourteen (0.161) above the genuine signal in tickets. Permutation importance on held-out rows — the score drop when a column is shuffled — put the noise columns at the bottom and matched the generator; its own caveat is that correlated features share credit, so permute correlated groups together",
-          "Because it sums to one",
-          "Because it is slow to compute"
-        ],
+        options: ["Because forests do not compute importances", "Impurity importance favours many-valued columns", "Because the importances always sum to one", "Because they are slow to compute on big data"],
         answer: 1,
         why: "MDI measures how much the trees used a column, including to memorise it."
       },
       {
         stem: "The forest's probabilities never exceeded 0.66 on a 15 %-positive target. What does that mean for its use?",
-        options: [
-          "The forest is underfitting",
-          "An average of votes over trees rarely reaches the extremes, so forest probabilities are compressed toward the base rate — top quintile predicted 0.356 against an actual 0.318, minimum 0.002. The ranking is fine; the values need calibration (isotonic or Platt) before they are used as probabilities or compared with a threshold chosen in probability units",
-          "The forest needs more trees",
-          "The target is mislabelled"
-        ],
+        options: ["The forest is underfitting the target", "Votes compress probabilities; calibrate them", "The forest needs more trees to reach 0.9", "The target is mislabelled in the data"],
         answer: 1,
         why: "Larger leaves helped (log-loss 0.420 → 0.400) but did not remove the compression; calibration does."
       }

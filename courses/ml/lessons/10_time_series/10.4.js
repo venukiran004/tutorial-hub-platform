@@ -308,56 +308,31 @@ ARIMA(y, order=(0, 1, 1)).fit().params[0]                  # θ = −0.571;  the
     questions: [
       {
         stem: "A demand planner wants a 52-week forecast from a Holt–Winters model whose trend was estimated over a strong recent quarter. What should be changed and why?",
-        options: [
-          "Increase α so the level responds faster",
-          "Use the damped trend: an undamped slope is extrapolated linearly for 52 weeks, and on the store it added 37 units over the year against 8 for the damped fit; damping bounds the total trend contribution at φ/(1 − φ) slopes",
-          "Remove the seasonal component",
-          "Fit on the last quarter only"
-        ],
+        options: ["Increase α so the level responds faster to change", "Damp the trend so 52 weeks of slope stay bounded", "Remove the seasonal component from the model", "Refit the model on the last quarter's data only"],
         answer: 1,
         why: "Trends estimated over a few months are the least reliable part of the model and the part that compounds with the horizon. Damping is a one-parameter change that converts a straight line into an asymptote and was the most consistently accurate configuration across the M-competition series."
       },
       {
         stem: "Why does Holt–Winters need three initial values and where do they come from on a short series?",
-        options: [
-          "They are set to zero",
-          "The recursions update from a starting level, slope and set of seasonal indices; with little data they are taken from the first seasons — the first season's mean, the difference of the first two seasons' means over m, and the first season's departures from its mean — and their noise persists until the smoothing parameters wash it out",
-          "They are the last three observations",
-          "They are estimated from the test set"
-        ],
+        options: ["All three are set to zero before the first update", "Level, slope and seasons, taken from early seasons", "They are the last three observations of the series", "They are estimated by peeking at the test set"],
         answer: 1,
         why: "On the twelve numbers the crude initial indices (−5.25, 0.25, −3.25, 8.25) were still 1.4 units off the truth after eight updates with γ = 0.3. With three or more cycles the 'estimated' initialisation fits them by likelihood alongside the parameters; with fewer, any seasonal model is mostly its initialisation."
       },
       {
         stem: "Which statement about the SES–ARIMA(0,1,1) equivalence is correct?",
-        options: [
-          "They give the same forecasts with θ = α",
-          "ARIMA(0,1,1) with θ = α − 1 produces the same point forecasts as simple smoothing with parameter α; the executed fits gave θ = −0.571 and α − 1 = −0.573 with next-step forecasts agreeing to 0.003",
-          "SES is an AR(1) model",
-          "The equivalence holds only for α = 0.5"
-        ],
+        options: ["They give the same forecasts when θ = α", "ARIMA(0,1,1) with θ = α − 1 matches SES", "SES is the same as an AR(1) model", "The equivalence holds only for α = 0.5"],
         answer: 1,
         why: "Write ARIMA(0,1,1) as y_t = y_{t−1} + ε_t + θ ε_{t−1}; its one-step forecast is an exponentially weighted average of past values with weight 1 + θ on the latest — which is α. The two families overlap here and diverge elsewhere: no ARIMA reproduces multiplicative seasonality and no ETS reproduces an AR(2) cycle."
       },
       {
         stem: "A Holt–Winters multiplicative fit fails on a retail series. The series contains two Christmas-day zeros. What happened?",
-        options: [
-          "The season length was wrong",
-          "The multiplicative form divides the observation by the seasonal factor and the level; a zero makes the update degenerate. Interpolate closures for the fit and add them back after, or use the additive form on logs with a floor",
-          "The trend was undamped",
-          "α was too small"
-        ],
+        options: ["The season length was set incorrectly", "A zero breaks the multiplicative update", "The trend component was left undamped", "The smoothing parameter α was too small"],
         answer: 1,
         why: "Multiplicative components are ratios, and ratios with a zero numerator or denominator are not estimates. The store lessons interpolate the closures before any multiplicative fit and treat closures as a known regressor or post-hoc override, which is also the honest treatment: a closure is not a sales observation."
       },
       {
         stem: "Four Holt–Winters variants score 20.2, 20.6, 20.8 and 21.0 with a standard deviation across origins of about 3.5. How should the choice be made?",
-        options: [
-          "Take the lowest, 20.2",
-          "They are indistinguishable at this sample size; choose on other grounds — the error form that matches the diagnosis, damping for safety, interval quality — or run more origins; a 0.8 difference under a 3.5 spread over 10 origins is noise",
-          "Average the four forecasts",
-          "Take the one with the lowest AIC"
-        ],
+        options: ["Take the lowest score, which is 20.2", "They are tied; choose on other grounds", "Average the four forecasts together", "Take the one with the lowest AIC value"],
         answer: 1,
         why: "The standard error of a mean over 10 origins with sd 3.5 is about 1.1, larger than the gaps between the variants. Ranking by a difference smaller than its uncertainty is the tuning leak of 10.3 in miniature. Averaging is a reasonable answer too — forecast combination is robust — but the point is that the backtest has not separated them."
       }

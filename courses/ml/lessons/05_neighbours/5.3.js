@@ -367,56 +367,31 @@ CalibratedClassifierCV(SVC(), method="isotonic", cv=5)
     questions: [
       {
         stem: "What is a support vector, and why does the model depend only on them?",
-        options: [
-          "Any misclassified point",
-          "A training point with a non-zero dual weight αᵢ: one on a margin plane (y f = 1) or violating it. By the KKT conditions every point strictly beyond its margin has αᵢ = 0 and contributes nothing to w = Σαᵢyᵢxᵢ, so removing it leaves the hyperplane unchanged — on the six points, deleting (2, 2) left w = (2, 2), b = −3",
-          "The points with the largest margin",
-          "The class centroids"
-        ],
+        options: ["Any training point the model misclassifies", "A point with non-zero dual weight, on or past the margin", "The points with the largest margin from the boundary", "The centroid of each class in feature space"],
         answer: 1,
         why: "This sparsity is why inference cost scales with support vectors, not rows, and why a support-vector count near n signals memorisation."
       },
       {
         stem: "Explain the kernel trick to someone who knows polynomial features.",
-        options: [
-          "It is polynomial features with a different name",
-          "Polynomial features build the columns φ(x) explicitly (C(p + d, d) of them) and take dot products; the dual only ever needs those dot products, and for many maps φ(x)ᵀφ(z) is a simple closed form in x and z — (xᵀz)² for the degree-2 map — so the model works in the expanded space without constructing it. For RBF the space is infinite-dimensional and the closed form is exp(−γ‖x − z‖²)",
-          "It approximates a neural network",
-          "It reduces the dimension of the data"
-        ],
+        options: ["It is polynomial features under a different name", "The dual needs only dot products, computed in closed form", "It approximates a neural network with one hidden layer", "It reduces the dimension of the data before fitting"],
         answer: 1,
         why: "The numerical check: (1·3 + 2·4)² = 121 and [1, 2√2, 4]·[9, 12√2, 16] = 121."
       },
       {
         stem: "How do C and γ interact in an RBF SVM, and how do you tune them?",
-        options: [
-          "C controls non-linearity, γ controls regularisation",
-          "γ sets each support vector's reach (how local the bumps are — capacity); C sets how many violations the model pays to avoid (how much of that capacity it uses). They trade off along a ridge — many (C, γ) pairs score alike — so search both jointly on a log grid by CV and watch the support-vector count: 400 of 400 at low C or 359 at γ = 100 means memorisation",
-          "Tune C first, then γ",
-          "γ should always be 1/p"
-        ],
+        options: ["C sets non-linearity and γ sets regularisation", "γ sets reach, C how much of it is used; tune jointly", "Tune C first to convergence, then tune γ", "γ should always be fixed at 1 divided by p"],
         answer: 1,
         why: "The grid's best cell was C = 0.1, γ = 3.16 at 0.903; C = 1, γ = 1 scored the same with 116 support vectors."
       },
       {
         stem: "When would you choose an SVM over logistic regression, and when the reverse?",
-        options: [
-          "SVM always; it maximises the margin",
-          "SVM for small-to-medium n with a non-linear boundary (kernels are cheap and principled), for p ≫ n with a clear margin, and where sparse inference matters; logistic regression when you need probabilities, coefficients, large n (linear time), or robustness to imbalance without extra care — on the churn data both linear models reached 0.757 once the SVM was class-weighted, and logistic got there without needing to be",
-          "Logistic regression only for text",
-          "SVM only for regression"
-        ],
+        options: ["SVM always, because it maximises the margin", "SVM for small n or kernels; LR for probabilities", "Logistic regression only for text problems", "SVM only for regression problems"],
         answer: 1,
         why: "Same linear boundary, different loss: the hinge ignores well-classified points and can abandon a class; the log-loss never stops pulling."
       },
       {
         stem: "SVR with default settings gave MAE 21.7 on spend, worse than linear regression; tuned, 7.2. What was wrong with the defaults?",
-        options: [
-          "The kernel was wrong",
-          "C = 1 and ε = 0.1 are sized for a standardised target; spend has a standard deviation near 60, so the model was allowed almost no excursion from a flat function and the tube was negligible. Scaling C to the target (100–1,000) and ε to a meaningful tolerance (5) gave a non-linear fit near KNN's; standardising y first would have made the defaults sensible",
-          "The features were not scaled",
-          "SVR cannot model interactions"
-        ],
+        options: ["The RBF kernel was the wrong choice", "C and ε were sized for a standardised target", "The input features were not scaled", "SVR cannot model interactions at all"],
         answer: 1,
         why: "ε also controls sparsity — 500 support vectors at ε = 5, 52 at ε = 20 — so it is a cost dial as much as an accuracy one."
       }

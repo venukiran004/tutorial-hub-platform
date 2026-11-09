@@ -378,56 +378,31 @@ m1 = LogisticRegression(C=1).fit(X_leak, y)                               # a sm
     questions: [
       {
         stem: "Derive the gradient of the log-loss with respect to β for one row.",
-        options: [
-          "∇ = (y − p)² x",
-          "∂ℓ/∂p = (p − y)/[p(1 − p)]; ∂p/∂z = p(1 − p); the product is ∂ℓ/∂z = p − y; and ∂z/∂β = x, so ∇ = (p − y)x — over all rows Xᵀ(p − y), the same form as linear regression's gradient with p in place of ŷ",
-          "∇ = Xᵀ(y − Xβ)",
-          "∇ = σ(z)(1 − σ(z))"
-        ],
+        options: ["∇ = (y − p)² x", "∇ = (p − y) x", "∇ = Xᵀ(y − Xβ)", "∇ = σ(z)(1 − σ(z))"],
         answer: 1,
         why: "The cancellation of p(1 − p) is the reason the sigmoid and cross-entropy are paired."
       },
       {
         stem: "Why can linear regression not simply be used for a binary target?",
-        options: [
-          "It can; the results are identical",
-          "Its predictions are unbounded and can leave [0, 1]; a squared-error loss through a sigmoid is non-convex (two minima on six points) and its gradient vanishes when the model is confidently wrong; and it has no likelihood interpretation. Logistic regression fixes all three by modelling the log-odds",
-          "Because the target is not normally distributed",
-          "Because the sigmoid is faster"
-        ],
+        options: ["It can; the results are identical to logistic", "Unbounded outputs, a non-convex fit, no likelihood", "Because the binary target is not normally distributed", "Because a sigmoid output makes training faster"],
         answer: 1,
         why: "The linear probability model is used in some econometrics for its interpretability, but for prediction and calibration the logit is the tool."
       },
       {
         stem: "A coefficient on `support_tickets` is +0.46. Interpret it for a stakeholder, correctly.",
-        options: [
-          "Each ticket increases the probability of churn by 46 %",
-          "Each additional ticket multiplies the odds of churn by e^{0.46} = 1.59, holding the other features fixed; the change in probability depends on where you start (from 10 % to 15 %, from 50 % to 61 %), because the model is linear in log-odds, not in probability",
-          "Each ticket adds 0.46 to the probability",
-          "Tickets are the most important feature"
-        ],
+        options: ["Each ticket raises the churn probability by 46%", "Each ticket multiplies the odds of churn by 1.59", "Each ticket adds 0.46 to the churn probability", "Tickets are the most important feature in the model"],
         answer: 1,
         why: "An odds ratio is the correct unit; a percentage-point change must be computed at a reference point."
       },
       {
         stem: "The fit warns of non-convergence and one coefficient is 130. What happened and what do you do?",
-        options: [
-          "Increase max_iter",
-          "A feature (or combination) separates the classes perfectly or nearly so, so the likelihood rises without bound as the coefficient grows and the MLE does not exist; check for a leaking or post-outcome feature first, then regularise (any finite C), or use Firth's correction if the coefficient must be reported",
-          "The learning rate is too high",
-          "Remove the intercept"
-        ],
+        options: ["Increase max_iter until the solver converges", "Near-perfect separation: check for a leak, then regularise", "The learning rate is too high for the solver", "Remove the intercept so the coefficients settle"],
         answer: 1,
         why: "Separation with 40 points: coef 2.67 at C = 1, 126 at C = 10⁶, 130 unpenalised — and a leak is the commonest cause."
       },
       {
         stem: "How does logistic regression extend to three classes, and which of the two ways is preferable?",
-        options: [
-          "Only one-vs-rest is possible",
-          "Softmax (multinomial): fit K linear scores and set P(y = k) = e^{zₖ}/Σe^{zⱼ}, one joint likelihood, probabilities sum to 1 by construction — log-loss 0.661 on the plan target; one-vs-rest fits K binary models and renormalises — 0.695 — and is the fallback for estimators with no multiclass form",
-          "Fit K − 1 pairwise models",
-          "Use a decision tree instead"
-        ],
+        options: ["Only one-vs-rest is possible for three classes", "Softmax: one joint model, the better default", "Fit K − 1 pairwise binary models and vote", "Switch to a decision tree for multiple classes"],
         answer: 1,
         why: "The binary sigmoid is softmax with K = 2 and one score fixed at zero."
       }

@@ -310,56 +310,31 @@ cross_val_score(RandomForestClassifier(200), X, y, cv=5, scoring="average_precis
     questions: [
       {
         stem: "Why is accuracy misleading on imbalanced data, and what replaces it?",
-        options: [
-          "Accuracy is fine if the classes are stratified",
-          "With 2.5 % positives, predicting 'no' for everyone scores 97.5 %, and a real model with recall 0.06 scores 97.5 % too — the metric is dominated by the majority class it is trivial to get right. Replace it with metrics that look at the minority: PR-AUC (floor = base rate, 0.025), recall at a fixed precision or review capacity, MCC or balanced accuracy for a thresholded summary, and above all the cost of each error type",
-          "Use ROC-AUC, which is unaffected by imbalance",
-          "Use log-loss only"
-        ],
+        options: ["Accuracy is fine if the folds are stratified", "Predicting the majority scores 97.5%; use PR-AUC", "Use ROC-AUC, which ignores imbalance entirely", "Use log-loss only, which ignores the threshold"],
         answer: 1,
         why: "ROC-AUC is a fine ranking metric but is flattered by the mass of easy negatives; PR-AUC is not."
       },
       {
         stem: "What does class_weight='balanced' actually do to a logistic regression, and what does it cost?",
-        options: [
-          "It resamples the data internally",
-          "It multiplies each row's loss by n/(K·nₖ) — 0.51 for negatives, 19.7 for positives here — which raises every log-odds by about ln(38.4) = 3.65: the decision boundary at 0.5 moves to where the untreated model's 0.025 was. The ranking is essentially unchanged (AUC 0.834 → 0.841), recall at 0.5 jumps from 0.06 to 0.75, and calibration is destroyed (mean p̂ 0.325 for a base rate of 0.025) — a threshold change with the probabilities broken",
-          "It removes majority rows",
-          "It changes the loss to hinge"
-        ],
+        options: ["It resamples the training data inside the solver", "It reweights the loss, shifting every log-odds", "It removes rows from the majority class at random", "It changes the loss from log-loss to the hinge loss"],
         answer: 1,
         why: "For hinge-loss models the weight matters more: an unweighted SVM abandoned the minority entirely (5.3)."
       },
       {
         stem: "Explain SMOTE's mechanism and one way it can go wrong.",
-        options: [
-          "It copies minority rows; it can only fail if k is too large",
-          "For a minority row it picks one of its k minority nearest neighbours and creates a new row on the segment between them, x + u(x_nn − x) with u uniform — (1, 2) + 0.4·(0.5, 0.5) = (1.2, 2.2) — until the classes balance. It goes wrong when a minority row has no close minority neighbour (segments cross majority territory), when applied before the train–test split (interpolated near-copies of test positives leak into training: PR-AUC 0.987 vs an honest 0.484), and when its calibration cost is ignored",
-          "It fits a Gaussian to the minority class and samples from it",
-          "It removes majority rows near the boundary"
-        ],
+        options: ["It copies minority rows; fails only if k is too large", "It interpolates between minority neighbours; noise spreads", "It fits a Gaussian to the minority class and samples", "It removes majority rows near the decision boundary"],
         answer: 1,
         why: "Synthetic rows are convex combinations of real ones: they add weight to the minority, not information about it."
       },
       {
         stem: "A stakeholder's review team can check 3 % of transactions a day. How do you set the threshold?",
-        options: [
-          "Use 0.5 after SMOTE",
-          "Train on the real distribution, check the probabilities are calibrated, and set the threshold at the 97th percentile of the score so that exactly the queue's capacity is flagged; report recall and precision at that threshold and monitor them. If costs are known instead of capacity, t* = c_FP/(c_FP + c_FN) on calibrated probabilities (0.048 here, sweep 0.04, cost 7,362 → 4,037). Resampled models' probabilities are not usable for either rule",
-          "Use the best-F1 threshold",
-          "Set the threshold to the base rate"
-        ],
+        options: ["Use a 0.5 threshold after applying SMOTE to the data", "Flag the top 3% of a calibrated score", "Use whichever threshold maximises the F1 score", "Set the threshold equal to the fraud base rate"],
         answer: 1,
         why: "Imbalance is handled in the decision, where the business constraint lives, not in the training set."
       },
       {
         stem: "When does treating imbalance not help, and how do you tell in advance?",
-        options: [
-          "It always helps at least a little",
-          "When the untreated model already ranks well (a well-separated minority: PR-AUC 0.94 with or without SMOTE) — the only problem was the threshold — and when the classes overlap so that no boundary exists (PR-AUC 0.09 under every treatment) — the problem is missing features. Look at the untreated model's PR curve first: good ranking means fix the threshold; ranking at the base rate means find features or reframe as anomaly detection",
-          "Only when the ratio is below 1 %",
-          "When SMOTE's k is wrong"
-        ],
+        options: ["It always helps at least a little on any data", "When ranking is already good, or classes overlap", "Only when the minority ratio is below 1%", "Only when SMOTE's k has been set wrongly"],
         answer: 1,
         why: "Resampling adds weight, not information; it cannot manufacture separability."
       }

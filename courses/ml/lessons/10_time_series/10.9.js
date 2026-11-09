@@ -384,56 +384,31 @@ monthly: the FVA review from the same table`,
     questions: [
       {
         stem: "The data-quality gate at 02:30 counts duplicate rows and finds 9, the same as every night since the ETL was fixed. Tonight it finds 30. What should happen?",
-        options: [
-          "Deduplicate and continue — the fix handles duplicates",
-          "Abort the run, keep yesterday's forecast, and page: a change in the count means the upstream process changed, and a forecast built on it would be plausible and wrong — the same 'silent fault' the hygiene checks of 10.1 exist to catch",
-          "Sum the duplicates instead",
-          "Skip the gate tonight and investigate tomorrow"
-        ],
+        options: ["Deduplicate and continue, since the fix handles it", "Abort, keep yesterday's forecast, and page someone", "Sum the duplicate rows instead of dropping them", "Skip the gate tonight and investigate tomorrow"],
         answer: 1,
         why: "The gate's value is in the comparison with the norm, not in the fix: the fix assumes the duplication means what it meant before. A tripled count might be a re-run of ten days, or genuine partial records that should be summed. Serving yesterday's forecast for one more day costs little; serving a forecast trained on a corrupted feed costs weeks of wrong orders."
       },
       {
         stem: "Why must the seasonal naive be scored every day in the same table as the production model?",
-        options: [
-          "For the FVA review only",
-          "Because a model that beat the baseline at launch can quietly stop beating it after a regime change, and only a live side-by-side comparison shows it; in the executed table the naive nearly caught up in the quiet January window (8.67 vs 8.55) and fell far behind in the event windows",
-          "Because the naive is cheaper",
-          "Because the naive has no bias"
-        ],
+        options: ["For the forecast value added review only", "A model can stop beating the baseline unnoticed", "Because the naive forecast is cheaper to run", "Because the naive forecast has no bias"],
         answer: 1,
         why: "Accuracy has no absolute scale; the baseline is the yardstick, and yardsticks drift too. A model at 8.5 % WAPE is excellent when the naive is at 15 % and worthless when the naive is at 8.6 %. Scoring both on the same days in the same rows is the only way to keep the comparison honest over time."
       },
       {
         stem: "A CUSUM alarm fires on a store four days after a refurbishment. What is the retraining response, and why not just wait for the weekly refit?",
-        options: [
-          "Wait — the weekly refit will pick it up",
-          "Refit immediately on truncated history (or add a step regressor): a scheduled refit on the full history keeps averaging the old level into the forecast, which 10.3 measured as a +22.8 bias for months with an expanding window",
-          "Increase the smoothing parameters",
-          "Switch to the seasonal naive until the next month"
-        ],
+        options: ["Wait, because the weekly refit will pick it up", "Refit now on truncated history, or add a step", "Increase the smoothing parameters instead", "Switch to the seasonal naive until next month"],
         answer: 1,
         why: "A changepoint means the model's assumptions have expired, and a refit that includes the pre-break history does not restore them — it dilutes the new regime. The response is a shorter window, a step regressor, or a sliding-window model, triggered by the alarm rather than the calendar."
       },
       {
         stem: "The boosting model's bias is +10.2 at store A and +3 to +4 at stores B and C. What does the table say about where to look?",
-        options: [
-          "The model is under-fitted everywhere",
-          "The bias is concentrated at the largest, fastest-rising store, which is where a tree model's inability to extrapolate a trend costs most — a trend fix or a ratio-to-level target for store A, and a re-run of the FVA review",
-          "Store A's data is wrong",
-          "The seasonal naive should be used for store A"
-        ],
+        options: ["The model is under-fitted at every store", "At the fast-rising store: trees cannot extrapolate", "Store A's data must contain errors", "Use the seasonal naive for store A instead"],
         answer: 1,
         why: "Store A has the highest level (230) and the steepest trend (0.05 a day) of the three; a leaf average cannot follow it. Breaking the error down by store and horizon is what turns a single WAPE into a diagnosis — the lesson of 10.3 and the reason the table has a store column."
       },
       {
         stem: "Which statement about the model chooser is correct?",
-        options: [
-          "It tells you the best model for a series",
-          "It tells you where to start; the backtest decides — on the store data the 'known-future covariates' branch (SARIMAX) beat the ML branch that used the same covariates, which no chooser could have known in advance",
-          "It always recommends a global boosting model for retail",
-          "It replaces the baseline"
-        ],
+        options: ["It tells you the best model for any series", "It tells you where to start; backtests decide", "It always recommends global boosting for retail", "It replaces the need for a naive baseline"],
         answer: 1,
         why: "The chooser encodes what usually works by the number of series, the length, the covariates and the need for coherence. Every recommendation in it is a candidate for the rolling-origin backtest, which on this data ranked the candidates in an order the chooser's retail default did not predict."
       }

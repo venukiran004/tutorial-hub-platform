@@ -335,56 +335,31 @@ print(cal.groupby("bin").agg(mean_p=("p", "mean"), rate=("y", "mean"), n=("y", "
     questions: [
       {
         stem: "Why can F1 select the most expensive threshold?",
-        options: [
-          "F1 is computed incorrectly",
-          "F1 is the harmonic mean of precision and recall and weighs a false positive and a false negative equally per row; when their costs differ — £5 against £100, or 10 against 500 — the F1-optimal point sits wherever the two rates balance, not where the money does",
-          "F1 ignores true negatives",
-          "F1 always favours recall"
-        ],
+        options: ["F1 is computed incorrectly at most thresholds", "F1 treats both error types as equally costly", "F1 ignores true negatives, which hold the cost", "F1 always favours recall over precision"],
         answer: 1,
         why: "On the fraud example F1 chose 0.70 at cost 20,850 against 12,420 at 0.50. Ignoring true negatives is a separate, real limitation of F1 but not the reason here."
       },
       {
         stem: "A fraud team says precision is only 0.12 and wants a higher threshold. What is the right response?",
-        options: [
-          "Raise the threshold until precision is 0.5",
-          "Ask what a false decline costs against a missed fraud: at 10 against 500, the 0.12-precision threshold is the cost minimum, and raising it to reach precision 0.63 would cost 68 % more; low precision is correct when a false positive is cheap and a miss is dear",
-          "Retrain the model",
-          "Switch to recall"
-        ],
+        options: ["Raise the threshold until precision reaches 0.5", "Compare costs: at 10 vs 500 this threshold is cheapest", "Retrain the model to improve its precision", "Switch the target metric from precision to recall"],
         answer: 1,
         why: "Precision is a description, not a target. The target is the cost, and the costs here make many cheap false alarms the right policy."
       },
       {
         stem: "When is a top-k budget rule preferable to a probability threshold?",
-        options: [
-          "Never; thresholds are more principled",
-          "When capacity is fixed (a team can review k cases), when the probabilities are not trusted to be calibrated, or when the base rate drifts — top-k always produces k flags, whereas a threshold's flagged count moves with the population",
-          "When the model is very accurate",
-          "When recall must be 1"
-        ],
+        options: ["Never, because a threshold is always more principled", "With fixed capacity, untrusted calibration, or drift", "Only when the model is extremely accurate already", "Only when recall must be exactly 1.0 for the task"],
         answer: 1,
         why: "Top-k trades a known volume for an unknown recall; a threshold trades a known probability cut for an unknown volume. Which unknown you can live with is a business question."
       },
       {
         stem: "The break-even rule says act when p > c/b. What must be true of p for this to be valid?",
-        options: [
-          "p must be above 0.5",
-          "p must be calibrated — a predicted 0.15 must correspond to about 15 % of such customers churning — otherwise the arithmetic is on a number that does not mean what it claims; check with a reliability table before using the formula",
-          "p must be from a logistic regression",
-          "p must be rounded"
-        ],
+        options: ["p must be above 0.5 for the rule to apply", "p must be calibrated, so 0.15 means about 15%", "p must come from a logistic regression", "p must be rounded to two decimal places"],
         answer: 1,
         why: "AUC-optimal scores can be badly calibrated (2.5). The empirical cost sweep sidesteps this; the formula does not."
       },
       {
         stem: "A cancer screening programme sets its threshold for recall ≥ 0.95. What does the resulting precision tell the programme?",
-        options: [
-          "That the model is bad",
-          "How many follow-up tests per true case the programme has committed to — the operational cost of the recall target — which it reports alongside so the trade is explicit, not hidden in a single metric",
-          "Nothing useful",
-          "That the threshold should be raised"
-        ],
+        options: ["That the model is bad and should be replaced", "The follow-up tests per true case the target commits to", "Nothing useful once recall has been fixed", "That the threshold should be raised to 0.5"],
         answer: 1,
         why: "Fixing one metric makes the other a consequence to be reported, not a failure to be fixed. Both numbers, in the programme's units."
       }

@@ -342,56 +342,31 @@ exp = explainer.explain_instance(
     questions: [
       {
         stem: "State the Shapley value formula in words and the four axioms it satisfies.",
-        options: [
-          "The coefficient of each feature in a local linear fit; the axioms are linearity, sparsity, locality, fidelity",
-          "Feature j's value is its marginal contribution v(S ∪ {j}) − v(S) averaged over all subsets S of the other features, weighted so that every order of arrival counts equally (|S|!(n − |S| − 1)!/n!). Efficiency: the values sum to f(x) − E[f]. Symmetry: interchangeable features get equal values. Dummy: a feature that changes nothing gets zero. Linearity: values for a sum of models are the sum of values",
-          "The feature's partial dependence at the row's value; the axioms are independence, additivity, monotonicity, boundedness",
-          "The permutation importance restricted to one row"
-        ],
+        options: ["A local linear fit's coefficients; linearity, sparsity", "Average marginal contribution; efficiency, symmetry", "Partial dependence at the row; independence, bounds", "Permutation importance restricted to a single row"],
         answer: 1,
         why: "Uniqueness is what makes SHAP an attribution rather than a heuristic: no other additive split satisfies all four."
       },
       {
         stem: "When do you use TreeSHAP, KernelSHAP and LinearSHAP, and what does each cost?",
-        options: [
-          "TreeSHAP for any model; the others are deprecated",
-          "TreeSHAP for tree ensembles — exact, one tree walk per row (297 rows in 14 ms); LinearSHAP for linear models — exact, βⱼ(xⱼ − x̄ⱼ); KernelSHAP for anything else — an approximation from sampled coalitions with nsamples model calls per row (500 gave error 0.03 here; a slow model makes it hours). Match the explainer to the model, and choose the background deliberately for all three",
-          "KernelSHAP always, because it is model-agnostic",
-          "LinearSHAP for trees after linearising them"
-        ],
+        options: ["TreeSHAP for every model; the others are deprecated", "Tree for trees, Linear for linear, Kernel otherwise", "KernelSHAP always, because it is model-agnostic", "LinearSHAP for trees, after linearising them"],
         answer: 1,
         why: "The model-specific explainers are exact and fast because they use the model's structure; the agnostic one pays for ignorance."
       },
       {
         stem: "Compare SHAP and LIME for explaining one prediction.",
-        options: [
-          "They are equivalent; LIME is the older name",
-          "SHAP attributes the prediction additively by Shapley values with axiomatic guarantees, is exact for trees and aggregates to global views; LIME fits a stochastic local surrogate whose coefficients are the explanation, with fidelity that must be measured (0.55 here) and results that vary across seeds (top-3 changed in two of five runs). SHAP for rigour, audit and trees; LIME for a quick story, text and images via superpixels, or models without a SHAP explainer — always with its seed spread and fidelity reported",
-          "LIME is exact; SHAP is an approximation",
-          "SHAP is only for global explanations; LIME only for local"
-        ],
+        options: ["They are equivalent; LIME is the older name", "SHAP is axiomatic; LIME's fidelity must be checked", "LIME is exact, while SHAP is an approximation", "SHAP is global only, and LIME is local only"],
         answer: 1,
         why: "They agreed on what mattered most for the customer and disagreed on the rest, which is the usual relationship."
       },
       {
         stem: "What makes an anchor useful, and what did the search on the churn model find?",
-        options: [
-          "An anchor is the feature with the largest SHAP value",
-          "An anchor is an if-then rule on the row's values under which the prediction holds with high precision, reported with its coverage — the form a policy can adopt. On the churn model no rule of up to three predicates reached 95 % precision: the best (logins ≤ 5 and tenure ≤ 6) held 86 % of the time on 1 % of customers. Reporting that is more useful than a rule that does not hold; anchors work best where the model's decisions are crisp",
-          "Anchors are counterfactuals with two features",
-          "The search found that logins alone anchor the prediction at 43 % precision, which is sufficient"
-        ],
+        options: ["It is the feature with the largest SHAP value", "A high-precision rule; none reached 95% here", "An anchor is a two-feature counterfactual", "Logins alone anchored it at 43%, enough"],
         answer: 1,
         why: "Precision and coverage are the two numbers a rule needs; a rule without them is a slogan."
       },
       {
         stem: "What are the properties of a good counterfactual, and which did the nearest one on the churn model lack?",
-        options: [
-          "Only validity: it must flip the prediction",
-          "Validity (flips the prediction), proximity (small change), sparsity (few features), plausibility (a real row could look like this), actionability (features the person can change), diversity (several options). The nearest flip — one extra login, 0.611 → 0.494 — is valid, proximate and sparse but fragile, sitting at the boundary; the +5 logins and −1 ticket option at 0.301 is the one a retention team would act on. Tenure and plan were excluded as non-actionable",
-          "Diversity only; one counterfactual is never enough",
-          "The nearest one was ideal because it changed one feature"
-        ],
+        options: ["Only validity: it must flip the prediction", "Six properties; the nearest flip was not robust", "Diversity only; one counterfactual never suffices", "The nearest was ideal, as it changed one feature"],
         answer: 1,
         why: "DiCE and similar tools generate a diverse set under constraints for exactly this reason."
       }

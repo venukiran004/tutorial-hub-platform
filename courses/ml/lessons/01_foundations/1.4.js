@@ -388,56 +388,31 @@ for frac in [0.5, 0.75, 1.0]:
     questions: [
       {
         stem: "What is the difference between what L1 and L2 penalties do to a weight that the data barely supports?",
-        options: [
-          "Both set it to zero",
-          "L2 shrinks it toward zero but leaves it non-zero; L1 sets it exactly to zero, because the Laplace prior's corner at zero makes zero the posterior mode for weakly supported weights",
-          "L1 shrinks it; L2 zeros it",
-          "Neither affects it"
-        ],
+        options: ["Both penalties set a weakly supported weight to exactly zero", "L2 shrinks it but keeps it non-zero; L1 sets it exactly to zero", "L1 shrinks it towards zero while L2 sets it to exactly zero", "Neither penalty affects weights the data barely supports"],
         answer: 1,
         why: "The executed L1 fit kept 7 of 65 weights at C = 0.03; the L2 fit at any C kept all 65, just smaller."
       },
       {
         stem: "In the MAP derivation, what does λ = σ²/τ² say about when to regularise hard?",
-        options: [
-          "When the data is clean",
-          "When the noise variance σ² is large relative to the prior variance τ² — noisy data and a confident belief that weights are small; clean data or an agnostic prior means trust the data",
-          "When there are many rows",
-          "λ is unrelated to noise"
-        ],
+        options: ["Regularise hard when the training data is clean", "Regularise hard when noise is large relative to the prior", "Regularise hard whenever there are many training rows", "Lambda is unrelated to the noise in the target"],
         answer: 1,
         why: "The penalty is the ratio of how much you distrust the data to how much you trust the prior. That is also why λ is tuned by validation: neither variance is known."
       },
       {
         stem: "Why does stopping gradient descent early act like an L2 penalty?",
-        options: [
-          "Because fewer iterations mean fewer parameters",
-          "Gradient descent from zero moves fastest along the strongly determined directions of the loss and slowest along the weak, noisy ones; stopping early leaves the weak directions near zero, which is what ridge does by shrinking them",
-          "Because the learning rate decays",
-          "It does not; they are unrelated"
-        ],
+        options: ["Because fewer iterations means fewer parameters are learned", "It leaves weak, noisy directions near zero, as ridge does", "Because the learning rate decays towards zero over time", "It does not; early stopping and L2 are unrelated"],
         answer: 1,
         why: "The executed run: GD at t = 200 had the two collinear weights at +0.49 and +0.45 where least squares had +4.69 and −3.73. The noisy direction was never learned."
       },
       {
         stem: "A booster's validation log-loss is 0.373 at round 45 and 0.605 at round 600, while training log-loss falls from 0.299 to 0.036. Which model do you keep?",
-        options: [
-          "Round 600; lowest training loss",
-          "Round 45; the validation minimum — everything after it is the model fitting the training rows' noise, and the training loss is not evidence",
-          "Round 300 as a compromise",
-          "Neither; the model is broken"
-        ],
+        options: ["Round 600, because its training loss is the lowest", "Round 45, the validation minimum", "Round 300, as a compromise between the two", "Neither, because the model is clearly broken"],
         answer: 1,
         why: "This is early stopping: the number of rounds is a hyperparameter chosen at the validation minimum, and the fold that chose it must not be the reported one."
       },
       {
         stem: "Training AUC 0.99, validation AUC 0.97 on a churn model. What is the most likely explanation?",
-        options: [
-          "An excellent model",
-          "Leakage: a human decision like churn is not predictable at 0.97 from honest features, and regularisation would lower both numbers together rather than closing a gap — check where each feature comes from before celebrating",
-          "Underfitting",
-          "The validation set is too small"
-        ],
+        options: ["An excellent model that is ready to deploy", "A leak: honest features rarely predict churn this well", "Underfitting, since the two scores are so close", "A validation set too small to measure anything"],
         answer: 1,
         why: "Overfitting shows as a gap; leakage shows as two numbers that are both too good. The table in section 01 is the diagnosis."
       }

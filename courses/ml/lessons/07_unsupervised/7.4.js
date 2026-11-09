@@ -333,56 +333,31 @@ the SVD route:  X = U D Vᵀ  ->  XᵀX = V D² Vᵀ,  so the columns of V are t
     questions: [
       {
         stem: "Derive PCA and state what the eigenvalues and eigenvectors of the covariance matrix represent.",
-        options: [
-          "PCA minimises reconstruction error; eigenvalues are the errors",
-          "Seek the unit direction w maximising the projected variance wᵀΣw; the Lagrangian condition is Σw = λw, so w is an eigenvector of the covariance matrix and λ, the variance along it, is its eigenvalue. Sorting by λ gives orthogonal components whose scores are uncorrelated with variances λᵢ; the SVD X = UDVᵀ computes them as V with λᵢ = dᵢ²/n. (Minimum reconstruction error is the equivalent dual view)",
-          "PCA fits a regression of each feature on the others",
-          "Eigenvectors are cluster centres; eigenvalues are cluster sizes"
-        ],
+        options: ["It minimises reconstruction error; eigenvalues are errors", "Maximise wᵀΣw: eigenvectors are axes, eigenvalues variances", "It regresses each feature on all of the others", "Eigenvectors are cluster centres; eigenvalues are sizes"],
         answer: 1,
         why: "For Σ = [[2, 0.8], [0.8, 0.6]] the polynomial λ² − 2.6λ + 0.56 gives 2.363 and 0.237, and Σw₁ = 2.363w₁ checks."
       },
       {
         stem: "Why must features be standardised before PCA, and when does standardising leave PCA nothing to do?",
-        options: [
-          "Standardising is optional; PCA is scale-invariant",
-          "PCA maximises variance in the given units, so the widest column owns PC1 (tenure: loading 1.00, 80 % of variance). Standardising equalises the units so that correlation, not scale, decides the directions. If the standardised features are uncorrelated, the covariance is the identity, every eigenvalue is 1, and the components are arbitrary — there is no dominant direction to find, and truncation can only discard signal (the churn numerics: ratios 35/21/20/19/5)",
-          "Standardising is needed only for kernel PCA",
-          "Standardising makes all eigenvalues equal to the number of features"
-        ],
+        options: ["Optional, since PCA is invariant to feature scale", "Variance depends on units; uncorrelated means nothing to do", "Needed only for kernel PCA, not for linear PCA", "It makes every eigenvalue equal to the feature count"],
         answer: 1,
         why: "PCA is a statement about correlation structure; without correlation there is no statement."
       },
       {
         stem: "How do you choose the number of components?",
-        options: [
-          "Keep components until 95 % of the variance is explained",
-          "Use the cumulative variance and scree as a description (digits: 90 % at 21, elbow near 5) but choose by cross-validating the downstream pipeline with n_components as a hyperparameter — KNN was within 0.011 of full accuracy at 10 components, logistic needed 30 — because the variance retained says nothing about the relevance retained, and the right k differs by model",
-          "Use the elbow of the scree plot",
-          "Keep √p components"
-        ],
+        options: ["Keep components until 95% of variance is explained", "Tune n_components by cross-validating the pipeline", "Keep the components before the scree plot's elbow", "Keep √p components, where p is the feature count"],
         answer: 1,
         why: "On the churn table no k below 12 was right for any model; on 60 factor mixtures 20 was right for all of them."
       },
       {
         stem: "A colleague applies PCA(5) before a random forest 'to reduce overfitting' and the AUC drops from 0.739 to 0.690. Diagnose.",
-        options: [
-          "The forest needed more trees",
-          "The twelve columns are mostly independent, so the seven dropped components held real signal; a forest does not overfit from twelve columns anyway. PCA before a tree model helps only when the columns are noisy mixtures of fewer factors (0.885 → 0.907 on 60 mixtures of 20 factors); on non-redundant tables rotation without truncation (PCA(12): 0.748) is the only version that can help, by giving the trees oblique splits",
-          "PCA should have been fitted on the test set too",
-          "Trees cannot use PCA outputs"
-        ],
+        options: ["The forest needed more trees after the PCA step", "Independent columns: the dropped components held signal", "PCA should have been fitted on the test set too", "Tree models cannot make use of PCA outputs"],
         answer: 1,
         why: "Two operations — rotate and truncate — with opposite effects; ask which one is wanted."
       },
       {
         stem: "When would you use kernel PCA, random projection or NMF instead of PCA?",
-        options: [
-          "Never; PCA is always sufficient",
-          "Kernel PCA for non-linear structure a known kernel captures (the rings' radius appeared as kernel component 3), accepting O(n²) and that the useful component may not be first; random projection as a fit-free first squeeze on very wide data, with the JL bound sizing k for a distance tolerance; NMF when the data are non-negative and additive — text, spectra, images — because its parts are readable where LSA's signed components ('signature minus sport') are not",
-          "Kernel PCA for large data, NMF for negative data",
-          "Random projection whenever PCA is too accurate"
-        ],
+        options: ["Never, because PCA is always sufficient", "For non-linear structure, very wide data, parts", "Kernel PCA for big data, NMF for negative data", "Random projection whenever PCA is too accurate"],
         answer: 1,
         why: "Each relaxes one of PCA's commitments: linearity, fitting, or signed factors."
       }

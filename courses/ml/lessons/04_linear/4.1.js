@@ -366,56 +366,31 @@ print(k, "iterations")                  # 289: x1 and x2 are correlated (r = 0.6
     questions: [
       {
         stem: "Why can the R² of a training fit never fall when a feature is added?",
-        options: [
-          "Because R² is bounded by 1",
-          "Because adding a column enlarges the subspace the features span, and the projection of y onto a larger subspace is never further from y — RSS cannot rise, so R² cannot fall; adjusted R² and held-out data correct for this",
-          "Because the intercept absorbs it",
-          "It can fall if the feature is noise"
-        ],
+        options: ["Because R² is bounded above by exactly 1", "A larger subspace only brings the projection closer", "Because the intercept absorbs the added feature", "It can fall, when the new feature is pure noise"],
         answer: 1,
         why: "The geometric view makes this a one-line fact. Fifty noise columns raised training R² from 0.56 to 0.68 in 2.4."
       },
       {
         stem: "What does the hat matrix's diagonal tell you?",
-        options: [
-          "The residuals",
-          "Each observation's leverage — how much its own y contributes to its fitted value; large for rows far from the feature centroid, summing to the number of parameters. A row with leverage near 1 has its fitted value dictated by itself and can steer the line",
-          "The coefficients",
-          "The R² per row"
-        ],
+        options: ["The residual left over for each observation", "Each row's leverage over its own fitted value", "The coefficient that each row contributes", "The share of R² that each row contributes"],
         answer: 1,
         why: "Leverage is the first half of influence; the second is the residual (Cook's distance combines them, 4.2)."
       },
       {
         stem: "Why is OLS the maximum-likelihood estimate, and what changes if the noise is not Gaussian?",
-        options: [
-          "OLS is always the MLE",
-          "With Gaussian noise the log-likelihood is a constant minus RSS/2σ², so maximising it minimises RSS; with Laplace noise the MLE minimises absolute error (median regression), with Poisson counts it minimises the deviance — the loss follows the noise model",
-          "It is not the MLE; it is the MAP",
-          "The MLE requires known σ"
-        ],
+        options: ["OLS is the MLE whatever the noise distribution", "Gaussian likelihood is −RSS; other noise, other loss", "OLS is the MAP estimate under a flat prior instead", "The MLE needs σ to be known before fitting"],
         answer: 1,
         why: "This is why 2.4's metric choice and 4.6's GLMs are the same question: what does the noise look like?"
       },
       {
         stem: "Two features are nearly identical (condition number 2 × 10⁸). What happens and what is the fix?",
-        options: [
-          "The normal equation fails but SVD works",
-          "Every exact solver returns huge coefficients of opposite sign whose sum is right — only the sum is identifiable from the data; no solver fixes an ill-posed problem, ridge regularisation does (or drop one column)",
-          "Gradient descent finds the right answer",
-          "Standardising fixes it"
-        ],
+        options: ["The normal equation fails, but SVD solves it", "Only the sum is identified; regularise or drop a column", "Gradient descent finds the correct coefficients", "Standardising the two features fixes the problem"],
         answer: 1,
         why: "The executed run: normal equation [−8,671, 8,673], lstsq [18,316, −18,314], both summing to 2. Conditioning is a property of the data."
       },
       {
         stem: "When would you fit a linear regression with SGD rather than the closed form?",
-        options: [
-          "Always; it is more accurate",
-          "When X cannot be factorised — tens of millions of rows, hundreds of thousands of sparse features, or data arriving as a stream — because SGD costs O(npk) with no matrix to store, at the price of approximate convergence, a learning rate, and the need for scaled features",
-          "When p is small",
-          "When the features are collinear"
-        ],
+        options: ["Always, because SGD is more accurate", "When X is too big or streams in to factorise", "When the number of features is small", "When the features are highly collinear"],
         answer: 1,
         why: "On 200,000 × 50 the exact solvers took 34–292 ms and SGD 328 ms for five epochs; the closed form wins until it stops fitting in memory."
       }

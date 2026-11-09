@@ -295,56 +295,31 @@ outer_scores = cross_val_score(search, X, y, cv=outer, scoring="roc_auc")   # ea
     questions: [
       {
         stem: "Why does random search usually beat grid search at equal budget?",
-        options: [
-          "Because random search evaluates more configurations",
-          "Because in most problems only one to three hyperparameters matter, and a grid spends its budget on repeated values of the important axes (a 5 × 5 grid tests 5 distinct values of each) while random draws test a distinct value on every trial; the chance of landing in a good region depends on its volume, 1 − 0.95ⁿ for the top 5 %, not on the number of axes. On a narrow one-dimensional peak, 25 random points found 0.971 and the grid 0.670",
-          "Because grid search overfits",
-          "Because random search uses Bayesian priors"
-        ],
+        options: ["Random search always evaluates more configurations", "Few axes matter; random tries a new value every trial", "Grid search overfits the cross-validation folds", "Random search draws from Bayesian priors"],
         answer: 1,
         why: "Grid search is still right for reproducing a published sweep or for two or three discrete axes."
       },
       {
         stem: "How does Bayesian optimisation choose the next trial, and what is its cost?",
-        options: [
-          "It evaluates the gradient of the score",
-          "It fits a surrogate to the trials so far — a Gaussian process, or TPE's densities of good and bad configurations — and maximises an acquisition function such as expected improvement, σ[ZΦ(Z) + φ(Z)], which favours candidates with high predicted score or high uncertainty; the cost is sequential evaluation (trials cannot all run at once) and, for GPs, poor scaling past a few hundred trials. TPE overtook random search by trial 20 in six dimensions",
-          "It tries all configurations and averages",
-          "It halves the search space each round"
-        ],
+        options: ["It follows the gradient of the validation score", "A surrogate plus an acquisition function; costly per trial", "It tries every configuration and averages the results", "It halves the search space after every round"],
         answer: 1,
         why: "The acquisition function is the exploration–exploitation trade made explicit."
       },
       {
         stem: "A random search reports best_score_ = 0.74 on a dataset. What must you check before believing it?",
-        options: [
-          "Whether the search used enough iterations",
-          "How many configurations were compared and how noisy each estimate was: best_score_ is the maximum of many cross-validated estimates and is biased upward, by an amount that grows with configurations and with per-estimate noise — 0.74 was the best of 200 configurations on 60 rows of pure noise. Nested CV, with the search inside an outer fold, gives the unbiased number (0.449 vs 0.515 on 200 noise rows)",
-          "Whether the model was refitted",
-          "Whether the grid was fine enough"
-        ],
+        options: ["Whether the search ran for enough iterations", "How many configs were compared and how noisy each was", "Whether the best model was refitted on all rows", "Whether the parameter grid was fine enough"],
         answer: 1,
         why: "On a well-sized real problem the optimism was +0.004; on small data with many trials it can be the whole result."
       },
       {
         stem: "When is successive halving a safe speed-up?",
-        options: [
-          "Always; it is strictly more efficient",
-          "When the resource being scaled produces partial results that rank candidates as their final results would — boosting iterations, epochs, trees in a forest — so that eliminating the bottom two-thirds early loses nothing. Not when the resource is the sample size and the optimum moves with it, as for the kernel SVM (0.9477 vs 0.9644): the winner on 250 rows was not the winner on 2,000",
-          "Only for tree models",
-          "Only when the factor is 2"
-        ],
+        options: ["Always, since it is strictly more efficient", "When partial results rank like final ones", "Only for tree-based models", "Only when the halving factor is 2"],
         answer: 1,
         why: "Hyperband hedges the starting resource across brackets but inherits the same assumption."
       },
       {
         stem: "After the search, which model do you deploy and which score do you report?",
-        options: [
-          "The best fold's model and best_score_",
-          "Deploy the chosen configuration refitted on all training rows (refit=True), because the searched model only ever saw k − 1 folds; report the nested cross-validated outer score, because it is the only estimate from rows the search never touched — and record the seed, the folds and the trial log, since a different seed chose a different C (5.55 vs 1.22) at a different score",
-          "The best fold's model and the nested score",
-          "An average of all fold models and the mean CV score"
-        ],
+        options: ["The best fold's model, and best_score_", "Refit on all rows; report the nested score", "The best fold's model, and the nested score", "An average of fold models, and the mean CV"],
         answer: 1,
         why: "The procedure is what was evaluated; the refitted product of that procedure is what ships."
       }

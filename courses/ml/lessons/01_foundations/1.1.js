@@ -361,56 +361,31 @@ st = SelfTrainingClassifier(LogisticRegression(max_iter=1000), threshold=0.8).fi
     questions: [
       {
         stem: "Which of these is a hyperparameter rather than a parameter?",
-        options: [
-          "The slope of a fitted regression line",
-          "The maximum depth of a decision tree — chosen before training and tuned by validation, not learned from the training loss",
-          "The split threshold at a tree's root node",
-          "A logistic regression's intercept"
-        ],
+        options: ["The slope of a regression line after it has been fitted", "The maximum depth of a tree, set before training and tuned", "The split threshold chosen at a decision tree's root node", "The intercept that a logistic regression learns in training"],
         answer: 1,
         why: "Parameters are what fit sets; hyperparameters shape the family or the search and are set by you, usually via cross-validation (8.1)."
       },
       {
         stem: "A hand-written rule scores 83.3 % accuracy on churn and a model 84.7 %. Why is the comparison uninformative?",
-        options: [
-          "The model is clearly better",
-          "84 % of customers do not churn, so predicting 'no' for everyone scores 83.7 %; both numbers are near the majority baseline and the useful comparison is recall and precision at a chosen threshold",
-          "Accuracy cannot be computed for rules",
-          "The rule should have used more features"
-        ],
+        options: ["The model is clearly better, since it scores 1.4 points higher", "Both sit near the 83.7% you get by predicting 'no churn' for all", "Accuracy cannot be computed for a hand-written rule at all", "The rule should have used more features to compete fairly"],
         answer: 1,
         why: "The executed 'always 0' baseline was 0.837. Any metric that a constant predictor can score well on is not measuring what you care about (2.1)."
       },
       {
         stem: "What distinguishes self-supervised from unsupervised learning?",
-        options: [
-          "Nothing; they are synonyms",
-          "Self-supervised manufactures a label from the input itself — the masked word, the next token — and trains a supervised objective on it; unsupervised has no label at all and seeks structure directly",
-          "Self-supervised requires human labels",
-          "Unsupervised is only for images"
-        ],
+        options: ["Nothing; the two terms are synonyms for the same idea", "Self-supervised makes a label from the input; unsupervised has none", "Self-supervised learning still requires human-written labels", "Unsupervised learning applies only to image data, not text"],
         answer: 1,
         why: "Self-supervision is supervised learning with a free label, which is why it produces representations that fine-tune well. Clustering and PCA never construct a label."
       },
       {
         stem: "When is machine learning the wrong tool?",
-        options: [
-          "When the data is tabular",
-          "When the logic is known and deterministic, there is no data to learn from, every decision must be auditable line by line, or an error is catastrophic with no human in the loop",
-          "When the problem is important",
-          "When the data is large"
-        ],
+        options: ["Whenever the data is tabular rather than text or images", "When the logic is known, data is absent, or errors are catastrophic", "Whenever the problem is important enough to need certainty", "Whenever the dataset is too large to inspect by hand"],
         answer: 1,
         why: "Learning replaces rules you cannot write. Where you can write them, the rule is cheaper, more auditable and does not drift."
       },
       {
         stem: "Framing 'reduce churn' as 'predict the churned column as recorded' is wrong because…",
-        options: [
-          "Churn is not predictable",
-          "The recorded label is known only after the event, and features extracted at the same time include its consequences (refunds, final invoices) — the model would predict the past; the task must fix an as-of date with features before it and the label after",
-          "Logistic regression cannot handle it",
-          "The column is imbalanced"
-        ],
+        options: ["Churn is a human decision, so it cannot be predicted at all", "Features recorded with the label include its consequences", "Logistic regression cannot handle a binary churn target", "The churn column is imbalanced, so accuracy is meaningless"],
         answer: 1,
         why: "This is the leakage of 1.6 built into the problem statement. The fix is temporal framing, then a split that respects it."
       }

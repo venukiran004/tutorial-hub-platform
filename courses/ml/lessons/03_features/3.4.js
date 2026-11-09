@@ -339,56 +339,31 @@ for feats in [num, num + extra]:
     questions: [
       {
         stem: "Why did the hand-built fee × tenure × discount feature beat PolynomialFeatures(2)?",
-        options: [
-          "Polynomial features are always worse",
-          "The true relationship is one specific three-way product with a clip at twelve months; degree-2 expansion produced 15 pairwise products of which one was close, plus 14 noise columns that the penalty had to suppress. Domain knowledge supplied the exact term; expansion approximated it and paid in variance",
-          "Ridge cannot use polynomial features",
-          "The hand-built feature leaked the target"
-        ],
+        options: ["Polynomial features are always worse than hand-built ones", "It was the exact three-way term; degree 2 added noise", "Ridge cannot use polynomial features effectively", "The hand-built feature leaked the target into the model"],
         answer: 1,
         why: "£6.39 against £14.68. When you know the mechanism, encode it; when you do not, expand and regularise — and prefer a tree model, which found it on its own at £7.43."
       },
       {
         stem: "When is binning a numeric feature the right choice?",
-        options: [
-          "Always, for interpretability",
-          "When a linear model must capture a non-monotone or step-shaped relationship and smooth alternatives (splines) are unavailable or the steps are real (age bands with policy thresholds); it wastes within-bin variation, and for trees it only removes information",
-          "For tree models, to speed them up",
-          "Never; it loses information"
-        ],
+        options: ["Always, because bins make any model interpretable", "When a linear model needs steps and the steps are real", "For tree models, because bins make training faster", "Never, because binning always discards information"],
         answer: 1,
         why: "Bins lifted a logistic regression from 0.517 to 0.866 on a U-shape; splines did better at 0.883. On a tree the same bins would be a loss."
       },
       {
         stem: "Why is the plain z-score a weak outlier detector?",
-        options: [
-          "It is too sensitive",
-          "The std it divides by is inflated by the very outliers it seeks, so two extreme values can hide each other below the threshold; the modified z-score uses the median and MAD, which the outliers cannot move",
-          "It only works for normal data",
-          "It requires scaling first"
-        ],
+        options: ["It is too sensitive and flags too many points", "Outliers inflate the std it divides by and hide", "It only works when the data is exactly normal", "It requires the feature to be scaled first"],
         answer: 1,
         why: "One 999 gave z = 31; two would give each about z = 22 on a std doubled again — still flagged here, but a handful of moderate outliers can pull each other under 3."
       },
       {
         stem: "A power transform is added to a pipeline that ends in a gradient booster, and nothing changes. Why?",
-        options: [
-          "The transform was fitted wrongly",
-          "Box-Cox and Yeo-Johnson are monotone, and a tree's splits depend only on the order of values, so every split point maps to an equivalent one and the model is identical; the transform matters for linear, distance and network models",
-          "Boosters ignore numeric features",
-          "The power transform needs scaling after it"
-        ],
+        options: ["The transform was fitted on the wrong fold", "Monotone transforms leave a tree's splits unchanged", "Boosters ignore numeric features after transforms", "The power transform needs scaling applied after it"],
         answer: 1,
         why: "The same reason trees are immune to scaling (3.1). Adding the transform costs a fitted object for nothing."
       },
       {
         stem: "What is the risk of choosing bin edges by looking at the target?",
-        options: [
-          "None; it improves the bins",
-          "The edges then encode the target, as a target encoding does; chosen on all rows they leak the validation labels into the feature, and the cross-validated score is inflated. Edges must be chosen on the training fold — by quantiles, by domain knowledge, or by a supervised discretiser fitted inside the Pipeline",
-          "The bins become too narrow",
-          "It only matters for regression"
-        ],
+        options: ["None; looking at the target improves the bin edges", "The edges encode the target and leak the labels", "The bins become too narrow to hold enough rows", "It only matters for regression targets, not classes"],
         answer: 1,
         why: "Anything fitted with the label, outside the fold, is the leak of 1.6. Bin edges are a fitted quantity."
       }

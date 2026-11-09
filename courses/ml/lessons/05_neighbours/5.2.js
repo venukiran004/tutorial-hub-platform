@@ -310,56 +310,31 @@ cal = CalibratedClassifierCV(pipe, method="isotonic", cv=5).fit(tickets, categor
     questions: [
       {
         stem: "Why is Naive Bayes 'naive', and why does it work despite that?",
-        options: [
-          "Because it uses a simple prior",
-          "It assumes features are conditionally independent given the class, so the joint likelihood factorises into one-dimensional pieces; this is nearly always false, but classification is an argmax — double-counting correlated evidence scales every class's log-score without usually reordering them, so the label survives while the probability becomes over-confident",
-          "Because it ignores the prior",
-          "Because it is linear"
-        ],
+        options: ["Because it uses a deliberately simple class prior", "It assumes conditional independence; argmax survives", "Because it ignores the class prior altogether", "Because it is a linear model in disguise anyway"],
         answer: 1,
         why: "Nine copies of one feature: AUC fell 0.05, log-loss tripled. The wrongness lands on calibration."
       },
       {
         stem: "Which variant, and why, for (i) e-mail word counts, (ii) a table of sensor readings, (iii) binary 'symptom present' flags?",
-        options: [
-          "Gaussian for all three",
-          "(i) Multinomial (or complement if classes are imbalanced), because the likelihood of a document is a multinomial over word counts; (ii) Gaussian, with skewed readings transformed first, because the likelihood is a per-class normal; (iii) Bernoulli, because presence and absence are both evidence and a Bernoulli models each flag",
-          "Multinomial for all three",
-          "Bernoulli for (i), multinomial for (ii) and (iii)"
-        ],
+        options: ["Gaussian for all three data types", "Multinomial, Gaussian, Bernoulli respectively", "Multinomial for all three data types", "Bernoulli, then multinomial for the other two"],
         answer: 1,
         why: "The variant is the likelihood model; choose it by what the feature is, not by habit."
       },
       {
         stem: "Naive Bayes beat logistic regression 0.650 to 0.411 with 40 training documents and 0.906 to 0.860 with 2,741. Explain.",
-        options: [
-          "Logistic regression is the wrong model for text",
-          "Naive Bayes only needs class word frequencies, which a handful of documents already estimate roughly, so it reaches a usable model almost immediately; logistic regression must place 18,546 coefficients from the labels and needs far more data to do so. Generative models converge faster to a higher asymptotic error; discriminative models converge slower to a lower one — with more data and tf-idf the gap closes (0.911 vs 0.894)",
-          "Naive Bayes overfits less because it has fewer parameters",
-          "The vocabulary was too large for logistic regression"
-        ],
+        options: ["Logistic regression is the wrong model for text", "NB needs only word frequencies; LR needs many rows", "NB overfits less because it has fewer parameters", "The vocabulary was too large for logistic regression"],
         answer: 1,
         why: "The learning curve is the diagnostic: if you have little data, the generative baseline is not just a baseline."
       },
       {
         stem: "A stakeholder wants Naive Bayes's predicted probability of spam shown to users. What do you say?",
-        options: [
-          "Show it; NB outputs probabilities",
-          "Not the raw value: NB's posteriors are systematically over-confident under correlated features (mean max-probability 0.958 at 90.6 % accuracy; top-quintile predicted 86 % against actual 26 % in the duplication experiment). Calibrate with isotonic or Platt scaling on held-out data (log-loss 0.645 → 0.254), or damp the double-counting with sublinear tf-idf, and check a reliability curve before showing anything",
-          "Show it only for spam",
-          "Use the log-score instead"
-        ],
+        options: ["Show it, since Naive Bayes outputs probabilities", "Not raw: NB is over-confident; calibrate it first", "Show it, but only for messages flagged as spam", "Show the log-score instead of the probability"],
         answer: 1,
         why: "The ranking is trustworthy; the number is not until it has been calibrated."
       },
       {
         stem: "How does Gaussian NB compute P(x | y) for a row, and what does it assume that the churn features violate?",
-        options: [
-          "It uses a single multivariate normal per class",
-          "For each feature and class it stores a mean and variance and evaluates a one-dimensional normal density, summing the logs across features: row 0 scored −13.641 against −15.067 for a posterior of 0.8063. It assumes each feature is bell-shaped within class; tickets is a Poisson count and discount takes three values, so those likelihoods are badly modelled — transform, discretise, or switch variant",
-          "It counts feature values",
-          "It assumes features are uniform"
-        ],
+        options: ["One multivariate normal per class, with covariance", "One normal per feature per class, logs summed", "It counts how often each feature value occurs", "It assumes each feature is uniformly distributed"],
         answer: 1,
         why: "A multivariate normal per class would be quadratic discriminant analysis (7.5's LDA is the shared-covariance version); Naive Bayes is the diagonal special case."
       }

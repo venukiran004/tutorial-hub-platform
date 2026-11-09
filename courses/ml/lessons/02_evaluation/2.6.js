@@ -369,56 +369,31 @@ t.groupby("plan").apply(lambda s: pd.Series({"n": len(s), "base": s.y.mean(), "f
     questions: [
       {
         stem: "A list [1, 0, 0, 0, 0] scores NDCG@5 = 1.0 and precision@3 = 0.33. Which is right?",
-        options: [
-          "NDCG is wrong; the list is poor",
-          "Both answer different questions: NDCG asks how close the order is to the best possible order for this query (perfect — there was only one relevant item and it is first); precision@3 asks how many of the top three were relevant (one). For a query with one answer, MRR or NDCG is the honest metric",
-          "Precision is wrong",
-          "They should always agree"
-        ],
+        options: ["NDCG is wrong, because the list is a poor one", "Both: they answer different questions about the list", "Precision is wrong, because NDCG is the better metric", "Neither, because they should always agree"],
         answer: 1,
         why: "Metric choice for ranking depends on what the interface shows and how many relevant items exist; normalised metrics handle the second, k-metrics the first."
       },
       {
         stem: "Why can silhouette prefer k-means' straight cut through two moons over DBSCAN's correct crescents?",
-        options: [
-          "DBSCAN is worse",
-          "Silhouette rewards points being close to their own cluster and far from the nearest other; a crescent is long, so its points are far from each other, while a straight cut makes compact halves — the metric assumes convex clusters and scores the tidy wrong answer higher",
-          "Because of noise",
-          "Silhouette needs labels"
-        ],
+        options: ["Because DBSCAN is the weaker clustering method", "Silhouette assumes compact clusters, so it rewards the cut", "Because the noise points distort the silhouette score", "Because silhouette needs ground-truth labels to work"],
         answer: 1,
         why: "Internal metrics encode a geometric assumption. ARI against known labels showed the truth (~1.0 for DBSCAN, ~0.24 for k-means)."
       },
       {
         stem: "Which fairness criterion should a retention-offer programme most naturally satisfy, and why?",
-        options: [
-          "Demographic parity, so every region gets equal offers",
-          "Equal opportunity — churners in every group should be found at the same rate — because the intervention is a benefit and the harm is a missed churner; the audit showed south's churners found at 0.615 against 0.727 for east",
-          "Predictive parity",
-          "None; fairness is for lending"
-        ],
+        options: ["Demographic parity, so every region gets equal offers", "Equal opportunity: find churners at the same rate", "Predictive parity, so a flag means the same everywhere", "None, because fairness criteria apply only to lending"],
         answer: 1,
         why: "The criterion follows from what the model does to people. A loan denial suggests predictive parity; a screening benefit suggests equal opportunity; the table shows the violations of each."
       },
       {
         stem: "What does 'lift 3.3 in the first decile' mean?",
-        options: [
-          "The model is 3.3 times more accurate",
-          "The top 10 % of customers by score contain 3.3 times as many churners as a random 10 % would — 16 of 48 churners in 30 of 297 customers",
-          "Recall is 0.33",
-          "The threshold is 0.33"
-        ],
+        options: ["The model is 3.3 times more accurate than chance", "The top 10% hold 3.3 times the churners of a random 10%", "Recall in the first decile is 0.33", "The decision threshold in the first decile is 0.33"],
         answer: 1,
         why: "Lift is cumulative gain divided by population share; it is the ranking's value in the language of a targeting budget."
       },
       {
         stem: "How does the C-index relate to AUC?",
-        options: [
-          "They are unrelated",
-          "For a binary outcome they are identical — the probability that the higher-scored of a pair has the event; for survival data the C-index counts only pairs whose order is known despite censoring, which is why it is the standard time-to-event metric",
-          "C-index is AUC squared",
-          "C-index is for regression"
-        ],
+        options: ["They are unrelated measures of different things", "Identical for binary outcomes; extended to censoring", "The C-index is the square of the AUC", "The C-index is defined only for regression"],
         answer: 1,
         why: "The executed C-index was 0.789, the model's AUC. Concordance is the pair-counting definition of AUC from 2.2, extended to censored pairs."
       }

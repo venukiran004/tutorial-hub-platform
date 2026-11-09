@@ -374,56 +374,31 @@ permutation_importance(adv.fit(X, is_test), X, is_test, scoring="roc_auc")
     questions: [
       {
         stem: "What is the difference between label leakage and feature leakage?",
-        options: [
-          "None; they are synonyms",
-          "Label leakage puts the label or a proxy for it among the features (a refund flag set on cancellation); feature leakage computes a legitimate feature with information from the wrong time (a centred rolling mean) — same effect, different vector and different fix",
-          "Label leakage only affects classification",
-          "Feature leakage only affects trees"
-        ],
+        options: ["None; the two terms are synonyms for the same leak", "Label leak: a proxy of the label; feature leak: wrong-time data", "Label leakage only affects classification problems", "Feature leakage only affects tree-based models"],
         answer: 1,
         why: "Both inflate the score; one is fixed by dropping or rebuilding the column, the other by fixing the window."
       },
       {
         stem: "Which transform is most dangerous to fit outside the cross-validation fold?",
-        options: [
-          "StandardScaler",
-          "A target encoder or a feature selector — both are functions of the labels, so fitting them on all rows copies label information into the features of the rows that will be scored",
-          "PCA",
-          "Median imputation"
-        ],
+        options: ["StandardScaler, which uses the column mean", "A target encoder or a feature selector", "PCA, which rotates all of the features", "Median imputation of missing values"],
         answer: 1,
         why: "Scalers leak the test rows' mean — a small effect. Label-dependent transforms leak the label itself, at whatever resolution their groups have."
       },
       {
         stem: "A 7-day centred rolling mean scored 0.771 and the trailing version 0.618. What made the difference?",
-        options: [
-          "Centred windows smooth better",
-          "The centred window includes three future days, one of which is the day being predicted; the feature contained the answer. Trailing windows ending before the as-of time are the only honest form",
-          "The trailing window was too short",
-          "Random noise"
-        ],
+        options: ["Centred windows smooth the series more effectively", "The centred window included the day being predicted", "The trailing window was too short to be useful", "Random noise between the two cross-validation runs"],
         answer: 1,
         why: "The window audit — where does this window end relative to the as-of time — catches this without running anything."
       },
       {
         stem: "Adversarial validation between training rows and last month's rows gives AUC 0.74 with `logins_30d` dominating. What do you conclude?",
-        options: [
-          "The model is leaking",
-          "The two sets are not the same population and the difference is concentrated in one feature — most likely a data-collection or logging change; find the cause before retraining or dropping the feature",
-          "Drop logins_30d",
-          "Nothing; 0.74 is fine"
-        ],
+        options: ["The model is leaking the label through that feature", "The populations differ, mostly in one feature: find out why", "Drop logins_30d, since it is the source of the problem", "Nothing, since an AUC of 0.74 is well within normal"],
         answer: 1,
         why: "One dominating feature points to a pipeline change; many contributing features point to genuine drift. Either way the model trained on the old rows is scoring a different world."
       },
       {
         stem: "Why does an implausibly high score deserve suspicion before celebration?",
-        options: [
-          "High scores are always wrong",
-          "Outcomes like churn, fraud and default depend on information nobody records; honest features rarely exceed ~0.8 AUC on them, so 0.94 is far more likely to be a leak than a breakthrough — and the cost of shipping a leak is a model that does nothing",
-          "Reviewers dislike high scores",
-          "Because the test set is small"
-        ],
+        options: ["Because high scores are always wrong in practice", "Honest features rarely score that high on such outcomes", "Because reviewers dislike unusually high scores", "Because the test set is always too small to trust"],
         answer: 1,
         why: "Plausibility is a prior. The executed leak scored 0.943; the honest model 0.73. Which of those numbers is surprising depends on knowing the problem."
       }

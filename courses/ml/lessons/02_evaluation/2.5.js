@@ -363,56 +363,31 @@ for name, m in variants.items():
     questions: [
       {
         stem: "Why is a random forest's probability under-confident at the extremes?",
-        options: [
-          "Because trees are biased",
-          "Its probability is the fraction of trees voting positive; individual trees vote 0 or 1 on their bootstrap samples, and the average of many noisy votes is pulled toward the middle — 0.55 predicted delivered 0.86 observed",
-          "Because of the bootstrap",
-          "It is over-confident, not under-confident"
-        ],
+        options: ["Because each tree is a biased estimator", "Averaging many 0/1 votes pulls scores to the middle", "Because the bootstrap removes the extreme rows", "It is over-confident at the extremes, not under"],
         answer: 1,
         why: "The S-curve is the averaging mechanism itself. Boosting, which adds logits rather than averaging votes, does not have it."
       },
       {
         stem: "When would you choose isotonic regression over Platt scaling?",
-        options: [
-          "Always; it is more flexible",
-          "When the calibration fold has thousands of rows and the miscalibration is not sigmoid-shaped; with a small fold or an S-curve, Platt's two parameters generalise better — it beat isotonic on 1,000 rows here",
-          "When the model is a logistic regression",
-          "Never"
-        ],
+        options: ["Always, because it is the more flexible method", "With thousands of rows and a non-sigmoid miscalibration", "When the underlying model is a logistic regression", "Never, because Platt scaling always generalises better"],
         answer: 1,
         why: "Isotonic is a non-parametric step function; its flexibility is paid for in variance and in tied outputs."
       },
       {
         stem: "A model's probabilities are used only to choose the top 10 % of customers for a call. Does calibration matter?",
-        options: [
-          "Yes, always",
-          "No — only the ordering is used, and calibration is a monotone transform that leaves it unchanged; it would matter the moment the scores were used in a formula, shown to someone, or combined with another model's",
-          "Only for logistic regression",
-          "Only if AUC is low"
-        ],
+        options: ["Yes, calibration always matters for any use of scores", "No: only the ranking is used, which calibration keeps", "Only if the underlying model is a logistic regression", "Only if the model's AUC is low on this data"],
         answer: 1,
         why: "The use-case table is the rule: arithmetic on p needs calibration; ranking by p does not."
       },
       {
         stem: "After training with class_weight='balanced', the model's mean predicted probability is 0.42 on a 16 % problem. What happened?",
-        options: [
-          "The model is broken",
-          "The weighting made the model behave as if positives were half the data, so its probabilities are calibrated to that imaginary base rate and are inflated; they rank fine but need recalibration on unweighted data before any formula uses them",
-          "The test set has more churners",
-          "This is expected and correct"
-        ],
+        options: ["The model is broken and must be retrained", "Weighting inflated the probabilities; recalibrate", "The test set contains more churners than training", "This is expected, and the scores are correct as is"],
         answer: 1,
         why: "Reweighting and resampling shift the prior on purpose. The ranking survives; the scale does not."
       },
       {
         stem: "In the Brier decomposition, which term does a better feature set improve, and which does calibration improve?",
-        options: [
-          "Both improve uncertainty",
-          "A better feature set raises resolution (the bins' observed rates spread further from the base rate); calibration lowers reliability (the gap between predicted and observed); uncertainty is the label's own variance and is fixed",
-          "Calibration improves resolution",
-          "Neither changes any term"
-        ],
+        options: ["Both improve the uncertainty term", "Features raise resolution; calibration fixes reliability", "Calibration raises resolution, features fix reliability", "Neither changes any term in the decomposition"],
         answer: 1,
         why: "The decomposition separates 'can the model tell them apart' from 'are its numbers honest' — AUC-like and calibration-like terms in one proper score."
       }

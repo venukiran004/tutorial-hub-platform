@@ -355,56 +355,31 @@ def average_precision(y, s):
     questions: [
       {
         stem: "A model's scores are replaced by their squares. What happens to ROC-AUC, PR-AUC, log loss and accuracy at 0.5?",
-        options: [
-          "All change",
-          "ROC-AUC and PR-AUC are unchanged (the ordering is preserved); log loss changes (the probabilities did); accuracy at 0.5 changes (every score below 1 got smaller, so the threshold now flags fewer rows)",
-          "Nothing changes",
-          "Only log loss changes"
-        ],
+        options: ["All four metrics change with the transform", "AUCs unchanged; log loss and accuracy change", "Nothing changes, since the ranking is the same", "Only log loss changes; accuracy stays fixed"],
         answer: 1,
         why: "Ranking metrics see order; proper scores see values; threshold metrics see values against a fixed cut. Knowing which is which is the whole lesson."
       },
       {
         stem: "Why is log loss unbounded while Brier is not?",
-        options: [
-          "Log loss uses natural logs",
-          "Log loss charges −log p for a positive: as p → 0 the charge → ∞, so one confident miss can dominate (6.91 at p = 0.001); Brier charges (1 − p)², which is at most 1",
-          "Brier ignores confident mistakes",
-          "They are both bounded"
-        ],
+        options: ["Because log loss uses natural logarithms", "Log loss → ∞ as p → 0; Brier is capped at 1", "Because Brier ignores confident mistakes", "Neither is unbounded; both are capped"],
         answer: 1,
         why: "This makes log loss the natural training objective (it is the likelihood) and Brier the calmer report; clip probabilities away from 0 and 1 before reporting log loss."
       },
       {
         stem: "What makes a scoring rule 'proper'?",
-        options: [
-          "It is between 0 and 1",
-          "Reporting the true probability minimises its expected value, so a model cannot improve it by hedging toward 0.5 or by bluffing confidence — both distortions of the churn model's logits made log loss and Brier worse",
-          "It ignores the threshold",
-          "It depends on prevalence"
-        ],
+        options: ["Its value always lies between 0 and 1", "Reporting the true probability minimises it", "It ignores the classification threshold", "Its value depends on the class prevalence"],
         answer: 1,
         why: "Accuracy rewards bluffing (push everything past the threshold); AUC ignores confidence entirely. Only proper scores make honest probabilities the optimal strategy."
       },
       {
         stem: "Why is linear interpolation of the PR curve wrong?",
-        options: [
-          "It is not wrong",
-          "Precision is not linear in recall between operating points: between two achievable points the true curve dips (adding rows adds false positives before the next true positive), so straight lines overstate the area; average precision uses the step sum instead",
-          "Because recall is discrete",
-          "Because PR curves are monotone"
-        ],
+        options: ["It is not wrong; straight lines are the standard method", "Precision dips between points, so lines overstate area", "Because recall can only take a few discrete values here", "Because PR curves always rise monotonically with recall"],
         answer: 1,
         why: "ROC's axes are both counts divided by fixed totals, so straight lines are exact there. PR's precision has a moving denominator."
       },
       {
         stem: "Two models: A has ROC-AUC 0.95 and PR-AUC 0.20; B has 0.90 and 0.35, on a 1 % fraud problem. Which do you prefer for an alert queue, and what does the pair of numbers tell you?",
-        options: [
-          "A; higher ROC-AUC",
-          "B: for an alert queue precision per flag is what matters and B's PR-AUC is far higher; the pair suggests A separates the bulk of negatives well but is weak at the very top of the ranking, where the alerts are drawn from",
-          "A; PR-AUC is unreliable",
-          "They are equivalent"
-        ],
+        options: ["A, because its ROC-AUC is the higher of the two", "B, because the queue needs precision at the top", "A, because PR-AUC is unreliable at 1% prevalence", "Either one, because the two are equivalent overall"],
         answer: 1,
         why: "ROC-AUC integrates over all thresholds, most of which flag most of the data; PR-AUC concentrates on the region where flags are few. On rare positives the second region is the only one that is used."
       }

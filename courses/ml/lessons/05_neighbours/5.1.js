@@ -361,56 +361,31 @@ index = faiss.IndexHNSWFlat(8, 32); index.add(Z); index.search(z_query, k=15)`,
     questions: [
       {
         stem: "How does k control bias and variance in KNN, and how do you choose it?",
-        options: [
-          "Larger k always improves accuracy",
-          "Small k follows individual points — low bias, high variance (train AUC 1.000, CV 0.575 at k = 1); large k averages over a wide neighbourhood — smooth, high bias, low variance. Choose it by cross-validation on the metric you care about; odd for binary voting; the sweep's shape also tells you whether the truth is local or smooth",
-          "k = √n is always optimal",
-          "k should equal the number of classes"
-        ],
+        options: ["Larger k always improves accuracy on new data", "Small k: low bias, high variance; choose by CV", "k = √n is always the optimal choice", "k should equal the number of classes"],
         answer: 1,
         why: "On the churn target the CV log-loss bottomed at k = 101 and AUC was still rising at 401 — the sweep said 'this is a smooth problem, use a smooth model'."
       },
       {
         stem: "Why does KNN degrade so much faster than logistic regression when noise features are added?",
-        options: [
-          "Logistic regression ignores noise by design",
-          "KNN has no feature weighting: every column enters the distance with equal weight after scaling, so 195 noise columns make the distance 97 % noise and the neighbours nearly random (AUC 0.95 → 0.60). Logistic regression can estimate a coefficient near zero for each noise column and lose only a little variance (0.86 → 0.79)",
-          "KNN is not scaled",
-          "The trees stop working"
-        ],
+        options: ["Logistic regression ignores noise columns by design", "KNN weights every column equally in the distance", "KNN was not scaled before the noise was added", "The tree-based neighbour index stops working"],
         answer: 1,
         why: "The nearest-to-farthest ratio fell from 13.9 to 0.32: 'nearest' had stopped meaning anything."
       },
       {
         stem: "Would you put PCA before KNN to fight the curse of dimensionality?",
-        options: [
-          "Yes; it reduces the dimension",
-          "Not as a cure for irrelevant features: PCA keeps the directions of largest variance, and after standardisation noise columns have the same variance as informative ones, so it keeps random directions (0.673 at d = 50, worse than nothing at d = 10). Use supervised selection (0.888), or PCA only when the informative signal genuinely lives in the high-variance directions (correlated measurements, images)",
-          "Yes; PCA is always safe",
-          "No; PCA only works for regression"
-        ],
+        options: ["Yes, because it reduces the number of dimensions", "Not for noise: after scaling, noise has equal variance", "Yes, because PCA is always safe before any model", "No, because PCA only works for regression targets"],
         answer: 1,
         why: "Unsupervised reduction preserves what varies; supervised selection preserves what predicts. KNN needs the second."
       },
       {
         stem: "When does a KD-tree help and when does it hurt?",
-        options: [
-          "It always helps",
-          "It prunes the search in low dimension — 8.8 ms against 115.6 ms brute force at d = 3 — but above roughly 15–20 dimensions it must visit almost every branch and is slower than the matrix multiplication it replaces: 11.2 s against 0.15 s at d = 50. At scale in high dimension use an approximate index",
-          "It helps only for regression",
-          "It hurts whenever n is large"
-        ],
+        options: ["It always helps, whatever the dimension", "It helps in low dimensions and hurts above ~20", "It helps only for KNN regression", "It hurts whenever the row count is large"],
         answer: 1,
         why: "Brute force is a BLAS call that barely cares about d; trees care about nothing else."
       },
       {
         stem: "When is KNN the right choice?",
-        options: [
-          "Whenever the data are numeric",
-          "Few, scaled, meaningful features; a local or curved boundary or a bending surface (spend 8.81 vs linear 20.94); a fast assumption-free baseline, a similarity lookup, or imputation; and a query load or table size the index can handle. Not for near-linear problems, high-dimensional or sparse data, tight latency, or when coefficients are required",
-          "Only for classification",
-          "Only when n is small"
-        ],
+        options: ["Whenever every feature is numeric", "Few, meaningful features; a local boundary", "Only for classification problems, never regression", "Only when the table has relatively few rows"],
         answer: 1,
         why: "The churn sweep ended within 0.003 of logistic regression at 400× the query cost — the honest answer there was 'use the linear model'."
       }

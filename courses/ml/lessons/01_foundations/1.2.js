@@ -411,56 +411,31 @@ mean_absolute_error(y_test, best.predict(X_test))       # 7.10, reported once
     questions: [
       {
         stem: "Why must deduplication happen before the split?",
-        options: [
-          "To save memory",
-          "A row present twice can land once in train and once in test; the model then scores a row it has seen, inflating the test metric — the executed table had ten such pairs",
-          "Duplicates break stratification",
-          "It does not matter"
-        ],
+        options: ["To save memory before the training data is copied", "A duplicated row can land in both train and test", "Because duplicates break stratification by class", "It does not matter whether it happens before or after"],
         answer: 1,
         why: "Any leak across the split — duplicates, the same customer's repeated rows, overlapping time windows — makes the test set partly training data."
       },
       {
         stem: "The 5-fold AUCs are logistic 0.730 ± 0.053 and gradient boosting 0.697 ± 0.055. What can you claim?",
-        options: [
-          "Logistic regression is the better model",
-          "The two are within each other's fold-to-fold spread; the difference is not established on 693 rows, and either could be chosen on other grounds — simplicity, calibration, latency",
-          "Gradient boosting is overfitting",
-          "More folds would settle it"
-        ],
+        options: ["Logistic regression is the better model on these numbers", "The gap is within fold spread, so neither is shown better", "Gradient boosting is overfitting, so it should be dropped", "Running more folds would settle which model is better"],
         answer: 1,
         why: "The spread is the point of reporting five numbers. A paired comparison on the same folds (2.7) is the formal version; the informal one is that ±0.05 swallows 0.03."
       },
       {
         stem: "Sixty of two hundred columns are 15 % missing. What is the wrong response and why?",
-        options: [
-          "Impute with the median",
-          "Drop every row with any missing value: with sixty columns each missing 15 %, almost no row is complete, so this discards most of the data; impute by type, add missingness indicators, and prefer models that handle NaN",
-          "Add an indicator column",
-          "Use KNN imputation"
-        ],
+        options: ["Impute every missing value with the column median", "Drop any row with a missing value; almost none survive", "Add an indicator column that marks each missing value", "Use KNN imputation, which borrows from similar rows"],
         answer: 1,
         why: "Row-wise deletion compounds across columns. The scale case's whole point is that the naive fix destroys the dataset."
       },
       {
         stem: "Why serialise the whole Pipeline rather than the model alone?",
-        options: [
-          "Smaller file",
-          "So that serving applies the same fitted imputation, scaling and encoding as training; a re-implementation of the features for serving is where training–serving skew comes from",
-          "The model cannot be saved alone",
-          "For versioning"
-        ],
+        options: ["To get a smaller file than the model saved on its own", "So serving applies exactly the transforms fitted in training", "Because scikit-learn cannot save a model without its pipeline", "So the file carries a version number for the registry"],
         answer: 1,
         why: "The fitted transforms are parameters as much as the coefficients are. One artefact, one code path."
       },
       {
         stem: "The test AUC (0.876) came back well above validation (0.706). What is the right report?",
-        options: [
-          "Report 0.876 as the model's performance",
-          "Report both, note that the test set holds 24 positives so its AUC has a wide interval, and treat the CV mean with its spread as the more reliable estimate",
-          "Re-split until they agree",
-          "Report the validation number"
-        ],
+        options: ["Report 0.876, since the test set is the final word", "Report both, flag the wide test interval, trust the CV mean", "Re-split the data until the two numbers agree", "Report only the validation number and drop the test score"],
         answer: 1,
         why: "Re-splitting until the numbers please you is using the test set many times. Small holdouts are noisy; say so and lean on cross-validation (2.7)."
       }

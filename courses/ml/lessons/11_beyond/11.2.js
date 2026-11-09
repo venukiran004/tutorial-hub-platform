@@ -400,56 +400,31 @@ residual sd where data exists: 0.472  (true noise 0.50)`,
     questions: [
       {
         stem: "A product manager wants the conversion rate of a new feature after 20 trials with 3 successes. What does the Bayesian answer add to '15 %'?",
-        options: [
-          "Nothing — the rate is 15 %",
-          "A posterior — Beta(4, 18) under a flat prior — whose 95 % interval runs from about 0.05 to 0.36, which says the rate is somewhere between a third of and more than twice the point estimate, and which can be combined with a prior from similar features to shrink a noisy early estimate",
-          "A p-value against 20 %",
-          "A confidence interval that excludes zero"
-        ],
+        options: ["Nothing; the rate is 15% and that is the answer", "A posterior whose interval runs from 0.05 to 0.36", "A p-value for the rate against a 20% benchmark", "A confidence interval that excludes zero"],
         answer: 1,
         why: "Twenty trials carry little information and the point estimate hides that; the posterior's width is the honest report, and its dependence on the prior is a feature when a defensible prior exists. The executed coin example showed the same: 3 of 4 gives an interval from 0.29 to 0.90."
       },
       {
         stem: "Why does a Gaussian process's predictive variance return to the prior variance far from the training data?",
-        options: [
-          "Because the kernel is normalised",
-          "Because k* → 0 as the distance grows, so the term k*ᵀ(K + σ²I)⁻¹k* subtracted from the prior variance vanishes and nothing has been learned about that region — executed: sd 0.14 next to a point, 1.005 six units away",
-          "Because of the noise term",
-          "Because the optimiser inflates the length-scale"
-        ],
+        options: ["Because the kernel function is normalised", "Far away, k* → 0, so nothing is subtracted", "Because of the noise term in the kernel", "Because the optimiser inflates the length-scale"],
         answer: 1,
         why: "The posterior variance is the prior variance minus what the data explain, and the data explain nothing about inputs they are unrelated to under the kernel. This is the property that makes GPs useful as surrogates: the acquisition function can see where the model is ignorant."
       },
       {
         stem: "Which is a correct statement about variational inference relative to MCMC?",
-        options: [
-          "VI is exact and MCMC is approximate",
-          "VI replaces sampling by optimisation of a tractable family's parameters to minimise KL(q ‖ p), which scales to large models but is biased — typically under-estimating the posterior's spread and missing multi-modality — while MCMC is asymptotically exact and slower",
-          "VI requires conjugate priors",
-          "MCMC cannot handle more than a few parameters"
-        ],
+        options: ["VI is exact and MCMC is approximate", "VI optimises a biased family; MCMC samples", "VI requires conjugate priors to work", "MCMC cannot handle more than a few parameters"],
         answer: 1,
         why: "The KL(q ‖ p) direction penalises q for putting mass where p has little, so q tends to sit inside one mode and be too narrow. The Laplace approximation executed on the coin is the simplest such Gaussian fit and showed the shape mismatch; NUTS on the same problem would reproduce the skew, as Metropolis did."
       },
       {
         stem: "Expected improvement proposed x = 2.65 after evaluations at −1.5, 0 and 2, whereas the greedy posterior mean proposed x = 2.0 — a point already evaluated. What does that illustrate?",
-        options: [
-          "EI is random",
-          "The acquisition must reward uncertainty as well as promise: the greedy mean re-evaluates the best known point and learns nothing, while EI's σφ(z) term sends it to an unexplored region where the surrogate's uncertainty makes improvement plausible",
-          "The GP was misfitted",
-          "UCB is better than EI"
-        ],
+        options: ["Expected improvement is a random proposal", "The acquisition must reward uncertainty too", "The Gaussian process was fitted wrongly", "UCB is a better acquisition than EI"],
         answer: 1,
         why: "Exploration is built into the acquisition function, not the surrogate; without it Bayesian optimisation degenerates to hill-climbing on a model. EI and UCB balance the two terms explicitly, which is why twelve EI steps beat fifteen random draws on every seed."
       },
       {
         stem: "UCB1 scored a regret of 79.8 against Thompson's 26.7 on arms of 5, 8 and 10 %. Is UCB1 a worse algorithm?",
-        options: [
-          "Yes — UCB is obsolete",
-          "Not in general: UCB1's bonus √(2 ln t / n) is calibrated for rewards spanning [0, 1] and is far too wide for rates near 5 %, so it over-explores; a variance-aware UCB or a rescaled bonus narrows the gap, whereas Thompson sampling needs no such tuning because its exploration comes from the posterior itself",
-          "Yes — Thompson sampling is always optimal",
-          "No — the difference is noise"
-        ],
+        options: ["Yes, UCB-style methods are now obsolete", "No: its bonus suits [0,1] rewards, not 5% rates", "Yes, because Thompson sampling is always optimal", "No, because the difference is only noise"],
         answer: 1,
         why: "UCB1's guarantee is worst-case over bounded rewards and its constant is conservative; on low-rate Bernoulli arms the confidence bound dwarfs the differences between arms. The executed result is a property of that mismatch, not of the UCB idea, and it is the practical reason Thompson sampling is preferred: its exploration is scaled automatically."
       }

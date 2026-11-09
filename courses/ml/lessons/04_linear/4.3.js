@@ -364,56 +364,31 @@ entry = [names[i] for i in np.argsort([np.argmax(np.abs(coefs[i]) > 0) for i in 
     questions: [
       {
         stem: "Why does ridge shrink the direction of a small singular value more than a large one?",
-        options: [
-          "Because small singular values are noise",
-          "Because the shrink factor along direction j is dⱼ²/(dⱼ² + λ): with d² = 22.7 and λ = 10 it is 0.69, with d² = 2.1 it is 0.17. Directions the data barely spans are exactly where OLS's estimate is most variable, and ridge damps them most",
-          "Because ridge standardises the features",
-          "It shrinks all directions equally"
-        ],
+        options: ["Because small singular values are always pure noise", "The shrink factor d²/(d²+λ) is smallest for small d", "Because ridge standardises the features internally", "It does not; ridge shrinks every direction equally"],
         answer: 1,
         why: "This is the mechanism by which ridge repairs collinearity: the unidentified direction of 4.1 has a tiny singular value and is shrunk toward zero."
       },
       {
         stem: "Lasso keeps x₁ on one bootstrap sample and x₂ on another. Is the model unstable?",
-        options: [
-          "Yes; lasso should not be used",
-          "The predictions are stable — x₁ and x₂ carry the same information, so either gives the same fit — but the selected set is not; lasso's choice within a correlated group is arbitrary, which matters if the set is being interpreted. Elastic net keeps the group; stability selection reports what survives resampling",
-          "No; lasso always selects the true feature",
-          "Yes; use OLS instead"
-        ],
+        options: ["Yes, so lasso should not be used on this data", "Predictions are stable; the chosen feature is not", "No, because lasso always selects the true feature", "Yes, so plain OLS should be used instead"],
         answer: 1,
         why: "18 versus 6 versus 26 in 50 resamples. Prediction and interpretation are different questions with different answers here."
       },
       {
         stem: "On the spend model, OLS, ridge and lasso all gave MAE 20.9 and LassoCV chose α = 0.15 with every coefficient non-zero. Why?",
-        options: [
-          "The CV was wrong",
-          "Regularisation reduces variance, and a five-feature model on 863 well-scaled rows has almost none: the OLS coefficients are already precise, so the best penalty is nearly no penalty. The 50-feature, 60-row problem is where the same penalties cut RMSE from 10 to 2.6",
-          "Lasso does not work on real data",
-          "The features were not standardised"
-        ],
+        options: ["The cross-validation was set up incorrectly", "Little variance to remove, so little penalty helps", "Lasso does not work well on real data", "The features were not standardised first"],
         answer: 1,
         why: "The penalty is a bias–variance trade (1.3); it pays only when there is variance to trade away."
       },
       {
         stem: "When is elastic net the right choice over lasso?",
-        options: [
-          "Always; it has more parameters",
-          "When features come in correlated groups and you want the group kept or dropped together, when p ≫ n and lasso's cap of n non-zero coefficients bites, or when you cannot decide between sparsity and shrinkage and let l1_ratio be tuned",
-          "When the features are independent",
-          "When n ≫ p"
-        ],
+        options: ["Always, because it has more parameters to tune", "With correlated groups, p ≫ n, or tuned sparsity", "When the features are independent of one another", "When there are many more rows than features"],
         answer: 1,
         why: "Elastic net kept both copies of the correlated pair in 50 of 50 resamples. Its cost is one more hyperparameter."
       },
       {
         stem: "Why must features be standardised before ridge or lasso, and why is the intercept left unpenalised?",
-        options: [
-          "For numerical stability only",
-          "One λ penalises every coefficient equally, and a coefficient's size depends on its feature's units, so an unscaled column in small units escapes the penalty (3.1); the intercept is the mean of y when the features are centred and penalising it would pull predictions toward zero for no reason",
-          "Standardisation is optional; the intercept is penalised",
-          "Because the SVD requires it"
-        ],
+        options: ["For numerical stability only; the intercept is penalised", "One λ meets unit-dependent sizes; the intercept is the mean", "Standardising is optional, and the intercept is penalised", "Because the SVD inside the solver requires it"],
         answer: 1,
         why: "Centre and scale X, centre y, penalise the slopes, add the intercept back: the standard implementation."
       }

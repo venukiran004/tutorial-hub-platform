@@ -288,56 +288,31 @@ aml.leaderboard.head(10)      # the top entry is usually a stacked ensemble`,
     questions: [
       {
         stem: "What makes a model comparison trustworthy?",
-        options: [
-          "A large test set",
-          "Identical folds for every model, repeated so that fold-assignment noise averages out; a dummy baseline as the floor; the metric the model will be used under; paired fold differences and win counts for the top candidates rather than a comparison of means; and the cost of fitting and serving alongside the score",
-          "Using the default hyperparameters for fairness",
-          "Reporting accuracy and F1"
-        ],
+        options: ["A large test set held out for the final score", "Shared, repeated folds; a baseline; paired differences", "Default hyperparameters for every model, for fairness", "Reporting both accuracy and F1 for every model"],
         answer: 1,
         why: "Two models with ±0.045 spreads can still be separated at 15/15 when the comparison is paired."
       },
       {
         stem: "Why is a t-test on repeated cross-validation folds optimistic, and what do you do about it?",
-        options: [
-          "Because 15 folds is too few",
-          "Because the folds share training rows, so their scores are positively correlated and the naive standard error (sd/√k) is too small; Nadeau and Bengio's correction replaces 1/k by 1/k + n_test/n_train, which multiplied the standard error by √6 here and turned p ≈ 0.0001 into ≈ 0.04. Report the corrected test if a p-value is needed, and prefer win counts and effect sizes",
-          "Because AUC is not normally distributed",
-          "It is not optimistic; folds are independent"
-        ],
+        options: ["Because 15 folds are too few for a t-test", "Folds share rows; correct the SE (Nadeau-Bengio)", "Because AUC values are not normally distributed", "It is not optimistic, since folds are independent"],
         answer: 1,
         why: "A 15/15 win count survives any correction; a p = 0.03 may not."
       },
       {
         stem: "On the spend target the non-linear models tied within 0.07 and a one-column ridge beat them by a point. What is the lesson for model selection?",
-        options: [
-          "Ridge regression is the best model for regression",
-          "When several families tie, they are all approximating the same structure and the gain lies in representing it directly: the engineered fee × min(tenure, 12) × (1 − discount) column encodes the truth's form, so a one-coefficient model reaches the noise floor at 200× less cost. The harness makes this visible because a feature is just another row in it",
-          "Tree models are unsuitable for regression",
-          "The non-linear models needed more tuning"
-        ],
+        options: ["Ridge regression is the best model for regression", "Ties suggest the structure; encode it directly", "Tree models are unsuitable for regression targets", "The non-linear models simply needed more tuning"],
         answer: 1,
         why: "A tie among families is a hint about the data, not a reason to stack them."
       },
       {
         stem: "What did AutoML do well and badly on the churn data?",
-        options: [
-          "It beat every hand-built model",
-          "Well: in 60 seconds with no prior it identified the linear family as the winner (internal loss 0.226 against 0.234–0.279 for the tree families), the same conclusion the harness reached. Badly: it did not standardise the inputs, spread its budget over six families, and its model lost 0.012 hold-out AUC to a two-line scaled logistic pipeline; it also cannot choose the metric, set a threshold, engineer the winning feature, or notice a leak",
-          "It failed to find any model above the dummy",
-          "It chose LightGBM, which overfitted"
-        ],
+        options: ["It beat every hand-built model on the data", "It found the right family, but skipped scaling", "It failed to find any model above the dummy", "It chose LightGBM, which then overfitted"],
         answer: 1,
         why: "Use AutoML to find the family and as a benchmark; do the feature and metric work yourself."
       },
       {
         stem: "Two models are statistically tied. How do you choose?",
-        options: [
-          "Pick the one with the higher mean",
-          "By the questions the score does not answer: fit and serving cost (logistic 16 ms vs SVC 298 ms), interpretability, calibration of the probabilities, robustness to imbalance and drift, and how often it can be refitted. A tie in the score column is a decision in the cost column, and the simpler model wins ties by default",
-          "Stack them",
-          "Run more folds until one wins"
-        ],
+        options: ["Pick the one with the higher mean score", "Choose on cost, interpretability, calibration", "Stack the two models into one ensemble", "Run more folds until one model wins"],
         answer: 1,
         why: "Simplicity is a tie-breaker with real value: fewer things to monitor, explain and retrain."
       }

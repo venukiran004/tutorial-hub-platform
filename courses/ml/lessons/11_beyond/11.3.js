@@ -361,56 +361,31 @@ per-client fine-tune from the global model                                # 0.65
     questions: [
       {
         stem: "Why is prequential evaluation honest without a held-out set?",
-        options: [
-          "Because it uses cross-validation internally",
-          "Because every row is scored by the model before the model has seen that row's label, so each prediction is out-of-sample by construction, and the running metric is the model's accuracy on data it had not yet learned from",
-          "Because the stream is shuffled",
-          "Because online models cannot over-fit"
-        ],
+        options: ["It runs cross-validation internally on the stream", "Each row is scored before its label is learned", "Because the stream is shuffled before scoring", "Because online models cannot over-fit at all"],
         answer: 1,
         why: "Test-then-train makes the whole stream a test set that is also the training set, one row later. It is also the natural monitor: the executed prequential accuracy dropped from 0.834 to 0.716 the moment the concept changed, which a held-out set from before the change could never show."
       },
       {
         stem: "A team runs FedAvg across 50 hospitals and reports a mean accuracy of 0.80. What must they also report, and why?",
-        options: [
-          "The number of rounds",
-          "Accuracy per hospital: concept skew — hospitals whose conditionals differ — shows as a global model that is good on average and worse than each hospital's own model for some of them (0.652 against 0.783 in the executed case), and the mean hides exactly that",
-          "The server's hardware",
-          "The learning rate"
-        ],
+        options: ["The number of training rounds that were run", "Accuracy per hospital, which the mean can hide", "The hardware the aggregation server runs on", "The learning rate each client used locally"],
         answer: 1,
         why: "Federated evaluation is a distribution over clients, and the failure mode that matters is the minority of clients the global model does not fit. Per-client numbers point to personalisation or clustering; a mean points nowhere."
       },
       {
         stem: "Why does a client that trains for 20 local epochs per round drift further from the other clients than one that trains for one epoch, and does it matter?",
-        options: [
-          "It does not drift; more epochs are always better",
-          "Each client's local optimum differs from the global one when its data differ, so more local steps move it further toward its own optimum (drift 0.059 at 1 epoch, 0.298 at 20); on a convex model the average still converges (accuracy unchanged), on a non-convex model averaging divergent clients can land between minima, and FedProx's proximal term or fewer local steps controls it",
-          "The drift is due to different learning rates",
-          "Drift is a communication artefact"
-        ],
+        options: ["It does not drift; more epochs are always better", "Its local optimum differs; more steps move further", "The drift comes from different learning rates", "Drift is an artefact of communication delays"],
         answer: 1,
         why: "More local computation per round saves communication — the expensive resource in cross-device settings — at the price of client drift. The executed convex case shows drift without damage; the concern is deep models, where the loss surface is non-convex and the trade-off is real."
       },
       {
         stem: "A federated system uses secure aggregation and no differential privacy. What is protected and what is not?",
-        options: [
-          "Everything is protected",
-          "Individual updates are hidden from the server (it sees only the sum), but the aggregate model still reveals information about clients' data — membership and attribute inference on the trained model, and with few clients the sum is nearly an individual update; differential privacy is what bounds that leakage, with an accounted ε",
-          "Nothing is protected without encryption at rest",
-          "The data are protected but the model is public"
-        ],
+        options: ["Everything about every client is protected", "Updates are hidden, but the model still leaks", "Nothing, without encryption of data at rest", "The data are protected, but the model is public"],
         answer: 1,
         why: "Secure aggregation is a statement about the server's view during training; differential privacy is a statement about what any output reveals about any one client. The executed one-row example shows how little is hidden by 'the data stay on the device' alone; the executed noise sweep shows what DP costs."
       },
       {
         stem: "When should a team choose batch retraining on a schedule over online learning?",
-        options: [
-          "Always — online learning is experimental",
-          "When the data fit in memory and the world is stable enough that a scheduled refit keeps up: online learning buys memory, latency and adaptivity, none of which matters then, and it costs simplicity, reproducibility and easy evaluation (the batch fit matched the online learner's accuracy on the stationary stream)",
-          "Never — online learning is strictly better",
-          "Only for image data"
-        ],
+        options: ["Always, because online learning is experimental", "When data fit in memory and the world is stable", "Never, because online learning is strictly better", "Only when the data are images"],
         answer: 1,
         why: "The executed stationary stream is the case for batch: same accuracy, one artefact to version, a backtest that is easy to run. Online learning earns its complexity when rows arrive continuously, do not fit, or stop resembling the past — and 10.9's retraining cadence covers the middle ground."
       }

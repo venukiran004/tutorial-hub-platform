@@ -279,56 +279,31 @@ EC.receiveLesson({
     questions: [
       {
         stem: "How do you tell high bias from high variance on a learning curve, and what does each call for?",
-        options: [
-          "Bias shows as a rising validation line; variance as a falling one",
-          "Variance is the gap: training far above validation (tree: 1.000 vs 0.735). Bias is the level: both lines converged low (linear model on an interaction truth: 0.669 vs 0.659). Variance calls for data, regularisation or averaging; bias calls for capacity or features, and data will not fix it (100× rows: +0.03)",
-          "Both look the same; only the validation curve distinguishes them",
-          "Bias is when the training score is low; variance is when it is high"
-        ],
+        options: ["Bias is a rising validation line; variance a falling one", "Variance is the gap; bias is a low level for both lines", "They look the same; only validation tells them apart", "Bias is a low training score; variance a high one"],
         answer: 1,
         why: "Gap, level, slope — three readings, three decisions: regularise or get data, add capacity, or stop."
       },
       {
         stem: "The validation line is still rising at the largest training size. What do you do first?",
-        options: [
-          "Add regularisation",
-          "Get more data — the curve says this model has not finished learning (boosting: 0.775 → 0.917 and still climbing; the spend forest: 7.37 with a floor of 6.38). Changing the model before the curve flattens confounds two effects; extrapolate the curve to the nearest known floor to estimate the gain and its limit",
-          "Switch to a simpler model",
-          "Increase capacity"
-        ],
+        options: ["Add regularisation to the current model", "Get more data before changing the model", "Switch to a simpler model family", "Increase the model's capacity"],
         answer: 1,
         why: "Rising slope is the one shape where 'more data' is the right first answer."
       },
       {
         stem: "Logistic regression's validation curve over C is flat from 0.001 to 100 (CV 0.736–0.743). What does that mean?",
-        options: [
-          "C was set wrong",
-          "The model is not variance-limited: a regulariser spanning five decades changes nothing because the twelve columns and 791 rows already give precise coefficients. The dial does not matter, the search budget should go elsewhere, and the model's limit is its features — which its learning curve confirmed (gain 0.02 from doubling rows)",
-          "The model is overfitting at every C",
-          "Cross-validation failed"
-        ],
+        options: ["C was set to the wrong range", "The model is not variance-limited", "The model overfits at every C", "Cross-validation has failed"],
         answer: 1,
         why: "A flat validation curve is a result: it closes a line of enquiry."
       },
       {
         stem: "Why does the training line keep rising past the point where the validation line turns down?",
-        options: [
-          "Because the training score is computed on more rows",
-          "Because added capacity can always fit more of the training folds, including their noise — a tree at depth 12 scores 0.994 in training and 0.542 in validation. The training line is a capacity meter, not a quality meter; the turn in the validation line is where capacity stops fitting signal and starts fitting noise",
-          "Because of a leak between folds",
-          "It does not; both lines turn together"
-        ],
+        options: ["The training score is computed on more rows", "Extra capacity fits training noise too", "Because of a leak between the folds", "It does not; both lines turn together"],
         answer: 1,
         why: "The vertical distance between the lines is the variance the extra capacity bought."
       },
       {
         stem: "Why report the standard deviation across folds alongside a learning curve?",
-        options: [
-          "It measures the model's variance",
-          "It measures the reliability of the estimate itself: ±0.129 on 100 rows means the fold scores range over a quarter of the scale, and any decision made on differences smaller than that is made on noise. At 791 rows it was ±0.057. Tuning, comparing and extrapolating are only meaningful when the spread is small relative to the differences being read",
-          "It is required by scikit-learn",
-          "It measures label noise"
-        ],
+        options: ["It measures the model's variance", "It measures how reliable the estimate is", "It is required by scikit-learn", "It measures the amount of label noise"],
         answer: 1,
         why: "A learning curve without error bars invites reading the noise as a trend."
       }

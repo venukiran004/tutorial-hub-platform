@@ -330,45 +330,25 @@ np.exp(m.forecast(28, exog=X_future) + m.params["sigma2"] / 2); forecast[closed]
     questions: [
       {
         stem: "A fitted ARIMA(0,1,0) with drift 1.6 is asked for a 12-step forecast from y_T = 54. What is it?",
-        options: [
-          "54 at every step",
-          "54 + 1.6h: a straight line, because d = 1 with a drift makes each difference forecast equal to the drift and the level the cumulative sum",
-          "54 × 1.6^h",
-          "The mean of the series"
-        ],
+        options: ["54 at every step of the horizon", "54 + 1.6h, a straight line", "54 × 1.6^h, a geometric curve", "The mean of the whole series"],
         answer: 1,
         why: "ARIMA(0,1,0) with drift is the random walk with drift — the 'drift' baseline of 10.3 — and its forecast is the last value plus the drift times the horizon: 55.6, 57.2, … 73.2 at h = 12. With p = q = 0 there is no decay and no shock to use; the shape is set entirely by d and the constant."
       },
       {
         stem: "Which pair of models can be compared by AIC?",
-        options: [
-          "(0,1,1)(0,1,1)₇ and (0,0,0)(0,1,1)₇ — both seasonal",
-          "(1,0,0)(0,1,1)₇ and (0,0,0)(0,1,1)₇ — same d and D, so the likelihoods are of the same differenced series",
-          "(3,1,2)(2,0,2)₇ and (0,1,1)(0,1,1)₇ — both have d = 1",
-          "Any two SARIMAX models on the same series"
-        ],
+        options: ["(0,1,1)(0,1,1)₇ and (0,0,0)(0,1,1)₇", "(1,0,0)(0,1,1)₇ and (0,0,0)(0,1,1)₇", "(3,1,2)(2,0,2)₇ and (0,1,1)(0,1,1)₇", "Any two SARIMAX models on the series"],
         answer: 1,
         why: "AIC compares likelihoods of the same data. The first pair differ in d; the third pair differ in D; both comparisons are of different series and different n. Only models with identical differencing (and identical exogenous treatment of the sample) are comparable; everything else goes to the backtest."
       },
       {
         stem: "A SARIMA fit returns Θ = −1.000 exactly. What does it indicate?",
-        options: [
-          "A perfect seasonal fit",
-          "A seasonal MA root on the unit circle that cancels the seasonal difference — the model is signalling that D = 1 was one difference too many; the point forecasts may be fine but the parameter is at a boundary and the interval is not trustworthy",
-          "The season length is wrong",
-          "Convergence failure only"
-        ],
+        options: ["A perfect fit of the seasonal pattern", "A unit root cancelling the seasonal difference", "The season length was specified wrongly", "A convergence failure and nothing more"],
         answer: 1,
         why: "(1 + ΘB⁷) with Θ = −1 is (1 − B⁷), which cancels the (1 − B⁷) on the other side: the seasonal difference is undone by the seasonal MA. Store B's airline fit showed it, and pmdarima's OCSB test had said no seasonal unit root; the cleaner model uses D = 0 with a seasonal AR term or seasonal dummies."
       },
       {
         stem: "Why did SARIMAX with the promotion calendar beat the same model without it by 29 % on the backtest, when the promotions are a random 10 % of days?",
-        options: [
-          "Because the model over-fitted the calendar",
-          "Because the promotion days are random but *known in advance*: the calendar is the company's own, so a +20 % day is predictable, and a model told the dates forecasts it while a model not told treats it as an unpredictable +0.19 shock",
-          "Because the Fourier terms did the work",
-          "Because promotions are seasonal"
-        ],
+        options: ["The model over-fitted the promotion calendar", "Promotions are random but known in advance", "The Fourier terms did the work, not the calendar", "Promotions follow a seasonal pattern"],
         answer: 1,
         why: "Randomness in the past is not the same as unpredictability in the future: the regressor's value for every future day is available at forecast time. That is the whole criterion for X. The fitted coefficient 0.197 against the built-in 0.182 shows the effect was learned; the leaked-traffic exercise shows the other side, where the regressor's future is not available and the model is worse for having it."
       },

@@ -335,56 +335,31 @@ print(r_base, adj_r2(yy, base.predict(X), 3), r_noisy, adj_r2(yy, noisy.predict(
     questions: [
       {
         stem: "Why does one error of +100 raise RMSE more than MAE?",
-        options: [
-          "RMSE is always larger",
-          "RMSE squares before averaging: 100² = 10,000 against the other five squares totalling 469, so the one row is 95 % of the MSE; MAE adds 100 to a total of 47, a smaller share",
-          "MAE ignores outliers",
-          "Because of the square root"
-        ],
+        options: ["RMSE is always larger than MAE on any data", "Squaring makes the one big error dominate the mean", "MAE ignores outliers when it averages errors", "Because of the square root taken at the end"],
         answer: 1,
         why: "Squaring makes the tail dominate. Whether that is a feature or a bug depends on whether a large miss really is disproportionately costly."
       },
       {
         stem: "When is R² of 0.3 a good result?",
-        options: [
-          "Never; 0.3 is poor",
-          "When the target is intrinsically noisy — a human outcome, a financial return — so that even the best possible model explains little of its variance; R² is relative to the mean baseline, not to an absolute standard",
-          "Only on the training set",
-          "When n is small"
-        ],
+        options: ["Never, because 0.3 is a poor fit in every field", "When the target is intrinsically noisy, like returns", "Only when it is measured on the training set itself", "Only when the sample is too small for anything better"],
         answer: 1,
         why: "Compare with what other models and domain knowledge achieve on the same target. The same 0.3 on a smooth physical measurement would be a failure."
       },
       {
         stem: "A stakeholder wants a percentage error and some targets are zero. What do you report?",
-        options: [
-          "MAPE, excluding the zeros",
-          "WAPE — total absolute error over total absolute target — which is a percentage of volume and cannot be blown up by small targets; or sMAPE with its caveats; and MAE in units alongside",
-          "MAPE as is",
-          "R²"
-        ],
+        options: ["MAPE, after excluding the rows whose target is zero", "WAPE, with MAE in units alongside it", "MAPE as it stands, including the zero targets", "R², because it is already a proportion"],
         answer: 1,
         why: "Excluding the zeros silently drops the rows that are often the hardest and most consequential. WAPE keeps them and answers 'what fraction of total volume did we miss'."
       },
       {
         stem: "Why can training-set R² only rise when a feature is added?",
-        options: [
-          "Because features are informative",
-          "Because least squares can always set the new feature's coefficient to whatever minimises SS_res, including zero, so the residual sum can only stay the same or fall — adjusted R² and held-out evaluation exist to remove this guaranteed optimism",
-          "It cannot; R² can fall",
-          "Because of collinearity"
-        ],
+        options: ["Because every added feature carries some information", "OLS can set the new coefficient to zero, so SS_res cannot rise", "It cannot; training R² can fall when features are added", "Because of collinearity between the new and old features"],
         answer: 1,
         why: "Fifty noise features raised training R² from 0.558 to 0.677. The executed adjusted R² stayed at 0.55–0.56."
       },
       {
         stem: "What does MSLE treat as equally bad, and when is that right?",
-        options: [
-          "Errors of equal size",
-          "Errors of equal ratio — predicting 50 or 200 for a true 100 cost about the same — which is right when the target spans orders of magnitude and a miss of 10 on a value of 20 matters as much as 1,000 on 2,000",
-          "Over- and under-prediction exactly",
-          "Errors near zero"
-        ],
+        options: ["Errors of equal absolute size in the target's units", "Errors of equal ratio, for targets spanning magnitudes", "Over- and under-prediction of exactly the same size", "Errors close to zero, which it weights most heavily"],
         answer: 1,
         why: "Log-scale metrics are the natural companion to log-transformed targets (3.4) and to right-skewed quantities like spend, counts and prices."
       }

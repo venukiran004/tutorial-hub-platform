@@ -318,56 +318,31 @@ plot_ale(exp, features=["tenure", "monthly_charges"], n_cols=2)
     questions: [
       {
         stem: "How is permutation importance computed, and what are its two main pitfalls?",
-        options: [
-          "Sum of impurity decreases over splits; pitfalls are speed and memory",
-          "Shuffle one column on held-out data, rescore in the chosen metric, and take the drop, repeated for a spread (logins: five shuffles 0.100–0.123). Pitfalls: correlated features share credit so each looks unimportant while the group matters (permute groups together), and computing on training rows measures memorisation rather than reliance (forest tenure: 0.094 train vs 0.036 test)",
-          "Refit the model without each feature; pitfalls are cost and instability",
-          "Take the model's coefficients; pitfalls are scaling and sign"
-        ],
+        options: ["Sum impurity decreases; pitfalls are speed and memory", "Shuffle a column on held-out data; correlation, leakage", "Refit without each feature; pitfalls are cost, instability", "Read the coefficients; pitfalls are scaling and sign"],
         answer: 1,
         why: "It is model-agnostic and metric-aware, which is why it is the default global importance."
       },
       {
         stem: "What does a partial dependence plot show, and what does it assume?",
-        options: [
-          "The correlation between a feature and the target",
-          "The model's average prediction when a feature is set to each grid value for every row, other features left at their own values — the model's mean response curve, in prediction units (P(churn) 0.334 at 4 logins, 0.061 at 20). It assumes the feature can be varied independently of the others; when they are correlated the construction creates rows outside the data and the curve becomes extrapolation",
-          "The feature's marginal distribution",
-          "The model's prediction for the average row"
-        ],
+        options: ["The correlation between a feature and the target", "The mean prediction as one feature varies alone", "The marginal distribution of the feature", "The model's prediction for the average row"],
         answer: 1,
         why: "An odds ratio (4.5) makes the same 'holding others fixed' assumption; the PDP just makes it visible for non-linear models."
       },
       {
         stem: "When would you use ALE instead of PDP, and how does it work?",
-        options: [
-          "ALE is faster, so always",
-          "When features are correlated (check the matrix; above ~0.5). ALE bins the feature, and within each bin measures the mean change in prediction when the rows already in that bin have the feature moved from the bin's lower to upper edge; the bin effects are accumulated and centred. Every query is a small move inside the data, so no impossible rows are created — slope 1.99 against the PDP's 1.58 on inputs correlated at 0.9",
-          "When the model is linear",
-          "When there are fewer than 100 rows"
-        ],
+        options: ["Always, because ALE is faster than a PDP", "With correlated features: it sums local changes", "Whenever the underlying model is linear", "Whenever there are fewer than 100 rows"],
         answer: 1,
         why: "ALE's cost is bins × 2 predictions on bin rows; its weakness is bins with too few rows."
       },
       {
         stem: "The PDP says a pound of monthly fee is worth 11.2 of annual spend; ICE curves show 4.0 for new customers and 12.1 for settled ones. Which is right?",
-        options: [
-          "The PDP; it averages out noise",
-          "The ICE curves: the fee's effect depends on tenure (spend = fee × min(tenure, 12) × …), so the average slope describes no actual customer. Diverging ICE curves are the definition of an interaction; the H-statistic quantifies it (0.034 for fee × tenure) and a two-feature PDP or ALE shows it. Always plot ICE alongside the PDP (kind='both')",
-          "Neither; the model is wrong",
-          "The PDP for reporting, ICE for debugging only"
-        ],
+        options: ["The PDP, because averaging removes noise", "The ICE curves, because of an interaction", "Neither, because the model itself is wrong", "PDP for reporting, ICE for debugging only"],
         answer: 1,
         why: "An average of heterogeneous effects is a number with no referent."
       },
       {
         stem: "A stakeholder reads 'support tickets are the third most important feature' as 'reducing tickets will reduce churn'. What do you say?",
-        options: [
-          "That is correct; importance measures effect",
-          "That importance measures what the model relies on, not what causes the outcome: tickets could be a symptom of dissatisfaction that causes both, and a leaked post-outcome column (1.5's refunds) would rank first while being an effect of churn. The plot is a statement about the model; a causal claim needs a design or the methods of 11.7. What the chart licenses is 'customers with more tickets are predicted to churn more'",
-          "That tickets are less important than logins so it does not matter",
-          "That the PDP would answer the causal question"
-        ],
+        options: ["Correct, because importance measures causal effect", "Importance is reliance, not cause", "Tickets rank below logins, so it does not matter", "The PDP would answer the causal question"],
         answer: 1,
         why: "Every explanation in this module carries the same caption: 'the model believes'."
       }

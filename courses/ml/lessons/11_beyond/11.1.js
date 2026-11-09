@@ -314,56 +314,31 @@ rollout: shadow one week -> 10 % canary with guardrails -> A/B sized at 31k/arm 
     questions: [
       {
         stem: "A fraud model must score each card transaction before the payment completes, with a 50 ms budget end to end. Which serving shape and export?",
-        options: [
-          "A nightly batch",
-          "A real-time service with the model exported to ONNX (0.25 ms per row measured) or an equivalent runtime, features from an online store, and the 20 ms Python-service overhead engineered down — because the prediction is needed inside the interaction",
-          "Streaming with a one-minute window",
-          "The scikit-learn pipeline behind FastAPI as measured (20 ms p50, 29 ms p99)"
-        ],
+        options: ["A nightly batch job that scores yesterday's transactions", "A real-time service with an ONNX model and an online store", "Streaming scores computed over a one-minute window", "The scikit-learn pipeline behind FastAPI, as measured"],
         answer: 1,
         why: "The decision is made inside the request, so batch is impossible. The measured in-process FastAPI latency of 29 ms at p99 leaves 21 ms for the network, the feature lookup and everything else, which is tight; the ONNX single-row cost of 0.25 ms is where the model itself should sit, and the rest of the budget is engineering around it."
       },
       {
         stem: "Which is the structural prevention of training–serving skew, as opposed to its detection?",
-        options: [
-          "A golden test of stored rows",
-          "One feature-computation function (or a feature store) called by both the training job and the service, with every transformation inside the pipeline artefact — the golden test is the detection",
-          "Monitoring the prediction distribution",
-          "Retraining weekly"
-        ],
+        options: ["A golden test that replays stored rows", "One feature function shared by training and serving", "Monitoring the distribution of predictions", "Retraining the model on a weekly schedule"],
         answer: 1,
         why: "Skew arises from two code paths; the prevention is to have one. The measured cases — a different window, a skipped imputation — were both differences between the training script and the service. The golden test catches what slips through, and the prediction monitor catches the largest cases late."
       },
       {
         stem: "Shadow deployment of a new ranking model shows identical latency and a 15 % higher average predicted relevance. Can the model ship?",
-        options: [
-          "Yes — it is better on every measure",
-          "Not on that evidence: shadow validates latency, errors and the prediction distribution but nobody saw its output, so it says nothing about user behaviour; a higher average score is not a better ranking — a canary or an A/B test (or interleaving for rankers) measures the effect on clicks or conversion",
-          "Yes, after a golden test",
-          "No — higher scores mean it is miscalibrated"
-        ],
+        options: ["Yes, because it is better on every measure", "Not yet: shadow says nothing about user behaviour", "Yes, once it passes a golden test", "No, because higher scores mean miscalibration"],
         answer: 1,
         why: "Each rollout stage answers a different question: shadow, 'does it run'; canary, 'does it break anything'; A/B, 'does it help'. A shift in the score distribution is a fact about the model, not about outcomes, and the only rollout that connects predictions to behaviour is one where users see them."
       },
       {
         stem: "An A/B test of a new model is 'winning' after three days of daily checks with p = 0.03. The pre-registered sample size is not yet reached. What is the right call?",
-        options: [
-          "Ship it — p < 0.05",
-          "Keep running: checking daily and stopping at the first p < 0.05 inflates the false-positive rate far above 5 %; either wait for the planned sample size or use a sequential test designed for repeated looks",
-          "Ship it if the canary guardrails held",
-          "Stop and declare no difference"
-        ],
+        options: ["Ship it, because p has dropped below 0.05", "Keep running; peeking daily inflates false positives", "Ship it, provided the canary guardrails held", "Stop the test now and declare no difference"],
         answer: 1,
         why: "Optional stopping is the same winner's curse as tuning on the reported folds (10.3): the minimum p-value over many looks is not a p-value. The executed canary simulation used daily checks and was flagged as such; a group-sequential or always-valid test spends the error budget across the looks."
       },
       {
         stem: "Why should the decision threshold live in the model card and be versioned with the artefact?",
-        options: [
-          "For documentation only",
-          "Because the threshold is calibrated to the model's score distribution: the previous churn version had the same AUC but flagged 61 % of customers at 0.35 where the current one flags 10 %, so a rollback of the model without its threshold would change the decision for half the customers",
-          "Because thresholds cannot be changed after deployment",
-          "Because the registry requires it"
-        ],
+        options: ["For documentation purposes only", "It is calibrated to one model's scores", "Thresholds cannot change after deployment", "Because the registry requires the field"],
         answer: 1,
         why: "AUC is a property of the ranking; the decision depends on where the scores sit, which changes with class weighting, calibration and the training data. The artefact is the model plus everything between its output and the action — threshold, calibrator, business rules — and a rollback restores all of it."
       }

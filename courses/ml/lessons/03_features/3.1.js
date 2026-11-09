@@ -308,56 +308,31 @@ print([n for n, c in zip(num, raw.coef_) if abs(c) > 1e-9]); print([n for n, c i
     questions: [
       {
         stem: "Which statement about tree models and scaling is correct?",
-        options: [
-          "Trees need min-max scaling",
-          "Trees are invariant to any monotone rescaling of a feature, because every split compares one feature with a threshold and the same rows fall on each side; scaling costs a fitted object and fixes nothing",
-          "Trees need scaling only for regression",
-          "Scaling improves tree accuracy slightly"
-        ],
+        options: ["Trees need min-max scaling to choose good splits", "Trees are invariant to any monotone rescaling", "Trees need scaling only for regression targets", "Scaling improves tree accuracy slightly"],
         answer: 1,
         why: "The forest scored 0.686 unscaled and 0.686–0.688 scaled; the third-decimal wobble is floating-point tie-breaking."
       },
       {
         stem: "Why must regularised linear models be scaled?",
-        options: [
-          "For speed",
-          "One λ penalises every coefficient equally, but a coefficient's size depends on its feature's units — a column in thousandths needs a tiny coefficient that the penalty ignores; standardising makes every coefficient 'per standard deviation' so the penalty is fair",
-          "They do not need scaling",
-          "Because of the intercept"
-        ],
+        options: ["To make the solver converge faster", "One λ penalises coefficients whose size depends on units", "They do not need scaling, unlike unregularised models", "Because the intercept must be centred at zero"],
         answer: 1,
         why: "Ridge at α = 50 shrank x1 by 12 % and the rescaled x2 not at all. LassoCV's chosen α on unscaled data is a statement about units."
       },
       {
         stem: "Why fit the scaler on the training fold only when the leak is 'only the test mean and std'?",
-        options: [
-          "It is not necessary for scalers",
-          "Because it is still information from rows that will be scored, because the habit must be automatic for the transforms where it matters enormously (target encoding, selection, resampling), and because a Pipeline makes it free",
-          "To make the numbers match the documentation",
-          "For reproducibility only"
-        ],
+        options: ["It is not needed for scalers, only for target encoders", "It still leaks, and the habit must hold where it matters", "To make the fitted numbers match the documentation", "For reproducibility of the run, and for nothing else"],
         answer: 1,
         why: "Scaling leaks little; the discipline is what prevents the transforms that leak a lot. The Pipeline is the discipline made structural."
       },
       {
         stem: "When is min-max the right choice?",
-        options: [
-          "Always for neural networks",
-          "When the range is a genuine fact of the feature — pixel intensities, percentages, a bounded sensor — and there are no outliers, or when an algorithm needs inputs in a fixed non-negative range",
-          "When the data is skewed",
-          "Never"
-        ],
+        options: ["Always, for any input to a neural network", "When the range is a real fact and there are no outliers", "When the feature's distribution is heavily skewed", "Never, because standardising is always better"],
         answer: 1,
         why: "Min-max is a statement that min and max are meaningful. For a column with a 999 typo they are not."
       },
       {
         stem: "A TF-IDF matrix is passed through StandardScaler and memory explodes. Why?",
-        options: [
-          "TF-IDF values are too large",
-          "Subtracting the mean turns every stored zero into a non-zero, converting a 0.1 %-dense sparse matrix into a dense one — use MaxAbsScaler or StandardScaler(with_mean=False), which only rescale",
-          "The scaler is slow",
-          "TF-IDF cannot be scaled"
-        ],
+        options: ["TF-IDF values are too large for the scaler's dtype", "Centring turns every stored zero into a stored value", "StandardScaler is slow on matrices this size", "TF-IDF matrices cannot be scaled at all"],
         answer: 1,
         why: "1,000 non-zeros became 50,000 in the executed example. Sparse data is scaled without centring, or not at all."
       }

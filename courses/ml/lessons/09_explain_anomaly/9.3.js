@@ -310,56 +310,31 @@ head_view(attentions, tokens)        # per-head attention, layer by layer`,
     questions: [
       {
         stem: "How does integrated gradients work, and what does completeness guarantee?",
-        options: [
-          "It averages the gradient over random noise; completeness means the sum is one",
-          "It integrates the gradient of the output with respect to each input along a straight path from a baseline x′ to the input x, and scales by (x − x′); in practice a Riemann sum over a few hundred steps. Completeness guarantees the attributions sum to F(x) − F(x′) (11.561 vs 11.624 at 200 steps), so no contribution is lost to saturation as it can be for a single local gradient — and every value is relative to the chosen baseline",
-          "It multiplies the gradient by the input; completeness means it is exact",
-          "It backpropagates relevance with conservation; completeness is the conservation rule"
-        ],
+        options: ["Averages gradients over noise; sum is one", "Integrates gradients from a baseline; sums to ΔF", "Gradient times input; completeness means exact", "Backpropagates relevance; conservation rule"],
         answer: 1,
         why: "The path is what defeats saturation: a unit that is flat at x may have had a gradient somewhere along the way from the baseline."
       },
       {
         stem: "What does Grad-CAM show, and what does it not show?",
-        options: [
-          "Which pixels drove the prediction, exactly",
-          "A coarse map at the last convolutional layer's resolution of where the evidence for a class lies: channel maps weighted by the mean gradient of the class score and passed through a ReLU. It does not attribute to individual pixels, has no completeness guarantee, and can light up a conspicuous input the model no longer decides on — after the fix the patch still drew 27 % of the heat while the behavioural test showed 0.9 % reliance",
-          "The attention weights of a CNN",
-          "The pixels whose removal changes the class"
-        ],
+        options: ["Exactly which pixels drove the prediction", "A coarse map of where class evidence lies", "The attention weights inside a CNN", "The pixels whose removal changes the class"],
         answer: 1,
         why: "Grad-CAM is the fast 'where' for images; IG or occlusion tests supply the 'which' and the 'how much'."
       },
       {
         stem: "Why are attention weights not a valid explanation of a transformer's prediction?",
-        options: [
-          "Because they are not normalised",
-          "Because they describe where the representation was gathered from, not how the gathered content affected the output; a token can receive most of the attention while its value contributes nothing or negatively through the readout — 85 % attention and a −0.46 contribution in the four-token example, with the output carried by a token at 7 %. Attention has no completeness or sensitivity guarantee; gradient-based attribution over the embeddings does",
-          "Because attention is computed before the softmax",
-          "Because multiple heads disagree"
-        ],
+        options: ["Because the weights are not normalised", "Where content came from, not its effect", "Because attention is taken before softmax", "Because the different heads disagree"],
         answer: 1,
         why: "Attention rollout with gradients, or IG over embeddings, answers the attribution question attention weights cannot."
       },
       {
         stem: "How would you detect a spurious correlation in an image classifier before deployment?",
-        options: [
-          "By checking that test accuracy is high",
-          "By attributing (Grad-CAM, IG) on a sample per class and measuring the attribution mass outside the region that should matter; by slicing evaluation by site, scanner, marker or any artefact the pipeline knows about; and by behavioural tests — remove the suspected cue and see the class vanish (0 % on unmarked threes), add it and see the class appear (42 %). Explanations generate the hypothesis; the behavioural test and the slice analysis confirm it",
-          "By training longer",
-          "By adding dropout"
-        ],
+        options: ["By checking that test accuracy is high", "Attributions, slicing and behavioural tests", "By training the classifier for longer", "By adding dropout to the classifier"],
         answer: 1,
         why: "The corner-patch model had a plausible test accuracy; only the tests that manipulated the cue revealed it."
       },
       {
         stem: "Why monitor explanations in production, and what would you track?",
-        options: [
-          "To display them on a dashboard",
-          "Because attribution drift localises a change to a feature the moment a batch is scored, while accuracy cannot be measured until labels arrive: when logins halved, its mean SHAP moved −0.04 → +0.71 and its top-contributor share 0.46 → 0.62 immediately. Track per feature the mean and spread of SHAP and the top-contributor share against the training reference; track the base value across retrains; alert on shifts of several reference sds; and version every served explanation with its model and baseline",
-          "To reduce latency",
-          "To retrain the model automatically"
-        ],
+        options: ["To display explanations on a dashboard", "Attribution drift shows change before labels", "To reduce the latency of predictions", "To retrain the model automatically"],
         answer: 1,
         why: "Prediction monitoring says the scores moved; explanation monitoring says which input moved them."
       }

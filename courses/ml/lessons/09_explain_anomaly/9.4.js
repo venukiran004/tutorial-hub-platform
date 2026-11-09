@@ -357,56 +357,31 @@ df["fee_corrupt"] = df.monthly_fee > 100                # the rule that survives
     questions: [
       {
         stem: "A fraud team fits `LocalOutlierFactor()` on last month's transactions and calls `.predict()` on today's. What happens?",
-        options: [
-          "It scores today's rows against last month's densities",
-          "It raises an error: without novelty=True, LOF only scores its training rows via fit_predict and has no predict for new data",
-          "It refits on today's rows automatically",
-          "It returns the training scores"
-        ],
+        options: ["It scores today's rows against last month's densities", "It raises an error: predict needs novelty=True", "It refits itself on today's rows automatically", "It returns the training scores for the old rows"],
         answer: 1,
         why: "scikit-learn separates outlier detection (score the training rows; the default) from novelty detection (novelty=True; score only new rows). The default estimator exposes fit_predict and negative_outlier_factor_ for the training data and no predict; the two modes exist because a detector fitted on contaminated data and one fitted on clean data should be used differently."
       },
       {
         stem: "Grubbs' test on the `support_tickets` column (a Poisson count with mean 0.8) gives G = 3.65 against a critical 4.00 and does not flag the count of 4. Is the test valid here?",
-        options: [
-          "Yes — it did not flag, so the column is clean",
-          "No — Grubbs assumes a Gaussian; on a skewed count its α is not calibrated, and the non-flag is a coincidence of the numbers rather than a conclusion",
-          "Yes — Grubbs is distribution-free",
-          "No — Grubbs cannot be applied to integers"
-        ],
+        options: ["Yes: it did not flag, so the column is clean", "No: Grubbs assumes a Gaussian, so α is off", "Yes, because Grubbs is distribution-free", "No, because Grubbs cannot handle integers"],
         answer: 1,
         why: "The critical value comes from the t distribution under a normality assumption; on a right-skewed count the largest value is routinely several sd above the mean without being anomalous, and the test's false-positive rate is not the nominal α in either direction. The result should be read as 'not applicable', not 'no outlier'."
       },
       {
         stem: "Why does the reachability distance replace the raw distance in LOF's density estimate?",
-        options: [
-          "To make LOF symmetric",
-          "To floor the distance at the neighbour's k-distance, so that points deep inside a dense neighbourhood all get the same density and the estimate does not fluctuate with tiny distances",
-          "To convert distances into probabilities",
-          "To speed up the neighbour search"
-        ],
+        options: ["To make LOF a symmetric measure", "To floor distances so dense regions are stable", "To convert distances into probabilities", "To speed up the nearest-neighbour search"],
         answer: 1,
         why: "Without the floor, a point 0.01 from a neighbour would have an lrd 100 times that of a point 1.0 away, and the ratio would be dominated by chance proximity. Flooring at the neighbour's k-distance makes every point within a neighbour's k-neighbourhood equivalent, which is what the worked example shows: the four square points all have lrd exactly 1.0."
       },
       {
         stem: "Removing the £999 row raised the number of rows flagged by the empirical-covariance Mahalanobis rule from 34 to 49 while MinCovDet moved from 88 to 83. What is the mechanism?",
-        options: [
-          "MinCovDet is more sensitive to small changes",
-          "The £999 row stretched the empirical covariance along the fee axis, deflating every other row's fee contribution to d² and masking fifteen rows; MinCovDet never included it in its half-sample",
-          "The χ² threshold changed with n",
-          "The empirical estimator had a random seed"
-        ],
+        options: ["MinCovDet is more sensitive to small changes", "The outlier inflated the covariance and masked rows", "The χ² threshold changed with the row count", "The empirical estimator used a random seed"],
         answer: 1,
         why: "A single extreme value in one column inflates that column's variance in the sample covariance, which multiplies by the inverse — so every row's distance in that direction shrinks. The robust estimator fits the tightest half of the rows, which excludes the £999 row by construction, so its ellipse and its counts are almost the same with and without it."
       },
       {
         stem: "Which detector should a team use first for a 40-column table of continuous sensor readings, 200,000 rows, where normal operation has two known regimes (idle and load)?",
-        options: [
-          "Mahalanobis with MinCovDet, on the whole table",
-          "A z-score per column",
-          "LOF or a KNN score on standardised features fitted per regime — or with the regime as a feature — because two regimes make one ellipse wrong and a global scale wrong",
-          "IQR fences per column"
-        ],
+        options: ["Mahalanobis with MinCovDet, on the whole table", "A z-score applied to each column on its own", "LOF or KNN scores fitted per operating regime", "IQR fences applied to each column on its own"],
         answer: 2,
         why: "Two regimes are two clusters, and a single Gaussian ellipse covers the gap between them and calls the gap normal; a global distance scale is set by the more diffuse regime. Conditioning on regime (score within each) or a local-density method handles it; the univariate rules ignore the 40-column combinations that sensor faults usually are. In 40 dimensions distance concentration is a concern, and 9.5's Isolation Forest is the next candidate."
       }

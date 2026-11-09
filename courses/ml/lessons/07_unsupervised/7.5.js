@@ -303,56 +303,31 @@ the heavy-tailed q lets moderately-distant points sit far apart in the map, whic
     questions: [
       {
         stem: "Derive the LDA direction for two classes and explain why it is not simply the difference of the class means.",
-        options: [
-          "It is the difference of the means, normalised",
-          "Maximising the Fisher ratio wᵀS_Bw / wᵀS_Ww gives S_W⁻¹S_Bw = λw; with two classes S_B has rank one and the solution is w ∝ S_W⁻¹(μ_B − μ_A). The S_W⁻¹ factor tilts the mean difference away from directions along which the classes are internally spread: in the worked example (0.981, 0.192) against the raw difference direction, with J = 12.94 vs 11.69, because within-class scatter was larger along y",
-          "It is the first principal component of the pooled data",
-          "It is the direction of maximum total variance"
-        ],
+        options: ["It is the difference of the class means, normalised", "w ∝ S_W⁻¹(μ_B − μ_A): tilted away from spread", "It is the first principal component of the pooled data", "It is the direction of maximum total variance"],
         answer: 1,
         why: "Separation relative to spread is the criterion; the mean difference alone is separation without the denominator."
       },
       {
         stem: "PCA(1) gave AUC 0.519 and LDA(1) gave 0.920 on the same data. What was the data like, and what does it teach?",
-        options: [
-          "PCA was not scaled",
-          "One feature was high-variance noise (97 % of the variance) and the other, low-variance, carried the class shift; PCA keeps variance and cannot see labels, so it kept the noise direction; LDA maximises separation over within-class spread and kept the signal. Unsupervised reduction can discard the discriminative direction; when labels exist and a linear projection is wanted, LDA is the reduction to try first — inside the folds",
-          "The classes were non-linearly separable",
-          "LDA overfitted"
-        ],
+        options: ["PCA was not scaled before it was applied", "PCA kept the noisy variance; LDA kept the signal", "The classes were not linearly separable", "LDA overfitted the training data"],
         answer: 1,
         why: "KNN on LDA(1) even beat KNN on both raw features (0.832 vs 0.812): removing the noise axis improved the neighbourhood."
       },
       {
         stem: "What is perplexity in t-SNE and why does the map use a Student-t distribution?",
-        options: [
-          "Perplexity is the learning rate; the t-distribution is for speed",
-          "Perplexity fixes each point's effective number of neighbours: its Gaussian bandwidth σᵢ is chosen so the entropy of its neighbour distribution equals log(perplexity), so dense and sparse regions get the same neighbourhood size. The low-dimensional similarities use a Student-t with one degree of freedom because two dimensions have less room than fifty: its heavy tail lets moderately distant points sit far apart, relieving the crowding that a Gaussian would cause and pulling clusters apart",
-          "Perplexity is the number of clusters; the t-distribution models outliers",
-          "Perplexity is the number of iterations"
-        ],
+        options: ["Perplexity is the learning rate; t is for speed", "Effective neighbour count; heavy tails stop crowding", "Perplexity is the cluster count; t models outliers", "Perplexity is the iteration count; t is the default"],
         answer: 1,
         why: "Perplexity 2 gave silhouette 0.27, 30 gave 0.53, 100 gave 0.42 — a scale choice, to be varied and not trusted singly."
       },
       {
         stem: "Which of these can you read from a t-SNE plot: (i) that two points are neighbours, (ii) that one cluster is larger than another, (iii) that two clusters are far apart, (iv) that the data have clusters?",
-        options: [
-          "All four",
-          "Only (i), with high reliability (trustworthiness 0.993, KNN in the map 0.986). Sizes are stretched by cluster-specific factors (3.9–14.2 in the map for 1.10–1.85 in the input), gaps correlate only 0.72 with input distances, and pure noise produces lumps with silhouette 0.34 — so (ii), (iii) and (iv) must be established in the input space and only illustrated by the map",
-          "(i) and (iii)",
-          "(ii) and (iv)"
-        ],
+        options: ["All four can be read from the plot", "Only (i), that two points are neighbours", "(i) and (iii), neighbours and far-apart clusters", "(ii) and (iv), sizes and the existence of clusters"],
         answer: 1,
         why: "The KL objective pays for neighbours only; sizes, gaps and lumps are whatever the optimiser found convenient."
       },
       {
         stem: "Why should embeddings not be used as model features, and which of PCA, LDA, t-SNE and UMAP is the exception in principle?",
-        options: [
-          "They can all be used freely",
-          "t-SNE has no mapping: a new row cannot be embedded without re-running on all rows, and a t-SNE 'feature' computed on train + test together is a leak (0.983 test accuracy that no deployment could reproduce). UMAP, PCA and LDA are fitted functions with transform, so they are usable in principle — but a downstream model on PCA(30) matched every embedding, and a regularised model on raw features usually does better; embeddings earn their place for visualisation and for giving distance-based methods a dense space",
-          "Only t-SNE is usable because it is the most accurate",
-          "PCA cannot be used because it is unsupervised"
-        ],
+        options: ["All four can be used freely as model features", "t-SNE has no transform; the others are fitted functions", "Only t-SNE is usable, because it is the most accurate", "PCA cannot be used because it is unsupervised"],
         answer: 1,
         why: "The test of a feature is whether it can be computed for the next row from a fitted object; t-SNE fails it outright."
       }

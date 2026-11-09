@@ -320,56 +320,31 @@ GridSearchCV(pipe, {"reg__alpha": [0.1, 1, 10], "clip__q_high": [0.99, 1.0]}, cv
     questions: [
       {
         stem: "What are the rules a custom estimator must follow, and what consumes each rule?",
-        options: [
-          "Inherit from BaseEstimator and define fit",
-          "`__init__` assigns its arguments unchanged (get_params/set_params/clone read them — a search sets them by name); learned state carries a trailing underscore and is set in fit (check_is_fitted, clone, pickling); fit and transform/predict call validate_data (n_features_in_ and shape enforcement); fit returns self (pipelines and fit_transform); mixins precede BaseEstimator; classifiers set classes_; tags declare NaN or multi-class support",
-          "Define fit, predict and score",
-          "Store all attributes with underscores"
-        ],
+        options: ["Inherit from BaseEstimator and define fit", "Store init args; learned state with _ in fit", "Define fit, predict and score methods", "Store every attribute with a trailing underscore"],
         answer: 1,
         why: "Each rule fails somewhere specific — usually inside GridSearchCV — when broken; check_estimator finds it first."
       },
       {
         stem: "Why should preprocessing live inside the pipeline that is saved, rather than in the serving code?",
-        options: [
-          "Because pipelines are faster",
-          "Because the learned preprocessing quantities — medians, quantiles, means, category lists — must be fitted on the training fold and applied identically at serve time; if the service reimplements them, training and serving drift apart the first time either is edited. One artefact from raw columns to probability, with handle_unknown and missing indicators inside, cannot skew, can be cross-validated honestly, and can be searched jointly with the model",
-          "Because scikit-learn requires it",
-          "Because joblib cannot save scalers separately"
-        ],
+        options: ["Because pipelines run faster in production", "Learned preprocessing must be applied identically", "Because scikit-learn requires it for serving", "Because joblib cannot save scalers on their own"],
         answer: 1,
         why: "The 999 outlier and the 126 missing tickets were handled inside the fitted pipeline, on the training fold, automatically."
       },
       {
         stem: "What goes in a model artefact besides the model, and why?",
-        options: [
-          "Nothing; the model is self-describing",
-          "A manifest: library and Python versions (pickles are version-fragile), the feature list in order, training date and row count, the CV score and chosen parameters, a hash of the file; and a golden set of rows with their expected outputs, checked on every load (True here) so that a version drift, a column reorder or a corrupted file is caught before a prediction is served",
-          "The training data",
-          "The notebook"
-        ],
+        options: ["Nothing, because a model file is self-describing", "A manifest of versions, features and a golden set", "A full copy of the training data used to fit it", "The notebook that was used to train the model"],
         answer: 1,
         why: "Two of the three corruptions in the exercise produce no error at all; only the manifest and golden set catch them."
       },
       {
         stem: "When would you export to ONNX, and what can stop you?",
-        options: [
-          "Always; ONNX is strictly better",
-          "When the serving path needs low latency (0.36 ms vs 14.3 ms per row), another language, or a data-only artefact without Python code execution; parity was 6 × 10⁻⁸. What stops you: any custom step without a registered converter (the winsorizer blocked the first export), unsupported estimators, and preprocessing that lives outside the pipeline. Decide the format before writing custom steps",
-          "Only for neural networks",
-          "Never for scikit-learn models"
-        ],
+        options: ["Always, because ONNX is strictly better", "For latency or portability, given converters", "Only for neural networks, not for other models", "Never for scikit-learn models of any kind"],
         answer: 1,
         why: "Keep the joblib artefact for retraining and explanations; ship the ONNX graph for scoring."
       },
       {
         stem: "Why is loading a pickle a security concern, and what are the mitigations?",
-        options: [
-          "It is not; pickles are data",
-          "Unpickling executes code embedded in the file, so a malicious or tampered artefact runs arbitrary Python at load. Mitigate by storing artefacts where only the training pipeline can write, recording and verifying a hash before load, never loading files from untrusted sources, and using data-only formats (ONNX, PMML, native tree dumps) across trust or language boundaries",
-          "It can overwrite the model",
-          "It leaks the training data"
-        ],
+        options: ["It is not; a pickle is plain data", "Unpickling runs code; restrict and verify", "It can overwrite the model in memory", "It leaks the training data to callers"],
         answer: 1,
         why: "The same property that lets a pickle carry your custom class lets it carry anything else."
       }

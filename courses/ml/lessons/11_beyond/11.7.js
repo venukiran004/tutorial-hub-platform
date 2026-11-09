@@ -315,56 +315,31 @@ report approval and outcome rates by protected group; monitor drift, coverage an
     questions: [
       {
         stem: "A hiring model is calibrated within each group and a regulator asks why its true-positive rates differ by group. What is the honest answer?",
-        options: [
-          "The model is fair because it is calibrated",
-          "Calibration and equal error rates are incompatible when the groups' base rates differ (the impossibility theorem); the organisation chose calibration, and equalising TPR would require group-specific thresholds with a measured cost — which criterion to satisfy is a policy choice the regulator and the organisation must make explicitly",
-          "The difference is noise",
-          "TPR cannot be measured by group"
-        ],
+        options: ["The model is fair because it is calibrated per group", "Calibration and equal TPRs clash at unequal base rates", "The difference between the groups' rates is noise", "TPR cannot be measured separately for each group"],
         answer: 1,
         why: "The executed loan book showed the same structure: calibrated within 0.02 per group, TPR 0.89 against 0.60. Neither number is a bug; the pair is a consequence of Bayes' rule, and the responsible answer names the trade-off and the choice rather than claiming fairness from one metric."
       },
       {
         stem: "Which of these is a collider that should not be conditioned on when estimating the effect of a training programme on promotion?",
-        options: [
-          "Prior performance, which affects both selection into the programme and promotion",
-          "Being nominated for a leadership award after the programme, which is caused both by the programme and by promotion-relevant qualities — conditioning on it (analysing nominees only) manufactures a spurious relationship, as selecting on skill + luck did",
-          "Department, which affects who is offered the programme",
-          "Tenure at the start of the programme"
-        ],
+        options: ["Prior performance, which affects selection and promotion", "An award nomination caused by both training and merit", "Department, which affects who is offered the programme", "Tenure at the start, recorded before the programme ran"],
         answer: 1,
         why: "Prior performance, department and tenure are confounders — causes of both treatment and outcome — and must be adjusted for. The award is downstream of both and is a collider; filtering to nominees, or adding nomination as a feature, induces bias. The DAG distinguishes the two; the variables' names do not."
       },
       {
         stem: "Propensity weights of 1,000 appeared for customers with a propensity of 0.001. What does that signal and what is the remedy?",
-        options: [
-          "A bug in the logistic regression",
-          "Thin overlap: such customers are almost never treated, so the few who were carry enormous weight and the estimate's variance explodes (IPW +3.22 against regression +3.01); clipping or trimming the propensities trades that variance for bias (+3.67 clipped), and if a region has no overlap at all, no method can estimate the effect there",
-          "That the treatment effect is large",
-          "That more strata are needed"
-        ],
+        options: ["A bug in the logistic regression fit", "Thin overlap: weights explode the variance", "That the treatment effect is very large", "That more strata are needed"],
         answer: 1,
         why: "Overlap (positivity) is the second assumption of observational causal inference after no unmeasured confounding; where a group is never treated, the counterfactual is pure extrapolation. Checking the propensity distribution by arm is the first diagnostic, and restricting the estimate to the region of common support is the honest response."
       },
       {
         stem: "A marketing team wants to target next quarter's promotion with a model trained on last quarter's campaign, which went to customers chosen by the sales team. What is the problem and the fix?",
-        options: [
-          "No problem — the campaign data are labelled",
-          "The treatment was assigned by the sales team's judgement, so treated and untreated customers differ in ways the data may not record; an uplift model on that data inherits the confounding. The fix is a randomised holdout in the next campaign (even a small one) to measure the effect honestly and to train the uplift model on, with the sales-team assignment kept as a feature rather than a filter",
-          "Use a response model instead",
-          "Retrain on the treated customers only"
-        ],
+        options: ["No problem, since the campaign data are labelled", "Targeting was confounded; randomise a holdout", "Use a plain response model instead", "Retrain on the treated customers only"],
         answer: 1,
         why: "The confounding experiment showed +11.7 against a true +3.0 from exactly this kind of targeting; adjustment helps only if the sales team's criteria are recorded, and an unrecorded 'gut feel' is the unmeasured confounder that defeats every method. A randomised slice costs a little revenue and buys the only reliable estimate."
       },
       {
         stem: "In a system-design interview you are asked to design a feature store. Which answer shows the most judgement?",
-        options: [
-          "Name a vendor and list its components",
-          "Ask for the load and latency, do the arithmetic (3,000 QPS × 40 features × 8 B ≈ 1 MB/s online, 6.4 GB/day offline), derive the store types from it, insist on point-in-time joins and a single transformation library for both paths, and name the failure modes — skew, staleness, silently changed definitions — with the monitor for each",
-          "Draw the offline and online stores and stop",
-          "Propose streaming everything"
-        ],
+        options: ["Name a vendor and list its components", "Size the load, derive the stores, name failures", "Draw the offline and online stores and stop", "Propose streaming every feature in real time"],
         answer: 1,
         why: "The interviewer is testing whether the candidate can turn requirements into numbers and numbers into choices, and whether they know how the system fails. The arithmetic makes the in-memory online store and the partitioned columnar offline store consequences rather than preferences; point-in-time correctness is the property that separates a feature store from a cache."
       }
