@@ -417,22 +417,22 @@ tau ratio               : 1.6468`,
     title: "Check yourself",
     questions: [
       { stem: "Two tokens have logits 4.0 and 2.0. At tau = 0.5, what is the ratio of their probabilities?",
-        options: ["2.0", "e² ≈ 7.39", "e⁴ ≈ 54.60", "4.0"],
+        options: ["About 2.0", "e² ≈ 7.39", "e⁴ ≈ 54.60", "About 4.0"],
         answer: 2,
         why: "The ratio is `exp((z_a − z_b)/tau)` = `exp(2.0/0.5)` = `exp(4)` ≈ 54.60. The second option is the ratio at tau = 1.0 and shows the mistake of forgetting the division. The first and fourth treat the relationship as linear in either the gap or the temperature, and the measurement in §01 rules both out — a gap of 1.0 gave ratios of 54.60, 7.39, 2.72, 1.65 and 1.28 across tau = 0.25 to 4, which is `exp(1/tau)` and nothing simpler." },
 
       { stem: "You raise temperature from 1.0 to 1.5. Which token is affected most, in relative terms?",
-        options: ["The most likely token, which loses the most mass", "The least likely tokens, whose probabilities rise by the largest factor", "All tokens equally, since every logit is divided by the same number", "Only tokens above the top-p threshold"],
+        options: ["The most likely token, which loses the most mass", "The least likely tokens, which rise the most", "All tokens equally, as each logit is divided", "Only tokens above the top-p threshold"],
         answer: 1,
         why: "Dividing by a larger tau compresses every gap, and the tokens with the largest gaps from the top are the ones whose relative position improves most — in §01 token D rose from 0.000006 to 0.160753 across the sweep, a factor of about 26,000, while token A fell by less than a factor of two. The first option confuses absolute loss with relative change: the top token does lose the most mass, but that is not what the question asks. The third mistakes an identical operation on the logits for an identical effect on the probabilities. The fourth confuses temperature with truncation, which does not happen at this stage at all." },
 
       { stem: "Your summariser at temperature=0.2 starts repeating itself after a model upgrade. What is the most likely cause?",
-        options: ["The new model has a bug in its sampler", "The new model produces wider logit gaps, so 0.2 now behaves like a much lower temperature", "The temperature parameter changed meaning between model versions", "Repetition is unrelated to temperature"],
+        options: ["The new model has a bug in its sampler", "Wider logit gaps make 0.2 act much colder", "Temperature changed meaning between versions", "Repetition is unrelated to temperature"],
         answer: 1,
         why: "Temperature scales whatever gaps the model produces, so it is relative rather than absolute — a better-calibrated model with wider gaps at tau = 0.2 concentrates more mass on the top token, and the measured ladder in §03 shows that the bottom of the temperature range is exactly where looping appears. The third option is wrong because the formula is fixed across versions; it is the distribution it operates on that moved. The first blames the sampler for a change in the model. The fourth is contradicted by the same ladder, where tau = 0.0 and 0.3 both looped and tau = 0.7 did not." },
 
       { stem: "What does an entropy of 0.5253 nats tell you that \"temperature is 0.2\" does not?",
-        options: ["How accurate the next token will be", "How many tokens the model is effectively choosing between at this step", "How long the response will be", "Which token will be selected"],
+        options: ["How accurate the next generated token will be", "How many tokens it is effectively choosing among", "How long the full response is going to be", "Which particular token is going to be selected"],
         answer: 1,
         why: "Entropy is a measure of the spread of the distribution, and at 0.5253 nats the measured prompt needed just 2 tokens to cover 90% of the mass — a statement about this step that the temperature alone cannot make, since the same tau gives different entropies on different prompts (5.9985 against 6.0774 for the two prompts measured in §02). The first option is the confusion the whole lesson is against: a confident distribution can be confidently wrong. The third is unrelated — length is `max_tokens` and the stop conditions, in 1.5 and 1.6. The fourth would require the argmax, which entropy does not carry." }
     ]

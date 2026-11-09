@@ -328,7 +328,7 @@ for 99.9% success you need a cap of 20152 tokens
     title: "Check yourself",
     questions: [
       { stem: "You set `max_completion_tokens=400` on a reasoning model and the response content is empty. What happened?",
-        options: ["The request failed and should be retried identically", "Reasoning consumed the whole 400-token budget before the answer began; you are billed for all 400", "The model had nothing to say", "The content filter removed the response"],
+        options: ["The request failed; retry it identically", "Reasoning used all 400 tokens; all billed", "The model had nothing to say", "The content filter removed the answer"],
         answer: 1,
         why: "The cap covers reasoning and answer together, and reasoning goes first — so a cap below the reasoning length leaves nothing for the answer, and the response arrives with `finish_reason: \"length\"`, empty content, and a charge for every token generated. The first option would retry into the same wall, since the failure is deterministic in the cap. The third mistakes an exhausted budget for a model with no answer. A content filter returns `finish_reason: \"content_filter\"`, which is a different and distinguishable case." },
 
@@ -343,7 +343,7 @@ for 99.9% success you need a cap of 20152 tokens
         why: "Extraction has no search to perform — the fields are present and the task is to read them out — so additional inference-time compute buys nothing while costing 10–100× in output tokens and adding seconds of latency. The other three involve genuine search over approaches, which is exactly what the reasoning tokens are spent on. The practical consequence is that routing matters: most requests sent to a reasoning model do not need one, and a cheap model handles them faster and far cheaper." },
 
       { stem: "You model reasoning length and find a median of 6,313 tokens. What cap do you set?",
-        options: ["6,313, the median", "Around 20,000, sized on the tail, and log the real distribution from day one", "1,500, as on the previous model", "As low as possible to control cost"],
+        options: ["6,313, the median length", "About 20,000, sized on the tail", "1,500, as on the previous model", "As low as possible to control cost"],
         answer: 1,
         why: "Sizing on the median means roughly half of requests exceed it, and exceeding it produces an empty answer and a full bill rather than a slightly shorter answer — so the cap has to be sized on the tail, which in the modelled distribution needed 19,742 tokens for 99% success. Carrying over the previous model's value is exactly the migration failure in §04, where a 1,500 cap left 8% of documents with empty summaries for a week. The fourth option treats the cap as a cost control, but it is a failure bound: lowering it converts expensive successes into equally expensive failures." }
     ]

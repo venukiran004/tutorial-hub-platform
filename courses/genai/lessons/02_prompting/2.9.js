@@ -325,22 +325,22 @@ room for images: 125500 tokens
     title: "Check yourself",
     questions: [
       { stem: "Your vision prompt returns descriptions instead of the field you wanted. What is the first fix?",
-        options: ["Raise `detail` to high", "Add the instruction, the region and an output schema — the image is only the input component", "Use a larger model", "Send the image twice"],
+        options: ["Raise `detail` to high for the image", "Add instruction, region and schema", "Use a larger vision-capable model", "Send the same image twice in a row"],
         answer: 1,
         why: "A description is what an under-specified prompt produces, and the four-component check applies unchanged: the image supplies input, while instruction, context and output format still have to be written. Raising detail costs 9× and addresses legibility, not ambiguity about the task. A larger model may describe more fluently and will still describe. Sending the image twice doubles the cost for nothing." },
 
       { stem: "You send two images for comparison with no text between them. What is likely to go wrong?",
-        options: ["The second image is ignored", "The model conflates them and cannot reliably say which is which", "Token cost doubles unexpectedly", "The request is rejected"],
+        options: ["The second image is ignored", "It conflates which image is which", "Token cost doubles unexpectedly", "The request is rejected"],
         answer: 1,
         why: "Without labels there is nothing in the context distinguishing the images, so references like \"the first one\" become unreliable and the model may attribute a feature of one to the other. Six tokens of `Image A — before:` and `Image B — after:` removes the class of confusion, and asking the model to refer to them by those labels makes the answer checkable. Both images are processed and both are billed, as expected; nothing is rejected." },
 
       { stem: "A 20-page document pipeline is too expensive at high detail. What is the best change?",
-        options: ["Reduce the image resolution before upload", "A low-detail pass over all pages, then high detail on the two or three that matter", "Summarise the images", "Increase max_tokens"],
+        options: ["Reduce image resolution before every upload", "Low detail on all, high on the few that matter", "Summarise each image first, then extract", "Increase max_tokens on every request"],
         answer: 1,
         why: "Measured, two-pass is 3.8× cheaper than all-high at twenty pages, because 85 tokens a page is enough to decide which pages contain the answer and only those pay the 1,105. Reducing resolution before upload saves bandwidth but not tokens above the resize threshold (1.11) — the server shrinks it anyway. Images cannot be summarised; there is no shorter version that keeps the relevant half. `max_tokens` governs output and is unrelated to input cost." },
 
       { stem: "A model reads the issue date instead of the expiry date from an ID card. What does that tell you?",
-        options: ["The image resolution is too low", "The prompt was incomplete about the hard case — it did not say how to distinguish them", "The model cannot read dates", "Temperature is too high"],
+        options: ["The image resolution is too low to read", "The prompt never said how to tell them apart", "The model cannot read printed dates at all", "The temperature is set too high for OCR"],
         answer: 1,
         why: "The model located the right block and chose the wrong line within it, which is an ambiguity it resolved consistently in a way nobody had specified — so the prompt was not vague in general, it was silent on the one document type where the two dates look alike. The fix is two lines naming the distinguishing feature, plus a code check that the date is in the future. Resolution would produce garbled output rather than a confident wrong field, and the model demonstrably reads dates on the other 93%." }
     ]

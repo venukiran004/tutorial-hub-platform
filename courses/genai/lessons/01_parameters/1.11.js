@@ -339,17 +339,17 @@ transitions(16, 9, "16:9")`,
         why: "The pipeline fits the image inside 2048×2048 and then shrinks the shortest side to 768, so a large square image always ends up as 768×768 and tiles into four — 85 + 170×4 = 765, measured identically for 1024, 2048 and 4096 pixel squares. The first option applies the tiling to the original dimensions and skips both resize steps. 85 is the flat `low` cost, not a cap on `high`. Content is irrelevant: the cost is a function of dimensions alone." },
 
       { stem: "Your pipeline asks \"is there a person in this photo?\" at `detail=\"high\"`. What is the likely finding if you test `low`?",
-        options: ["Accuracy collapses — high detail is always better", "The answers are likely identical and you are paying 9× for nothing", "Low detail is not supported for photographs", "Latency increases"],
+        options: ["Accuracy collapses; high detail always wins", "Same answers; you are paying 9× for nothing", "Low detail is not supported for photographs", "Latency increases at low detail"],
         answer: 1,
         why: "Low detail gives the model a 512-pixel view of the whole image, which is ample for coarse recognition — and it costs 85 tokens against 765, a measured 9.0× difference. The task that genuinely needs the tiles is reading small text or resolving fine structure, not detecting whether a person is present. The first option assumes more resolution always helps, which is the assumption the half-hour A/B in §02 exists to test. Low detail is supported everywhere, and fewer tokens reduce latency rather than increasing it." },
 
       { stem: "You need to extract line items from 500 scanned invoices per day. What is the best architecture?",
-        options: ["Send each page to a vision model at high detail", "OCR for the text, a vision model only for layout questions the text cannot answer", "Send each page at low detail to save tokens", "Send the whole PDF as one image"],
+        options: ["Send each page to a vision model at high detail", "OCR for text; vision only for layout questions", "Send each page at low detail to save tokens", "Send the whole PDF as a single image"],
         answer: 1,
         why: "Dense text on a page is what OCR is built for: it produces greppable, diffable output at typically 300–800 tokens a page, and a low-confidence OCR result is obviously garbage where a vision model's misreading is a plausible wrong number — much more expensive to discover. Vision earns its cost on the geometry OCR discards, such as which box is the total. High detail on every page is the expensive default the incident in §04 was built on. Low detail would make the text unreadable, which is the one thing the tiles were for. A whole PDF as one image loses resolution on every page at once." },
 
       { stem: "Why does resizing a 4000-pixel image to 768 on the shortest side before upload help?",
-        options: ["It reduces the token count from 765 to 255", "It does not save tokens at all — it saves upload bandwidth and latency", "It halves the cost", "It changes detail from high to low automatically"],
+        options: ["It cuts tokens from 765 to 255", "It saves bandwidth and latency, not tokens", "It halves the cost of the request", "It switches detail from high to low"],
         answer: 1,
         why: "Both sizes resolve to 765 tokens because the server shrinks the shortest side to 768 before tiling, so the token cost is identical — what the client-side resize saves is transmitting megabytes that are discarded on arrival, which shows up as upload time and latency. Getting to 255 tokens would require going below 513 pixels on the long side, which is a different and lossier decision. Nothing about the upload size changes the `detail` setting, which is an explicit request parameter." }
     ]

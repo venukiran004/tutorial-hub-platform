@@ -386,22 +386,22 @@ polite           0.0328       0.8x   <- below the noise floor`,
     title: "Check yourself",
     questions: [
       { stem: "A persona shifts the next-token distribution by 0.1354 nats. Why is the temperature comparison included?",
-        options: ["To show the persona is equivalent to a temperature change", "Because a KL in nats has no intuitive scale without a baseline the reader already understands", "Because temperature and persona interact", "To prove the persona is unnecessary"],
+        options: ["To show the persona equals a temperature change", "Nats need a familiar baseline to mean anything", "Because temperature and persona interact", "To prove the persona is unnecessary"],
         answer: 1,
         why: "Nobody has an intuition for nats, so 0.1354 on its own is unfalsifiable — against 0.0390 for a 10% temperature change it becomes a claim, roughly 3.5× an effect people already take seriously. The two are not equivalent: a persona reorders the distribution and temperature never does. They do not meaningfully interact in the way top-p and temperature do. And the comparison establishes the persona matters rather than that it does not." },
 
       { stem: "A first-token KL measurement ranks four personas by effect size. What can you conclude?",
-        options: ["The highest-scoring persona is the best one", "Only that all four do something — the ordering among them is not meaningful from this measurement", "The lowest-scoring one should be deleted", "Nothing at all"],
+        options: ["The highest-scoring persona is the best one", "All four do something; the order means little", "The lowest-scoring one should be deleted", "Nothing at all can be concluded"],
         answer: 1,
         why: "The measurement separates prefixes that perturb the distribution from those that do not — both vacuous prefixes landed at or below the 0.0390 calibration point — but the first token is where register shows and where behavioural rules have not yet had anything to act on. Measured, adding rules to a persona *lowered* the score from 0.1354 to 0.1089, which would rank it worse and is not a claim the data supports. Choosing between fragments that both do something needs a test set (2.12). A low-but-above-calibration score is not grounds for deletion for the same reason, and the screen is plainly informative, so the last option is too strong." },
 
       { stem: "Your medical summariser becomes more readable after a stronger persona. What is the risk?",
-        options: ["Higher token cost", "Confident prose removes the hedging readers were using to decide what to verify", "The model becomes slower", "The persona overrides the safety training"],
+        options: ["Higher token cost per summary", "It strips the hedging readers relied on", "The model becomes noticeably slower", "The persona overrides safety training"],
         answer: 1,
         why: "A persona shifts register, and confident clinical prose is equally confident whether the content is right or wrong — measured in the incident, accuracy barely changed while the rate at which staff verified against source notes fell by about a third. Register carries information to a human reader independently of content, so changing it changes downstream behaviour in a way no accuracy metric shows. Cost and latency are negligible for a few tokens, and a persona does not override safety training." },
 
       { stem: "How do you tell whether a persona is carrying the specification?",
-        options: ["Count the tokens it uses", "Delete it and check whether the prompt still states the task and the output shape", "Ask the model", "Compare output length"],
+        options: ["Count the tokens that it uses up", "Delete it and check the spec survives", "Ask the model whether it helps it", "Compare output lengths with and without"],
         answer: 1,
         why: "A persona is the context component of the four in 2.1, and it cannot substitute for instruction or output format — so if removing it leaves a prompt that no longer says what you want, those components were being implied by a register rather than stated. That matters because a register cannot be checked against a requirement and therefore cannot be evaluated (2.12). Token count says nothing about what a fragment is doing; asking the model produces a plausible answer about itself; length is unrelated." }
     ]

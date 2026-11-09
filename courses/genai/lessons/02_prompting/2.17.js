@@ -325,22 +325,22 @@ without prompt_version logged, the same data gives only:
     title: "Check yourself",
     questions: [
       { stem: "Why use a content hash rather than a version number for a prompt?",
-        options: ["It is shorter", "A number must be remembered to increment; a hash is correct by construction", "Hashes are faster to compare", "It makes rollback easier"],
+        options: ["It is shorter to write and read", "A hash is correct by construction", "Hashes are faster to compare", "It makes rolling back much easier"],
         answer: 1,
         why: "A hand-maintained number is a claim about the file, and when someone edits the template without bumping it, two different prompts are logged as the same version — after which every attribution is wrong and nothing reveals it. A hash is derived from the content so it cannot drift. The cost is readability, which is why you keep a name and changelog alongside. Length and comparison speed are irrelevant at this scale, and rollback works the same either way." },
 
       { stem: "Quality drops 12% and nothing in the code deployed. Where do you look first?",
-        options: ["The model provider, for a silent version change", "Prompt version changes — a registry lets prompts change without a deploy", "Infrastructure", "User behaviour"],
+        options: ["The provider, for a silent model change", "Prompt version changes in the registry", "The infrastructure and its config", "Shifts in user behaviour"],
         answer: 1,
         why: "A registry decouples prompt changes from deploys, which is precisely why \"nothing deployed\" does not mean \"nothing changed\" — and the measured attribution shows how misleading the alternative is: without a prompt-version field, a regression caused by a day-20 prompt change presents as a day-40 model change. The provider is worth ruling out, which `system_fingerprint` does in seconds if it is logged. Eight days were spent on that investigation in the incident for want of one field." },
 
       { stem: "What should automatically halt a prompt rollout?",
-        options: ["A quality score drop", "Error rate or latency exceeding a threshold", "Any user complaint", "Nothing — rollouts should be reviewed manually"],
+        options: ["A drop in the offline quality score", "Error rate or latency over a threshold", "Any single complaint from a user", "Nothing; rollouts need manual review"],
         answer: 1,
         why: "Error rate and latency move within an hour and are unambiguous; quality takes far longer to measure at any useful resolution — 2.12 measured a 3-point difference as not significant even at n=1,000. So the automatic halt catches catastrophes and the quality decision is made deliberately with enough data. A single complaint is too noisy to automate on, and a rollout with no automatic halt is a slower deploy rather than a rollout." },
 
       { stem: "Your registry records who changed each prompt and when. Is that attribution?",
-        options: ["Yes — it is a complete audit trail", "No — attribution needs each response connected to the version that produced it", "Only if changes are rare", "Only with a human reviewer"],
+        options: ["Yes, as it is a complete audit trail", "No; responses must link to their version", "Only if prompt changes are rare", "Only with a human reviewer signing off"],
         answer: 1,
         why: "An audit trail records what changed; attribution requires knowing what each response did, which only the application can log. Without that connection an investigation starts from whatever *is* in the logs — usually the model — and in the incident the registry history was correct, complete, and not consulted for eight days because nothing linked a bad summary to it. Rarity of changes does not help: one unattributed change is enough to mislead an investigation." }
     ]

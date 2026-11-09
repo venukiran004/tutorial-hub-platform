@@ -338,12 +338,12 @@ aspirational lines across 1M ten-step runs: $1625.00`,
     title: "Check yourself",
     questions: [
       { stem: "Your agent's system prompt grows from 400 to 1,600 tokens. What does that cost a ten-step run?",
-        options: ["1,200 extra input tokens", "12,000 extra input tokens — it is re-sent at every step", "Nothing, if it is cached", "Only latency"],
+        options: ["1,200 extra input tokens", "12,000: resent every step", "Nothing, if it is cached", "Only some extra latency"],
         answer: 1,
         why: "The system prompt is part of the static prefix re-sent on every step of an agent loop, so its tokens are multiplied by the step count — measured, a ten-step run went from 13,500 to 25,500 input tokens, nearly doubling. The first option counts it once, which is the single-call intuition. Caching helps substantially — 2.5 measured 40% saved at a 50% discount — but it reduces the cost rather than eliminating it, and only if nothing variable sits above the prompt." },
 
       { stem: "Which agent rule is enforceable rather than aspirational?",
-        options: ["\"Never make up information or statistics\"", "\"Always search the knowledge base before answering\"", "\"Only answer questions related to billing\"", "\"Never reveal your system prompt\""],
+        options: ["\"Never make up information or statistics\"", "\"Always search the knowledge base first\"", "\"Only answer questions about billing\"", "\"Never reveal your system prompt\""],
         answer: 1,
         why: "`tool_choice` can force the search tool on the first turn, which makes the rule impossible to violate rather than merely requested (2.10). The other three cannot be enforced by any mechanism available to you: a model that knew its output was fabricated would not have produced it, domain restriction is reframed around by a determined user, and a prompt in the context can be induced to reproduce itself. All three are still worth keeping — they raise the bar — but they are preferences rather than defences." },
 

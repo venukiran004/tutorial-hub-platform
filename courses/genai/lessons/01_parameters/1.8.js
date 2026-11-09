@@ -456,22 +456,22 @@ at 1,000,000 requests/month, $2.50 per 1M input tokens:
     title: "Check yourself",
     questions: [
       { stem: "You use JSON mode with no schema and your parse rate is 100%. What can still go wrong?",
-        options: ["Nothing — valid JSON is what you needed", "The object can have the wrong fields, missing fields or wrong types", "The response can fail to be JSON under load", "Only performance"],
+        options: ["Nothing; valid JSON was all you needed", "Wrong, missing or mistyped fields", "It can stop being JSON under load", "Only performance can suffer"],
         answer: 1,
         why: "JSON mode guarantees the response parses and says nothing about its contents — `{}` and `{\"answer\": \"I don't know\"}` are both perfectly valid. The failure surfaces as a `KeyError` downstream or, worse, a `.get(field, default)` that silently substitutes a default when the model renames a key. The first option is exactly the false confidence the lesson is about, and the incident in §05 is a 99.4% parse rate that told nobody anything. JSON mode does not degrade under load, and performance is not the issue." },
 
       { stem: "Under OpenAI's strict mode, how do you express a field that may be absent?",
-        options: ["Leave it out of `required`", "Make it required with a nullable type, and check for None rather than for the key", "Use `additionalProperties: true`", "Strict mode does not support that at all"],
+        options: ["Leave it out of `required`", "Required but nullable; check for None", "Set `additionalProperties: true`", "Strict mode cannot express that"],
         answer: 1,
         why: "Strict mode requires every property to appear in `required`, so there are no optional fields — you declare the field required and permit null as one of its values, which makes the key always present. That changes downstream code: presence checks stop discriminating and null checks are what you need. The first option is what people try and what strict mode rejects. `additionalProperties: true` would allow *extra* fields, which is the opposite constraint and is also forbidden. The fourth is wrong — the case is supported, just expressed differently." },
 
       { stem: "Why is `Literal[\"free\", \"pro\", \"enterprise\"]` better than the same list written in the prompt?",
-        options: ["It uses fewer tokens", "Under structured output it is a constraint that cannot be violated, where a prompt instruction can", "It makes the model faster", "There is no difference; both end up in the request"],
+        options: ["It uses fewer tokens than the prompt", "It is an unbreakable constraint, not a request", "It makes the model generate faster", "No difference; both reach the request"],
         answer: 1,
         why: "The `Literal` generates an `enum` in the schema, and under structured output the constraint is enforced by masking the logits — the model cannot emit a fourth value. The same list in the prompt is an instruction, which is followed most of the time. Token count is not the argument and may go either way; the enum also lets you delete the prompt sentence, but that is a side benefit. Speed is unrelated. The fourth option is true that both are sent and wrong about what that means: where a constraint lives determines whether it is enforced or requested." },
 
       { stem: "Your invoice extractor has a 99.4% valid-parse rate under a schema, but 2% of dates are misread. What does that tell you?",
-        options: ["The schema is not being applied", "The field was typed as `str`, so the schema verified the one property that could not be wrong", "The parse rate metric is broken", "The model needs a higher temperature"],
+        options: ["The schema is not actually being applied", "Typed as `str`, so nothing real was checked", "The parse-rate metric itself is broken", "The model needs a higher temperature"],
         answer: 1,
         why: "Every string is a valid string, so a `str`-typed date field makes the parse rate structurally incapable of detecting a format problem — the metric was always going to read near 100%. Typing the field as a date generates `\"format\": \"date\"` and makes the constraint structural; cross-field checks like `due_date >= invoice_date` then belong in code, because no JSON Schema can express them. The first option is contradicted by the parse rate itself. The metric is not broken; it is measuring the wrong thing, which is a different and more dangerous problem. Temperature has nothing to do with it." }
     ]

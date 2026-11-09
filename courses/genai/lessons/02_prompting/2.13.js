@@ -290,12 +290,12 @@ for static in (3000, 2400, 1650, 900, 300):
     title: "Check yourself",
     questions: [
       { stem: "You add a line naming the user and their plan to the top of a 4,200-token system prompt. What happens?",
-        options: ["About 8 tokens are added to each request", "The cache prefix fails immediately and all 4,200 tokens are reprocessed at full price, plus the write premium", "Nothing — the cache matches on content, not position", "Only the personalised line is uncached"],
+        options: ["About 8 tokens are added to each request", "The cache misses, and all 4,200 are reprocessed", "Nothing; caches match content, not position", "Only the personalised line goes uncached"],
         answer: 1,
         why: "A prefix cache matches from the start and stops at the first difference, so a variable line at position one invalidates everything behind it — and on Anthropic you continue paying the roughly 25% write premium for cache entries nothing will ever match. The third option describes a cache that can find static content anywhere, which is precisely what a prefix cache cannot do. Moving the same line below the static block costs nothing and restores the hit rate." },
 
       { stem: "Your examples block is 3,000 tokens and your system prompt is 300. What does layout buy you?",
-        options: ["Very little — the static block is too small to protect", "A 6.6× difference on input cost, if the examples can go in the cached prefix", "Nothing, since examples must be dynamic", "It only matters above 10,000 tokens"],
+        options: ["Very little; the static block is too small", "About 6.6× on input cost, if examples are cached", "Nothing, since examples must be dynamic", "It only matters above 10,000 tokens"],
         answer: 1,
         why: "Measured at that ratio: examples-first costs 0.008750 and all-static costs 0.001325, a 6.6× difference from layout alone with identical content. The first option is true of the static-first layout specifically — at 0.008075 it is barely better than caching nothing, because protecting a 300-token block is not worth much — but all-static protects the examples too. Whether the examples *can* be static is an accuracy question (2.2), not a layout one." },
 
@@ -305,7 +305,7 @@ for static in (3000, 2400, 1650, 900, 300):
         why: "Streaming costs exactly the same tokens at the same rates — 1.12 measured that it changes when the first token arrives, not what the response costs — and the only case where it saves money is aborting, which is a separate decision. The other three are real and large: a smaller model is up to 16.7× on the price table, batching is 50% on both input and output, and caching is 50–90% of the cached input portion." },
 
       { stem: "Your cache hit rate has been zero for three months. What is the cheapest way to have caught it?",
-        options: ["Reviewing the prompt more carefully", "A unit test asserting that two requests from different users share their first N bytes", "Monitoring total spend", "Asking the provider"],
+        options: ["Reviewing the prompt more carefully", "A test that users share the first N bytes", "Monitoring the total monthly spend", "Asking the provider about cache hits"],
         answer: 1,
         why: "The assertion runs without calling a model, costs nothing, and would fail in the pull request that introduced the variable line — where a prompt review demonstrably did not catch it, since the line looked like context in the obvious place for context. Total spend is the metric that failed in the incident: a 35% rise over a quarter reads as growth. `cached_tokens` should also be logged, but that detects the problem after shipping rather than before." }
     ]

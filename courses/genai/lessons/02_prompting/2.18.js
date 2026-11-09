@@ -292,22 +292,22 @@ strongest template: 'classify' (4 of 5 present)`,
     title: "Check yourself",
     questions: [
       { stem: "Which component is missing from all six of the templates?",
-        options: ["The instruction", "The absence clause — what to do when the information is not there", "The input", "The output format"],
+        options: ["The instruction itself", "The absence clause", "The input component", "The output format spec"],
         answer: 1,
         why: "Measured across six templates, every one specifies the task and the input and none says what to do when the document does not contain the requested information — because templates are written against documents that do. That is precisely the omission that produces plausible invented values which satisfy a schema and go unnoticed, as in 2.7's invoice incident. Instruction and input are present in all six; output format is missing from two." },
 
       { stem: "Why is context missing from five of six templates?",
-        options: ["Carelessness by the authors", "Context is the component that cannot be generic — it is the audience, domain and constraints", "It is implied by the instruction", "Templates do not need context"],
+        options: ["Carelessness by the authors", "It is the part that cannot be generic", "It is implied by the instruction", "Templates simply do not need it"],
         answer: 1,
         why: "A template is by definition task-shaped and domain-free, and context is the audience, domain and constraints — so it is exactly the part a template cannot supply. The one exception measured is classification, which has context only because a classification task cannot be stated at all without defining the labels: the task shape forces it. That makes adding context the first edit when adapting any template, rather than a sign the template was badly written." },
 
       { stem: "Your incident summaries are \"accurate but useless\" to the managers reading them. What is wrong?",
-        options: ["The model is too small", "The selection rule is generic — \"key findings\" selects correctly for a different reader", "The temperature is too high", "The summaries are too short"],
+        options: ["The model is too small", "The selection rule is generic", "The temperature is too high", "The summaries are too short"],
         answer: 1,
         why: "\"Key findings\" is a selection rule and it selected correctly: the key findings of an incident review are technical, because most of the document is. The readers wanted what broke, who it affected and what is changing — a different selection, which has to be named. Length and temperature do not change what gets selected, and a larger model would select the same defensible things. This is section 01's point: a generic selection rule picks something defensible that nobody asked for." },
 
       { stem: "You are adapting the entity-extraction template. What is the most important change?",
-        options: ["Make the instruction more forceful", "Replace the prose format description with a schema, and keep the semantic clauses", "Add a persona", "Increase max_tokens"],
+        options: ["Make the instruction more forceful", "Use a schema; keep the semantic clauses", "Add a persona to the start of the prompt", "Increase max_tokens on the request"],
         answer: 1,
         why: "The template describes a JSON shape in words, which 1.8 ranks bottom of four approaches — a schema makes the shape a guarantee rather than a request. What survives the migration is the semantics a schema cannot express: use an empty list if no entities are present, do not infer. 2.7 measured a schema replacing about 57% of a format prompt's clauses, so roughly 43% of the prose is doing work that must be kept. A persona adds register, not structure, and max_tokens is unrelated." }
     ]

@@ -381,22 +381,22 @@ N=40  with a 50% prefix cache: 90000 -> 68400 input tokens (24% saved)`,
     title: "Check yourself",
     questions: [
       { stem: "An agent produces a 105-token trace over 8 steps. How many input tokens is the trace billed at?",
-        options: ["105 — it is sent once", "840 — 105 tokens × 8 steps", "424 — each step re-sends everything so far", "It depends on the model"],
+        options: ["105, as the trace is sent once", "840, as 105 tokens × 8 steps", "424, each step resending all so far", "It depends on the model in use"],
         answer: 2,
         why: "The model has no memory between steps, so step i carries everything produced in steps 1 to i−1 — the sum is 424 for this trace, measured, which is 4.04× what a human reads. The first option assumes conversational memory that does not exist. The second multiplies the full trace by the step count, which over-counts because early steps carry less than the whole trace. The mechanism is the same on every model, so the fourth is wrong in kind." },
 
       { stem: "You are tuning cost on a 5-step agent with 20 tool definitions. What is the biggest lever?",
-        options: ["Reducing the number of steps", "Prompt caching on the static prefix, which is ~90% of input tokens at that length", "Compressing old observations", "A cheaper model"],
+        options: ["Reducing the number of steps", "Caching the static prefix", "Compressing old observations", "Switching to a cheaper model"],
         answer: 1,
         why: "Measured, at five steps the system prompt and tool definitions are about 90% of all input tokens, because the growing trace has not had time to dominate — so caching the prefix or routing to fewer tools is where the money is. Compressing observations targets the trace, which matters at forty steps and barely at five: the two levers apply at opposite ends of the run length. A cheaper model is a separate axis and may not clear the quality bar." },
 
       { stem: "Your agent hits its 30-step cap and returns whatever it has. What is wrong with that?",
-        options: ["Nothing — a partial answer is better than none", "An exhausted agent returns a plausible half-answer indistinguishable from a real one; it should raise", "The cap should be higher", "Steps are cheap so the cap is unnecessary"],
+        options: ["Nothing; a partial answer beats none", "It looks like a real answer; it should raise", "The cap should simply be higher", "Steps are cheap, so the cap is needless"],
         answer: 1,
         why: "A silent return at the cap produces an answer that looks like success to every caller and every metric, which is the same class of failure as an empty reasoning response in 1.10 — invisible until a user complains. Raising makes the exhaustion visible and lets the caller decide. A higher cap makes it worse on both axes, since late steps are the most expensive by the quadratic and the ones where the model is most lost. Steps are emphatically not cheap: 64 of them cost 32.5× the trace." },
 
       { stem: "When should you use a fixed chain instead of a ReAct loop?",
-        options: ["Never — agents are more capable", "When the sequence of steps is known in advance", "When the task is simple", "When latency matters"],
+        options: ["Never; agents are more capable", "When the steps are known in advance", "Whenever the task is simple", "Whenever latency matters"],
         answer: 1,
         why: "If you can draw the flowchart, the control flow belongs in your code, where it is deterministic, testable, cheaper and has no non-termination failure mode — extract, then classify, then summarise is three calls in a known order, not a loop. A loop exists for the case where which step comes next depends on what the last one returned. Task simplicity and latency are consequences rather than the criterion: a simple task with an unknown path still needs a loop, and a complex one with a known path does not." }
     ]

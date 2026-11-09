@@ -318,22 +318,22 @@ cost per additional correct answer: $0.00625
     title: "Check yourself",
     questions: [
       { stem: "Why does asking for step-by-step reasoning improve accuracy on multi-step problems?",
-        options: ["The model tries harder when asked", "Each token is one forward pass, so writing steps buys more computation, and the steps are in the context for later passes to read", "It activates a reasoning module in the architecture", "It lowers the effective temperature"],
+        options: ["The model tries harder when asked", "More tokens buy computation it can reread", "It activates a dedicated reasoning module", "It lowers the effective temperature"],
         answer: 1,
         why: "A transformer does the same amount of arithmetic for every token regardless of difficulty, so the only way to spend more computation on a hard problem is to emit more tokens — and because the model has no working memory between tokens except the tokens, the intermediate results have to be written down to be available. There is no separate reasoning module; the mechanism is the ordinary forward pass. Effort is not a property a model has, and temperature is unaffected by the prompt." },
 
       { stem: "You add \"think step by step, but output only the final answer\" to save tokens. What happens?",
-        options: ["Accuracy improves and output stays short", "You pay for the instruction and get a direct answer — the mechanism was the visible tokens", "The model reasons internally and the answer improves", "Output becomes non-deterministic"],
+        options: ["Accuracy rises and output stays short", "You pay for it but get a direct answer", "The model reasons internally and improves", "Output becomes non-deterministic"],
         answer: 1,
         why: "There is no silent thinking: the model's only working memory between tokens is the tokens, so forbidding the working removes exactly the thing that produced the benefit, while the added instruction still costs prompt tokens. If the working must be hidden from users, generate it inside a delimiter and strip it, or use a two-call chain — both keep the computation. A reasoning model does precisely this server-side, which is what its hidden tokens are." },
 
       { stem: "Your Pydantic schema has `decision` declared before `reasoning`. What is the consequence?",
-        options: ["None — field order is cosmetic in JSON", "The reasoning is generated after the decision, so it justifies rather than informs it", "The schema will fail validation", "Reasoning will be truncated"],
+        options: ["None; field order is cosmetic in JSON", "Reasoning comes after, so it justifies", "The schema will fail validation", "The reasoning will be truncated"],
         answer: 1,
         why: "Generation is left to right, so fields are produced in declaration order — a decision emitted first is committed with one forward pass behind it, and the reasoning that follows is conditioned on it rather than feeding it. Reversing the order is a one-line change that makes the working genuinely precede the answer. JSON object order is semantically irrelevant to a parser, which is why this is easy to miss; it is not irrelevant to a generator. Nothing about it affects validation or length." },
 
       { stem: "For which task does chain-of-thought add cost and no accuracy?",
-        options: ["A word problem with two arithmetic steps", "Extracting five stated fields from an invoice", "Debugging a logic error", "A constraint satisfaction puzzle"],
+        options: ["A two-step arithmetic word problem", "Extracting five stated invoice fields", "Debugging a subtle logic error", "A constraint satisfaction puzzle"],
         answer: 1,
         why: "Extraction has no intermediate result to compute — the fields are present and the task is to read them out — so the extra forward passes have nothing to do, while the output grows by up to 90× on the expensive side of the bill. The other three all involve a value or a deduction that must be derived before the answer exists, which is exactly what the extra passes are for. Worse, on an extraction task the prose working also creates a parsing problem that structured output had already solved." }
     ]

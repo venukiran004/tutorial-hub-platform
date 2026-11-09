@@ -371,22 +371,22 @@ residuals: [0.14, -0.21, 0.07]`,
     title: "Check yourself",
     questions: [
       { stem: "You count a French document with `cl100k_base` and get 73 tokens. What does `o200k_base` give?",
-        options: ["The same 73 — encodings agree on the same text", "About 57 — the newer vocabulary carries more non-English subwords", "About 90 — newer encodings are more granular", "It depends on the length only"],
+        options: ["The same 73; encodings agree on text", "About 57; more non-English subwords", "About 90; newer ones are more granular", "It depends on the length only"],
         answer: 1,
         why: "Measured, the same French sentence was 73 tokens under `cl100k_base` and 57 under `o200k_base` — a 22% reduction, because the newer vocabulary includes more non-English subword units so fewer pieces are needed. English was identical between the two in the same measurement, which is why the difference surprises people working only in English. The third option has the direction backwards. Length alone cannot determine a count when the vocabularies differ." },
 
       { stem: "Your counter sums `len(enc.encode(content))` per message. What does it miss?",
-        options: ["Nothing, if the encoding is right", "The per-message and reply-priming envelope, plus tool definitions and any schema", "Only the system message", "The output tokens"],
+        options: ["Nothing, provided the encoding is right", "Message envelopes, tools and schemas", "Only the system message's tokens", "The output tokens of the reply"],
         answer: 1,
         why: "The chat format wraps each message in role and boundary tokens — about 3 per message plus 3 to prime the reply on recent OpenAI models — and tool definitions and schemas are sent as input too, at roughly 85 tokens per tool. All of these are additions, which is why a naive counter is systematically optimistic and a quota built on one lets tenants over-consume. The third option names one message where the problem is per-message. Output tokens are a separate figure that no input counter is expected to produce." },
 
       { stem: "It is commonly said GPT-4o-mini is \"30× cheaper\" than GPT-4o. Its price table lists $2.50 and $0.15 per million input tokens. What is the real ratio?",
-        options: ["30×, as stated", "16.7×, on both input and output", "It cannot be computed from those figures", "About 8×"],
+        options: ["30×, as stated", "16.7×, both ways", "Not computable here", "About 8× overall"],
         answer: 1,
         why: "2.50 ÷ 0.15 = 16.7 on input, and 10.00 ÷ 0.60 = 16.7 on output, so the factor is the same on both and no mix of the two produces 30. The claim and the table are in the same document and cannot both be right — which is the reason to check a ratio against the numbers before repeating it. The figures are sufficient to compute the answer, so the third option is wrong, and 8× matches nothing in the table." },
 
       { stem: "Where should model prices live in your codebase?",
-        options: ["Hardcoded constants, since they rarely change", "Configuration, with the date each was checked, raising on an unknown model", "Fetched from the provider at startup", "Derived from the invoice each month"],
+        options: ["Hardcoded constants, as they rarely change", "Dated config that raises on unknown models", "Fetched from the provider at startup", "Derived from each month's invoice"],
         answer: 1,
         why: "Prices move, mostly downward, so a rate table needs a checked-on date to be auditable and must fail loudly on a model it has no rate for — silently defaulting to another model's price turns a cost dashboard into confident fiction. Hardcoding makes the staleness invisible. Providers do not generally expose a pricing endpoint to fetch at startup. Deriving from the invoice is a useful reconciliation but far too slow to price a request you are about to send." }
     ]

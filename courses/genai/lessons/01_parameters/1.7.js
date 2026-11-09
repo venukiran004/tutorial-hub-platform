@@ -342,22 +342,22 @@ smallest gap: 1.566e-02 at position 29
     title: "Check yourself",
     questions: [
       { stem: "You set `temperature=0`, pin a dated model version, and send the same prompt twice an hour apart. What can still differ?",
-        options: ["Nothing — those two settings are sufficient", "The logits, because batch composition and hardware change the floating-point summation order", "Only the response latency", "The tokenisation of the prompt"],
+        options: ["Nothing; those two settings are sufficient", "The logits, via batching and hardware order", "Only the response latency between the calls", "The tokenisation of the prompt itself"],
         answer: 1,
         why: "Greedy removes the sampling draw and a pinned version removes weight drift, but neither touches the arithmetic: the measured run showed a batch of 4 shifting the logits by 1.984e-04 against a batch of 1, with identical weights in one process. Where the top-two gap is smaller than that, the argmax flips and the responses diverge completely. The first option is the belief the lesson is against. Latency does vary but is not the interesting answer. Tokenisation is deterministic given the same text and tokeniser version, so the fourth is wrong." },
 
       { stem: "What does a change in `system_fingerprint` tell you?",
-        options: ["Your request was malformed", "The backend configuration changed, so the same seed no longer implies the same output", "The model is overloaded", "Your seed was ignored"],
+        options: ["Your request was malformed in some way", "The backend changed, so seeds stop matching", "The model is currently overloaded", "Your seed value was silently ignored"],
         answer: 1,
         why: "The fingerprint identifies the backend configuration — weights and serving stack — and the provider's contract is that reproducibility claims hold only within a fingerprint. A change means the ground moved, which is why it belongs in your logs beside every stored response. The first and third options invent meanings the field does not carry. The fourth is closer but wrong in kind: the seed is still applied, it just no longer selects the same behaviour because what it is seeding has changed underneath it." },
 
       { stem: "Your greedy test suite asserts byte-identical output and fails about once a fortnight on random prompts. What should you do?",
-        options: ["Add a retry, since the failures are transient", "Replace byte-equality with assertions on what the output must contain, and alert separately on fingerprint changes", "Raise the temperature so the variation is expected", "Pin a different model version"],
+        options: ["Add a retry, since the failures are transient", "Assert on content; alert on fingerprint changes", "Raise the temperature so variation is expected", "Pin a different model version instead"],
         answer: 1,
         why: "Byte-equality is the wrong assertion for a hosted model: the logits are not bit-stable across batch shapes, and a small fraction of positions sit close enough to a tie to be flipped by that — a failure rate that has nothing to do with your code. A retry masks the noise — and, as the incident shows, masks the genuine backend change the suite exists to catch. Raising the temperature adds variation rather than removing it. Pinning a different version does not help, because the version was already pinned and is not the source." },
 
       { stem: "A legal summarisation feature must produce the identical summary every time a document is re-opened. What is the right design?",
-        options: ["temperature=0 with a fixed seed", "Cache the output keyed on (document, model version, parameters, seed) and serve the cached copy", "A higher top_p for stability", "Retry until two consecutive calls agree"],
+        options: ["temperature=0 together with a fixed seed", "Cache output keyed on doc, model and params", "A higher top_p, for more stable output", "Retry until two consecutive calls agree"],
         answer: 1,
         why: "Nothing in the request parameters can make a batched floating-point system behave like a pure function — the measurement shows the logits moving with batch shape alone. The only genuine guarantee is not to ask twice: generate once, store it, and key the cache on everything that could change the answer. The first option is best-effort and will be wrong occasionally, which for a legal artefact is the wrong risk profile. The third has nothing to do with stability. The fourth costs double and still gives no guarantee, since two calls can agree and a third disagree." }
     ]

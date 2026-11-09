@@ -353,22 +353,22 @@ least portable element: 'JSON schema for the output'`,
     title: "Check yourself",
     questions: [
       { stem: "You port a prompt to Anthropic and your abstraction converts the `system` message to a user turn. What is the consequence?",
-        options: ["Nothing — the content is identical", "The instructions lose their privileged position and become much easier to override", "The request fails", "Token cost rises"],
+        options: ["Nothing, since the content is identical", "Instructions lose their privileged position", "The request fails outright at the API", "The token cost rises noticeably per call"],
         answer: 1,
         why: "Anthropic takes the system prompt as a top-level parameter, so a message-role entry converted to a user turn arrives with no more authority than anything else in the conversation — the instruction hierarchy that makes injection harder is simply absent. It is especially dangerous because it works: quality looks comparable and nothing in the logs distinguishes the two, so it only surfaces under adversarial input. The request succeeds, which is the problem, and token cost is unchanged." },
 
       { stem: "You move a prompt from GPT-4o to o4-mini. Which elements must be removed rather than adapted?",
-        options: ["The XML delimiters", "The explicit chain-of-thought instruction and the temperature", "The few-shot examples", "The stop sequence"],
+        options: ["The XML delimiters around input", "The CoT instruction and temperature", "The few-shot examples and labels", "The stop sequence at the end"],
         answer: 1,
         why: "Reasoning models control their own sampling, so temperature is rejected outright, and step-by-step instructions tell the model how to do the thing it was trained to do unaided — costing tokens and narrowing its search. Delimiters, examples and stop sequences all port unchanged. Measured across the elements, the reasoning model kept only 3 of 8 unchanged, which is why this is a bigger migration than changing provider." },
 
       { stem: "Which prompt element needs a mechanism change on every provider?",
-        options: ["The system prompt", "Few-shot examples", "The JSON schema for structured output", "XML delimiters"],
+        options: ["The system prompt text", "The few-shot examples", "The JSON output schema", "The XML delimiters"],
         answer: 2,
         why: "Structured output is `response_format` on OpenAI, `output_config.format` or forced tool use on Anthropic and `responseSchema` on Gemini — same intent, three call shapes, and a mechanism change on all four targets measured. That is an argument for putting it behind a client-layer interface rather than expressing it in the prompt. The system prompt ports unchanged on OpenAI chat; examples and XML delimiters port everywhere." },
 
       { stem: "A Gemini deployment intermittently returns no content for clinical text. What is the likely cause?",
-        options: ["Context window overflow", "A safety threshold blocking legitimate content in that domain", "The model is overloaded", "Temperature is too high"],
+        options: ["Context window overflow", "A safety threshold misfiring", "The model is overloaded", "Temperature is too high"],
         answer: 1,
         why: "Gemini's safety filters are configurable per category with a blocking threshold, and domains like clinical text, security research and legal discovery routinely trip defaults — producing a response with no candidates or a `SAFETY` finish reason rather than text. The intermittent pattern and the domain specificity are both characteristic. Code that reads `resp.text` directly raises an unhelpful exception on both block shapes, which is why this gets debugged as flakiness. Overflow produces truncation, not absence, and temperature does not cause blocks." }
     ]

@@ -374,22 +374,22 @@ for n in (30, 50, 100, 500, 1000, 5000):
     title: "Check yourself",
     questions: [
       { stem: "Prompt B scores 0.88 on your 50-case set where prompt A scored 0.84. What do you conclude?",
-        options: ["B is better; ship it", "Nothing — that difference is two cases and well inside the noise of a 50-case set", "B is better but only for these cases", "The metric is wrong"],
+        options: ["B is better; ship it now", "Nothing: two cases, inside the noise", "B is better, but only for these cases", "The metric itself is wrong"],
         answer: 1,
         why: "At fifty cases the smallest detectable improvement is about fifteen points, and a four-point difference is two cases — measured, a three-point difference at n=50 gives p = 1.0000, meaning the results are literally indistinguishable. Shipping on that is a coin flip, and doing it repeatedly overfits the prompt to fifty specific inputs, which is the eighteen-month incident. The metric may be fine; the sample size is the problem." },
 
       { stem: "You want to detect a 3-point prompt improvement. What is the cheapest way to halve the data you need?",
-        options: ["Use a more sensitive metric", "Run both prompts on the same test cases and use a paired test", "Increase the confidence level", "Use an LLM judge"],
+        options: ["Use a more sensitive metric", "Pair both prompts on the same cases", "Increase the required confidence level", "Use an LLM judge instead of labels"],
         answer: 1,
         why: "A paired comparison discards the cases where both prompts agree — which carry no information about which is better — and looks only at disagreements, which measured takes a 3-point lift from p = 0.0576 unpaired at n=1,000 to p = 0.0035 paired at the same size, roughly a fivefold saving in data. It costs nothing, because you were already going to run both prompts on the same inputs. Raising the confidence level requires *more* data, not less. A different metric changes what you measure rather than the power of the comparison, and a judge adds its own noise and bias." },
 
       { stem: "Your golden set has 40 cases and 31 accepted prompt improvements over 18 months. What is the likely state of the prompt?",
-        options: ["Substantially better than it was", "Overfitted to 40 examples by a process that selected noise", "Unchanged in quality", "Better on edge cases only"],
+        options: ["Substantially better than it once was", "Overfitted to 40 cases by selected noise", "Unchanged in its overall quality", "Better on the edge cases only"],
         answer: 1,
         why: "Forty cases detects roughly a 15-point change, so improvements in the 1-to-4-point range are noise — and accepting only the positive ones, 31 times, is a selection process that reliably accumulates changes fitting those 40 inputs and nothing else. Measured retrospectively on 2,000 production cases, the result was worse than the starting point. The danger is precisely that it does not look like nothing happened: it generates a record of steady improvement." },
 
       { stem: "What does a production A/B test add over an offline golden set?",
-        options: ["Faster results", "Real inputs and real outcomes — whether users accepted, edited, retried or escalated", "Lower cost", "Statistical significance by default"],
+        options: ["Faster results than offline", "Real inputs and user outcomes", "Lower cost per comparison", "Significance by default"],
         answer: 1,
         why: "An offline set measures whether output matched what you expected; production measures what users actually did with it, which is the signal that matters and which no offline metric substitutes for. It is slower, not faster, and it costs exposure — half your users get the worse variant until you stop. Sample size accumulates on its own but significance still has to be computed; it is not automatic." }
     ]

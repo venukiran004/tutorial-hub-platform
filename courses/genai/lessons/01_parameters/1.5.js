@@ -373,17 +373,17 @@ most optimistic estimate: logline, off by 66.7%
         why: "The window is shared, so the room left for output is `window − input_tokens` = 28,000, and you want a margin below that because token counts can shift with templating and tool definitions. The first option is the confusion the lesson is about: `max_tokens` cannot claim space the prompt has already spent. The third has no basis. The fourth mistakes a provider's default value for a limit — defaults are conventions, not constraints, and several models will happily return far more." },
 
       { stem: "You estimate a document's cost at 4 characters per token. For which content is that estimate most dangerously wrong?",
-        options: ["English prose, where it over-counts slightly", "A log line full of UUIDs, where the real count is about twice the estimate", "A short sentence, where the absolute error is small", "Any content — the rule is equally wrong everywhere"],
+        options: ["English prose, where it over-counts slightly", "UUID-heavy logs, at about twice the estimate", "A short sentence, where the error is small", "Any content; it is equally wrong everywhere"],
         answer: 1,
         why: "UUIDs measured 1.95 characters per token against the assumed 4, so the estimate is roughly half the real cost — and it errs in the optimistic direction, telling you a payload fits when it does not. English prose measured 4.43, which over-counts by about 10% and merely wastes a little window. The third option is true but irrelevant: short inputs are not where budgets fail. The fourth is contradicted by the measured spread of 1.95 to 4.43 across content types." },
 
       { stem: "A response comes back with `finish_reason: \"length\"`. What does that tell you?",
-        options: ["The model finished its answer and stopped naturally", "The output was cut off at max_tokens or the window limit, mid-answer", "The prompt was too long and was truncated", "The response was blocked by a content filter"],
+        options: ["The model finished and stopped naturally", "Output was cut off at the limit, mid-answer", "The prompt was too long and was truncated", "A content filter blocked the response"],
         answer: 1,
         why: "`length` means the generation loop was stopped from outside — the model had not emitted an end-of-sequence token and was mid-answer, as the measured truncations at 5, 15 and 40 tokens all show. `stop` is the natural-completion case, so the first option names the wrong value. Prompt truncation is a separate thing that happens before generation and is not reported through `finish_reason` at all. A blocked response returns `content_filter`." },
 
       { stem: "You want responses of about two sentences. What is the right way to get them?",
-        options: ["Set max_tokens=60", "Ask for two sentences in the prompt, and set max_tokens well above that as a safety net", "Set max_tokens=60 and lower the temperature", "Use a stop sequence at the second full stop"],
+        options: ["Set max_tokens=60 and nothing else", "Ask for two sentences; keep max_tokens as a net", "Set max_tokens=60 and lower the temperature", "Use a stop sequence at the second full stop"],
         answer: 1,
         why: "The model has no knowledge of `max_tokens` while generating — the cap is applied by the server from outside — so using it to shape length produces a longer answer with the end missing, not a shorter answer. Only the prompt can tell the model to aim for a length. The third option adds an irrelevant parameter; temperature affects which tokens are chosen, not how many. The fourth is closer to workable but fragile: full stops appear in abbreviations and decimals, and 1.6 shows that a stop sequence truncates server-side after the tokens are already generated and billed." }
     ]

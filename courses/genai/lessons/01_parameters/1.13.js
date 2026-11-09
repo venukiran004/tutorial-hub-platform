@@ -316,17 +316,17 @@ output/input 0.15, sweeping the static share:
     title: "Check yourself",
     questions: [
       { stem: "Your prompt is `[user question][3,000-token system prompt]`. What is your cache hit rate?",
-        options: ["Around 88%, since most of the prompt is static", "Effectively zero — the cache matches a prefix and the first token already varies", "50%, the OpenAI discount", "It depends on the question's length"],
+        options: ["About 88%, since most of it is static", "Effectively zero: the first token varies", "50%, the OpenAI discount rate", "It depends on the question's length"],
         answer: 1,
         why: "A prompt cache matches from the start and stops at the first difference, so a variable user question in front means the match fails immediately and all 3,000 static tokens are reprocessed at full price — and on Anthropic you also pay the roughly 25% write premium for an entry nothing will match. The first option assumes the cache can find static content anywhere in the prompt, which is precisely what a prefix cache cannot do. 50% is the discount on tokens that do hit, not a hit rate. Question length is irrelevant when the mismatch is at token one." },
 
       { stem: "A workload is 200 input tokens and 2,000 output tokens per request. Which optimisation helps more?",
-        options: ["Prompt caching, at 90%", "The Batch API, if the work can wait", "Both equally", "Neither applies to output-heavy work"],
+        options: ["Prompt caching, at 90%", "The Batch API, if it can wait", "Both help equally", "Neither suits output-heavy work"],
         answer: 1,
         why: "Caching discounts input only, and input is a small fraction of this bill — even a perfect 100% input discount could not touch the 2,000 output tokens that dominate it. Batching takes 50% off both, so on output-heavy traffic it is the only lever of the two that reaches the expensive part. The sweep in the exercise shows caching losing to batching everywhere above an output/input ratio of about 0.11 at an 80% static share. The fourth option is wrong: batching very much applies, provided a day of latency is acceptable." },
 
       { stem: "Why does a `Current time: 2026-09-25T11:24:16Z` line near the top of a system prompt matter?",
-        options: ["It wastes about 12 tokens", "It changes every second, so the cache prefix fails and every later token is reprocessed at full price", "It confuses the model about the date", "It is not cached because timestamps are excluded"],
+        options: ["It wastes about 12 tokens per call", "It changes each second, breaking the cache", "It confuses the model about the date", "Timestamps are excluded from caching"],
         answer: 1,
         why: "The cache matches a prefix and stops at the first difference, so a second-precision timestamp at token 12 means the remaining thousands of static tokens miss on every request — plus, on Anthropic, the roughly 25% write premium for a cache entry nothing will ever match. The token cost of the line itself is trivial by comparison. Nothing about timestamps is excluded from caching; the problem is entirely that the value varies. The model is not confused by the date — it is the cache that is." },
 

@@ -404,22 +404,22 @@ best accuracy per token: 2 shots`,
     title: "Check yourself",
     questions: [
       { stem: "GPT-2-medium answers 0 of 6 opposites correctly at zero shots and 6 of 6 at two. What does the rank data (431, 359, 270…) add?",
-        options: ["That the model is guessing randomly at zero shots", "That the model already knows the answers — it does not know that producing one is the task", "That two examples are always enough", "That the model was fine-tuned by the examples"],
+        options: ["The model is guessing randomly at zero shots", "It knows answers, not that answering is the task", "Two examples are always enough for any task", "The two examples effectively fine-tuned it"],
         answer: 1,
         why: "A rank of 2 for `wet → dry` at zero shots means the correct answer was nearly the top choice already; what the examples supply is the task, not the knowledge. Random guessing over a 50,257-token vocabulary would put correct answers at rank 25,000 on average, not 2 to 431. Two examples sufficing is specific to this task and test set — the exercise's harder items kept improving to seven shots. And nothing was fine-tuned: no weight changed, which is the defining property of in-context learning." },
 
       { stem: "One of your twelve few-shot examples has a wrong label. What is the likely effect?",
-        options: ["Roughly 1/12 of the accuracy, in proportion to its share", "Disproportionate — examples are the specification, so a contradictory one makes the rule ambiguous", "None; the majority pattern dominates", "It only affects queries similar to that example"],
+        options: ["About 1/12 of accuracy, in proportion", "Disproportionate: it muddies the specification", "None; the majority pattern dominates", "It only affects queries like that example"],
         answer: 1,
         why: "Measured, one wrong label in four took accuracy from 6/6 to 3/6 — half, not a quarter — because the model infers the rule from the examples and a contradictory example is a competing hypothesis rather than noise. The fourth option is closer than it looks, and is what the routing incident showed: the damage concentrated on tickets resembling the bad example. But it is not confined there, because the rule the model infers governs everything. The proportional and no-effect answers both assume the examples are data being averaged, when they are a specification being read." },
 
       { stem: "Your measurement shows accuracy flat from two examples to eight. What follows?",
-        options: ["Two examples are enough for every task", "On this task, every example after the second is pure cost — and you should check the test set is hard enough before generalising", "More examples are actively harmful", "The model has memorised the task"],
+        options: ["Two examples are enough for every task", "Later examples are pure cost here", "More examples are actively harmful", "The model has memorised the task"],
         answer: 1,
         why: "Measured, marginal accuracy per token was +0.125 for each of the first two examples and exactly zero for every one after, so six of eight shot counts were buying nothing while adding 24 prompt tokens to every request. The caution in the second half matters because this task is unusually clean — one unambiguous mapping, no label imbalance, no edge cases — and real classification tasks keep improving well past two. Harm is a stronger claim than the data supports: accuracy was flat, not falling, though probability mass on one item did fall from 0.748 to 0.484. Memorisation would imply weight changes, and nothing was trained." },
 
       { stem: "When is dynamic few-shot selection worth the complexity?",
-        options: ["Always — relevant examples beat fixed ones", "When the task has many distinct sub-cases that a fixed set cannot represent", "When you have fewer than five examples", "When latency matters"],
+        options: ["Always; relevant examples beat fixed ones", "With many sub-cases a fixed set misses", "With fewer than five examples in total", "Whenever latency is a priority"],
         answer: 1,
         why: "Retrieving examples per query pays off when no small fixed set can represent the space — a classifier over forty product areas, say — and it adds a retrieval call, an index to maintain, and the loss of prompt caching on everything after the examples, since the prefix now differs per request. On a uniform task like the opposites measurement, two arbitrary examples reached ceiling and retrieval would buy nothing. With fewer than five examples there is nothing to select from. Latency is a reason against, not for." }
     ]

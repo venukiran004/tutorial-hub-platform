@@ -345,22 +345,22 @@ threshold 3000 ms -- output length at which the silent wait exceeds it:
     title: "Check yourself",
     questions: [
       { stem: "You switch a 240-token response from non-streaming to streaming. What changes?",
-        options: ["The response completes faster", "The user sees the first token about 110 times sooner; the total time and cost are unchanged", "The cost falls by about half", "The model generates fewer tokens"],
+        options: ["The whole response completes faster", "First token ~110× sooner; total unchanged", "The cost falls by about half", "The model generates fewer tokens"],
         answer: 1,
         why: "Measured, TTFT was 50.7 ms against a whole-response wait of 5,621.5 ms — a 110.9× difference in when the first token lands, with the last token arriving at the same moment either way. Streaming redistributes the waiting; it does not reduce it. Cost is identical per token, and the only way streaming saves money is aborting, which is a separate decision. The model generates exactly the same tokens." },
 
       { stem: "Your streaming client crashes with an IndexError on the last chunk. Why?",
-        options: ["The stream was interrupted", "The final usage chunk has an empty `choices` array", "`finish_reason` was not set", "max_tokens was exceeded"],
+        options: ["The stream was interrupted midway", "The usage chunk has empty `choices`", "`finish_reason` was never set on it", "max_tokens was exceeded at the end"],
         answer: 1,
         why: "When `include_usage` is enabled, the last chunk carries the totals and no choices at all, so `chunk.choices[0]` raises — the fix is to guard with `if chunk.choices:` before indexing. An interrupted stream ends without raising, which is precisely why it needs the separate `finish is None` check. A missing `finish_reason` and exceeding `max_tokens` both produce quiet wrong behaviour rather than an IndexError." },
 
       { stem: "A user navigates away mid-stream and your client just stops reading. What happens?",
-        options: ["The server stops generating and you are billed for what was produced", "The server keeps generating and bills for every token, and you log nothing because the usage chunk never arrives", "The request is cancelled automatically", "The tokens are refunded"],
+        options: ["The server stops; you pay for what was made", "It keeps generating and billing, unlogged", "The request is cancelled automatically", "The generated tokens are refunded"],
         answer: 1,
         why: "Abandoning a stream without closing the connection leaves the server generating to completion, and because usage arrives only in the final chunk the client records nothing at all — the request becomes invisible rather than partially counted, which is exactly the 30% gap in §04. Calling `stream.close()` is what actually stops generation. Nothing is cancelled automatically and nothing is refunded; the work was done." },
 
       { stem: "Your prompt is 2,000 tokens and users complain about a slow spinner. Does streaming help?",
-        options: ["Yes — streaming always reduces perceived latency", "No — prefill alone is several seconds and there is nothing to stream until it finishes", "Yes, if you also raise max_tokens", "Only if the answer is short"],
+        options: ["Yes; streaming always cuts perceived latency", "No; prefill takes seconds before any token", "Yes, if you also raise max_tokens", "Only if the answer itself is short"],
         answer: 1,
         why: "The first token cannot exist until the prompt has been processed, and the measured prefill was 936.5 ms at 513 tokens, and the fitted line puts 2,000 tokens at about 3,566 ms — so the spinner is showing during prefill, which streaming has no access to. The levers there are cutting the prompt or caching its static prefix so the prefill is not repeated. Raising `max_tokens` would lengthen the response and make the total wait worse. Answer length is irrelevant to a delay that occurs before generation starts." }
     ]

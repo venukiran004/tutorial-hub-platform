@@ -332,22 +332,22 @@ least portable call site: 'extract' (3 parameters lost in total)`,
     title: "Check yourself",
     questions: [
       { stem: "You migrate a summariser using `frequency_penalty=0.5` from OpenAI to Anthropic. What happens?",
-        options: ["The parameter is translated to an equivalent", "Anthropic does not support it; depending on your client it errors or is silently dropped, and the output starts repeating", "The request fails with a clear error, always", "Nothing — penalties are applied client-side"],
+        options: ["It is translated to an equivalent parameter", "Unsupported: it errors or drops, then repeats", "The request fails with a clear error, always", "Nothing; penalties are applied client-side"],
         answer: 1,
         why: "Anthropic supports neither `frequency_penalty` nor `presence_penalty`, and whether you find out depends entirely on your client: a strict SDK errors, a permissive wrapper drops it and returns a successful response with the loop-breaking behaviour gone. There is no equivalent to translate to — the repetition has to move into the prompt. The third option is too optimistic about tooling, and it is precisely the assumption behind the quarter-long quality regression in §04. Penalties are applied server-side during sampling, not by any client." },
 
       { stem: "Which provider behaviour for an unsupported parameter is most dangerous?",
-        options: ["Rejecting the request with a 400", "Silently ignoring it and returning a normal response", "Reinterpreting it as a similar parameter", "They are equally risky"],
+        options: ["Rejecting the request with a 400", "Silently ignoring it", "Reinterpreting it as something similar", "They are all equally risky"],
         answer: 1,
         why: "A rejection tells you immediately and costs one failed request; a reinterpretation at least produces a related behaviour and is usually documented. Silent ignoring returns HTTP 200 with behaviour that does not match your configuration, so the failure surfaces later as an unexplained quality regression with no error, no alert and nothing in any diff. That asymmetry is why an abstraction layer must raise rather than drop." },
 
       { stem: "Model A costs $1 per million tokens and model B costs $2. Which is cheaper per task?",
-        options: ["A, by definition", "Not determinable — verbosity, tokenisation, retry rate and hidden reasoning tokens all break the comparison", "B, since it is presumably better", "A, unless it is more than twice as slow"],
+        options: ["A, by definition", "Not determinable from price alone", "B, since it is presumably better", "A, unless it is twice as slow"],
         answer: 1,
         why: "Four things separate rate from cost per task: a model that answers in twice as many tokens costs twice as much at the same rate; tokenisation differs by language, measured at 22% on French; a cheaper model that fails a schema 10% of the time costs 10% more than its rate implies; and a reasoning model's hidden tokens can be 10–100× the visible answer. The only meaningful comparison is cost per successfully completed task on your own traffic. Latency, in the fourth option, is a real constraint but not a cost per task." },
 
       { stem: "What should a provider-agnostic wrapper do with a parameter the target cannot honour?",
-        options: ["Drop it silently — best effort is the point of an abstraction", "Raise by default, or return an explicit list of what was dropped", "Map it to the closest equivalent automatically", "Log it at debug level"],
+        options: ["Drop it silently, as best effort", "Raise, or report what was dropped", "Map it to the closest equivalent", "Log it at debug level"],
         answer: 1,
         why: "A parameter that changes model behaviour cannot be dropped on a best-effort basis without the caller knowing, because the result is a valid response that does not do what the code configured — the hardest class of LLM bug to attribute. Automatic mapping is worse still: `frequency_penalty` and `repetition_penalty` are different arithmetic (1.4), so a silent translation produces a different strength of effect than the caller asked for. Debug-level logging is not visible when it matters, which is during an incident three weeks later." }
     ]

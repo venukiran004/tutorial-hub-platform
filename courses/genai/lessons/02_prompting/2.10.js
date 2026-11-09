@@ -365,22 +365,22 @@ closest five overall:
     title: "Check yourself",
     questions: [
       { stem: "A tool is never called even though it is clearly relevant. Where do you look first?",
-        options: ["The parameters schema", "The description — selection happens before the schema is read", "The temperature", "The tool_choice setting"],
+        options: ["The parameters schema", "The description", "The temperature", "The tool_choice setting"],
         answer: 1,
         why: "Selection is a matching problem over the tool's name and description; the parameters schema is read only once a tool has been chosen, so it cannot affect whether it is chosen. Measured, the description is 6 tokens of an 84-token definition and carries the entire decision. `tool_choice` is worth checking if it is set to `none`, but that would suppress all tools rather than one. Temperature affects sampling broadly and is not the mechanism." },
 
       { stem: "Your tool requires `account_id` and the conversation has not supplied one. What happens?",
-        options: ["The model asks the user for it", "The model emits a plausible-looking identifier that validates perfectly", "The request fails validation", "The tool is skipped"],
+        options: ["The model asks the user to supply it", "It invents a valid-looking identifier", "The request fails schema validation", "The tool is skipped for that turn"],
         answer: 1,
         why: "A required field must be filled, so the model produces something that satisfies the type — and a well-formed identifier passes the schema while pointing at nothing, or at someone else's account. The fix is to make the field nullable with a description saying null means unknown, and to name the tool that supplies it so the model plans two steps. Asking the user is the behaviour you want and is not what a required field with no instruction produces. Schema validation passes, which is exactly the problem." },
 
       { stem: "You have 30 tools and selection accuracy is poor. What is the most likely cause?",
-        options: ["30 is simply too many for any model", "Some pairs of descriptions cover overlapping ground", "The schemas are too complex", "Temperature is too high"],
+        options: ["30 is too many for any model", "Overlapping pairs of descriptions", "The schemas are too complex", "The temperature is too high"],
         answer: 1,
         why: "Selection degrades because of overlap rather than count — a set of thirty well-separated tools selects better than eight where three could plausibly answer the same question, so the audit is pairwise and an embedding similarity check surfaces the culprits in seconds. Schema complexity affects argument quality after selection. Temperature is a broad lever and not the mechanism. Count does matter for cost and for how easy separation is to maintain, but it is not the direct cause of a wrong choice." },
 
       { stem: "Your agent should always search before answering. How do you enforce it?",
-        options: ["Put \"always search first\" in the system prompt", "Force the tool on the first turn with `tool_choice`", "Raise the tool's description priority", "Remove all other tools"],
+        options: ["Say \"always search first\" in the prompt", "Force it on turn one with `tool_choice`", "Raise the description's priority", "Remove all the other tools"],
         answer: 1,
         why: "A prompt instruction influences a distribution; `tool_choice` naming the tool removes the decision entirely, and a step that should always happen is not a decision — it is step one of a pipeline. There is no priority field on a description. Removing the other tools would work for that turn and destroys the agent's ability to do anything else, which is a much larger change than forcing one call." }
     ]

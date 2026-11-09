@@ -320,17 +320,17 @@ spread: 0 to 6 of 6`,
     title: "Check yourself",
     questions: [
       { stem: "Your few-shot prompt is not following its instruction. The usual suggestion is moving the instruction to the end. What happens?",
-        options: ["It usually helps, due to recency", "On a few-shot prompt it can destroy it — measured, 6 of 6 fell to 0 of 6", "No change", "It only affects long prompts"],
+        options: ["It usually helps, due to recency bias", "It can wreck it: 6 of 6 fell to 0", "No change in accuracy at all", "It only affects very long prompts"],
         answer: 1,
         why: "In a few-shot prompt the examples and the query are one contiguous pattern, and putting a sentence between the last example and the query means the last thing in the context is prose — so the model continues prose. Measured, that took a working prompt to zero, which is worse than removing the instruction entirely (6 of 6). The advice is sound for an instruction-following prompt after a long document, where recency works in your favour; it inverts here, and the table does not say so." },
 
       { stem: "Why did the `a means b` separator score 1 of 6 where `a -> b` scored 6?",
-        options: ["The model does not understand the word 'means'", "`means` is ordinary English with many continuations; `->` appears almost exclusively as a mapping", "The prompt was longer", "Tokenisation of 'means' is unusual"],
+        options: ["The model does not understand 'means'", "`->` almost always marks a mapping", "That prompt was longer", "'means' tokenises unusually"],
         answer: 1,
         why: "The rank data shows the correct answer at rank 2 or 3 on five of six items under `means` — the model understands the task and the pattern is losing to ordinary language, which `a means b` invites and `a -> b` does not. That is the argument for preferring notation over prose in a few-shot block even though it reads worse. Length differences are trivial here, and `means` tokenises unremarkably; the issue is what else can follow it." },
 
       { stem: "A trailing space after `->` took a prompt from 6 of 6 to 0 of 6. What is the mechanism?",
-        options: ["The model treats whitespace as significant punctuation", "Tokenisation — the leading-space form of the answer is a different token from the bare form", "The prompt exceeded a length limit", "Temperature variance"],
+        options: ["Whitespace counts as significant punctuation", "The space changes which token comes next", "The prompt exceeded a length limit", "Ordinary temperature variance"],
         answer: 1,
         why: "` dry` is a single token distinct from `dry`, so a trailing space consumes the space the expected answer carried and the model's output no longer matches the token being checked for. That is why brittleness concentrates in changes affecting tokenisation while changes affecting only appearance — double newlines, reversed example order — held at 6 of 6. Nothing about length or sampling is involved; the measurement was deterministic argmax." },
 

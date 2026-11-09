@@ -331,7 +331,7 @@ base per-step accuracy 0.95
     title: "Check yourself",
     questions: [
       { stem: "A three-step chain replaces one call on a 3,000-token document. What is the cost ratio?",
-        options: ["About 3×, one per call", "About 1.9× — the document is read once and replaced by a small intermediate", "About 1×", "It depends entirely on the model"],
+        options: ["About 3×, one per model call", "About 1.9×: the document is read once", "About 1×, the same as before", "It depends entirely on the model"],
         answer: 1,
         why: "Measured, input rose only 34% because the document appears in step 1 and is replaced by a 300-token list of claims thereafter, while output tripled — giving 1.90× overall. The 3× intuition assumes every call carries the same input, which is exactly what decomposition avoids. It cannot be 1×, since output genuinely triples. The ratio does depend on the document size — it approaches 1.2× on a 30,000-token document — but the mechanism is the same on any model." },
 
@@ -341,12 +341,12 @@ base per-step accuracy 0.95
         why: "Independent failures multiply, so it is 0.9⁵ = 0.590 — which is why a chain of individually good steps can be a poor pipeline, and why adding a step to improve quality can reduce end-to-end accuracy. The first option ignores compounding entirely. The product assumption is pessimistic in practice, because real failures are correlated and a later step that can see the source sometimes recovers, but it establishes the shape correctly and it is computable." },
 
       { stem: "Your critique-and-refine chain shows almost no improvement over the draft alone. Why?",
-        options: ["The critique prompt needs rewording", "The critique step has the same information the draft step had, so it is asked to find errors it does not think are errors", "Three steps is too few", "Temperature is too low"],
+        options: ["The critique prompt needs rewording", "The critic knows no more than the drafter", "Three steps are too few to show a gain", "The temperature is set too low"],
         answer: 1,
         why: "A model reviewing its own output with no new information inherits its own blind spots — the errors it made are by construction the ones it does not recognise as errors — so self-critique alone gains much less than its 3× cost implies. The fix is to give the critique step something the draft lacked: a retrieved document to check against, a tool that verifies a calculation, a checklist, or a stronger model. Rewording and temperature do not change what information is available, and more steps compounds more failures." },
 
       { stem: "When should you NOT decompose a task?",
-        options: ["When it involves multiple models", "When splitting does not make the sub-tasks meaningfully easier", "When latency matters", "When the task is long"],
+        options: ["When it involves multiple models", "When splitting makes nothing easier", "Whenever latency matters", "Whenever the task is long"],
         answer: 1,
         why: "Modelled across base accuracies and splitting gains, the optimum is k=1 whenever the per-step gain is small — every extra step adds a failure rate that multiplies in, with nothing to offset it, plus latency and cost. That is the quantitative version of \"do not decompose to make a prompt tidier\". Multiple models and long tasks are both reasons *to* decompose. Latency is a real cost of chaining but not the deciding criterion: a chain that materially improves accuracy is often worth three round trips." }
     ]

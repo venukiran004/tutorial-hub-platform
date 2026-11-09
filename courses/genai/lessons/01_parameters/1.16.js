@@ -365,22 +365,22 @@ for n in (10, 50, 200, 1000, 5000):
     title: "Check yourself",
     questions: [
       { stem: "A response comes back with `finish_reason: \"content_filter\"`. What should the client do?",
-        options: ["Retry with the same request up to three times", "Surface it to the user; an identical retry will be blocked identically", "Increase max_tokens and retry", "Treat it as a transient error and back off"],
+        options: ["Retry the same request up to three times", "Surface it; an identical retry is blocked", "Increase max_tokens and try again", "Treat it as transient and back off"],
         answer: 1,
         why: "The same input to the same model produces the same block, so retrying spends latency to arrive at the identical outcome — and where the filter is applied to the output, the tokens were generated and billed before being rejected, so each attempt costs money. Raising `max_tokens` addresses truncation, which is a different `finish_reason` entirely. Treating it as transient is what a retry loop with no branch does, and it is why this needs its own case." },
 
       { stem: "200 clients are rate-limited simultaneously and all use exponential backoff with no jitter. What happens?",
-        options: ["They spread out naturally as the delays double", "All 200 retry in the same second, recreating the spike that caused the limit", "Only the first retry collides", "The provider queues them"],
+        options: ["They spread out naturally as delays double", "All 200 retry together, recreating the spike", "Only the very first retry collides", "The provider queues them in arrival order"],
         answer: 1,
         why: "A deterministic schedule produces identical delays from identical starting points, so the synchronisation that caused the rate limit is preserved through every round — measured, all 200 landed in one second, against nine seconds and a worst second of 29 with full jitter. Doubling the delay changes when the herd arrives, not that it is a herd. The collision repeats on every attempt, not just the first. Providers reject over a rate limit rather than queueing." },
 
       { stem: "Your user-facing endpoint has a 10-second timeout. How many retry attempts can you afford?",
-        options: ["As many as possible for resilience", "About three — five attempts is a 31-second worst case, which outlives the timeout", "Seven, the usual default", "One, since retries are unreliable"],
+        options: ["As many as possible, for resilience", "About three; five outlives the timeout", "Seven, the usual library default", "One, since retries are unreliable"],
         answer: 1,
         why: "The measured schedule gives worst cases of 7.0 seconds for three attempts, 31.0 for five and 123.0 for seven, so anything above three exceeds the caller's timeout — and a retry loop that outlives its caller is doing work nobody will receive. Maximising attempts treats retries as free, which they are not: they are latency the user experiences. A single attempt gives up the real benefit, since a 429 or a 503 very often succeeds on the second try." },
 
       { stem: "Which of these should your client NOT retry?",
-        options: ["A 429 rate limit", "A 503 from the provider", "A 400 for exceeding the context window", "A connection reset"],
+        options: ["A 429 rate-limit response", "A 503 from the provider", "A 400 for context overflow", "A connection reset by peer"],
         answer: 2,
         why: "A context-length error is deterministic in the request: the prompt is too long and will be exactly as long on the next attempt, so every retry fails identically while multiplying the latency of the failure. The fix is to shorten the prompt (1.5). 429s and 503s are transient and are precisely what backoff exists for, and a connection reset is retryable with the caveat that the request may already have been processed — which matters for anything with a side effect." }
     ]

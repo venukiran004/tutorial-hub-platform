@@ -361,17 +361,17 @@ for i, c in enumerate(CASES, 1):
         why: "The task was understood and performed, and the shape was acceptable — what the model was not told is who the answer is for, which is the context component. The instruction is present because a summary was produced; the input is present because it summarised real material; the format is a separate axis and could be right or wrong independently. Naming the component matters because the fix is a clause about the audience, not a rewrite." },
 
       { stem: "A well-written prompt with all four components produces confident summaries of material you never supplied. What is the cause?",
-        options: ["The instruction is ambiguous", "The input component rendered empty — the model is inventing what it cannot see", "The temperature is too high", "The model needs few-shot examples"],
+        options: ["The instruction is ambiguous", "The input rendered empty", "The temperature is too high", "The model needs few-shot examples"],
         answer: 1,
         why: "Content that does not correspond to any document you provided means the model had no document, which is an input failure — usually a template variable that rendered empty or a retrieval step that returned nothing. It is only findable by inspecting the fully rendered request rather than the template. Temperature affects which tokens are chosen, not whether material exists; examples would teach the format of an invented summary. Ambiguity in the instruction would produce a different task, not invented data." },
 
       { stem: "Output repeats the same bullet three times. What do you check first?",
-        options: ["Rewrite the prompt with clearer instructions", "`frequency_penalty` and the other sampling parameters", "Add few-shot examples of varied bullets", "Switch to a larger model"],
+        options: ["Rewrite the prompt more clearly", "frequency_penalty and sampling", "Add varied few-shot bullets", "Switch to a larger model"],
         answer: 1,
         why: "Repetition has a parameter that addresses it directly — frequency penalty (1.4) — so it is a one-line fix when it is the cause, and checking takes seconds against hours of prompt work. The four-component check is what identifies this as not a prompting problem: all four are present and the failure is in how tokens were sampled. Examples and a larger model are both expensive ways to work around a setting, and rewriting loses whatever the prompt was doing right." },
 
       { stem: "What distinguishes an engineered prompt from a written one?",
-        options: ["Length and specificity", "The presence of a test set and a metric that can show a change is an improvement", "Use of XML delimiters", "Few-shot examples"],
+        options: ["Length and specificity", "A test set and a metric", "Use of XML delimiters", "Few-shot examples"],
         answer: 1,
         why: "Techniques generate candidate prompts; only a test set tells you which candidate to keep, and without one a prompt change is an opinion that nobody can check six months later. Length, delimiters and examples are all techniques — useful, and each validated or refuted by the same measurement. The practical consequence is that the first thing to build for a new prompt is not the prompt, it is the twenty cases you will judge it on (2.12)." }
     ]

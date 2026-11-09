@@ -322,22 +322,22 @@ base accuracy 0.45
     title: "Check yourself",
     questions: [
       { stem: "Your model is right 40% of the time on a task. You apply 21-sample self-consistency. What happens?",
-        options: ["Accuracy rises toward 40% with less variance", "Accuracy falls to about 17% — voting amplifies the wrong answer", "Accuracy stays at 40%", "Accuracy rises above 50%"],
+        options: ["It rises toward 40%, with less variance", "It falls to ~17%: voting amplifies errors", "It stays exactly at 40% on average", "It rises above 50% with enough samples"],
         answer: 1,
         why: "Majority voting finds the answer the model produces most often, and below chance that is a wrong one — the binomial gives 0.1744 at p=0.40 with n=21, and 0.0264 at p=0.30. The mechanism that helps above 0.5 runs in reverse with the same force below it. Accuracy is unchanged only at exactly p=0.5, where voting does nothing at any N. Nothing about sampling can lift a sub-chance model above chance, because there is no signal being averaged in — only a mode being amplified." },
 
       { stem: "At p=0.8, self-consistency gives +0.096 accuracy at n=3 and +0.199 at n=21. What does that tell you about N?",
-        options: ["Always use 21 — more samples are always better", "n=3 captures nearly half the total gain for a seventh of the extra cost; returns fall steeply", "The relationship is linear", "n=21 is twice as good as n=3"],
+        options: ["Always use 21, as more samples are always better", "n=3 gets half the gain at a seventh of the cost", "The relationship between N and gain is linear", "n=21 is exactly twice as good as n=3"],
         answer: 1,
         why: "Per extra call the return falls from +0.0480 at n=3 to +0.0100 at n=21 — a factor of nearly five — while cost rises linearly, so most of the value is captured early. n=21 gives about twice the absolute lift for ten times the extra calls, which is the opposite of the fourth option's framing. Whether the extra calls are worth it depends entirely on what an error costs; at a penny per error the optimiser chose n=1 even at p=0.75, and at five pounds it chose n=23." },
 
       { stem: "You adopt self-consistency and aggregate accuracy rises from 0.78 to 0.85. What should you check before shipping?",
-        options: ["Nothing — the improvement is clear", "Per-segment accuracy, in case a slice below 0.5 is being made worse", "That temperature is high enough", "That N is odd"],
+        options: ["Nothing, since the improvement is clear", "Per-segment accuracy for slices below 0.5", "That the temperature is set high enough", "That N is an odd number to avoid ties"],
         answer: 1,
         why: "An aggregate above chance can contain a category below it, and on that category voting degrades accuracy exactly as the binomial predicts — measured in the incident, a 3% category went from 0.44 to 0.39 while the headline rose. A small slice moves the aggregate by nothing, so the harm is invisible without slicing. Temperature above zero is necessary for the samples to differ but is not the risk here; an odd N avoids ties and is worth doing, but it is a detail rather than the check that matters." },
 
       { stem: "What does tree-of-thought require that self-consistency does not?",
-        options: ["A higher temperature", "A way to evaluate a partial solution", "More samples", "Structured output"],
+        options: ["A higher sampling temperature", "A way to score a partial solution", "Many more samples per question", "Structured output for each step"],
         answer: 1,
         why: "Self-consistency only needs to compare final answers for equality, so it works wherever answers are discrete. Tree-of-thought has to score competing branches, which means an evaluator — and where that evaluator is the same model that generated the branches, it inherits the same misunderstandings and the gains are much smaller than the compute suggests. The technique earns its cost where evaluation is cheaper or more reliable than generation: a unit test, a constraint checker, a calculator. Temperature, sample count and output format are common to both." }
     ]

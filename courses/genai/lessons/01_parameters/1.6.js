@@ -338,12 +338,12 @@ token           logit        gap  p(baseline) p(at threshold)   flips?
     title: "Check yourself",
     questions: [
       { stem: "Your request sets `stop=[\".\"]` and the model generates 200 tokens, the first sentence ending after 12. What appears in `usage.completion_tokens`?",
-        options: ["12, because generation stopped there", "The number actually generated before the server halted — more than 12, and you are billed for it", "0, because the response was truncated", "200, always"],
+        options: ["12, because generation stopped right there", "More than 12: whatever ran before the halt", "0, because the response was truncated early", "200, every single time, whatever the stop"],
         answer: 1,
         why: "The stop check runs on decoded text after tokens are produced, so the server cannot halt before generating the token that completes the match, and it bills for everything it computed. The measured case kept 1 of 30 generated tokens and all 30 were computed. The first option is the mental model the lesson is against — the model is never told the parameter exists. The fourth assumes no early halt at all, which real servers do perform; the point is that it happens after the token, not before. Zero is never right: work was done." },
 
       { stem: "You add `logit_bias={12345: 5}` for a token currently at 5% of the probability mass. Roughly where does it end up?",
-        options: ["10%, since 5 is a modest number", "About 89% — a bias of b multiplies the odds by exp(b), and exp(5) ≈ 148", "50%, because it becomes tied for first", "Unchanged, since 5 is far below the ±100 range"],
+        options: ["About 10%, since 5 is a modest number", "About 89%: odds multiply by exp(5)", "About 50%, as it ties for first place", "Unchanged, as 5 is far below ±100"],
         answer: 1,
         why: "A bias is added to the logit, and from the ratio identity in 1.2 that multiplies the token's odds against every other token by `exp(5)` ≈ 148 — measured at 0.88936913, up from 0.051379. The first option reads the number as if it were a percentage or a linear nudge. The third confuses a bias with a tie: the measured tie point put the token near 0.10, because two tied leaders still compete with 50,255 others. The fourth mistakes the documented range for a scale on which 5 is small — in log-odds, 5 is enormous." },
 
@@ -353,7 +353,7 @@ token           logit        gap  p(baseline) p(at threshold)   flips?
         why: "A bias is keyed by token id, so banning the concept means enumerating every surface form — `refund`, ` refund`, `Refund`, ` REFUND`, ` refunds`, ` refunding` — and some of those are not single tokens at all, which means no single id can block them. The measured enumeration in §03 showed exactly this: seven surface forms, six distinct first tokens, and one that splits into two. The fourth option is the attempt that seems thorough and still leaks, and it also risks the incident in §04, where a banned id was shared with a legitimate word. A stop sequence would truncate the reply mid-sentence rather than avoiding the word, which is a worse outcome than saying it." },
 
       { stem: "Why does a token biased to exactly the logit gap reach about 0.10 rather than 0.5?",
-        options: ["Because the softmax is not normalised at that point", "Because the two tied tokens still compete with the other 50,255, which hold the rest of the mass", "Because logit_bias is applied after the softmax", "Because float32 rounding shifts the result"],
+        options: ["The softmax is not normalised at that point", "The pair still competes with 50,255 others", "logit_bias is applied after the softmax", "float32 rounding shifts the result"],
         answer: 1,
         why: "At the tie the biased token and the previous leader have identical logits and therefore identical probabilities, but a tie for first place is not a two-way contest — the remaining vocabulary still holds about 80% of the mass, and roughly 0.10 is each leader's share of it. The first option is wrong: softmax always normalises to 1. The third has the order backwards — bias is added to the logit, before the softmax, which is why the effect is multiplicative in the odds. The fourth invents a rounding effect at a magnitude where float32 has plenty of precision." }
     ]

@@ -611,7 +611,7 @@ print("  top_k=50  keeps                     : 50, at this and every temperature
         why: "Top-k keeps a fixed count by definition, and dividing every logit by a positive constant cannot change their ranking — so the same 50 tokens survive at every temperature, as measured at tau = 0.2, 0.8, 1.0 and 1.5. The first and third options describe top-p, whose count moved from 2 to 8,841 across that range. The fourth describes the top-p rule too: top-k never inspects the mass, only the order." },
 
       { stem: "A provider returns a logprob of −1.45 (probability 0.234) for the chosen token, on a request with `top_p=0.9`. What does that number describe?",
-        options: ["The model's raw probability for that token", "The probability after truncation and renormalisation over the surviving candidates", "The token's logit, converted to log space", "The probability the answer as a whole is correct"],
+        options: ["The model's raw probability for that token", "Its probability after truncation and renormalising", "The token's logit, converted into log space", "The probability the whole answer is correct"],
         answer: 1,
         why: "Truncation deletes candidates and the remainder is renormalised, so the reported number is conditional on your sampling settings — in the worked pipeline `' the'` went from 0.0846 raw to 0.2343 after top_k=50 and top_p=0.9 deleted 50,236 competitors. The first option is what people assume and is wrong for exactly that reason. The third confuses a logit with a log-probability: logits are unnormalised and here were all around −100. The fourth is a category error — this is a per-token quantity, and 9.14 covers why it is a poor confidence signal even for the token."},
 

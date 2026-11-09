@@ -310,22 +310,22 @@ best F1 0.67 at 10 phrases -- and the attack set is ten items I wrote`,
     title: "Check yourself",
     questions: [
       { stem: "Why is prompt injection not fixable the way SQL injection was?",
-        options: ["Models are not deterministic", "There is no parser separating instruction from data — everything arrives as one token sequence", "The attacks are too varied", "Providers have not implemented it yet"],
+        options: ["Models are not deterministic", "No parser separates instruction from data", "The attacks are far too varied", "Providers have not implemented it yet"],
         answer: 1,
         why: "Parameterised queries work because a database parses structure separately from values, so a value cannot become structure. A model infers which parts of its context are instructions from how the text reads, and the attacker writes some of that text — there is no channel to separate. Non-determinism is a different property and would not help if it were absent. Attack variety makes filtering hard but is a consequence rather than the cause, and this is not a feature providers are withholding." },
 
       { stem: "The keyword filter measures precision 0.33 and recall 0.30. What does that mean in practice?",
-        options: ["It catches most attacks but annoys some users", "It misses most attacks and blocks most legitimate messages — bad in both directions at once", "It is well calibrated for a first attempt", "Precision is low because the attack set is small"],
+        options: ["It catches most attacks but annoys some users", "It misses most attacks and blocks most users", "It is well calibrated for a first attempt", "Precision is low as the attack set is small"],
         answer: 1,
         why: "Recall 0.30 means seven of ten attacks pass through; precision 0.33 means two of every three blocks are a legitimate message — measured at six of eight benign inputs blocked. The expectation is a filter that trades annoyance for safety, and this one gets neither. The phrases are ordinary English, so attackers have unlimited paraphrases and users have unlimited innocent uses, and adding phrases worsens precision faster than it improves recall." },
 
       { stem: "You tune a keyword list to 0.80 recall on your attack set. What is the problem?",
-        options: ["Nothing — 0.80 is good", "It is fitted to the attacks you imagined; precision is still 0.57 and an attacker writes the eleventh", "Recall should be 1.0", "You need more benign examples"],
+        options: ["Nothing, since 0.80 recall is good enough", "It fits imagined attacks; precision is poor", "Recall really needs to be exactly 1.0", "You simply need more benign examples"],
         answer: 1,
         why: "The list was tuned against ten strings the author wrote, so high recall on that set is overfitting rather than generalisation — exactly 2.12’s problem in a security setting, and a spam filter’s millions of real examples are what make the analogy misleading. Precision also never exceeded 0.60 and was 0.57 at the best F1, so even at its best the filter is wrong more often than right when it fires. More benign examples would improve the precision estimate and would not fix the generalisation problem." },
 
       { stem: "Which defence layer makes a successful injection harmless rather than less likely?",
-        options: ["Delimiter isolation", "An input classifier", "Least privilege and authorising as the requesting user", "Output filtering for leaked instructions"],
+        options: ["Delimiter isolation", "An input classifier", "Least privilege as the user", "Output filtering for leaks"],
         answer: 2,
         why: "If tools authorise as the user making the request rather than as the agent, a model talked into asking for something simply gets a refusal from your code — the attack succeeds at the text level and achieves nothing, which requires no recognition of the attack at all. The other three are probabilistic: delimiters and classifiers raise the bar without a guarantee, and output filtering catches the extraction case specifically. Five of the six layers are of that kind; this is the one that is not." }
     ]

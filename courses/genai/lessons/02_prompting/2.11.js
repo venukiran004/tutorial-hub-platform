@@ -328,22 +328,22 @@ Simple+CoT        162          -          -         -`,
     title: "Check yourself",
     questions: [
       { stem: "What does `BootstrapFewShot` actually optimise?",
-        options: ["The wording of the instruction", "Which demonstrations to include, by keeping traces the metric approves", "The model's weights", "The temperature and sampling parameters"],
+        options: ["The wording of the instruction", "Which demonstrations to include", "The model's weights", "The sampling parameters"],
         answer: 1,
         why: "It runs the module over training inputs, keeps the traces where the metric says the output was correct, and uses those as few-shot demonstrations — automated example selection rather than instruction search. Searching instructions as well needs `MIPROv2` and considerably more compute. Weight optimisation is `BootstrapFinetune`, a different member of the family. Sampling parameters are not part of what any teleprompter searches." },
 
       { stem: "You version your DSPy signatures, metric and training set in git. Is your deployment reproducible?",
-        options: ["Yes — that is everything that defines the module", "No — the compiled artefact must be saved too, or each build searches again and finds something different", "Only if you pin the model version", "Only if the metric is deterministic"],
+        options: ["Yes; that defines the whole module", "No; the compiled artefact must be saved", "Only if you pin the model version", "Only if the metric is deterministic"],
         answer: 1,
         why: "Compilation is a search whose result depends on the model's behaviour and on sampling, so running it in the build produces a different prompt each time — which is how a team can lose a good prompt and be unable to recover it from identical inputs. The artefact has to be produced deliberately, committed, and loaded at runtime. Pinning the model and a deterministic metric both reduce variance and neither makes an unsaved search reproducible." },
 
       { stem: "DSPy generates 135 tokens where your hand-written prompt is 30. What are the extra tokens buying?",
-        options: ["Better accuracy, always", "A parsing contract that works on any model without schema support", "Faster inference", "Automatic chain-of-thought"],
+        options: ["Better accuracy, always", "A portable parsing contract", "Faster inference overall", "Automatic chain-of-thought"],
         answer: 1,
         why: "The generated prompt is field delimiters, a template and an explicit terminator — machinery that lets the adapter extract typed fields deterministically from any model's response, including models with no structured-output support. Accuracy is not guaranteed by scaffolding and depends on the task and the optimisation. More tokens is slower, not faster. Chain-of-thought is a separate module (`dspy.ChainOfThought`), which measured at a further 47 prompt tokens." },
 
       { stem: "When is DSPy NOT worth the setup?",
-        options: ["When you have more than five prompts", "When you have no labelled data, one model, and a single well-understood prompt", "When you use structured output", "When latency matters"],
+        options: ["When you have more than five prompts", "No labels, one model, one known prompt", "When you use structured output", "Whenever latency matters"],
         answer: 1,
         why: "All three of the conditions fail together there: without labelled data there is nothing to optimise against, with one model portability is worth nothing, and a single prompt does not amortise a framework — and at 419% token overhead on a simple signature you would be paying for benefits you are not using. Several prompts is a reason for it rather than against. Structured output and DSPy solve overlapping problems but are not exclusive. Latency is affected by token count, not by the framework as such." }
     ]

@@ -365,17 +365,17 @@ ratio of the two penalties on the most common token: 16.0x
         why: "Frequency penalty is rate × count = 0.5 × 6 = 3.0; presence penalty is flat at 0.5 regardless of the count. The first option applies the count to both and erases the only difference between the parameters. The third has them the wrong way round. The fourth ignores the rate on the frequency side. In odds terms the gap is large: `exp(-3.0)` ≈ 0.050 against `exp(-0.5)` ≈ 0.607, so one has made the token twenty times less likely and the other about a third." },
 
       { stem: "Why must a repetition penalty implemented as division branch on the sign of the logit?",
-        options: ["Because negative logits are invalid input to softmax", "Because dividing a negative logit increases it, rewarding the token instead of penalising it", "Because float division is undefined for negatives", "Because the penalty must be between 1.0 and 2.0"],
+        options: ["Negative logits are invalid input to softmax", "Dividing a negative logit raises it", "Float division is undefined for negatives", "The penalty must lie between 1.0 and 2.0"],
         answer: 1,
         why: "−100.0 divided by 1.2 is −83.3, which is a higher score — so the token you meant to discourage becomes more likely, and real logit vectors are routinely all-negative (the one measured in 1.1 ran from −129.87 to −100.25). The first option is wrong: softmax is defined for any real input and is shift-invariant, which is why all-negative vectors are unremarkable. The third is simply false. The fourth describes the parameter's conventional range and has nothing to do with the sign problem." },
 
       { stem: "Output loops at `repetition_penalty=1.0`, is clean at 1.2, and looks identical at 1.2, 1.5 and 2.0. What do you conclude?",
-        options: ["Anything at or above 1.2 is equally safe", "The penalty has already reordered every argmax it was going to; the higher settings are untested, not proven safe", "The penalty stops working above 1.2", "The model ignores values above 1.2"],
+        options: ["Anything at or above 1.2 is equally safe", "Higher settings are untested, not proven safe", "The penalty simply stops working above 1.2", "The model ignores any value above 1.2"],
         answer: 1,
         why: "Under greedy decoding a penalty only changes the output where it flips which token is largest, so once it is strong enough to flip all the ties it was going to, further increases produce no visible change — the measured sweep showed exactly this flat top from 1.2 to 2.0. That is an absence of evidence, not evidence of safety: on a different prompt, or with sampling, 2.0 will behave very differently from 1.2. The third and fourth options invent a ceiling in the implementation that does not exist; the penalty is applied at every setting, it just has nothing left to change on this input." },
 
       { stem: "A 300-word product description mentions the product name once and then says \"it\" for four paragraphs. Which setting is the likely cause?",
-        options: ["Temperature too low", "A high frequency penalty compounding on the repeated name", "top_p too high", "A presence penalty, which charges for the first use"],
+        options: ["Temperature set too low", "A high frequency penalty", "top_p set too high", "A presence penalty on first use"],
         answer: 1,
         why: "Frequency penalty scales with count, so a name the description must repeat is penalised harder every time it appears — at 1.2 the fifth mention carries a reduction of 6.0, a factor of `exp(-6)` ≈ 0.0025 against every alternative. The fourth option is close but wrong on the mechanism: a presence penalty is flat, so it charges once and then stops getting stronger, which cannot produce the escalating avoidance described. Low temperature would produce more repetition, not less. A high top_p widens the candidate set but does nothing to specifically suppress a token that has already been used." }
     ]

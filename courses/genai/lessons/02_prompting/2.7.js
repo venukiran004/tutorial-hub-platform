@@ -339,7 +339,7 @@ the schema replaces 8 of 14 clauses (57%)`,
     title: "Check yourself",
     questions: [
       { stem: "You migrate from a format prompt to a schema. Which clause must NOT be deleted?",
-        options: ["\"Return a JSON object\"", "\"Use null for any value the document does not state\"", "\"currency is one of GBP, USD, EUR\"", "\"All fields are required\""],
+        options: ["\"Return a JSON object\"", "\"Use null for any unstated value\"", "\"currency is one of GBP, USD, EUR\"", "\"All fields are required\""],
         answer: 1,
         why: "A schema can make a field nullable but cannot say when null is the right answer, so deleting that clause leaves the model to produce a plausible value for anything the source does not state — and every such value satisfies the schema, which is exactly the incident in §04. The other three are pure shape: `type: object`, an `enum`, and `required` respectively, all enforceable and therefore genuinely redundant once the schema exists." },
 
@@ -349,12 +349,12 @@ the schema replaces 8 of 14 clauses (57%)`,
         why: "A repaired object is one nobody specified — `{\"a\": 1}` is indistinguishable from a response where `b` was genuinely absent, so a loud failure becomes a plausible record with a gap in it, found months later if at all. Retrying is cheap and usually succeeds, and persistent failure is a real signal about the prompt or the input. Asking the model to repair its own output adds a call and the same guessing problem. An empty object discards the failure entirely." },
 
       { stem: "Where is the best place to put \"ISO 4217 code, e.g. GBP\"?",
-        options: ["The system prompt", "The field's `description` in the schema", "A comment in the code", "A few-shot example"],
+        options: ["In the system prompt", "In the field's description", "In a comment in the code", "In a few-shot example"],
         answer: 1,
         why: "A `description` sits adjacent to the point at which the field is generated, where it competes with nothing; the same sentence in a system prompt is several hundred tokens earlier and competing with every other instruction there. This is also why 1.8's exercise concluded `title` keys are safe to strip and descriptions are not. A code comment is invisible to the model. A few-shot example would work but costs far more tokens for one field's convention." },
 
       { stem: "Your parse rate goes from 94% to 100% after adopting structured output. What does that tell you about correctness?",
-        options: ["Correctness improved by 6%", "Nothing — the schema guarantees the one property that can no longer fail", "Correctness is now guaranteed", "The model got better"],
+        options: ["Correctness improved by 6%", "Nothing about correctness", "Correctness is now guaranteed", "The model itself got better"],
         answer: 1,
         why: "Parse rate measures whether the output has the right shape, and a schema makes that structurally incapable of failing — so the metric now reads 100% regardless of whether the values are right, which is the same trap as the 99.4% parse rate in 1.8. Correctness of contents is a separate question needing range checks, cross-field consistency and referential checks against the source, none of which a schema performs. Nothing about the model changed." }
     ]
