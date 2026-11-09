@@ -635,45 +635,25 @@ def test_ddof_choice_is_visible():
     questions: [
       {
         stem: "`X.shape` is `(3, 4)`. What does `X.sum(axis=0)` return?",
-        options: [
-          "A shape (3,) array — one value per row",
-          "A shape (4,) array — axis 0 is collapsed, giving one value per column",
-          "A scalar",
-          "A shape (3, 1) array"
-        ],
+        options: ["Shape (3,), one value per row", "Shape (4,), one value per column", "A single scalar for the whole array", "Shape (3, 1), a column of row sums"],
         answer: 1,
         why: "The argument names the axis being removed, so `(3, 4)` becomes `(4,)`. People call this \"summing the columns\" because of what the result contains, which is exactly the confusion that breaks down on a 4-D array — say \"collapse axis 0\" instead."
       },
       {
         stem: "`X - X.mean(axis=1)` raises on a (100, 20) array but works on a (4, 4) one. Why?",
-        options: [
-          "Square arrays are special-cased",
-          "On a square array the (4,) result aligns with the columns just as well as the rows, so it broadcasts wrongly instead of raising",
-          "The mean is undefined for non-square arrays",
-          "It is a NumPy bug"
-        ],
+        options: ["Square arrays are special-cased by NumPy", "On a square array it broadcasts wrongly, silently", "The mean is undefined for non-square arrays", "It is a bug in NumPy's broadcasting rules"],
         answer: 1,
         why: "Broadcasting aligns from the right, so a `(n,)` result of collapsing axis 1 meets the column dimension. When the two dimensions happen to be equal it succeeds and subtracts row means column-wise — every value wrong, no exception. `keepdims=True` removes the ambiguity entirely."
       },
       {
         stem: "`np.nansum` on a slice that is entirely nan returns what?",
-        options: [
-          "nan",
-          "0.0, which is indistinguishable from a group that genuinely totalled zero",
-          "It raises",
-          "The count of nan values"
-        ],
+        options: ["nan, since every value was missing", "0.0, which looks like a real zero total", "It raises an error on the empty slice", "The number of nan values in the slice"],
         answer: 1,
         why: "nansum treats nan as zero, so an empty group and a zero-valued group produce the same output. In a revenue report those are very different claims — which is why an aggregate should always be reported next to the count it was computed from."
       },
       {
         stem: "`a = np.array([1.0, np.nan, 3.0])`. What is `a.argmax()`?",
-        options: [
-          "2",
-          "1 — the index of the nan, because nan compares False against everything in the running-maximum test",
-          "0",
-          "nan"
-        ],
+        options: ["2, the index of the largest real value", "1, the index of the nan", "0, the index of the first element", "nan, because the array contains nan"],
         answer: 1,
         why: "nan is neither greater nor less than anything, so the scan's behaviour falls out of implementation detail rather than intent. `np.nanargmax` gives 2. The practical rule is never to call `argmax` on data that might contain missing values."
       }

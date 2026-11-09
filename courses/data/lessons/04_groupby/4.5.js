@@ -644,45 +644,25 @@ def test_join_to_lookup_works_on_canonical_form():
     questions: [
       {
         stem: "Why is `s.str.upper()` 30× faster on `string[pyarrow]` than on `object` dtype?",
-        options: [
-          "Arrow strings are shorter",
-          "The object version calls Python's `str.upper` once per element; the Arrow version calls one compiled kernel over the whole array",
-          "Arrow caches results",
-          "Object dtype does extra validation"
-        ],
+        options: ["Arrow stores each string in fewer bytes", "One compiled kernel instead of a per-item call", "Arrow caches the results of earlier calls", "Object dtype performs extra validation per item"],
         answer: 1,
         why: "The accessor is vectorised in form on both dtypes, but only the Arrow backend has a compiled implementation. On `object` the per-element Python call dominates. The conversion is one line and is best done at read time so every later operation benefits."
       },
       {
         stem: "You validate identifiers with `codes.str.match(r\"AB\\d{2}\")` and `\"AB123\"` passes. Why?",
-        options: [
-          "The regex needs a `+`",
-          "`match` anchors only at the start — `fullmatch` anchors both ends and would reject the extra digit",
-          "`\\d{2}` matches three digits",
-          "match is case-insensitive"
-        ],
+        options: ["The regex needs a `+` after the digits", "match anchors only at the start; use fullmatch", "`\\d{2}` can match three digits in a row", "match is case-insensitive by default"],
         answer: 1,
         why: "`match` asks \"does the string begin with this pattern\"; `contains` asks \"does it appear anywhere\"; only `fullmatch` asks \"is the whole string exactly this\". Format validation is the third question, and the other two let malformed values through silently."
       },
       {
         stem: "`\"Acme Ltd\"` and `\"Acme\\u00a0Ltd\"` appear as two groups in a groupby. What is the difference?",
-        options: [
-          "Trailing whitespace",
-          "A non-breaking space in the second — visually identical, different bytes, and Unicode normalisation (NFKD/NFKC) folds it to a plain space",
-          "Different capitalisation",
-          "One has a trailing period"
-        ],
+        options: ["A trailing space at the end of one", "A non-breaking space; normalise Unicode", "Different capitalisation of the name", "One of them has a trailing period"],
         answer: 1,
         why: "Groupby matches exact bytes. Look-alike characters — non-breaking spaces, fullwidth digits, ligatures, accented forms — need Unicode normalisation before case folding and whitespace collapsing. Do it once at ingestion into a separate key column."
       },
       {
         stem: "`.str.extract` on a pattern with three named groups returns what?",
-        options: [
-          "A Series of tuples",
-          "A DataFrame with three string columns named after the groups, with NaN across a row that did not match",
-          "A list per row",
-          "A MultiIndex Series"
-        ],
+        options: ["A Series of tuples, one tuple per row", "A DataFrame, one column per named group", "A list of every match found in each row", "A Series indexed by a MultiIndex"],
         answer: 1,
         why: "Named groups become column names; every extracted value is a string regardless of what it looks like, so numeric fields need `pd.to_numeric` afterwards. The all-NaN rows are the parse failures — count them, report them, and do not drop them."
       }

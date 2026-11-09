@@ -671,45 +671,25 @@ def test_rejects_degenerate_input():
     questions: [
       {
         stem: "Why can a script with `np.random.seed(42)` at the top still produce different results between runs?",
-        options: [
-          "The seed expires",
-          "The seed sets one global state that any imported library also draws from and advances",
-          "NumPy re-seeds from the clock periodically",
-          "Integer seeds are not supported"
-        ],
+        options: ["The seed expires after a fixed number of draws", "Imported libraries draw from the same global state", "NumPy re-seeds itself from the clock periodically", "Integer seeds are not supported by the new API"],
         answer: 1,
         why: "The legacy API has a single hidden generator shared by the whole process. A library that samples internally — for plot dithering, jitter, or a shuffle inside a helper — advances the state your next line reads. `default_rng` gives you a generator object nothing else can touch."
       },
       {
         stem: "A sampling function does `rng = np.random.default_rng(42)` on its first line. What breaks?",
-        options: [
-          "Nothing — it is properly seeded",
-          "Every call returns the identical sample, so repeated bootstrap draws are the same and the estimated variance collapses",
-          "It is too slow",
-          "The seed must be prime"
-        ],
+        options: ["Nothing, since the generator is properly seeded", "Every call returns the same sample", "It is too slow to create a generator per call", "The seed must be a prime number to work"],
         answer: 1,
         why: "The generator is recreated from the same seed on every call, so there is no sequence at all. The confidence interval comes out implausibly tight — wrong in the flattering direction, which is why it survives review. Accept the generator as a parameter instead."
       },
       {
         stem: "For a parallel bootstrap, how should replicates be seeded so the result does not depend on worker count?",
-        options: [
-          "Seed each worker with `seed + worker_id`",
-          "Spawn one `SeedSequence` per replicate from a single root, and pass it to whichever worker runs it",
-          "Seed once in the parent before forking",
-          "Use a different seed for each run"
-        ],
+        options: ["Seed each worker with seed + worker_id", "One spawned SeedSequence per replicate", "Seed once in the parent before forking", "Use a fresh seed for every run"],
         answer: 1,
         why: "One sequence per replicate means replicate 37 gets the same stream regardless of which process handles it, so `workers=1` and `workers=8` give bit-identical output. Seeding per worker makes the answer a function of the machine's core count."
       },
       {
         stem: "Everything is seeded and a model still cannot be rebuilt exactly. What is the most likely cause?",
-        options: [
-          "The seed was too small",
-          "The source data changed between runs — a mutable table queried at two different times",
-          "NumPy is non-deterministic",
-          "The model has random initialisation"
-        ],
+        options: ["The seed value was too small", "The source data changed between runs", "NumPy is non-deterministic underneath", "The model has random initialisation"],
         answer: 1,
         why: "Most irreproducibility investigations end at the input, not the generator. That is the argument for recording a content hash and row count alongside the seed — thread count, library versions and float summation order are the other candidates, and none of them is affected by seeding."
       }

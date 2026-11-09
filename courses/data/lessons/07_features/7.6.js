@@ -654,45 +654,25 @@ def test_more_bins_keep_more_resolution_until_they_do_not():
     questions: [
       {
         stem: "Why should `pd.qcut` not be applied to the test set directly?",
-        options: [
-          "It is slower than `cut`",
-          "It computes new quantile edges from the test distribution — a different binning from training, and a leak of test-set information into the feature definition",
-          "It cannot handle duplicates",
-          "It returns intervals rather than integers"
-        ],
+        options: ["It is slower than cut on test data", "It recomputes edges from the test set", "It cannot handle duplicate edges", "It returns intervals, not integers"],
         answer: 1,
         why: "The edges are the fit. `qcut(..., retbins=True)` on training data returns them; `cut(test, edges)` applies them. The same rule holds for supervised edges, which additionally used y and belong inside the CV loop."
       },
       {
         stem: "A gradient-boosting model scores 0.70 on a raw feature and 0.67 after the feature is binned into six intervals. What happened?",
-        options: [
-          "The bins were too wide",
-          "The tree could only split at the six edges instead of wherever the target changed — binning gave it a coarser version of a feature it already knew how to read",
-          "One-hot encoding was needed",
-          "The bins introduced NaN"
-        ],
+        options: ["The six bins were too wide", "Splits were limited to six fixed edges", "One-hot encoding of the bins was needed", "The binning introduced NaN values"],
         answer: 1,
         why: "Trees find their own thresholds. Binning a tree's input can only remove split points, so it is neutral at best. It helps a linear model, which otherwise has one coefficient and one direction — and that asymmetry is the whole decision."
       },
       {
         stem: "`pd.cut([18], [0, 18, 65])` with the default `right=True` puts 18 in which bin?",
-        options: [
-          "(18, 65] — the adult bin",
-          "(0, 18] — the child bin, because right-closed intervals include their upper edge",
-          "Neither; it raises",
-          "NaN"
-        ],
+        options: ["(18, 65], the adult bin", "(0, 18], the child bin", "Neither; it raises", "NaN, outside both"],
         answer: 1,
         why: "Right-closed means `(a, b]`, so 18 belongs to the interval ending at 18. For an 'adult from 18' rule that is wrong, and it is silent. `right=False` gives `[18, 65)`. State the convention and test the edge value."
       },
       {
         stem: "When is binarising a feature at a single threshold the right representation?",
-        options: [
-          "Whenever the feature is skewed",
-          "When the threshold is a rule in the world, the signal is presence rather than amount, or the effect saturates past a point",
-          "Never; it loses too much",
-          "Only for text data"
-        ],
+        options: ["Whenever the feature is heavily skewed", "When the threshold is real or effects saturate", "Never, since binarising loses too much", "Only for features derived from text"],
         answer: 1,
         why: "`age >= 18`, `spend > 0`, `days_overdue > 90` — the world already binarised these, or the amount past the cut carries no further signal. Everything but the sign is lost, so keep the raw feature alongside the flag when the tail matters."
       }

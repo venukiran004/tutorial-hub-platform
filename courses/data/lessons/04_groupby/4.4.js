@@ -738,45 +738,25 @@ def test_bad_timestamp_raises():
     questions: [
       {
         stem: "What is the difference between `tz_localize` and `tz_convert`?",
-        options: [
-          "They are aliases",
-          "`tz_localize` attaches a zone to a naive stamp, stating what it meant; `tz_convert` translates an aware stamp to another zone, keeping the instant",
-          "`tz_localize` is for Series and `tz_convert` for DataFrames",
-          "`tz_convert` only works with UTC"
-        ],
+        options: ["They are aliases for the same operation", "localize labels a naive stamp; convert moves it", "localize is for Series, convert for DataFrames", "tz_convert only works when the target is UTC"],
         answer: 1,
         why: "Localising says \"this naive value was London time\"; converting says \"show this instant in New York\". Localising an already-aware stamp raises and converting a naive one raises — the errors are what stop the two being confused."
       },
       {
         stem: "A daily report uses `resample(\"24h\")` on a timezone-aware index. What happens at a DST transition?",
-        options: [
-          "Nothing — 24 hours is a day",
-          "The bins drift by an hour at each transition and never realign, because a calendar day is 23 or 25 hours on those dates",
-          "It raises an AmbiguousTimeError",
-          "The transition day is dropped"
-        ],
+        options: ["Nothing happens, since 24 hours is a day", "Bins drift an hour at each switch and stay off", "It raises an AmbiguousTimeError at the switch", "The transition day is dropped from the output"],
         answer: 1,
         why: "`\"24h\"` is a fixed duration; `\"D\"` is a calendar day. On an aware index `resample(\"D\")` knows the spring day is 23 hours and bins correctly. The 24-hour version is wrong on the transition day and offset by an hour on every day after it."
       },
       {
         stem: "`hourly.resample(\"D\").sum()` on a frame with `sales`, `price` and `stock` columns. What is wrong?",
-        options: [
-          "Nothing — sum is the default",
-          "Every column is summed: daily \"price\" becomes 24 prices added together and \"stock\" the sum of 24 balances — aggregation must be chosen per column",
-          "resample cannot handle multiple columns",
-          "It should be mean for everything"
-        ],
+        options: ["Nothing; sum is the right default for all", "Price and stock get summed too; choose per column", "resample cannot handle more than one column", "It should use mean for every column instead"],
         answer: 1,
         why: "Sum is right for a count, mean for a level, last for a balance. `resample(\"D\").agg({\"sales\": \"sum\", \"price\": \"mean\", \"stock\": \"last\"})` says which is which. The default produces numbers that look plausible and mean nothing."
       },
       {
         stem: "Which upsampling fill invents no data?",
-        options: [
-          "`ffill`",
-          "`asfreq` — new slots are NaN; every other fill is a claim about values nobody observed",
-          "`interpolate`",
-          "`bfill`"
-        ],
+        options: ["`ffill`, repeating the last value", "`asfreq`, leaving new slots as NaN", "`interpolate`, between known values", "`bfill`, from the next known value"],
         answer: 1,
         why: "`ffill` claims the value held until the next reading — right for a state, wrong for a flow. `interpolate` claims a smooth curve and uses the future reading. `asfreq` leaves the gaps as gaps, which is the honest starting point before deciding what a gap means."
       }

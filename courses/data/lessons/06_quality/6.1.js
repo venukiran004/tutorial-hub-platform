@@ -817,45 +817,25 @@ def test_findings_are_ranked():
     questions: [
       {
         stem: "A missing-rate table shows twelve columns each 1.2% missing. What does it not tell you?",
-        options: [
-          "Which columns are missing",
-          "Whether those twelve columns are missing on the same 1.2% of rows — a distinct population — or scattered independently",
-          "The total missing count",
-          "The dtype of each column"
-        ],
+        options: ["Which of the columns are missing values", "Whether they are missing on the same rows", "The total count of missing values", "The dtype of each of the columns"],
         answer: 1,
         why: "Per-column rates cannot distinguish scattered gaps from a block of rows that lost twelve fields together. Count missing values per row: a spike at twelve is a second source, a partial record type or a broken import, and it gets its own finding before anything is imputed."
       },
       {
         stem: "A column of order timestamps shows 90% of values at exactly 00:00:00. What should you conclude?",
-        options: [
-          "Most orders happen at midnight",
-          "The source stores dates, not datetimes, and a fake midnight was added — hour-of-day features from this column are meaningless",
-          "The timezone is wrong",
-          "The data is sorted"
-        ],
+        options: ["Most orders really are placed at midnight", "Dates with a fake midnight; hour is noise", "The timezone conversion has gone wrong", "The data happens to be sorted by time"],
         answer: 1,
         why: "A real time column has a spread of times. A spike at midnight is a date with a placeholder time. The 10% that are not midnight are worth a look too — they may be a different source that does record time."
       },
       {
         stem: "Every distribution looks plausible, every type is right, and the file has 60% of the rows it should. Which check catches this?",
-        options: [
-          "describe()",
-          "A row count against the source system or the previous extract",
-          "value_counts on the key",
-          "Missingness per column"
-        ],
+        options: ["describe() on every column", "A row count against the source", "value_counts on the key column", "Missingness rate per column"],
         answer: 1,
         why: "A truncated export is internally consistent. Nothing about the data that is present reveals the data that is absent — only an external expectation does. That is why sanity checks are a separate step and why they need a reference outside the file."
       },
       {
         stem: "Which of these is a finding, in the sense the profiler should emit?",
-        options: [
-          "\"amount looks a bit off\"",
-          "\"amount: 42 values are −999, a sentinel that would read as an outlier\"",
-          "\"check the amount column\"",
-          "\"amount has a low mean\""
-        ],
+        options: ["\"amount looks a bit off in places\"", "\"amount: 42 values are the −999 sentinel\"", "\"check the amount column carefully\"", "\"amount has a lower mean than usual\""],
         answer: 1,
         why: "A finding names the column, gives the count, and states the consequence — something a colleague could verify with one query and act on. The others are feelings. A profiler's value is measured by how many of its outputs are the first kind."
       }

@@ -750,45 +750,25 @@ def test_every_log_row_has_evidence_and_rule():
     questions: [
       {
         stem: "Why should winsorisation bounds be fit on the training split only?",
-        options: [
-          "It is faster",
-          "Bounds from the full data include the test rows, so the cap is a value the model 'saw' — in production a larger-than-ever value gets capped at the training percentile, which the test should reflect",
-          "The test set has no outliers",
-          "sklearn requires it"
-        ],
+        options: ["It is faster than fitting on all rows", "Full-data bounds leak the test rows", "The test set contains no outliers", "scikit-learn requires it for winsorising"],
         answer: 1,
         why: "Any statistic estimated from data is a fit step, and fit steps see training data only. A test row above every training value is capped at the training 99th percentile — exactly what happens to a production row — and the test score is honest about it."
       },
       {
         stem: "A regression slope moves by a third when one row is removed. That row has a typical x and a wildly wrong y. Is that consistent?",
-        options: [
-          "Yes — any outlier moves the slope",
-          "No — a row at a typical x has little leverage and mostly moves the intercept; a slope change that large implies an extreme x as well, which is what Cook's distance would show",
-          "Yes, if the y is large enough",
-          "Cannot tell"
-        ],
+        options: ["Yes, because any outlier moves the slope a lot", "No: a typical x has little leverage on the slope", "Yes, provided the y error is large enough", "It cannot be told from the information given"],
         answer: 1,
         why: "Influence depends on residual and leverage together. A wrong y at the centre of x shifts the line up; a wrong y at the edge of x rotates it. Cook's distance combines both and identifies the consequential rows, which are not the same as the unusual ones."
       },
       {
         stem: "Twenty rows have amounts 100× too large from a pence/pounds mix-up. Which treatment is best?",
-        options: [
-          "Huber regression",
-          "Divide by 100 — the cause is known and the correction is exact; a robust loss would only limit the damage, not remove it",
-          "Cap at the 99th percentile",
-          "Remove the rows"
-        ],
+        options: ["Fit a Huber regression to limit the damage", "Divide by 100: the cause is known and exact", "Cap the column at its 99th percentile", "Remove the twenty affected rows entirely"],
         answer: 1,
         why: "When the cause is known, correct it. Robust models survive errors but still feel them — the comparison shows Huber at MAE 12 against 8 for the corrected data. And go and fix the source, because it will send pence again."
       },
       {
         stem: "A policy of removing all flagged rows scores best in validation. What should you check?",
-        options: [
-          "Nothing — it won",
-          "Whether the validation set was also stripped of extremes; if production contains bulk orders, the honest test set must too, and on that set removal is the worst policy",
-          "The random seed",
-          "Whether capping was tried"
-        ],
+        options: ["Nothing, because that policy won fairly", "Whether validation was stripped of extremes too", "Whether a different random seed changes it", "Whether capping the values was also tried"],
         answer: 1,
         why: "A model that never saw an amount above 300 meets one at 20,000 in production. The test set that flatters removal is one where those rows were removed too. Score every policy on a test set that reflects what the model will actually meet."
       }

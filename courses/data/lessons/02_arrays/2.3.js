@@ -808,45 +808,25 @@ def test_scaling_does_not_change_the_verdict():
     questions: [
       {
         stem: "Why prefer `np.linalg.solve(A, b)` over `np.linalg.inv(A) @ b`?",
-        options: [
-          "They are equivalent; solve is just shorter",
-          "solve is faster, numerically more accurate, and raises on a singular matrix rather than returning values",
-          "inv only works on symmetric matrices",
-          "solve handles complex numbers"
-        ],
+        options: ["They are equivalent; solve is just shorter", "solve is faster, more accurate and raises", "inv only works on symmetric matrices", "solve handles complex numbers and inv does not"],
         answer: 1,
         why: "`inv` does more work — a full inverse plus a product — and the inverse of an ill-conditioned matrix is itself badly wrong, with that error then multiplied through. Explicitly forming an inverse is almost always a step taken because the mathematical notation writes it that way."
       },
       {
         stem: "A linear model's coefficients change sign between weekly refits while predictions stay accurate. What is the likely cause?",
-        options: [
-          "Overfitting",
-          "Collinear features making the coefficients unidentifiable — the fit is fine, the parameters are not separable",
-          "Too few training rows",
-          "A bug in the optimiser"
-        ],
+        options: ["Overfitting to each week's training data", "Collinear features make coefficients unidentifiable", "Too few training rows in each weekly refit", "A bug in the optimiser used for the fit"],
         answer: 1,
         why: "Near-duplicate features make `XᵀX` ill-conditioned, so many coefficient vectors fit almost equally well and the solver picks between them arbitrarily. Check `cond(X.T @ X)` on standardised features, and demonstrate it by refitting on bootstrap samples — that persuades where a condition number does not."
       },
       {
         stem: "What do the two einsum rules say about `\"bhqd,bhkd->bhqk\"`?",
-        options: [
-          "It transposes the last two axes",
-          "`d` appears in both inputs and not the output, so it is summed over; b, h, q and k are carried through",
-          "It computes an outer product over all axes",
-          "It requires square inputs"
-        ],
+        options: ["It transposes the last two axes of each input", "d is summed over; b, h, q and k are carried", "It computes an outer product over every axis", "It requires both inputs to be square"],
         answer: 1,
         why: "A repeated letter absent from the output is contracted. This is the attention score computation: for each batch and head, every query against every key, summing over the feature dimension. The letters are the documentation, which is einsum's real advantage over transpose-and-matmul."
       },
       {
         stem: "You run PCA without centring the data first. What happens?",
-        options: [
-          "Nothing — SVD centres internally",
-          "The first component points at the mean rather than the direction of greatest variance",
-          "It raises an error",
-          "The components come out in the wrong order"
-        ],
+        options: ["Nothing, since SVD centres the data internally", "PC1 points at the mean, not the variance", "It raises an error about uncentred data", "The components come out in the wrong order"],
         answer: 1,
         why: "SVD finds directions of greatest *magnitude*, not greatest variance. On uncentred data the offset from the origin dominates, so the leading component describes where the cloud sits rather than how it is shaped — and adding a constant to every feature would change the result."
       }

@@ -621,45 +621,25 @@ def test_min_df_drops_one_off_tokens():
     questions: [
       {
         stem: "Why is a `HashingVectorizer` immune to vocabulary leakage?",
-        options: [
-          "It uses a fixed English vocabulary",
-          "It has no fit step — each token maps to a column by hashing, so nothing is learned from any data and the test set cannot shape the columns",
-          "It lowercases everything",
-          "It is not; it leaks the same way"
-        ],
+        options: ["It uses a fixed English vocabulary list", "No fit step: columns come from hashing", "It lowercases every token before hashing", "It is not; it leaks just the same way"],
         answer: 1,
         why: "There is no vocabulary to fit, store or contaminate. The price is collisions — two tokens in one bucket, softened by `alternate_sign` — and coefficients on buckets rather than words. IDF, if wanted, is a separate `TfidfTransformer` that is then the fit step."
       },
       {
         stem: "What does the IDF term do to a word that appears in every document?",
-        options: [
-          "Doubles its weight",
-          "Drives its weight to the floor — `log(N/df)` with df = N is zero (or 1 in sklearn's smoothed form), so a ubiquitous word contributes almost nothing",
-          "Removes the document",
-          "Leaves it unchanged"
-        ],
+        options: ["Doubles its weight in every document", "Drives its weight to the floor", "Removes the document from the matrix", "Leaves its weight unchanged"],
         answer: 1,
         why: "IDF measures how distinctive a term is across the corpus. 'The' is in every document and says nothing about any of them; 'refund' is in a few and says a lot. The weights are fit from the training corpus and applied unchanged at transform time."
       },
       {
         stem: "A learned entity embedding for 40,000 product IDs is trained on the target. What leakage risk does it carry?",
-        options: [
-          "None; embeddings are unsupervised",
-          "The same as target encoding — each row's label shaped its product's vector, so it must be trained on the training split only, with rare products merged into a trained 'unknown' index",
-          "Only if the dimension is too large",
-          "Only for unseen products"
-        ],
+        options: ["None, since embeddings are unsupervised", "Like target encoding: train on train only", "Only when the dimension is too large", "Only for products unseen in training"],
         answer: 1,
         why: "The embedding is fit to the target by gradient descent; a product with three rows has a vector fit to three labels. Train on the training split, regularise the embedding, group rare IDs into an 'unknown' index that is itself trained — the same discipline as 7.1 and 7.2, in a different representation."
       },
       {
         stem: "A pretrained sentence-embedding model has a 256-token limit and is given a 2,000-word ticket. What happens?",
-        options: [
-          "It raises an error",
-          "The text is silently truncated — only the beginning is embedded, and the resolution described at the end is never read",
-          "It embeds the whole text at lower quality",
-          "It splits the text automatically"
-        ],
+        options: ["It raises an error on the long input", "It is silently truncated to the start", "It embeds the whole text at lower quality", "It splits the text into chunks automatically"],
         answer: 1,
         why: "Most embedding models truncate without warning. Chunk long documents and pool the chunk vectors, embed a summary, or at least know which part was read — a ticket whose outcome is in the final paragraph embeds as its opening complaint."
       }

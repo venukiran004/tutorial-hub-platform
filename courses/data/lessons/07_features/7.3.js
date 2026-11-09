@@ -685,45 +685,25 @@ def test_intercept_is_the_prior_log_odds():
     questions: [
       {
         stem: "Region 'north' holds 34% of all fraud cases and 17% of all non-fraud cases. What is its WoE?",
-        options: [
-          "0.17",
-          "ln(0.34 / 0.17) ≈ 0.69 — north leans toward fraud by a factor of about 2 in the odds",
-          "0.34 − 0.17 = 0.17",
-          "ln(0.17 / 0.34) ≈ −0.69"
-        ],
+        options: ["0.17, the gap in shares", "ln(0.34 / 0.17) ≈ 0.69", "0.34 − 0.17 = 0.17", "ln(0.17 / 0.34) ≈ −0.69"],
         answer: 1,
         why: "WoE is the log of the ratio of the category's share of positives to its share of negatives. The shares are of each class total, not of the category. Positive means the category is over-represented among positives; the sign convention depends on which class is 'positive'."
       },
       {
         stem: "Why does WoE suit logistic regression specifically?",
-        options: [
-          "It is bounded between 0 and 1",
-          "Logistic regression is linear on the log-odds scale, and WoE is already the log-odds shift for each category — so one coefficient near 1 replaces one coefficient per level",
-          "It handles missing values",
-          "It is faster to compute than one-hot"
-        ],
+        options: ["It is bounded between 0 and 1", "WoE is already on the log-odds scale", "It handles missing values natively", "It is faster to compute than one-hot"],
         answer: 1,
         why: "The model's job for a WoE feature is to learn β ≈ 1, on a scale where a straight line is the right shape. Twenty categoricals with ten levels each is 180 one-hot columns or 20 WoE columns at the same fit — smaller, more sensibly regularised, and every coefficient readable."
       },
       {
         stem: "A continuous feature's WoE across ten quantile bins rises, dips slightly at bin 7, and rises again. What should you do for a scorecard?",
-        options: [
-          "Keep it; the dip is real",
-          "Merge bins until the WoE is monotonic — the dip is within sampling noise, and a scorecard cannot print 'risk rises, then falls slightly, then rises'",
-          "Drop the feature",
-          "Use more bins"
-        ],
+        options: ["Keep it, since the dip is real", "Merge bins until WoE is monotonic", "Drop the feature from the scorecard", "Use more bins to resolve the dip"],
         answer: 1,
         why: "With a few thousand rows per bin at a low event rate, adjacent rates differ by less than their standard error. Merging neighbours that break the trend gives fewer, cleaner bins at slightly lower IV — and a step function the model can trust. If the effect is genuinely U-shaped, monotonicity is the wrong assumption and should not be forced."
       },
       {
         stem: "A feature has IV = 0.85. What is the most likely explanation?",
-        options: [
-          "It is the best feature in the set",
-          "It is a leak — a proxy for the target, or a field populated after the outcome was known; IV above 0.5 is the 'suspicious' band for this reason",
-          "The eps smoothing is too small",
-          "It has too many categories"
-        ],
+        options: ["It is the best feature in the set", "It is probably a leak of the target", "The eps smoothing is set too small", "It has too many distinct categories"],
         answer: 1,
         why: "Real features rarely separate a binary outcome that cleanly. A field like 'days since default flag set' is populated only for defaulters, its bins separate the classes almost perfectly, and its IV is enormous. The screen's top band catches it before a model is fitted; kept, it would give AUC near 1.0 in training and nothing in production."
       }

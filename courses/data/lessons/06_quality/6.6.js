@@ -835,45 +835,25 @@ def test_ranking_changes_with_mechanism():
     questions: [
       {
         stem: "Why does mean imputation attenuate the correlation between the imputed column and everything else?",
-        options: [
-          "It changes the column's mean",
-          "The imputed rows all sit at one x value regardless of their y, so they cannot follow any trend and pull every relationship flatter",
-          "It introduces NaN",
-          "It only affects categorical columns"
-        ],
+        options: ["It changes the column's mean", "Fills sit at one x, ignoring y", "It introduces NaN values", "It only affects categorical columns"],
         answer: 1,
         why: "A third of the points form a vertical stripe at the mean. They have real y values and a made-up x, so they contribute nothing to the covariance and everything to the denominator. The correlation drops — here from 0.93 to 0.78 — and every model inherits the flattened slope."
       },
       {
         stem: "What is the difference between a single iterative imputation and one draw of multiple imputation?",
-        options: [
-          "Nothing",
-          "The single fill uses the conditional mean — every value exactly on the regression line; the MI draw samples from the conditional distribution, so the fills have realistic scatter and different seeds give different values",
-          "MI uses a different model",
-          "MI is faster"
-        ],
+        options: ["Nothing; the two produce the same fill", "Single fills the mean; MI samples with scatter", "MI uses an entirely different model family", "MI runs faster than iterative imputation"],
         answer: 1,
         why: "`sample_posterior=True` is the switch. Without it, imputed rows are too well-behaved — residual spread a hundredth of the observed rows' — and the model learns a relationship cleaner than reality. With it, repeated draws disagree, and that disagreement is the between-imputation variance Rubin's rules add to the SE."
       },
       {
         stem: "An imputer is fit on the full dataset before the train/test split. What is wrong?",
-        options: [
-          "Nothing, imputers are not models",
-          "The test rows' values influenced the fill applied to training rows — a leak; and for a structured imputer, the test rows' relationships leaked too",
-          "It is slower",
-          "The split must come after every transformation"
-        ],
+        options: ["Nothing, since imputers are not models", "Test rows shaped the training fill: a leak", "It makes the pipeline slower", "The split must follow every transform"],
         answer: 1,
         why: "Every imputer has a fit step — a mean, a set of neighbours, a regression — and that step learns from whatever it sees. Fit on train, transform both; a Pipeline enforces it by construction. The test that shifts the test fold by a thousand and asserts the training fill is unchanged is the proof."
       },
       {
         stem: "For a gradient-boosted tree model, what is often the best way to handle a column with missing values?",
-        options: [
-          "Mean imputation",
-          "Leave the NaN in — the model learns at each split which branch missing rows take, which is a learned per-split indicator that imputation would erase",
-          "Drop the column",
-          "KNN imputation"
-        ],
+        options: ["Mean imputation before training it", "Leave NaN in; splits learn a branch", "Drop the column from the model", "KNN imputation before training it"],
         answer: 1,
         why: "LightGBM, XGBoost, CatBoost and HistGradientBoosting accept NaN natively. Inventing a value removes information the model could have used. For linear models, KNN and neural networks, which cannot take NaN, impute — and add the indicator."
       }

@@ -646,45 +646,25 @@ def test_single_transaction_customer_has_share_one():
     questions: [
       {
         stem: "Why is `g.agg(lambda s: s.mean())` much slower than `g.agg(\"mean\")`?",
-        options: [
-          "Lambdas are always slow in Python",
-          "The string dispatches to compiled code; the lambda is a Python call executed once per group",
-          "The lambda copies the data",
-          "The string form caches results"
-        ],
+        options: ["Lambdas are always slow in Python", "The string runs compiled code; lambdas loop", "The lambda copies each group's data", "The string form caches its results"],
         answer: 1,
         why: "pandas recognises built-in names (and bare NumPy functions) and runs them in Cython over all groups at once. A callable it cannot recognise must be called per group — 10,000 groups, 10,000 Python calls, even when the body is identical."
       },
       {
         stem: "`transform(lambda s: s.head(1))` raises. Why?",
-        options: [
-          "head is not allowed in transform",
-          "transform must return one value per input row or a scalar — a shorter Series cannot be aligned back",
-          "The lambda needs an axis argument",
-          "It only works with strings"
-        ],
+        options: ["head() is simply not allowed inside transform", "transform needs one value per row; head is shorter", "The lambda needs an explicit axis argument", "transform only works on string columns"],
         answer: 1,
         why: "transform's contract is a same-length result aligned to the source index. It is not \"apply that returns a Series\" — for a result with a different shape per group, `apply` is the verb, with its speed cost and its index to clean up."
       },
       {
         stem: "`out[\"rank\"] = tx.groupby(\"k\").apply(lambda g: g[\"v\"].rank()).values`. What is wrong?",
-        options: [
-          "rank needs ascending=False",
-          "apply concatenates in group order, and .values assigns positionally — the ranks land on the wrong rows unless the input was sorted by k",
-          "apply cannot return a Series",
-          "The column must be reset first"
-        ],
+        options: ["rank needs ascending=False to rank correctly", "apply's group order meets positional .values", "apply cannot return a Series from a lambda", "The column must be reset before assignment"],
         answer: 1,
         why: "The apply result has a `(k, original_index)` MultiIndex in sorted-group order. Stripping it and assigning positionally attaches the first group's ranks to whichever rows come first in the input. `groupby(\"k\")[\"v\"].rank()` returns the source index and needs no `.values`."
       },
       {
         stem: "When is `apply` the right choice?",
-        options: [
-          "Whenever a lambda is involved",
-          "When a function needs the whole group frame and returns several outputs that do not decompose into named aggregations",
-          "For any custom function",
-          "Never"
-        ],
+        options: ["Whenever a lambda is involved in the step", "When a whole group yields several linked outputs", "For any custom function, whatever it returns", "Never, because agg and transform cover everything"],
         answer: 1,
         why: "A Series-per-group summary combining, say, the row with the max value's label and a range needs the whole frame at once. That is legitimate, and the cost is accepted. Most other uses of `apply` are a slow spelling of `agg` or `transform`."
       }

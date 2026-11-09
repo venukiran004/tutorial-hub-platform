@@ -522,56 +522,31 @@ print(f"threshold {t_star:.2f}: precision {precision_score(y[scored], yhat):.2f}
     questions: [
       {
         stem: "`df[\"cust_n_orders\"] = df.groupby(\"customer_id\").amount.transform(\"count\")` appears in a churn model. What is wrong and which check shows it?",
-        options: [
-          "Nothing — order count is a legitimate feature",
-          "It counts every order in the extract, including those after each row, so it encodes how long the customer stayed — which is the label; the truncation test shows it changing when later rows are removed",
-          "It should be `size` not `count`",
-          "It needs a `reset_index`"
-        ],
+        options: ["Nothing; order count is a legitimate feature", "It counts later orders too, encoding the label", "It should use size rather than count", "It needs a reset_index after transform"],
         answer: 1,
         why: "A whole-history count is a clock. The as-of version is `groupby(...).cumcount()` — orders strictly before this one — and the truncation test is the automated guard: rebuild on a shortened history and any past value that changes used the future."
       },
       {
         stem: "Which pair of post-shipping checks works without any labels?",
-        options: [
-          "Live AUC and live precision",
-          "PSI per feature against the training distribution, and a data contract on dtypes, ranges, categories and null rates at every scoring call",
-          "Retraining accuracy and calibration",
-          "A/B test lift"
-        ],
+        options: ["Live AUC and live precision", "Feature PSI and a data contract", "Retraining accuracy and calibration", "A/B test lift on revenue"],
         answer: 1,
         why: "Labels arrive late — chargebacks, churn windows, outcomes — or never for rows the model declined. Drift in the inputs and violations of the schema are visible immediately, and they are the first signal that the live score will be wrong when it finally arrives."
       },
       {
         stem: "Two runs of the same training script produce predictions that differ in the sixth decimal place. What is the right response?",
-        options: [
-          "Ignore it — the difference is negligible",
-          "Find the non-deterministic step — an unseeded estimator, `n_jobs` changing summation order, a set iteration, a SQL query without ORDER BY — because the next difference will not be in the sixth decimal",
-          "Average the two runs",
-          "Round the predictions"
-        ],
+        options: ["Ignore it; the difference is negligible", "Find the non-deterministic step", "Average the two runs' predictions", "Round the predictions to five places"],
         answer: 1,
         why: "The run-it-twice test is strict on purpose. A tiny difference proves the pipeline has a step that is not under the seed's control; the same step can produce a different feature order or a different split next time."
       },
       {
         stem: "A model rejects 10 % of applications, and only approved applications ever receive a repayment label. What happens at retraining, and what is the fix?",
-        options: [
-          "Nothing — more data is more data",
-          "The next model trains only on rows the current model approved, learns that its approvals are fine, and the rejected region is never re-examined; keep a small random slice that is decided without the model so an unbiased labelled sample exists",
-          "Use class weights",
-          "Retrain less often"
-        ],
+        options: ["Nothing, since more data is always more data", "It learns only from its approvals; keep a random slice", "Use class weights to correct the selection bias", "Retrain the model less often so the bias is smaller"],
         answer: 1,
         why: "A feedback loop is a selection mechanism on the training data. The holdout slice is expensive — some of those applications will default — and it is the only source of ground truth for the region the model has stopped looking at."
       },
       {
         stem: "In the review procedure, why is 'find the split' the second step rather than 'read the features'?",
-        options: [
-          "Because splits are shorter to read",
-          "Because everything above the split is applied to test rows too — every statistic, imputation, encoding, aggregate and resampling there is suspect, and reading upwards from the split is how to find them in one pass",
-          "Because the split determines the metric",
-          "It is not; features come first"
-        ],
+        options: ["Because splits are shorter to read", "Everything above it touches test rows too", "Because the split determines the metric", "It is not; features come first"],
         answer: 1,
         why: "The split is the line that separates what the model may learn from what it must be tested on. Finding it first turns the rest of the notebook into two regions with different rules, and the region above it is where the leaks live."
       }

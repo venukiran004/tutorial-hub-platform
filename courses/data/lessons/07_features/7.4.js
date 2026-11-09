@@ -592,45 +592,25 @@ def test_target_scaling_changes_ridge_fit():
     questions: [
       {
         stem: "A column has median 20, 99th percentile 65, and one value of 5,000. After min-max scaling, where is the 99th percentile?",
-        options: [
-          "Around 0.99",
-          "Around 0.012 — the outlier defines the range, and 99% of the data is compressed into the bottom 1.2% of it",
-          "Around 0.5",
-          "Unchanged"
-        ],
+        options: ["Around 0.99, near the top", "Around 0.012, squeezed low", "Around 0.5, in the middle", "Unchanged by the scaling"],
         answer: 1,
         why: "The maximum is the outlier, so the range is ~5,000 and every normal value is a tiny fraction of it. A network with a sigmoid sees a feature that is effectively zero for every normal row. Robust scaling puts the 99th percentile at about 3 IQRs and leaves the outlier at 350 — still an outlier, but the bulk is usable."
       },
       {
         stem: "Why does an L2-regularised logistic regression need scaled inputs when unregularised OLS does not?",
-        options: [
-          "Logistic regression is non-linear",
-          "The penalty shrinks all coefficients equally, but a per-pound coefficient is tiny and a per-year one is large — so the penalty hits the small-unit feature hard and the large-unit one barely",
-          "Regularisation requires positive features",
-          "It does not; the difference is the optimiser"
-        ],
+        options: ["Logistic regression is a non-linear model", "One penalty hits small-unit features hardest", "Regularisation requires positive features", "It does not; the optimiser is the difference"],
         answer: 1,
         why: "Unpenalised OLS just rescales each coefficient to match the unit, so predictions are unchanged. A penalty on coefficient magnitude is not unit-aware: it treats 0.00001 per pound as 'small' and 0.06 per year as 'large'. Scaling makes the penalty fair — and the optimiser converges faster when no direction is a thousand times steeper than another."
       },
       {
         stem: "A scaler is fit on the full dataset before `cross_val_score`. What is the consequence?",
-        options: [
-          "None; scaling is not a model",
-          "Every fold's validation rows contributed to every fold's training mean and scale — a leak whose size depends on how different the folds are, which is what CV was meant to measure",
-          "The scores are pessimistic",
-          "The scaler will fail on new data"
-        ],
+        options: ["None, since scaling is not a model", "Validation rows shaped the training scale", "The cross-validated scores are pessimistic", "The scaler will fail on new data"],
         answer: 1,
         why: "The mean is a statistic learned from data, and a statistic that saw the validation rows is a leak. Inside a Pipeline the scaler is refit per fold. On a homogeneous dataset the effect is small; on time-split or grouped data — where the folds differ — it is not."
       },
       {
         stem: "A Ridge model with `alpha=1.0` is fit on a salary target in the tens of thousands. What happens to the regularisation?",
-        options: [
-          "It works as intended",
-          "It barely bites — the coefficients are large in raw units and alpha=1 is negligible against them; scaling y makes the same alpha a real penalty, and the predictions must then be inverted",
-          "It over-regularises",
-          "Ridge cannot fit large targets"
-        ],
+        options: ["It works exactly as intended", "It barely bites on such large units", "It over-regularises the coefficients", "Ridge cannot fit targets that large"],
         answer: 1,
         why: "The penalty's strength is relative to the coefficient magnitudes, which scale with y. `TransformedTargetRegressor` standardises y, fits, and inverts on predict — the manual route has four places to forget the inverse, and reporting z-scores as salaries is the usual result."
       }

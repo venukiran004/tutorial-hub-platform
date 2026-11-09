@@ -434,23 +434,13 @@ print("pipeline: contract verified")`,
     questions: [
       {
         stem: "Why does `__init__` in a custom transformer store its arguments unchanged and do nothing else?",
-        options: [
-          "Convention only",
-          "`get_params`/`set_params` and `clone` read and write those attributes by name; deriving values in `__init__` means `set_params` changes an argument without changing the derived value, so grid search silently tunes nothing",
-          "For speed",
-          "Because fit will overwrite them"
-        ],
+        options: ["It is a convention with no technical reason", "clone and set_params rely on stored arguments", "It makes construction faster", "Because fit will overwrite them anyway"],
         answer: 1,
         why: "BaseEstimator introspects the `__init__` signature and expects attributes of the same names. Derived state belongs in `fit`, with a trailing underscore, so it is recomputed on every clone and every fold."
       },
       {
         stem: "A validation fold contains a `region` value that never appeared in the training fold. What should the pipeline do, and where is that decided?",
-        options: [
-          "Raise an error — unseen data is a bug",
-          "Map it to all-zero one-hot columns via `handle_unknown=\"ignore\"`; the decision lives in the encoder step so every fold and the serving path behave identically",
-          "Refit the encoder on the validation fold",
-          "Drop the row"
-        ],
+        options: ["Raise an error, since unseen data is a bug", "All-zero columns via handle_unknown, in the step", "Refit the encoder on the validation fold", "Drop the row from the validation fold"],
         answer: 1,
         why: "Transform-time rows will always contain things fit-time rows did not. Refitting on them is the leak the pipeline exists to prevent; dropping rows is impossible in transform. The encoder's unknown-handling makes the behaviour deterministic and shared."
       },
@@ -467,23 +457,13 @@ print("pipeline: contract verified")`,
       },
       {
         stem: "A model is validated with a Python pipeline and served by a hand-written reimplementation of the preprocessing in another service. Where is the risk?",
-        options: [
-          "None, if the code review was careful",
-          "Training–serving skew: every learnt statistic and every edge case — unknown category, null, rare level — must be reproduced exactly, and any drift between the two produces predictions the validation never measured",
-          "Only latency",
-          "Only in the model weights"
-        ],
+        options: ["None, provided the code review was careful", "Training–serving skew in every statistic", "Only latency between the two services", "Only in the model weights themselves"],
         answer: 1,
         why: "The pipeline's value is that the object that scored in CV is the object that serves. A reimplementation reintroduces the possibility of a silent mismatch; if it is unavoidable, the batch-of-one outputs of both paths are compared on a fixed sample in CI."
       },
       {
         stem: "What does `memory=\"cache_dir\"` on a Pipeline change?",
-        options: [
-          "It stores the model weights",
-          "Fitted transformer steps are cached by their inputs and parameters, so a grid over the final estimator's parameters reuses the same fitted preprocessing per fold instead of refitting it for every candidate",
-          "It enables out-of-core training",
-          "It makes the pipeline deterministic"
-        ],
+        options: ["It stores the model weights on disk", "It caches fitted steps and reuses them", "It enables out-of-core training", "It makes the pipeline deterministic"],
         answer: 1,
         why: "Caching is a performance feature with no effect on correctness: the cached step was still fitted on that fold's training rows. It matters when preprocessing is the expensive part and the grid is over the model."
       }

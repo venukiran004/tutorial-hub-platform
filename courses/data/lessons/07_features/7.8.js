@@ -747,45 +747,25 @@ def test_one_hot_weekday_sums_to_one():
     questions: [
       {
         stem: "Why should an elapsed-time feature never be computed against `datetime.now()`?",
-        options: [
-          "It is slow",
-          "The feature changes every time the code runs — training and scoring see different tenures, and a backfill next year ages every historical row — so it neither reproduces nor matches production",
-          "Timezones make it wrong",
-          "pandas does not support it"
-        ],
+        options: ["It is slow to call on every row", "It changes on every run; nothing reproduces", "Timezones make it wrong by an hour", "pandas does not support datetime.now()"],
         answer: 1,
         why: "An explicit `as_of` makes the feature a pure function of the data and the reference: the snapshot date in training, the scoring time in production, the historical date in a backfill. The transformer can then also reject any timestamp or reference after `as_of` as a label."
       },
       {
         stem: "Ridge on `(sin, cos)` of hour fits hourly demand with a morning and an evening peak poorly. What is missing?",
-        options: [
-          "More training data",
-          "A second harmonic — one sine-cosine pair draws one smooth bump per day; `sin(2θ), cos(2θ)` lets the linear model draw two",
-          "The raw hour integer",
-          "Standardisation"
-        ],
+        options: ["More training data", "A second harmonic", "The raw hour integer", "Standardised inputs"],
         answer: 1,
         why: "Sine and cosine of the base angle span a single sinusoid. Two peaks need the second harmonic; three need the third. It is a Fourier basis for the feature, and CV chooses how many terms. A tree finds both peaks on the raw integer without any of this."
       },
       {
         stem: "`days_to_contract_end` uses a date in the future. Is it a leak?",
-        options: [
-          "Yes — any future date is a leak",
-          "No — the contract end date was known at `as_of` (it is in the contract), so it could have been computed at scoring time; `days_until_churn` uses a date that was not known, and that is the label",
-          "Only if the contract has ended",
-          "Only for tree models"
-        ],
+        options: ["Yes, any future date is a leak", "No: the end date was known at as_of", "Only once the contract has ended", "Only for tree-based models"],
         answer: 1,
         why: "The test is not whether the date is after `as_of` but whether its value was known at `as_of`. A scheduled event is a feature; an outcome is a label. The transformer enforces the distinction by rejecting reference dates after `as_of` that were not known in advance."
       },
       {
         stem: "Why is `dayofyear` encoded via the year fraction rather than the integer 1–366?",
-        options: [
-          "Integers cannot be encoded cyclically",
-          "The period changes in leap years — sin/cos of `day/365` puts 31 December slightly out of place in a leap year, while `(ts − year_start) / year_length` always wraps exactly to 1 January",
-          "The fraction is faster to compute",
-          "Trees require it"
-        ],
+        options: ["Integers cannot be encoded cyclically", "Leap years shift a /365 encoding", "The fraction is faster to compute", "Tree models require the fraction"],
         answer: 1,
         why: "A fixed period of 365.25 is approximately right; the exact year fraction is right by construction and costs one line. The test asserts 31 December and 1 January are within 0.05 on the circle while a six-month gap is near the diameter."
       }

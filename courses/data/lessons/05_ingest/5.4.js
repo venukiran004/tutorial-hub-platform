@@ -663,45 +663,25 @@ def test_reconciles_to_csv(tmp="t_arch"):
     questions: [
       {
         stem: "Reading two columns of 26 takes 18 s from CSV with `usecols` and 0.12 s from Parquet. Why the gap?",
-        options: [
-          "Parquet is cached",
-          "CSV `usecols` parses every byte of every row and discards 24 columns afterwards; Parquet seeks to the two columns and never reads the rest",
-          "The Parquet file is smaller",
-          "pandas uses multiple threads for Parquet"
-        ],
+        options: ["The Parquet file was cached in memory", "CSV parses every byte; Parquet seeks columns", "The Parquet file is smaller on disk", "pandas uses more threads for Parquet"],
         answer: 1,
         why: "Row-oriented files cannot locate one column without passing through the others. The 150× difference is the columnar layout, before compression or threading are considered."
       },
       {
         stem: "What is the small-files problem?",
-        options: [
-          "Files under 1 KB cannot be compressed",
-          "Over-partitioning produces thousands of tiny files, each with fixed overhead and a separate open/seek — reading them is slower than reading one large file",
-          "Parquet cannot store fewer than 1,000 rows",
-          "Small files lose their statistics"
-        ],
+        options: ["Files under 1 KB cannot be compressed", "Many tiny files, each paying fixed overhead", "Parquet cannot store under 1,000 rows", "Small files lose their column statistics"],
         answer: 1,
         why: "Partitioning on three columns, or appending daily without compaction, produces this. Partition on one or two low-cardinality columns, target 100 MB–1 GB per file, and compact append-only partitions periodically."
       },
       {
         stem: "Which layout serves both \"one region over a date range\" and \"all regions for a month\"?",
-        options: [
-          "Partition by region and month",
-          "Partition by month, sort by region within each file — both queries prune by month, and the region filter skips row groups via statistics without splitting the month into four files",
-          "Partition by day",
-          "One file, sorted by date"
-        ],
+        options: ["Partition by both region and by month", "Partition by month; sort by region within", "Partition by individual calendar day", "One single file, sorted only by date"],
         answer: 1,
         why: "Partitioning on both would make the all-regions query open four files per month for the same bytes. Sorting gives the region filter most of the pushdown benefit at no cost to the other query shape."
       },
       {
         stem: "Why is pickle unsuitable for storing data at rest?",
-        options: [
-          "It is too slow",
-          "Loading a pickle executes arbitrary code, and the format breaks across library versions",
-          "It cannot store DataFrames",
-          "It does not compress"
-        ],
+        options: ["It is too slow for large frames", "Loading runs code; versions break it", "It cannot store a DataFrame at all", "It does not compress the data well"],
         answer: 1,
         why: "A pickle from an untrusted source is a security decision, and one from last year's pandas may not load in this year's. It is a serialisation for a running process. Parquet stores the same frame with types intact and is readable by everything."
       }

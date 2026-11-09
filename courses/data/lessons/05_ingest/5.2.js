@@ -774,45 +774,25 @@ def test_column_names_clean_in_every_encoding():
     questions: [
       {
         stem: "A column shows `\"cafÃ©\"` where `\"café\"` was expected. What happened?",
-        options: [
-          "The file is corrupted",
-          "UTF-8 bytes were decoded as Latin-1 or cp1252 — the two-byte é became two one-byte characters",
-          "The font does not support accents",
-          "The file is UTF-16"
-        ],
+        options: ["The file was corrupted in transit", "UTF-8 bytes were decoded as Latin-1", "The display font does not support accents", "The file is actually encoded as UTF-16"],
         answer: 1,
         why: "`Ã` followed by a symbol is the signature. The bytes were fine; the reader used the wrong table. Re-read with `encoding=\"utf-8\"`, or if the mojibake was saved upstream, `s.encode(\"latin-1\").decode(\"utf-8\")` round-trips it — but report that the source is mis-exporting."
       },
       {
         stem: "Why is `errors=\"ignore\"` dangerous in a data pipeline?",
-        options: [
-          "It is slow",
-          "It deletes every byte that fails to decode, so names and identifiers silently lose characters",
-          "It only works with UTF-8",
-          "It raises on the first bad byte"
-        ],
+        options: ["It makes reading much slower", "It deletes undecodable bytes silently", "It only works with UTF-8 input", "It raises on the first bad byte"],
         answer: 1,
         why: "`\"Müller\"` in cp1252 read as UTF-8 with ignore becomes `\"Mller\"` — a different name, with no marker. `\"strict\"` raises with the byte offset, which is what you want: the encoding is wrong and that is the thing to fix."
       },
       {
         stem: "A 16-digit card number passed through Excel and came back as `1.23457E+15`. What was lost?",
-        options: [
-          "Nothing — it is the same number in scientific notation",
-          "Every digit past the sixth; Excel displays long numbers in scientific notation and saves what it displays, and its 15-digit limit had already zeroed the last digit",
-          "Only the formatting",
-          "The leading zero"
-        ],
+        options: ["Nothing; it is the same number in another notation", "Digits beyond the sixth, saved as Excel displayed them", "Only the formatting of the cell was changed", "The leading zero of the card number"],
         answer: 1,
         why: "Excel saves the displayed form. Reading `1.23457E+15` back gives `1234570000000000`. The defence is not to let Excel touch identifiers: prefix them so they are text, request `.xlsx` and read with `dtype=str`, or ask for a non-Excel export."
       },
       {
         stem: "A file is twice the size you expect and every other byte is `00`. What is it?",
-        options: [
-          "Compressed",
-          "UTF-16 — ASCII characters take two bytes, one of them zero; read with `encoding=\"utf-16\"`",
-          "Binary",
-          "Corrupted"
-        ],
+        options: ["A compressed file", "UTF-16 text", "A binary format", "A corrupted file"],
         answer: 1,
         why: "Some SQL Server and PowerShell exports are UTF-16. The BOM at the start tells the decoder the byte order, and `encoding=\"utf-16\"` reads and strips it. Reading it as UTF-8 either fails or produces a file of null characters between every letter."
       }

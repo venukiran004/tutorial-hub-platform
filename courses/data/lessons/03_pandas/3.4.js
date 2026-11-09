@@ -704,45 +704,25 @@ def test_longest_run_helper():
     questions: [
       {
         stem: "Why does `df[df.temp != np.nan]` fail to drop missing rows?",
-        options: [
-          "It needs `.loc`",
-          "NaN is not equal to anything including itself, so `!= np.nan` is True for every row and nothing is dropped",
-          "The column is object dtype",
-          "np.nan and pd.NA are different"
-        ],
+        options: ["It needs `.loc` to filter the rows", "NaN equals nothing, so all rows stay", "The column has the object dtype", "np.nan and pd.NA are different values"],
         answer: 1,
         why: "IEEE 754 defines NaN as unequal to everything. Both `== np.nan` and `!= np.nan` are useless as filters — the first matches nothing, the second matches everything — and neither raises. `isna()` and `notna()` are the only correct tests."
       },
       {
         stem: "A sensor sends −999 when offline. Why does `isna()` not detect it?",
-        options: [
-          "isna only works on object columns",
-          "−999 is a real float value — a sentinel is only missing by convention, and pandas has no way to know the convention",
-          "The column must be converted to Int64 first",
-          "isna requires the na_values argument"
-        ],
+        options: ["isna only works on object-dtype columns", "−999 is a real number, missing by convention", "The column must be converted to Int64 first", "isna needs the na_values argument to see it"],
         answer: 1,
         why: "A sentinel is a valid number that a source has agreed to treat as missing. Nothing marks it. It survives `fillna`, flows into `mean`, and drags the average to −40 — `replace(sentinels, np.nan)` is the step that makes it visible to everything downstream."
       },
       {
         stem: "Which fill method is safe in a feature for a time-series model?",
-        options: [
-          "`bfill`",
-          "`ffill` — it uses only past values, where `bfill` and `interpolate` use the future",
-          "`interpolate`",
-          "All of them"
-        ],
+        options: ["`bfill`, from the next value", "`ffill`, from past values only", "`interpolate`, between neighbours", "All of them are equally safe"],
         answer: 1,
         why: "Backward fill and interpolation both look at the next known value, which at prediction time has not happened yet. The operation is the same shape; the direction is the whole difference between a feature and a leak. `ffill(limit=n)` additionally stops a stale value being carried indefinitely."
       },
       {
         stem: "`(s > 75).sum()` is 2 and `(s <= 75).sum()` is 1 on a Series of length 5. What happened to the other two?",
-        options: [
-          "They were exactly 75",
-          "They are missing — NaN fails both comparisons, so they fall into neither bucket and no warning is raised",
-          "The Series has duplicates",
-          "Integer overflow"
-        ],
+        options: ["They were exactly 75 each", "They are NaN: fail both tests", "The Series has duplicate labels", "An integer overflow occurred"],
         answer: 1,
         why: "Every comparison against NaN returns False, so a two-way split silently excludes the missing rows from both sides. If missing should be its own category, `np.select` with an explicit `isna()` condition first makes the third bucket visible."
       }

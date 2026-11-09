@@ -430,56 +430,31 @@ print("imbalance: threshold first, weights second, resampling inside the fold or
     questions: [
       {
         stem: "A model on 2 % positives reports ROC AUC 0.94 and precision 4 % at the threshold that gives 80 % recall. Are these consistent?",
-        options: [
-          "No — an AUC that high implies high precision",
-          "Yes — ROC AUC is insensitive to the base rate; at 2 % positives even a good ranker flags many negatives per positive at high recall, and precision is bounded by the base rate times the lift",
-          "No — the threshold is wrong",
-          "Only if the data was resampled"
-        ],
+        options: ["No: an AUC that high implies high precision", "Yes: at 2% positives, precision stays low", "No: the threshold must have been wrong", "Only if the data had been resampled"],
         answer: 1,
         why: "ROC measures true-positive against false-positive *rates*; with 49 negatives per positive, a 5 % false-positive rate is 2.5 negatives flagged per positive found. The precision–recall curve shows this directly; ROC hides it."
       },
       {
         stem: "SMOTE is applied to the whole dataset, then 5-fold cross-validation reports average precision 0.97 versus 0.24 without it. What does 0.97 measure?",
-        options: [
-          "The improvement SMOTE brought",
-          "How well the model recognises interpolations of rows it trained on: each validation positive has synthetic offspring in the training folds, and the folds are half positive",
-          "The model's true generalisation",
-          "Overfitting that would be fixed by regularisation"
-        ],
+        options: ["The improvement SMOTE brought to the model", "Recognising interpolations of training rows", "The model's true generalisation performance", "Overfitting that regularisation would fix"],
         answer: 1,
         why: "Synthetic rows are functions of real rows. Resampling before the split puts a validation row's relatives into training and balances the validation fold to a rate the deployment will never have. Inside an imblearn pipeline, SMOTE scores 0.23 — noise around the plain 0.24."
       },
       {
         stem: "A missed positive costs 50, a false alarm costs 2, and the model's probabilities are calibrated. At what probability should a row be flagged?",
-        options: [
-          "0.5",
-          "Above 2 / (2 + 50) ≈ 0.038 — flag when the expected cost of missing, p × 50, exceeds the expected cost of a false alarm, (1 − p) × 2",
-          "Above the base rate",
-          "Above 50 / 52"
-        ],
+        options: ["0.5, the default threshold", "About 0.038, from the costs", "The base rate of positives", "50 / 52, about 0.96"],
         answer: 1,
         why: "Minimising expected cost gives the threshold cost_fp / (cost_fp + cost_fn). It is far below 0.5 whenever a miss is much more expensive than a false alarm, which is the usual case for rare positives — and the validation sweep should agree with it if the probabilities are honest."
       },
       {
         stem: "Which evaluation is wrong?",
-        options: [
-          "Average precision on the natural-rate validation fold, with SMOTE inside the pipeline",
-          "Precision at a threshold chosen on validation predictions at the natural rate",
-          "Precision on a test set that was undersampled to 50 % negatives so the metric looks meaningful",
-          "Brier score on natural-rate out-of-fold probabilities"
-        ],
+        options: ["Average precision at the natural rate, SMOTE inside", "Precision at a threshold picked at the natural rate", "Precision on a test set undersampled to 50%", "Brier score on natural-rate out-of-fold scores"],
         answer: 2,
         why: "Precision depends on the base rate. A balanced test set reports a precision the population cannot deliver and a threshold that is wrong by the same factor. Resampling, if used, touches the training rows of a fold and nothing else."
       },
       {
         stem: "When are class weights the right tool rather than a threshold change?",
-        options: [
-          "Always — they are the standard fix",
-          "When the model's ranking itself is poor because it never learns the minority — a tree that never splits for it, a loss swamped by easy negatives — and the weights improve average precision, not just recall at 0.5",
-          "Never — the threshold is always sufficient",
-          "Only for logistic regression"
-        ],
+        options: ["Always, since they are the standard fix", "When the ranking itself never learns the minority", "Never, since a threshold change always suffices", "Only for logistic regression models"],
         answer: 1,
         why: "For a well-specified model, weights reparametrise the intercept and change nothing a threshold could not. They earn their place when the ranking improves, which average precision measures and recall-at-0.5 does not. Either way the threshold is re-chosen afterwards."
       }

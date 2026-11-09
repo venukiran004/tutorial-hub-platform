@@ -713,45 +713,25 @@ def test_smearing_is_correct_when_residuals_are_skewed():
     questions: [
       {
         stem: "A column of transaction counts has 60% zeros. `log1p` produces a spike at 0 and a bump around 3. What is the right treatment?",
-        options: [
-          "Box-Cox",
-          "Recognise it as zero-inflated — two distributions — and model presence and amount separately, or add a presence flag alongside log of the positives",
-          "Square root",
-          "Quantile transform to normal"
-        ],
+        options: ["Apply a Box-Cox transform to the column", "Zero-inflated: model presence and amount apart", "Apply a square-root transform instead", "Quantile-transform the column to normal"],
         answer: 1,
         why: "No power transform reshapes a bimodal column into a normal one. The zeros are a different process from the positives — 'did they spend' against 'how much given they did' — and a hurdle model or a flag-plus-log pair represents that honestly."
       },
       {
         stem: "Why can a log-target model have excellent log-scale RMSE and a 20% under-forecast of totals?",
-        options: [
-          "The validation set was too small",
-          "On the log scale the predictions are unbiased; the bias appears only after exponentiating, where the result is the median rather than the mean — and nobody evaluated there",
-          "Ridge regularisation shrinks predictions",
-          "The features were not scaled"
-        ],
+        options: ["The validation set was too small", "exp of a log mean is the median, not mean", "Ridge regularisation shrinks predictions", "The input features were not scaled"],
         answer: 1,
         why: "Median and mean are different targets on a skewed scale, and the model was optimal for one while the business needed the other. The check is a predicted-total-to-actual-total ratio on the original scale — one line that the log-scale metric can never substitute for."
       },
       {
         stem: "When is Duan's smearing preferred over the `exp(σ²/2)` correction?",
-        options: [
-          "Never; they are identical",
-          "When the log-scale residuals are not normal — smearing uses the empirical mean of `exp(residuals)` and is correct for any residual shape; the factor assumes normality",
-          "When the target has zeros",
-          "When the model is a GLM"
-        ],
+        options: ["Never; the two are identical", "When log residuals are not normal", "When the target contains zeros", "When the model is a GLM"],
         answer: 1,
         why: "For normal log-residuals the two agree. For skewed or heavy-tailed residuals — common on real data — the log-normal factor over- or under-corrects and smearing does not. Smearing also generalises to any transform: average the inverse over the training residuals."
       },
       {
         stem: "What does `PowerTransformer(method=\"box-cox\")` learn, and why does that make it a fit step?",
-        options: [
-          "Nothing; it applies a fixed formula",
-          "The exponent λ that makes the training column closest to normal — λ near 0 is log, near 0.5 is sqrt; a different λ on test data would transform the two sets differently",
-          "The mean and standard deviation only",
-          "The number of bins"
-        ],
+        options: ["Nothing; it applies a fixed formula", "The exponent λ, learned from training", "Only the mean and standard deviation", "The number of quantile bins to use"],
         answer: 1,
         why: "λ is estimated from data, like a scaler's mean. Fit on train, transform both, inside a Pipeline. The fitted λ is also informative in itself: it is the answer to 'how much compression does this column need'."
       }

@@ -674,45 +674,25 @@ def test_the_original_reindex_broadcasts_region_totals():
     questions: [
       {
         stem: "What does `.pipe(f, x=1)` do inside a chain?",
-        options: [
-          "Applies f to each column",
-          "Calls `f(current_frame, x=1)` and passes the result to the next step",
-          "Runs f in a subprocess",
-          "Applies f to each group"
-        ],
+        options: ["Applies f to each column of the frame", "Calls f(frame, x=1) and passes on the result", "Runs f in a separate subprocess", "Applies f to each group of the frame"],
         answer: 1,
         why: "`pipe` is function application with the frame as the first argument. It folds any function — including ones that inspect and return the frame unchanged — into the chain, which is what makes chains debuggable and their steps individually testable."
       },
       {
         stem: "When is `query` slower than a boolean mask?",
-        options: [
-          "Always",
-          "On small frames, where parsing the string dominates; on millions of rows numexpr fusion makes it faster",
-          "When the condition uses `and`",
-          "Never"
-        ],
+        options: ["Always, on frames of every size", "On small frames, where parsing dominates", "Whenever the condition uses `and`", "Never, since query is always faster"],
         answer: 1,
         why: "`query` parses a string every call — around 6× slower than a mask on 50 rows. At scale the numexpr engine evaluates the whole expression in one pass with no intermediate boolean arrays, and wins. Choose it for readability; the speed follows the frame size."
       },
       {
         stem: "How do you inspect the middle of a chain without breaking it apart?",
-        options: [
-          "You cannot — that is the cost of chaining",
-          "Insert `.pipe(peek)` — a function that prints the shape and returns the frame unchanged",
-          "Convert it to statements temporarily",
-          "Use `.head()` at the end"
-        ],
+        options: ["You cannot; that is the cost of chaining", "Insert `.pipe(peek)` that prints and returns", "Split it into statements temporarily", "Call `.head()` at the very end"],
         answer: 1,
         why: "An identity pipe that logs, asserts, times or drops into a debugger sees the frame at that exact point and passes it on. The row count at each step is the single most useful thing it can print — a step that loses 40% of rows is visible immediately."
       },
       {
         stem: "Which of these should NOT be a chain?",
-        options: [
-          "Filter, derive two columns, group, filter again",
-          "A workflow where two branches share an expensive prefix and each needs it separately",
-          "Load, clean, aggregate, sort",
-          "Query, assign, pipe a tested function, merge"
-        ],
+        options: ["Filter, derive two columns, group, filter again", "Two branches that each need a costly prefix", "Load, clean, aggregate and then sort", "Query, assign, pipe a tested function, merge"],
         answer: 1,
         why: "A chain is linear. When two branches need the same intermediate, compute it once, name it, and chain from there — forcing it into one expression recomputes the prefix or contorts the structure. The same applies to steps that need `try/except` or that are genuinely hundred-line stages."
       }

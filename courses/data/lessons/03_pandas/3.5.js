@@ -693,45 +693,25 @@ def test_empty_input():
     questions: [
       {
         stem: "Why does `pivot` raise on duplicate (index, column) pairs while `pivot_table` does not?",
-        options: [
-          "pivot is an older function",
-          "pivot has no aggregation, so two candidate values for one cell is an error; pivot_table combines them with aggfunc",
-          "pivot_table sorts first",
-          "pivot only works on numeric data"
-        ],
+        options: ["pivot is simply the older function", "pivot cannot aggregate; pivot_table can", "pivot_table sorts the data first", "pivot only works on numeric data"],
         answer: 1,
         why: "`pivot` refuses to guess which value a cell should hold, which makes it the safe choice when duplicates would indicate a bug. `pivot_table` is `groupby` plus `unstack` and will silently combine them — using `mean` by default — so it belongs only where aggregation is the intent."
       },
       {
         stem: "After `wide.melt(id_vars=\"store\")` on a frame with a `region` column, you find rows where `month == \"region\"`. Why?",
-        options: [
-          "A bug in melt",
-          "`value_vars` was not set, so every non-id column — including region — was melted into variable/value pairs",
-          "region was categorical",
-          "The frame had a MultiIndex"
-        ],
+        options: ["A bug in melt's handling of strings", "value_vars was unset, so region melted", "region was stored as a categorical", "The frame carried a MultiIndex"],
         answer: 1,
         why: "Without `value_vars`, melt takes every column not in `id_vars` as a measurement. There is no error, just rows where the variable is a column name that was never a measurement. Name the value columns explicitly on any frame with more than one kind of column."
       },
       {
         stem: "A monthly report's grand total is lower than the transaction total. What is the most likely cause?",
-        options: [
-          "Floating-point rounding",
-          "Transactions with a missing store key were dropped by the groupby underneath pivot_table",
-          "The months were sorted alphabetically",
-          "fill_value was set to 0"
-        ],
+        options: ["Floating-point rounding in the monthly sums", "Rows with a missing store key were dropped", "The months were sorted alphabetically", "fill_value was set to 0 for empty cells"],
         answer: 1,
         why: "`groupby` excludes NaN keys by default, and `pivot_table` inherits that. The rows leave silently and their amount appears in no cell. A reconciliation assertion — report total equals source total — catches this and every other silent-loss mechanism in one line."
       },
       {
         stem: "`df.explode(\"tags\")` on a row whose tags list is empty produces what?",
-        options: [
-          "No row",
-          "One row with NaN in the tags column, sharing the original index label",
-          "An error",
-          "A row with an empty string"
-        ],
+        options: ["No row at all for that index", "One row with NaN, same index label", "An error about the empty list", "A row with an empty string"],
         answer: 1,
         why: "Empty lists become a single NaN row rather than vanishing, and every exploded row keeps its source index label, so the index now repeats. Both need a decision: `reset_index(drop=True)`, and either `dropna` or keep the row depending on whether a tagless post should appear."
       }

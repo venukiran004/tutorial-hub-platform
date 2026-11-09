@@ -503,56 +503,31 @@ print("report: parallel analysis counts components shared across columns; the qu
     questions: [
       {
         stem: "On raw columns, `PCA(n_components=0.95)` keeps four of five components and a logistic regression on them scores AUC 0.51; on the original columns it scores 0.94. What happened?",
-        options: [
-          "PCA introduced noise",
-          "The fifth column — the only one related to the target — had the smallest variance, so it was the direction PCA ranked last and the variance rule discarded; PCA never looks at y",
-          "Logistic regression needs the original columns",
-          "n_components should have been an integer"
-        ],
+        options: ["PCA introduced noise into the inputs", "The only useful column had the least variance", "Logistic regression needs the raw columns", "n_components should have been an integer"],
         answer: 1,
         why: "Explained variance measures spread, not usefulness. Four loud unrelated columns own 99.8 % of the variance; the quiet predictive column owns 0.2 % and is exactly what truncation removes. No unsupervised rule can rank by relevance to a target it does not see."
       },
       {
         stem: "Parallel analysis on forty standardised columns returns 3. A colleague sets `PCA(3)` and the CV score falls from 0.88 to 0.72. Why?",
-        options: [
-          "Parallel analysis is unreliable",
-          "It counted the components that carry variance shared across columns — three latent factors. A predictive column that is independent of everything else is not shared structure, so it is not counted, and the model needed it",
-          "The shuffling was wrong",
-          "Three is too few for logistic regression"
-        ],
+        options: ["Parallel analysis is unreliable in general", "It counts shared variance, not lone predictors", "The shuffling in the analysis was wrong", "Three is too few for logistic regression"],
         answer: 1,
         why: "Parallel analysis answers 'how many directions exceed what chance correlation produces'. An independent unit-variance column produces an eigenvalue of about 1 — the same as the null — whether or not it predicts the label. The model's k comes from the CV grid, with passthrough as the control."
       },
       {
         stem: "Which of these is a legitimate use of t-SNE output?",
-        options: [
-          "Two extra features for the classifier",
-          "Reporting that two clusters are 'far apart' because they are far apart in the plot",
-          "A picture to check whether rows that share a label also tend to be neighbours, confirmed at more than one perplexity",
-          "Embedding tomorrow's rows with the fitted object"
-        ],
+        options: ["Two extra features for the classifier", "Claiming two clusters are far apart", "Checking labelled rows are neighbours", "Embedding tomorrow's rows with it"],
         answer: 2,
         why: "t-SNE preserves neighbourhoods and nothing else: inter-cluster distance and cluster size are artefacts, the picture changes with perplexity, and there is no `transform` for new rows. It is for looking, and even then with a perplexity check."
       },
       {
         stem: "Scaled PCA gives explained-variance ratios `[0.40, 0.20, 0.20, 0.20, 0.00]` on five columns. What does the last value mean?",
-        options: [
-          "The fifth column is constant",
-          "One column is a linear combination of others, so the data has only four independent directions; the fifth component is empty",
-          "PCA failed to converge",
-          "Scaling removed a column"
-        ],
+        options: ["The fifth column is constant", "One column mixes the others", "PCA failed to converge here", "Scaling removed one column"],
         answer: 1,
         why: "A zero eigenvalue is a direction with no variance — the data lies in a four-dimensional subspace of the five columns. That is redundancy, exactly what PCA compresses, and the case where dropping a component loses nothing."
       },
       {
         stem: "Why does `PCA` belong inside the `Pipeline` when it cannot see the target?",
-        options: [
-          "It does not need to — unsupervised steps cannot leak",
-          "Fitting it on all rows lets the test rows shape the axes the model is judged on, and puts n_components outside the cross-validation meant to choose it",
-          "Only for speed",
-          "Because StandardScaler requires it"
-        ],
+        options: ["It does not need to; unsupervised steps can't leak", "Test rows shape the axes; k escapes the CV", "Only for speed, since PCA is slow", "Because StandardScaler requires it there"],
         answer: 1,
         why: "The components are learnt from whatever rows they are fit on. Per-fold fitting keeps the test rows out of the rotation and makes k a tunable hyperparameter on the same grid as everything else."
       }

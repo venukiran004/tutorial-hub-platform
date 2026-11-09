@@ -731,45 +731,25 @@ def test_mean_imputation_without_indicator_still_loses():
     questions: [
       {
         stem: "Older survey respondents skip the income question more often, and among respondents of the same age, who skips is random. Which mechanism is this?",
-        options: [
-          "MCAR",
-          "MAR — missingness depends on an observed column (age), and conditioning on it makes the rest random",
-          "MNAR",
-          "None; it is not missing"
-        ],
+        options: ["MCAR, missing completely at random", "MAR, random once age is accounted for", "MNAR, depending on the income itself", "None, because skipping is not missing"],
         answer: 1,
         why: "The missingness is predictable — not random overall — but predictable from something you can see. Group-conditional imputation by age band, or a model that includes age, handles it. If instead high earners skipped regardless of age, that would be MNAR."
       },
       {
         stem: "Why does mean imputation preserve the mean and still damage an analysis?",
-        options: [
-          "It changes the mean",
-          "It collapses the imputed values onto one point, shrinking the variance and weakening every correlation the column participates in",
-          "It only works on integers",
-          "It raises on NaN"
-        ],
+        options: ["It actually changes the column's mean", "Variance shrinks and correlations weaken", "It only works on integer columns", "It raises on any remaining NaN"],
         answer: 1,
         why: "Forty percent of a column set to a single value has less spread than the truth and no relationship to anything else. Standard errors shrink, correlations attenuate, and under MAR the mean itself is wrong because it is the wrong group's typical value. Model-based or group-conditional imputation recovers structure; adding the indicator preserves the fact of missingness."
       },
       {
         stem: "A churn model dropped the 40% of customers without a survey score. Validation AUC was 0.79; production was 0.66. Why?",
-        options: [
-          "Overfitting",
-          "The validation set was complete cases too — the model was scored on the population it trained on, which had half the true churn rate, and never met the customers who did not answer",
-          "The survey question changed",
-          "Random seed"
-        ],
+        options: ["Overfitting to the training customers", "Validation was also complete cases only", "The survey question changed later", "A different random seed in production"],
         answer: 1,
         why: "Non-response was driven by churn, so complete-case training saw the unusual churners and validation scored on the same selection. In production the non-responders arrived with NaN, were filled with a typical score, and were scored as typical. The indicator alone would have scored 0.72."
       },
       {
         stem: "What can and cannot be tested about the missingness mechanism from the data alone?",
-        options: [
-          "All three mechanisms can be identified with Little's test",
-          "MCAR can be tested by comparing rows with and without the value on other columns; MAR versus MNAR cannot, because the difference is whether missingness depends on a value you do not have",
-          "Nothing can be tested",
-          "Only MNAR can be tested"
-        ],
+        options: ["Little's test identifies all three mechanisms", "MCAR is testable; MAR versus MNAR is not", "Nothing about the mechanism can be tested", "Only MNAR can be tested from the data"],
         answer: 1,
         why: "Rejecting MCAR establishes that missingness has a cause. Whether the cause is an observed column or the missing value itself has the same signature in the observed data. Process knowledge — how the value is collected — and a truncated observed tail are the evidence that separates them."
       }

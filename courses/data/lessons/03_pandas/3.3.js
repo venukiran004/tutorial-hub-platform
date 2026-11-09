@@ -711,45 +711,25 @@ def test_all_missing_column_is_safe():
     questions: [
       {
         stem: "`df.memory_usage().sum()` reports 40 MB but the process holds 155 MB. Why?",
-        options: [
-          "pandas has overhead per frame",
-          "Object columns are counted as 8 bytes per row for the pointer, excluding the string objects they point at",
-          "The index is not counted",
-          "Memory is fragmented"
-        ],
+        options: ["pandas adds overhead to every frame", "Object columns count pointers, not strings", "The index is left out of the count", "Memory is fragmented by the allocator"],
         answer: 1,
         why: "`deep=True` follows the pointers and counts the referenced Python objects. On text-heavy frames the shallow figure is routinely a quarter of the truth, so capacity planning built on it is planning for a different program."
       },
       {
         stem: "Converting a column of one million distinct order IDs to `category` does what to memory?",
-        options: [
-          "Halves it",
-          "Increases it — the categories array holds every string and you add a code per row on top",
-          "Leaves it unchanged",
-          "Reduces it by 90%"
-        ],
+        options: ["Halves it, by deduplicating the IDs", "Increases it: every ID plus a code per row", "Leaves it unchanged, since IDs are distinct", "Reduces it by about 90%"],
         answer: 1,
         why: "Categorical compresses by storing each distinct value once, so it saves nothing when every value is distinct and costs an extra 4 bytes per row for the code. Measure `memory_usage(deep=True)` before and after rather than converting on principle."
       },
       {
         stem: "`pd.Series([1, 2, None])` has what dtype, and why does it matter?",
-        options: [
-          "int64, with None treated as 0",
-          "float64 — and float64 represents integers exactly only up to 2⁵³, so large IDs lose precision",
-          "object",
-          "Int64"
-        ],
+        options: ["int64, with None treated as 0", "float64, exact only up to 2⁵³", "object, holding Python ints and None", "Int64, the nullable integer type"],
         answer: 1,
         why: "NumPy integers cannot hold a missing value, so pandas widens to float. Snowflake and Twitter-style IDs exceed 2⁵³, and `9007199254740993` silently becomes `...992`. `dtype=\"Int64\"` — capital I — keeps them exact."
       },
       {
         stem: "A `groupby` on two categorical columns returns 10,000 rows from a 50-row frame. What happened?",
-        options: [
-          "The join duplicated rows",
-          "`observed=False` produces a row for every category combination, including ones that never occurred",
-          "The categories were unordered",
-          "An index was not reset"
-        ],
+        options: ["The join duplicated some rows", "observed=False: every combination", "The categories were not ordered", "The index was never reset first"],
         answer: 1,
         why: "With 100 categories in each column that is a 100×100 cartesian product. `observed=True` restricts the result to combinations actually present — this is the most common cause of a groupby that unexpectedly explodes on categorical keys."
       }

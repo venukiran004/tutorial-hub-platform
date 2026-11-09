@@ -747,45 +747,25 @@ def test_label_encoded_correlation_is_meaningless():
     questions: [
       {
         stem: "Which measure is appropriate for the association between `region` (4 values) and `tier` (2 values)?",
-        options: [
-          "Pearson correlation after label encoding",
-          "Cramér's V on the contingency table, with chi-square for whether it is distinguishable from independence",
-          "Spearman correlation",
-          "The difference in means"
-        ],
+        options: ["Pearson correlation after label encoding", "Cramér's V, with chi-square for significance", "Spearman correlation on the two codes", "The difference in means between groups"],
         answer: 1,
         why: "Categorical columns have no order, so correlation is meaningless and label encoding just measures the arbitrary integers you assigned. The contingency table is the object; chi-square tests it against independence and Cramér's V normalises the strength to 0–1."
       },
       {
         stem: "Three features have pairwise correlations no higher than 0.71, and VIF above 200 for each. What is going on?",
-        options: [
-          "VIF is miscalculated",
-          "One feature is nearly a linear combination of the other two — redundancy that no pairwise measure can see",
-          "The features are independent",
-          "The sample is too small"
-        ],
+        options: ["The VIF values are miscalculated", "One is a linear mix of the other two", "The three features are independent", "The sample is too small for VIF"],
         answer: 1,
         why: "VIF regresses each feature on all the others; `c = a + b` is perfectly predictable from `a` and `b` together while correlating only moderately with each. A \"drop pairs above 0.9\" rule keeps all three, and a linear model on them has unidentifiable coefficients."
       },
       {
         stem: "Experience and pay are negatively correlated in a company-wide table, and positively correlated within every department. Which is true?",
-        options: [
-          "The data is corrupted",
-          "Both — department is a confounder; more experienced staff are concentrated in lower-paying departments, and the aggregate number answers a question nobody asked",
-          "The within-department numbers are wrong",
-          "Correlation cannot be computed within groups"
-        ],
+        options: ["The data is corrupted somewhere", "Both: department confounds the aggregate", "The within-department numbers are wrong", "Correlation cannot be computed in groups"],
         answer: 1,
         why: "Simpson's paradox. The aggregate is not incorrect; it is the answer to \"across everyone, ignoring department\" — which is not what anyone means by \"does experience raise pay\". Any actionable pairwise result should be recomputed within the obvious groups to check for a sign flip."
       },
       {
         stem: "Why does a chi-square p-value of 10⁻²⁷ not tell you the association is strong?",
-        options: [
-          "It does",
-          "Chi-square scales with sample size, so on a million rows a trivial association is astronomically significant — Cramér's V normalises for n",
-          "p-values only apply to numeric data",
-          "The test assumes normality"
-        ],
+        options: ["It does: tiny p means a strong link", "Chi-square grows with n; use Cramér's V", "p-values only apply to numeric data", "The test assumes normally distributed data"],
         answer: 1,
         why: "Significance answers \"could this arise by chance at this n\"; on large data almost everything is significant. Strength is a separate question, and V — chi-square divided by n and the table's smaller dimension — is the number that answers it and is comparable across tables."
       }

@@ -752,45 +752,25 @@ def build_features(engine, as_of):
     questions: [
       {
         stem: "Why must values never be formatted into SQL text?",
-        options: [
-          "It is slower",
-          "A value containing an apostrophe breaks the query, and a crafted value becomes SQL — parameters make the value data and never SQL",
-          "SQLAlchemy forbids it",
-          "It only matters for user input"
-        ],
+        options: ["Formatted SQL runs more slowly", "Quotes break it; crafted values become SQL", "SQLAlchemy forbids formatted SQL", "It only matters for user-typed input"],
         answer: 1,
         why: "`O'Brien` ends the string literal; `x' OR '1'='1` returns every row. Both are handled by parameter binding, which is also shorter. Table and column names are the one exception, because they cannot be bound — validate them against an allowlist."
       },
       {
         stem: "A query with `WHERE EXTRACT(YEAR FROM order_date) = 2026` shows `Seq Scan` despite an index on `order_date`. Why?",
-        options: [
-          "The index is corrupt",
-          "The function hides the column, so the index cannot be used — `order_date >= '2026-01-01' AND < '2027-01-01'` is the sargable form",
-          "EXTRACT is not supported",
-          "The table is too small"
-        ],
+        options: ["The index on order_date is corrupt", "The function hides the column from the index", "EXTRACT is not supported by the planner", "The table is too small to use the index"],
         answer: 1,
         why: "An index stores `order_date` values; it cannot answer a question about a function of them without evaluating the function on every row. Rewrite the predicate as a direct range on the column and the plan becomes an `Index Scan`."
       },
       {
         stem: "`f.customer_id.map(recent.groupby(\"customer_id\").size())` for a customer with no recent orders gives what?",
-        options: [
-          "0",
-          "NaN — the customer is absent from the groupby result, so map finds nothing; the feature says 'unknown' where the truth is 'zero'",
-          "An error",
-          "The customer's lifetime count"
-        ],
+        options: ["0, since the customer has no orders", "NaN: 'unknown' where the truth is zero", "An error from the missing key", "The customer's lifetime order count"],
         answer: 1,
         why: "A missing key in a map is NaN, and NaN is not zero in any downstream comparison. The SQL form makes the fix explicit: `LEFT JOIN` to the aggregate, then `COALESCE(count, 0)` — while leaving genuinely unknowable values like days-since-last-order as NULL."
       },
       {
         stem: "What does `to_sql(..., if_exists=\"replace\")` do to an existing table?",
-        options: [
-          "Truncates it",
-          "Drops it and recreates it from the frame's dtypes — every index, constraint, default and grant is lost",
-          "Upserts on the primary key",
-          "Appends"
-        ],
+        options: ["It truncates the table's rows", "Drops and recreates it; indexes lost", "It upserts on the primary key", "It appends the rows to the table"],
         answer: 1,
         why: "It is a `DROP TABLE` followed by `CREATE TABLE`. For a managed table, `TRUNCATE` then append inside `engine.begin()` keeps the structure and is atomic; for a snapshot table, delete the partition being written and append, so a re-run replaces exactly that partition."
       }

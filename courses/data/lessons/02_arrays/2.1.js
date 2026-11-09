@@ -582,12 +582,7 @@ def test_rejects_zero_size():
     questions: [
       {
         stem: "Two arrays of shape `(2, 3)`. What does `np.stack([a, b], axis=0)` produce?",
-        options: [
-          "Shape (4, 3)",
-          "Shape (2, 2, 3) — a new axis, with both inputs intact inside it",
-          "Shape (2, 6)",
-          "An error"
-        ],
+        options: ["Shape (4, 3), rows joined", "Shape (2, 2, 3), a new axis", "Shape (2, 6), columns joined", "An error, since stack needs 1-D"],
         answer: 1,
         why: "`stack` adds a dimension rather than lengthening one, so both inputs survive whole one layer deeper. `concatenate(axis=0)` is the operation that gives `(4, 3)` — the rule is that concatenate keeps ndim and stack increases it by one."
       },
@@ -604,23 +599,13 @@ def test_rejects_zero_size():
       },
       {
         stem: "`np.array_split(np.arange(10), 3)` produces chunks of what sizes?",
-        options: [
-          "[3, 3, 4]",
-          "[4, 3, 3] — the remainder goes to the earlier chunks",
-          "[3, 3, 3] with one element dropped",
-          "It raises, since 10 is not divisible by 3"
-        ],
+        options: ["[3, 3, 4], extra at the end", "[4, 3, 3], extra at the start", "[3, 3, 3], one element dropped", "It raises: 10 is not divisible by 3"],
         answer: 1,
         why: "`array_split` allows uneven division and front-loads the remainder; `split` would raise. This matters whenever a chunk index maps to something real — a worker, a file, a time slice — and it is why batching should use `range(0, n, size)` instead."
       },
       {
         stem: "You shuffle a 10 GB feature matrix before batching. What is the memory-efficient approach?",
-        options: [
-          "`rng.permutation(X)` then slice",
-          "Permute an index array once, then fancy-index one batch at a time",
-          "Shuffle each batch after slicing",
-          "Sort by a random column"
-        ],
+        options: ["`rng.permutation(X)`, then slice it", "Permute an index, index one batch at a time", "Shuffle each batch after slicing it", "Sort the rows by a random column"],
         answer: 1,
         why: "Permuting the array itself allocates a full copy before the first batch. Permuting indices costs 8 bytes per row, and each batch copies only `size × n_features`. Shuffling within batches is not a shuffle at all — rows never leave their original neighbourhood."
       }

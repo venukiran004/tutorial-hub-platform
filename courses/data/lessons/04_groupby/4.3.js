@@ -701,45 +701,25 @@ def test_time_window_not_row_window():
     questions: [
       {
         stem: "What does `closed=\"left\"` do on a time-based rolling window?",
-        options: [
-          "Reverses the window direction",
-          "Excludes the current timestamp from its own window — the causal boundary, without a separate shift",
-          "Includes only the first observation",
-          "Sorts the index"
-        ],
+        options: ["It reverses the direction of the window", "It excludes the current stamp from its window", "It includes only the first observation", "It sorts the index before rolling"],
         answer: 1,
         why: "The default `closed=\"right\"` gives `(t−w, t]`, including `t`. `\"left\"` gives `[t−w, t)`, so the statistic at `t` uses only earlier timestamps. It is the time-window form of `shift(1)`, and it composes correctly with `groupby`."
       },
       {
         stem: "`df[\"price\"].rolling(2).mean()` on a frame with several symbols sorted by symbol. What happens at each symbol's first row?",
-        options: [
-          "NaN, correctly",
-          "It averages the previous symbol's last price with this symbol's first — the window crosses the group boundary",
-          "It raises",
-          "It uses the symbol's own mean"
-        ],
+        options: ["NaN, correctly, at each symbol's start", "It mixes the previous symbol's last price in", "It raises at the symbol boundary", "It uses that symbol's overall mean"],
         answer: 1,
         why: "A plain rolling window knows nothing about groups; it just looks back two rows. `groupby(\"symbol\")[\"price\"].rolling(2)` restarts at each group, and `groupby(\"symbol\").shift(1)` gives NaN at each group's start instead of the previous group's value."
       },
       {
         stem: "Why prefer median and MAD over mean and std for a rolling anomaly baseline?",
-        options: [
-          "They are faster",
-          "A burst of anomalies inflates the mean and std of any window containing it, so later readings in the burst are compared against a baseline they have already corrupted and pass",
-          "They handle NaN better",
-          "They are more precise"
-        ],
+        options: ["They are faster to compute in a window", "A burst corrupts mean and std; it passes itself", "They handle missing values more gracefully", "They are more precise estimates in general"],
         answer: 1,
         why: "Robust statistics are unmoved by a minority of extreme values, so the fourth bad reading in a burst still looks bad. With mean/std the burst hides itself — the test that flags all eleven readings rather than just the first is the one that distinguishes the two."
       },
       {
         stem: "`rolling(5)` on transactions with irregular timestamps. What does the feature mean?",
-        options: [
-          "The last five minutes",
-          "The last five rows, which is a different span of time at every row — six minutes for one user, five hours for another",
-          "The last five days",
-          "A fixed span set by the index frequency"
-        ],
+        options: ["The last five minutes of transactions", "Five rows: a different time span per row", "The last five days of transactions", "A fixed span set by the index frequency"],
         answer: 1,
         why: "A count window is defined in rows, not time. On irregular data its meaning changes row by row. `rolling(\"30D\")` on a datetime index defines the window by elapsed time, so \"mean spend in the 30 days before this transaction\" means the same thing for every row and every user."
       }

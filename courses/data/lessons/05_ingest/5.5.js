@@ -750,45 +750,25 @@ WHERE  o.status = 'paid' AND c.region = 'north'
     questions: [
       {
         stem: "Why can `WHERE` not reference `SUM(amount)`?",
-        options: [
-          "SUM is only allowed in SELECT",
-          "WHERE runs before GROUP BY, so at that stage no groups or aggregates exist — HAVING is the same test after aggregation",
-          "It can, with parentheses",
-          "SUM must be aliased first"
-        ],
+        options: ["SUM is only allowed in the SELECT list", "WHERE runs before any aggregate exists", "It can, if wrapped in parentheses", "SUM must be given an alias first"],
         answer: 1,
         why: "The logical execution order is FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. Each stage sees only what the previous one produced. Wrapping the aggregation in a CTE turns the aggregate into a real column that an outer WHERE can filter."
       },
       {
         stem: "A `LEFT JOIN customers c` followed by `WHERE c.tier = 'gold'` returns fewer rows than the left table. Why?",
-        options: [
-          "LEFT JOIN drops unmatched rows",
-          "The WHERE runs after the join and drops rows where c.tier is NULL — unmatched left rows — so it behaves as an INNER JOIN",
-          "tier is indexed",
-          "gold customers have no orders"
-        ],
+        options: ["LEFT JOIN drops unmatched rows anyway", "WHERE drops the NULL rows; now it is INNER", "Because the tier column is indexed", "Because gold customers have no orders"],
         answer: 1,
         why: "Unmatched left rows have NULL in every right column, and `NULL = 'gold'` is unknown. To keep every left row and still restrict the match, the condition belongs in the `ON` clause, where it is part of the join rather than a filter on its result."
       },
       {
         stem: "An order has 3 lines and 2 payments. Joining orders to both tables and summing gives what?",
-        options: [
-          "Correct totals",
-          "6 rows per order: line amounts doubled, payment amounts tripled",
-          "An error",
-          "5 rows per order"
-        ],
+        options: ["Correct totals for every order", "Six rows each: lines ×2, payments ×3", "An error from joining both tables", "Five rows for every single order"],
         answer: 1,
         why: "Cardinality compounds across joins — one row per (line, payment) pair. Aggregate each child table in its own subquery to one row per order, then join the aggregates. It is the SQL form of the three-frames rule for nested JSON."
       },
       {
         stem: "`SELECT AVG(score) FROM t` where half the scores are NULL. What is computed?",
-        options: [
-          "The mean treating NULL as 0",
-          "The mean of the non-NULL scores only — SUM(score) / COUNT(score), not / COUNT(*)",
-          "NULL",
-          "An error"
-        ],
+        options: ["The mean, with NULL treated as 0", "The mean of the non-NULL scores", "NULL, since some inputs are NULL", "An error, since NULLs are present"],
         answer: 1,
         why: "Aggregates skip NULL, and `COUNT(score)` excludes them. If missing should count as zero, `AVG(COALESCE(score, 0))` says so. The difference between `COUNT(*)` and `COUNT(score)` is the number of NULLs — a free data-quality figure."
       }

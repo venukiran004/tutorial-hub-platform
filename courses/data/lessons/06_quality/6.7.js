@@ -702,45 +702,25 @@ def test_clean_data_has_few_flags():
     questions: [
       {
         stem: "Height 185 cm (97th percentile) and weight 48 kg (3rd percentile) in one row. What finds it?",
-        options: [
-          "A z-score on each column",
-          "Mahalanobis distance — it measures distance from the centre along the correlated axes, and this pair is far off the height–weight relationship while inside both marginal ranges",
-          "The IQR rule",
-          "Nothing; both values are within range"
-        ],
+        options: ["A z-score on each column", "Mahalanobis distance", "The IQR rule per column", "Nothing; both are in range"],
         answer: 1,
         why: "Every univariate check passes it because each column is examined alone. The joint distribution is an ellipse along the correlation; this point is 6–7 'standard deviations' from it in the direction the ellipse is narrow. Six such rows in the example pass every per-column check and fail the joint one."
       },
       {
         stem: "A log-normal column produces 50 IQR-rule outliers, all in the upper tail. What are they?",
-        options: [
-          "Data entry errors",
-          "The tail of a skewed distribution — a symmetric rule reads a long right tail as outliers; detect on the log scale or per side",
-          "Duplicates",
-          "Masked values"
-        ],
+        options: ["Data entry errors in the upper tail", "The natural tail of a skewed distribution", "Duplicated rows at the high end", "Masked values that were mis-decoded"],
         answer: 1,
         why: "The IQR fences are symmetric around the quartiles, and a skewed column is not. Taking the log first turns a log-normal into a normal, after which the same rule flags the genuine extremes — about five in the example — rather than the whole tail."
       },
       {
         stem: "A sensor value of 100 is flagged as an outlier on day 200 but was normal on day 1. What kind of detection is this?",
-        options: [
-          "Univariate",
-          "Residual-from-trend — the series rose 0.5 per day, so on day 200 the expectation is 200 and a reading of 100 is 100 below it",
-          "Multivariate",
-          "A false positive"
-        ],
+        options: ["Univariate detection on the raw value", "Residual from the trend", "Multivariate detection across sensors", "A false positive from the rule"],
         answer: 1,
         why: "The value is in the column's range; it is the residual from the expected level that is extreme. Detrend, or use a causal rolling baseline, and detect on the residual. The general form is 'model the expectation, detect on what the model gets wrong'."
       },
       {
         stem: "Why is `contamination=0.01` in Isolation Forest a risk?",
-        options: [
-          "It is too high",
-          "It sets the threshold directly — the model flags exactly 1% regardless of what the data contains; use the scores and choose the cutoff by inspection",
-          "It only works with scaled data",
-          "It requires a normal distribution"
-        ],
+        options: ["The value is too high for most data", "It forces exactly 1% to be flagged", "It only works with scaled data", "It requires normally distributed data"],
         answer: 1,
         why: "The parameter is a guess at the outlier fraction, and predict() honours it literally. On clean data it flags 1% of ordinary rows; on data with 5% contamination it flags a fifth of the outliers. `score_samples` gives the anomaly score; the threshold should come from looking at its distribution."
       }

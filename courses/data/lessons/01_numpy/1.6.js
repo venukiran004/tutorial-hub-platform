@@ -715,45 +715,25 @@ def test_empty_input():
     questions: [
       {
         stem: "What is the dtype of `np.array([1, \"2\", 3])`?",
-        options: [
-          "object",
-          "`<U21` — the integers were converted to strings, and arithmetic on it now fails",
-          "int64, with the string coerced",
-          "It raises a TypeError"
-        ],
+        options: ["object, holding the mixed values", "`<U21`: everything became strings", "int64, with the string coerced", "It raises a TypeError"],
         answer: 1,
         why: "NumPy unifies to the type everything can convert to, which here is a fixed-width Unicode string. Nothing warns you, the array looks fine in a REPL, and the failure arrives later as a TypeError from an operation that should have worked."
       },
       {
         stem: "Why does padding ragged session data to the maximum length fail catastrophically on real user event logs?",
-        options: [
-          "nan handling is slow",
-          "The padded width is set by the single longest user, so a handful of bot accounts make every row enormous",
-          "np.full cannot allocate large arrays",
-          "The lengths must be sorted first"
-        ],
+        options: ["nan handling is slow in padded arrays", "The longest user sets every row's width", "np.full cannot allocate large arrays", "The lengths must be sorted first"],
         answer: 1,
         why: "Cost scales with `n_users × max_length` rather than with total events. Twenty automated accounts with 250,000 events each turn a 9 MB problem into a 400 GB allocation — and it appears the day one unusual account is created, not gradually."
       },
       {
         stem: "`out = np.append(out, chunk)` inside a loop of 2,000 iterations. What is the problem?",
-        options: [
-          "np.append is deprecated",
-          "Each call allocates a new array and copies everything so far, making the loop quadratic — 200 million element copies to build 200,000",
-          "The dtype changes each iteration",
-          "It only works on 1-D arrays"
-        ],
+        options: ["np.append is deprecated in NumPy 2", "Every call copies everything: quadratic", "The dtype changes on each iteration", "It only works on one-dimensional arrays"],
         answer: 1,
         why: "Arrays are fixed size, so `append` cannot append — it reallocates. Collecting into a Python list and calling `np.concatenate` once is linear and typically hundreds of times faster; preallocating is better still when the total size is known."
       },
       {
         stem: "You memory-map a 100 GB C-contiguous array and read one column. What happens?",
-        options: [
-          "Only that column is read from disk",
-          "Effectively the whole file is read, because the column's elements are strided across every page",
-          "It raises a MemoryError",
-          "NumPy caches the column"
-        ],
+        options: ["Only that column's bytes are read from disk", "Nearly the whole file, as the column spans pages", "It raises a MemoryError for a 100 GB file", "NumPy caches the column after the first read"],
         answer: 1,
         why: "In row-major layout, consecutive elements of a column are separated by the full row width, so touching the column touches every page. This is precisely the access pattern columnar formats exist for, and the strongest practical argument for Parquet over a raw binary dump."
       }

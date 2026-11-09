@@ -711,45 +711,25 @@ def test_clean_data_gives_full_coverage():
     questions: [
       {
         stem: "A revenue report is 38% higher than the source of truth after a CRM migration. What is the most likely cause?",
-        options: [
-          "Currency conversion",
-          "A duplicated key in the customer lookup, so every order for that customer is counted twice after the join",
-          "The inner join dropped rows",
-          "A timezone shift"
-        ],
+        options: ["A currency conversion error in the new CRM", "A duplicated key in the customer lookup", "The inner join dropped unmatched rows", "A timezone shift moved the dates"],
         answer: 1,
         why: "Dropping rows can only lower a total; only a duplicated key on the enrichment side can raise it. The join did exactly what joins do — one row per matching pair — and `validate=\"many_to_one\"` would have raised at the line that caused it."
       },
       {
         stem: "Which is the safest default join for enriching a fact table from a lookup?",
-        options: [
-          "inner",
-          "left — the row count cannot fall, so a failed lookup appears as NaN in a column rather than as missing rows",
-          "outer",
-          "cross"
-        ],
+        options: ["inner, keeping only matched rows", "left, so the row count cannot fall", "outer, keeping every row of both", "cross, pairing every row"],
         answer: 1,
         why: "Inner silently discards facts with no lookup match. Left preserves them with NaN, which is visible and countable via `indicator=True`. Combine it with `validate=\"many_to_one\"` so the other direction — a duplicated lookup row — also fails loudly."
       },
       {
         stem: "How do you find rows in the left table with no match on the right?",
-        options: [
-          "`how=\"anti\"`",
-          "Left join with `indicator=True`, then keep rows where `_merge == \"left_only\"`",
-          "`how=\"outer\"` then dropna",
-          "Inner join and compare lengths"
-        ],
+        options: ["Pass `how='anti'` to merge", "Left join with indicator; keep left_only", "Merge with `how='outer'`, then dropna", "Inner join, then compare the lengths"],
         answer: 1,
         why: "pandas has no anti-join, and this is the idiom. It answers \"customers who never ordered\" and \"orders with no shipment\", and the `_merge` column is also the free coverage report for any enrichment join."
       },
       {
         stem: "`merge_asof(trades, quotes, on=\"time\", direction=\"forward\")` in a feature pipeline. What is the problem?",
-        options: [
-          "It is slower than backward",
-          "It attaches the next quote after each trade — a future value, which is leakage in a feature",
-          "It requires unsorted input",
-          "It cannot handle duplicates"
-        ],
+        options: ["It is slower than a backward match", "It attaches a future quote: leakage", "It requires unsorted input to work", "It cannot handle duplicate times"],
         answer: 1,
         why: "Forward direction takes the first row at or after the key, which has not happened yet at prediction time. The default `backward` is the causal choice; `allow_exact_matches=False` additionally excludes a same-instant row when that would leak."
       }

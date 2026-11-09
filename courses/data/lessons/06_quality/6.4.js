@@ -782,45 +782,25 @@ def test_normalisation_makes_case_variants_exact():
     questions: [
       {
         stem: "Why is comparing every customer to every other infeasible at a million rows?",
-        options: [
-          "Memory",
-          "It is n² — 500 billion pairs — so blocking restricts comparison to pairs sharing a cheap key, cutting it to millions",
-          "pandas has no pairwise function",
-          "Strings are slow to compare"
-        ],
+        options: ["It needs too much memory", "It is n² pairs; block first", "pandas has no pairwise function", "String comparison is too slow"],
         answer: 1,
         why: "Blocking on postcode district plus surname initial gives ~50,000 blocks of ~20 rows: 9.5 million comparisons instead of 500 billion. Since a typo in the block key separates a true pair forever, several passes on different keys are used and their candidate sets united."
       },
       {
         stem: "After merging duplicate customers, orders start failing to join. What was missed?",
-        options: [
-          "The orders needed deduplicating too",
-          "The id mapping — every order referencing a losing id now points at a customer that no longer exists",
-          "The survivor should have been the newest",
-          "Blocking was too aggressive"
-        ],
+        options: ["The orders needed deduplicating too", "The old-to-survivor id mapping", "The survivor should have been the newest", "Blocking was set too aggressively"],
         answer: 1,
         why: "Deduplication produces two outputs: the merged table and the `old_id → surviving_id` mapping. The second must be applied to every table that references the key, and keeping the oldest id as survivor minimises how many references change at all."
       },
       {
         stem: "A~B scores 0.85 and B~C scores 0.85, but A and C are clearly different people. What happens under naive clustering?",
-        options: [
-          "A and C are kept separate",
-          "All three become one cluster — connected components are transitive, and one weak link chains them",
-          "B is dropped",
-          "The scores are averaged"
-        ],
+        options: ["A and C are kept in separate clusters", "One weak link chains all three together", "B is dropped from both of the pairs", "The two scores are averaged together"],
         answer: 1,
         why: "Clustering by connected components does not require A and C to have been compared. On real data this produces a cluster of hundreds of John Smiths through a chain of borderline matches. A cluster-size cap, with oversized clusters left unmerged and reported, is the guard."
       },
       {
         stem: "Which error is worse in customer deduplication, and how does it shape the threshold?",
-        options: [
-          "Missing a duplicate — it wastes storage",
-          "A false merge — it combines two real people's orders and addresses and is hard to undo, so the threshold is set for precision and requires agreement on more than one field",
-          "They are equally bad",
-          "Neither matters at scale"
-        ],
+        options: ["Missing a duplicate, since it wastes storage", "A false merge: tune for precision, several fields", "They are equally bad, so tune for F1", "Neither matters once data reaches scale"],
         answer: 1,
         why: "A missed duplicate is an inefficiency that sits still; a false merge is a corruption that propagates into every downstream table. That asymmetry is the design principle: calibrate on labelled pairs, constrain precision first, and accept lower recall."
       }

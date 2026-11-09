@@ -653,45 +653,25 @@ def test_fit_free_and_row_independent():
     questions: [
       {
         stem: "A cabin column holds `\"A21\"`, `\"B45\"`, blanks and `\"n/a\"`. After extracting deck and number, what has been lost?",
-        options: [
-          "Nothing",
-          "The recording convention — blank versus `n/a` versus recorded — which on this data predicts the outcome better than the deck itself",
-          "The cabin number's parity",
-          "The deck letter's order"
-        ],
+        options: ["Nothing of any predictive value", "How missing was recorded, which predicts", "Whether the cabin number is odd or even", "The ordering of the deck letters"],
         answer: 1,
         why: "A recorded cabin means a first-class ticket; a blank means it was not recorded. That distinction is the strongest signal in the column and it lives in the format, not the content. A pattern-matched indicator keeps it; a parser that only extracts fields throws it away."
       },
       {
         stem: "A rent column has `\"£1,250/month\"`, `\"350 pw\"` and `\"£4,000 per year\"`. What is the base representation?",
-        options: [
-          "Keep the strings as a category",
-          "One numeric column on a single period — pounds per month — with weekly × 52/12 and yearly / 12, plus the original period as a feature",
-          "Three separate columns by period",
-          "The raw number, ignoring the period"
-        ],
+        options: ["Keep the raw strings as a category", "One monthly figure, plus the original period", "Three separate columns, one per period", "The raw number, ignoring the period"],
         answer: 1,
         why: "Values on different periods are not comparable until normalised, and ignoring the period makes a weekly rent look like a monthly one. The period token itself is worth keeping: listings quoted weekly are a different market segment from those quoted yearly."
       },
       {
         stem: "Why should a parser never assume a missing unit is the most common one?",
-        options: [
-          "It slows parsing",
-          "The assumption is right most of the time and silently wrong by a large factor the rest — NaN with a named reason lets the coverage report show how often it happens and someone decide",
-          "Regexes cannot express defaults",
-          "It always is the most common one"
-        ],
+        options: ["It slows the parser down considerably", "It is silently wrong by a large factor", "Regexes cannot express a default unit", "It always is the most common unit"],
         answer: 1,
         why: "A guessed default produces a plausible number with no marker that it was guessed. Returning NaN and `period:missing` costs nothing and makes the frequency visible; if the feed's convention justifies a default, that becomes a documented rule rather than a silent one."
       },
       {
         stem: "Which of these should a regex-based parser NOT try to extract from a free-text notes column?",
-        options: [
-          "Invoice references like `INV-20261`",
-          "Dates written in prose such as 'promised payment Fri' — a date parser produces a wrong date with high confidence",
-          "Amounts like `£45.00`",
-          "Keyword flags for 'refund' or 'dispute'"
-        ],
+        options: ["Invoice references like `INV-20261`", "Prose dates such as 'promised payment Fri'", "Amounts written like `£45.00` in the notes", "Keyword flags for 'refund' or 'dispute'"],
         answer: 1,
         why: "References, amounts and keywords have patterns a regex can match reliably. Dates in prose, names and addresses do not: the parser will produce a confident, wrong value more often than a missing one. Those belong to a real NER model or a person, and a parser that knows its limits reports coverage honestly."
       }

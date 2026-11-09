@@ -577,45 +577,25 @@ def test_metric_responds_to_model_quality_runs():
     questions: [
       {
         stem: "Why is `a * b` roughly 200× faster than an equivalent Python loop?",
-        options: [
-          "NumPy uses multiple CPU cores",
-          "The per-element interpreter overhead — dispatch, type check, object allocation — is removed entirely, not reduced",
-          "NumPy caches results",
-          "The loop is compiled just-in-time"
-        ],
+        options: ["NumPy spreads the work across all CPU cores", "Per-element interpreter overhead is removed", "NumPy caches results from earlier calls", "The loop is compiled just-in-time first"],
         answer: 1,
         why: "The arithmetic was never the expensive part. Removing the interpreter from the inner loop eliminates roughly 80 ns per element of dispatch and allocation, and lets the compiler use SIMD registers on contiguous data. Basic NumPy operations are single-threaded, so it is not about cores."
       },
       {
         stem: "`y_true` is `(500,)` and `y_pred` is `(500, 1)`. What does `(y_true - y_pred).mean()` return?",
-        options: [
-          "The mean error",
-          "A plausible-looking number computed from a 500×500 matrix of every pairwise difference",
-          "A ValueError",
-          "An array of 500 values"
-        ],
+        options: ["The mean error across the 500 predictions", "A mean over a silent 500×500 broadcast", "A ValueError about the mismatched shapes", "An array of 500 per-row differences"],
         answer: 1,
         why: "The shapes broadcast to `(500, 500)`: 500 genuine errors on the diagonal and 249,500 comparisons between unrelated pairs. The result is dominated by the target's own spread, which is why such a metric stays stable even when the model degrades badly."
       },
       {
         stem: "Which change reduces peak memory in a pairwise distance calculation on 5,000 points with 50 features?",
-        options: [
-          "Using float32 for the input",
-          "Expanding ‖a−b‖² to ‖a‖² + ‖b‖² − 2a·b, so the largest temporary is (n, n) rather than (n, n, d)",
-          "Using np.vectorize",
-          "Looping over rows"
-        ],
+        options: ["Using float32 for the input points", "Expanding the norm so the temporary is (n, n)", "Wrapping the distance in np.vectorize", "Looping over the rows one at a time"],
         answer: 1,
         why: "The naive broadcast materialises an `(n, n, d)` intermediate — 10 GB here. The algebraic form's largest array is `(n, n)` at 200 MB, and the matrix product runs in optimised BLAS. Clamp the result at zero before the square root, because float cancellation produces tiny negatives."
       },
       {
         stem: "You need one multiplier per row of a `(2, 3)` array, but `prices * discount` raises with `discount` of shape `(2,)`. What is the fix?",
-        options: [
-          "Transpose prices",
-          "`prices * discount[:, None]` — reshape to `(2, 1)` so it stretches across columns",
-          "Convert discount to a list",
-          "Use np.multiply"
-        ],
+        options: ["Transpose prices before multiplying", "`discount[:, None]`, a (2, 1) column", "Convert discount to a Python list", "Call np.multiply instead of `*`"],
         answer: 1,
         why: "Broadcasting aligns from the right, so `(2,)` pads to `(1, 2)` and meets the 3 columns — a mismatch. `discount[:, None]` makes it `(2, 1)`, which stretches along axis 1 and applies one value per row."
       }

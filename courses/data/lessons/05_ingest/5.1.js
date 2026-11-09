@@ -744,45 +744,25 @@ def test_column_order_is_canonical():
     questions: [
       {
         stem: "`pd.read_csv(f, parse_dates=[\"d\"])` on a column starting `03/04/2026`. What format does it use?",
-        options: [
-          "Day-first, as most of the world writes",
-          "It infers one format from the first value — ambiguous, so it picks month-first — and applies it to every row, misparsing or failing on 13/04",
-          "ISO 8601",
-          "It asks"
-        ],
+        options: ["Day-first, as most of the world writes dates", "One format inferred from the first value, applied to all", "ISO 8601, the international standard format", "It asks interactively when a date is ambiguous"],
         answer: 1,
         why: "pandas 2.x infers a single format from the first non-null value. `03/04` fits both conventions, and the guess is month-first. Rows that do not fit the guess produce a warning, `NaT`, or a wrong date. `date_format=\"%d/%m/%Y\"` removes the guess entirely."
       },
       {
         stem: "Which aggregation cannot be computed correctly across chunks by combining per-chunk results?",
-        options: [
-          "Sum",
-          "Median — it needs all the values at once; a mean of per-chunk medians is not the median",
-          "Count",
-          "Max"
-        ],
+        options: ["Sum, which needs every value at once", "Median, which needs all the values together", "Count, which needs every row in one place", "Max, which cannot be combined across chunks"],
         answer: 1,
         why: "Sums, counts, extrema and anything built from them compose. Medians, quantiles and distinct counts do not — they need approximate sketches, two passes, or a columnar engine. This is the same trap as averaging per-chunk VWAPs."
       },
       {
         stem: "A file with 3% malformed rows is read with `on_bad_lines=\"skip\"`. What is the problem?",
-        options: [
-          "It raises",
-          "3% of the data is discarded with no record that it happened",
-          "The bad rows are padded with NaN",
-          "It is slower"
-        ],
+        options: ["It raises an error on the first bad row", "3% of rows vanish with no record of it", "The bad rows are padded out with NaN", "It is much slower than the default"],
         answer: 1,
         why: "Skipping is correct; silence is not. A callable `on_bad_lines` records each dropped line, so the count goes into the pipeline's report and a threshold can distinguish noise from a broken export. Three bad rows in a million and three thousand mean different things."
       },
       {
         stem: "What survives a `to_csv` / `read_csv` round trip?",
-        options: [
-          "Everything",
-          "The values only — dtypes are re-inferred, the index becomes a column, categoricals become object, timezones become strings",
-          "Values and dtypes",
-          "Values and the index"
-        ],
+        options: ["Everything, including dtypes and index", "The values only; types and index are lost", "The values together with their dtypes", "The values together with the index"],
         answer: 1,
         why: "CSV carries no metadata. For storage between runs of your own code, Parquet keeps dtypes, categoricals, timezone and the index. CSV is for handing data to something that cannot read anything else."
       }

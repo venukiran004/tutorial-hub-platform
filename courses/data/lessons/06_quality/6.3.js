@@ -829,45 +829,25 @@ def test_trend_detects_rising_soft_rate(tmp="hist.jsonl"):
     questions: [
       {
         stem: "Which dimension does `ship_date >= order_date` test?",
-        options: [
-          "Validity — the date is well-formed",
-          "Consistency — two values in the same row agree with each other",
-          "Completeness — both dates are present",
-          "Accuracy — the dates are correct"
-        ],
+        options: ["Validity: the date is well-formed", "Consistency: two values in a row agree", "Completeness: both dates are present", "Accuracy: the dates are correct"],
         answer: 1,
         why: "Validity is about one value's format and domain; consistency is about values agreeing with each other, within a row or across tables. The ship-date rule is a within-row consistency check, and a missing ship date is a separate completeness finding — each dimension reports its own."
       },
       {
         stem: "Why should a quality check return a boolean mask rather than raise on the first failure?",
-        options: [
-          "Masks are faster",
-          "A mask shows which rows and how many, lets checks compose on the same row, and lets the gate report every failure in one message",
-          "Exceptions cannot be logged",
-          "pandas requires it"
-        ],
+        options: ["Boolean masks are faster to evaluate", "It shows every failing row, all at once", "Exceptions cannot be logged properly", "pandas requires checks to return masks"],
         answer: 1,
         why: "A file with five defects should produce five findings, not one exception and four unknowns. The mask can be grouped by source or date to locate the cause, and a row failing two checks shows both. The gate decides what to raise, once, with everything listed."
       },
       {
         stem: "A check's lambda references a column that was dropped from the feed. What should happen?",
-        options: [
-          "The check is skipped",
-          "The check fails with the error recorded — a schema change must not silently disable the check that would have caught it",
-          "The gate passes",
-          "The column is filled with NaN"
-        ],
+        options: ["The check is skipped for this run", "The check fails and records the error", "The gate passes, as no rows failed", "The missing column is filled with NaN"],
         answer: 1,
         why: "A `KeyError` inside a check is evidence that the feed changed shape. Catching it and marking the check failed keeps the failure visible; swallowing it means the check that used to guard `ship_date` is now guarding nothing, with no one told."
       },
       {
         stem: "Why is a soft gate worth having if it never blocks the pipeline?",
-        options: [
-          "It is not",
-          "Its failure rate is recorded every run, so a source degrading from 0% to 2.5% over ten days is visible as a trend before it crosses any threshold",
-          "It catches hard failures",
-          "It is faster than a hard gate"
-        ],
+        options: ["It is not worth having at all", "Its recorded rate shows a degrading trend", "It catches failures a hard gate misses", "It runs faster than a hard gate"],
         answer: 1,
         why: "Soft gates measure health. A malformed-email rate under 2% is fine today; the same rate having tripled over a week is a source problem worth a conversation now. The history file is what makes that visible, and a check that only ever said pass or fail could not show it."
       }

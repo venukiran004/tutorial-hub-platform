@@ -454,56 +454,31 @@ print("report the estimate from the split that matches the deployment; the shuff
     questions: [
       {
         stem: "A random forest scores 0.71 under shuffled 5-fold and 0.67 under GroupKFold by customer. The features include age, region and plan, constant per customer. What explains the gap?",
-        options: [
-          "GroupKFold uses less training data",
-          "The customer-level columns act as a fingerprint; the forest learnt each customer's effect and was scored on that customer's other rows under the shuffled split",
-          "The group split is biased",
-          "The forest is underfitting"
-        ],
+        options: ["GroupKFold uses less training data", "Customer-level columns act as a fingerprint", "The group split is biased against forests", "The forest is underfitting the data"],
         answer: 1,
         why: "Rows of one customer share a latent effect and a near-unique combination of static columns. Shuffled folds put the same customer on both sides, so the model is rewarded for memory. Which number is right depends on whether production scores seen or new customers."
       },
       {
         stem: "Why does `TimeSeriesSplit` need a `gap` when the label is 'default within 90 days'?",
-        options: [
-          "To make the folds equal in size",
-          "Because a training row in the last 90 days before the test block has a label determined by events inside the test block — an embargo of the label horizon removes that overlap",
-          "To leave room for the validation set",
-          "It does not; gap is for feature windows only"
-        ],
+        options: ["To make the folds equal in size", "Late training labels overlap the test block", "To leave room for the validation set", "It does not; gap is for feature windows"],
         answer: 1,
         why: "Labels computed over a forward window reach into the future by that window's length. Training rows whose window overlaps the test period carry test-period information; the gap excludes them. Feature windows that look backwards add to the required gap in the other direction."
       },
       {
         stem: "A grid search over twenty settings reports `best_score_` 0.94. Nested CV over the same search reports 0.88. Which number do you report and why?",
-        options: [
-          "0.94 — it is the model's score",
-          "0.88 — the best of twenty noisy numbers is biased upwards, and 0.88 is what the choose-then-fit procedure delivers on rows that took no part in the choice",
-          "The average of the two",
-          "0.94, with 0.88 as a footnote"
-        ],
+        options: ["0.94, since it is the model's score", "0.88: best-of-twenty is biased upward", "The average of the two numbers", "0.94, with 0.88 as a footnote"],
         answer: 1,
         why: "Selecting the maximum of noisy estimates selects noise as well as signal. The outer loop scores each chosen setting on a fold the search never saw, and that mean is the honest estimate of the procedure you are going to rerun on all the data."
       },
       {
         stem: "Under drift, an expanding-window walk-forward scores 0.64 and a sliding window of 800 rows scores 0.67. What does that tell you?",
-        options: [
-          "The sliding window is leaking",
-          "Old rows describe a relationship that no longer holds and drag the expanding fit towards it; recency helps, and the window length is a hyperparameter to tune on earlier folds",
-          "Use a shuffled split instead — it scores 0.67",
-          "The model needs more features"
-        ],
+        options: ["The sliding window is leaking", "Old rows drag the fit; tune the window", "Use a shuffled split, which scores 0.67", "The model needs more features"],
         answer: 1,
         why: "Both are honest — each trains only on the past. The difference is how much past. The shuffled 0.67 is not a candidate: it used rows from after each test row. Choose the window on validation folds and confirm on the last block."
       },
       {
         stem: "With 5 % positives and 600 rows, eight stratified holdouts give AUCs from 0.38 to 0.85 for the same model. What is the correct conclusion?",
-        options: [
-          "The model is unstable",
-          "The estimate is: seven positives in a test set cannot pin down a rank statistic, so a single holdout is uninformative — use cross-validation and report the spread",
-          "Increase the test size to 50 %",
-          "Use accuracy instead"
-        ],
+        options: ["The model itself is unstable", "Too few positives: use CV, show spread", "Increase the test size to 50% of rows", "Switch the evaluation metric to accuracy"],
         answer: 1,
         why: "The model is identical across seeds; the test set is what changes. AUC's standard error with a handful of positives is close to 0.1. Cross-validation uses every row as a test row once; repeated CV tightens it further; and the interval belongs next to the number."
       }

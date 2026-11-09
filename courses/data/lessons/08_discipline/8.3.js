@@ -474,56 +474,31 @@ print("audit: three kinds planted, three kinds found, honest score", after["time
     questions: [
       {
         stem: "A churn model scores AUC 0.99. The top feature is `closure_reason`, populated for 100 % of training rows and 0 % of rows in a live scoring sample. What is this?",
-        options: [
-          "A very strong proxy",
-          "Target leakage: the column is written when the case is closed, after the outcome the model is meant to predict; in production it does not exist yet",
-          "Temporal leakage",
-          "A data-quality problem in the live pull"
-        ],
+        options: ["A very strong proxy for churn", "Target leakage: written after the outcome", "Temporal leakage from a moving window", "A data-quality problem in the live pull"],
         answer: 1,
         why: "Full in training, empty at scoring time is the signature of a column populated by the outcome. The single-feature scan would show it near 1.0 alone, and the manifest would show its known_at as 'case closed'."
       },
       {
         stem: "Why can cross-validation not detect duplicate rows split across folds?",
-        options: [
-          "It can, if shuffle=True",
-          "Because CV measures how well the model predicts the held-out fold — and a memorised twin in training makes that prediction correct; the inflated score is the symptom, not a detector",
-          "Because duplicates are removed automatically",
-          "Because trees ignore duplicates"
-        ],
+        options: ["It can, provided shuffle=True is set", "A memorised twin makes the prediction right", "Duplicates are removed automatically", "Because tree models ignore duplicates"],
         answer: 1,
         why: "The contamination inflates exactly the number CV reports. Detection needs a check that looks at the rows — twin share per fold — or an upstream deduplication before any split."
       },
       {
         stem: "A centred 3-step rolling mean is used as a feature. The model is evaluated on a time split with the last two steps of every customer held out, and scores 0.86 versus 0.80 for a trailing window. Which statement is correct?",
-        options: [
-          "The centred window is a better feature and the time split proves it is safe",
-          "The time split did not stop the leak: for every row, the feature already contained the next step's value before the split was made; the truncation test shows it changing when the future is removed",
-          "The trailing window is leaking",
-          "The difference is noise"
-        ],
+        options: ["The centred window is better, and the split proves it", "The feature already held the next step before splitting", "The trailing window is the one that leaks", "The difference in scores is only noise"],
         answer: 1,
         why: "Splitting by time orders rows; it cannot remove information that was baked into a feature during construction. Rebuild the feature on a truncated history and any past value that changes used the future."
       },
       {
         stem: "Which planted leak does the shuffled-label control detect?",
-        options: [
-          "A closure code written after the outcome",
-          "Duplicate rows across folds",
-          "A selector or encoder fitted on all rows before cross-validation — the control scores above chance because the fit used the validation labels",
-          "A centred rolling window"
-        ],
+        options: ["A closure code written after the outcome", "Duplicate rows spread across folds", "A selector fitted on all rows first", "A centred rolling window feature"],
         answer: 2,
         why: "With shuffled labels a closure code is no longer aligned, twins carry independent random labels, and a centred window predicts nothing. Only a step that fitted on the validation fold's labels keeps scoring — which is what the control is for. A clean shuffled-label result is not a clean bill for the other three."
       },
       {
         stem: "Rows extracted in the last 60 days for a 'churn within 90 days' label are all labelled retained. What has happened and what is the fix?",
-        options: [
-          "Churn has fallen recently",
-          "The label window had not closed for those rows, so they are false negatives; censor rows whose window has not elapsed and record the extraction date in the manifest",
-          "Nothing — more data is always better",
-          "Relabel them as churned"
-        ],
+        options: ["Churn has genuinely fallen recently", "Their label window has not closed: censor", "Nothing, since more data is always better", "They should all be relabelled as churned"],
         answer: 1,
         why: "The label itself leaks the extraction time. The most recent rows — the ones most like production — carry systematically wrong labels, and the model learns that recency predicts retention."
       }

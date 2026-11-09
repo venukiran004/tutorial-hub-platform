@@ -876,45 +876,25 @@ def test_short_run_is_refused():
     questions: [
       {
         stem: "A moving average of a positive series dips at both ends of the chart. Why?",
-        options: [
-          "The data genuinely starts and ends low",
-          "`mode=\"same\"` pads with zeros, so the boundary values average real data with zeros that are not in the dataset",
-          "The kernel is not normalised",
-          "Floating-point error at the boundaries"
-        ],
+        options: ["The data genuinely starts and ends low", "mode='same' pads the edges with zeros", "The kernel weights are not normalised", "Floating-point error at the boundaries"],
         answer: 1,
         why: "The window extends past the data at the edges and `\"same\"` fills it with zeros. Use `mode=\"valid\"` and accept the shorter output, or pad with `mode=\"edge\"` so the boundary assumption — that the series continues flat — is one you chose deliberately."
       },
       {
         stem: "You compute `np.gradient(x)` on data with irregular timestamps. What is wrong?",
-        options: [
-          "Nothing — gradient handles irregular spacing",
-          "It assumes unit spacing, so you get a per-sample rate rather than a per-second rate — plausible numbers in the wrong units",
-          "It requires sorted input",
-          "It returns one fewer value"
-        ],
+        options: ["Nothing; gradient handles irregular spacing", "It assumes unit spacing: wrong units", "It requires sorted input to work", "It returns one fewer value than input"],
         answer: 1,
         why: "`np.gradient(x, t)` uses the actual coordinates. Without them every rate is scaled by whatever the local spacing happened to be, and with irregular sampling it is not even a consistent rescaling — the error varies point to point."
       },
       {
         stem: "You have 60 days of hourly data. Which cycle can an FFT reliably detect?",
-        options: [
-          "An annual cycle",
-          "A weekly cycle — about 8.5 cycles fit in the record",
-          "A 30-minute cycle",
-          "All of these"
-        ],
+        options: ["An annual cycle", "A weekly cycle", "A 30-minute cycle", "All of these"],
         answer: 1,
         why: "You need two or three full cycles to establish a period, so 60 days cannot see an annual one at all. A 30-minute cycle is below the Nyquist limit for hourly sampling and *aliases* — appearing as a spurious lower frequency that looks entirely genuine."
       },
       {
         stem: "A degree-20 polynomial has much lower training error than a degree-2 fit. What does that tell you?",
-        options: [
-          "The true relationship is degree 20",
-          "Nothing useful — training error falls monotonically with degree, so it measures overfitting rather than fit quality",
-          "The data is noisy",
-          "The fit failed to converge"
-        ],
+        options: ["The true relationship is of degree 20", "Nothing: training error always falls", "The data is too noisy for degree 2", "The degree-2 fit failed to converge"],
         answer: 1,
         why: "Adding parameters can only reduce in-sample error. The degree-20 fit oscillates wildly between the training points — Runge's phenomenon — and goes to infinity immediately outside its domain. Only held-out data can choose the degree."
       }

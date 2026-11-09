@@ -612,45 +612,25 @@ def test_clean_data_has_no_warning():
     questions: [
       {
         stem: "A groupby on two categorical keys returns 12,000 rows from a 200-row frame. Why?",
-        options: [
-          "Duplicate rows in the input",
-          "`observed=False` produced a row for every category combination — 120 × 100 — including ones with no data",
-          "The keys were not sorted",
-          "The index was not reset"
-        ],
+        options: ["Duplicate rows in the input frame", "observed=False: every category pair", "The keys were not sorted first", "The index was not reset first"],
         answer: 1,
         why: "Categorical keys carry their full category list, and the pandas 2.x default includes every combination whether or not it occurs. The invented rows have sum 0 and count 0, and a mean over them is 0/0. `observed=True` restricts to combinations actually present."
       },
       {
         stem: "Which of these is NOT a valid groupby key?",
-        options: [
-          "A function applied to each index label",
-          "A `pd.Grouper(freq=\"MS\")`",
-          "A Series with a different index than the frame — it will align and produce NaN groups rather than raise",
-          "A list mixing a column name and an array"
-        ],
+        options: ["A function applied to each index label", "A `pd.Grouper(freq='MS')` on a date column", "A Series indexed differently from the frame", "A list mixing a column name and an array"],
         answer: 2,
         why: "All four are accepted, which is the point: the third does not raise, it aligns on the index and silently matches nothing. Pass `.to_numpy()` to group positionally when the Series index is not meant to match."
       },
       {
         stem: "Why prefer `df.groupby(\"k\")[\"v\"].sum()` over `df.groupby(\"k\").sum()[\"v\"]`?",
-        options: [
-          "The first returns a DataFrame",
-          "The first aggregates one column; the second aggregates every column and discards all but one",
-          "The second raises on string columns",
-          "They are identical"
-        ],
+        options: ["The first returns a DataFrame, not a Series", "The first sums one column; the second sums all", "The second raises on string columns", "They are identical in cost and result"],
         answer: 1,
         why: "On a wide frame the second form does all the work for every numeric column and throws the results away. It may also raise or concatenate strings depending on version and `numeric_only`. Select before aggregating."
       },
       {
         stem: "A report matched finance for a year, then stopped after a feed started sending rows with a missing key. Was the code correct before?",
-        options: [
-          "Yes — the feed broke it",
-          "No — `dropna=True` was always dropping missing keys; there had simply been none to drop",
-          "Yes — pandas changed the default",
-          "It depends on the pandas version"
-        ],
+        options: ["Yes, the new feed broke correct code", "No: missing keys were always dropped", "Yes, pandas changed its default since", "It depends on the pandas version used"],
         answer: 1,
         why: "A default-argument defect is correct on the data it was tested with and wrong on data that arrives later. The totals matched because the data happened not to exercise the bug. `dropna=False` plus a reconciliation assertion is the fix that would have been right from the start."
       }

@@ -678,45 +678,25 @@ ORDER BY customer_id, order_date, order_id;
     questions: [
       {
         stem: "What is the difference between `SUM(x) ... GROUP BY k` and `SUM(x) OVER (PARTITION BY k)`?",
-        options: [
-          "They are identical",
-          "GROUP BY returns one row per group; OVER returns every original row with its group's sum attached",
-          "OVER is faster",
-          "GROUP BY allows ORDER BY"
-        ],
+        options: ["They are identical in their output", "GROUP BY collapses rows; OVER keeps them", "OVER is always faster than GROUP BY", "GROUP BY permits ORDER BY, OVER does not"],
         answer: 1,
         why: "Same computation, different output shape. The window form is what lets you compute `x / SUM(x) OVER (PARTITION BY k)` — a share of group total — without a join. It is pandas `transform` against `agg`."
       },
       {
         stem: "Two history rows share `updated_at` and `ROW_NUMBER() OVER (PARTITION BY id ORDER BY updated_at DESC)` is used to pick the latest. What is the risk?",
-        options: [
-          "It raises",
-          "The tie is broken arbitrarily, so the 'latest' row can differ between runs of the same query on the same data",
-          "Both rows get rn = 1",
-          "It picks the older one"
-        ],
+        options: ["The query raises an error", "The tie is broken arbitrarily", "Both rows get rn = 1", "It always picks the older row"],
         answer: 1,
         why: "ROW_NUMBER always assigns unique numbers, and with a non-unique ORDER BY the engine chooses. Add a version, id or load timestamp as the final key. RANK would give both rows 1 and make the tie visible instead."
       },
       {
         stem: "A feature uses `AVG(amount) OVER (PARTITION BY c ORDER BY d)` with no frame clause. What does it compute?",
-        options: [
-          "The average of previous orders",
-          "The running average including the current row and any peers with the same date — a leak if the target depends on the current row",
-          "The average of the next orders",
-          "The partition average"
-        ],
+        options: ["The average of previous orders only", "A running average including same-day peers", "The average of the following orders", "The whole partition's average"],
         answer: 1,
         why: "The default frame is `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`. It includes this row. `ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING` is the causal version — and the discipline is to write the frame explicitly on every feature."
       },
       {
         stem: "How do you filter on a window function's result?",
-        options: [
-          "In WHERE, directly",
-          "In a CTE or subquery — the window is computed after WHERE, so the outer query's WHERE sees it as an ordinary column",
-          "In HAVING",
-          "You cannot"
-        ],
+        options: ["In WHERE, referring to it directly", "In an outer query over a CTE or subquery", "In HAVING, after the window runs", "You cannot filter on it at all"],
         answer: 1,
         why: "Window functions run after WHERE, GROUP BY and HAVING, so a WHERE in the same SELECT cannot reference them. Wrapping the query makes the window result a real column of the inner result, which the outer WHERE can filter — the shape of every `WHERE rn = 1` query."
       }

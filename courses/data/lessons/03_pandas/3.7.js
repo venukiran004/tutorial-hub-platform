@@ -645,45 +645,25 @@ def test_empty_input():
     questions: [
       {
         stem: "`s.value_counts(normalize=True)` reports 60% for value \"a\" on a column where 2 of 7 rows are missing. What does 60% mean?",
-        options: [
-          "3 of 7 rows",
-          "3 of the 5 non-missing rows — missing values are excluded from the denominator",
-          "It is an estimate",
-          "The proportion after imputation"
-        ],
+        options: ["3 of the 7 rows in the column", "3 of the 5 non-missing rows", "An estimate from a sample", "The share after imputation"],
         answer: 1,
         why: "Normalisation divides by the count of values actually counted, and missing values are not counted. `dropna=False` puts them in as their own category and makes the denominator the full row count — which is usually what a report about customers should say."
       },
       {
         stem: "You `drop_duplicates(subset=[\"user\", \"event\"])` on a click stream and lose 8% of rows. What should you have done first?",
-        options: [
-          "Used keep=\"last\"",
-          "Inspected with `keep=False` to see whether the flagged rows are genuine duplicates or distinct events that merely share user and event",
-          "Reset the index",
-          "Sorted by user"
-        ],
+        options: ["Used keep='last' to keep newer rows", "Inspected the flagged rows with keep=False", "Reset the index before deduplicating", "Sorted the stream by user first"],
         answer: 1,
         why: "The subset defines what counts as a duplicate. Two real purchases by the same user share `[user, event]` and differ in timestamp and amount — a blind drop deletes a sale. Seeing every copy side by side is the only way to tell, and 8% removed is a finding to report, not a step to hide."
       },
       {
         stem: "Scores 90, 85, 85, 70. What does `rank(ascending=False, method=\"min\")` give the two 85s?",
-        options: [
-          "2.5 each",
-          "2 each, with the 70 ranked 4th — competition ranking with a gap",
-          "2 and 3, by row order",
-          "2 each, with the 70 ranked 3rd"
-        ],
+        options: ["2.5 each, the average rank", "2 each; the 70 ranks 4th", "2 and 3, by row order", "2 each; the 70 ranks 3rd"],
         answer: 1,
         why: "`min` assigns tied values the lowest position they occupy and skips the following ranks — \"1st, joint 2nd, joint 2nd, 4th\". `average` would give 2.5, `dense` would give the 70 a 3, and `first` would split the tie by whichever 85 appears first in the frame."
       },
       {
         stem: "How do you turn a boolean \"session starts here\" column into session numbers without a loop?",
-        options: [
-          "`rank()`",
-          "`cumsum()` — it increments at every True, so all rows up to the next start share a number",
-          "`cumcount()`",
-          "`factorize()`"
-        ],
+        options: ["`rank()` on the flag", "`cumsum()` on the flag", "`cumcount()` on the flag", "`factorize()` on the flag"],
         answer: 1,
         why: "A cumulative sum of a boolean counts the Trues seen so far, which labels each consecutive run. Within `groupby(\"user\")` the numbering restarts per user. The idiom generalises to any \"new group begins here\" flag — gaps in time, changes in state, page reloads."
       }

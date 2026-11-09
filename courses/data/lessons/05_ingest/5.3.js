@@ -696,45 +696,25 @@ def test_empty_feed():
     questions: [
       {
         stem: "A record has `items` (3 elements) and `payments` (2 elements). What does flattening both into one frame produce?",
-        options: [
-          "5 rows",
-          "6 rows — the cartesian product, with every item repeated twice and every payment three times",
-          "3 rows",
-          "An error"
-        ],
+        options: ["5 rows, items plus payments", "6 rows, a cartesian product", "3 rows, one per item", "An error from the mismatch"],
         answer: 1,
         why: "Unrolling two independent arrays into one table multiplies their lengths. Line totals sum to double the revenue and payments to triple, with nothing to say so. The relational form — one frame per array, joined by the parent key — is the only one that does not repeat."
       },
       {
         stem: "Why is JSON Lines preferred over a JSON array for large files?",
-        options: [
-          "It compresses better",
-          "One object per line can be read and parsed incrementally; a JSON array cannot be parsed until the closing bracket is reached",
-          "It supports more types",
-          "pandas cannot read JSON arrays"
-        ],
+        options: ["It compresses much better than an array", "Lines parse one at a time; arrays need the end", "It supports more data types than JSON", "pandas cannot read JSON arrays at all"],
         answer: 1,
         why: "A parser cannot know where record 500,000 ends in an array without reading to the end. JSON Lines makes each line independent, so `read_json(lines=True, chunksize=...)` streams it, and a single malformed line is one bad record rather than a failed file."
       },
       {
         stem: "`pd.read_json(...)[\"id\"]` has dtype `datetime64[ns]` but the IDs are integers like 1700000000. What happened?",
-        options: [
-          "The file stored dates",
-          "read_json's date inference decided large integers were epoch timestamps",
-          "The column name contained 'date'",
-          "A timezone was set"
-        ],
+        options: ["The file genuinely stored dates", "Large integers were inferred as epochs", "The column name contained 'date'", "A timezone was set on the reader"],
         answer: 1,
         why: "`read_json` tries to convert plausible-looking columns to dates by default, and a Unix-epoch-sized integer qualifies. `convert_dates=False`, or a list naming only the real date columns, turns the guess off."
       },
       {
         stem: "One record in a feed has `\"tags\": \"hello\"` instead of a list. What does `explode(\"tags\")` do to it?",
-        options: [
-          "Raises a TypeError",
-          "Produces five rows — h, e, l, l, o — because a string is iterable",
-          "Keeps it as one row",
-          "Converts it to a list automatically"
-        ],
+        options: ["It raises a TypeError on the string", "Five rows, one per character", "It keeps the record as one row", "It converts the string to a list"],
         answer: 1,
         why: "explode iterates whatever it finds. Five extra rows that look like single-character tags is a silent corruption. Check the types before exploding and wrap scalars in a list; a dict would be exploded into its keys the same way."
       }

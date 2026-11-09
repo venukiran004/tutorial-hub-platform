@@ -626,45 +626,25 @@ def test_accumulator_dtype_matters():
     questions: [
       {
         stem: "`a.strides` returns `(32, 8)` for an `int64` array. What does that mean?",
-        options: [
-          "The array has 32 rows and 8 columns",
-          "Moving one row costs 32 bytes — four elements — and moving one column costs 8 bytes",
-          "The array uses 32 bytes total",
-          "The first axis has stride 32 elements"
-        ],
+        options: ["The array has 32 rows and 8 columns", "A row step is 32 bytes; a column step is 8", "The whole array occupies 32 bytes in memory", "The first axis has a stride of 32 elements"],
         answer: 1,
         why: "Strides are always in bytes, never elements. This is the metadata that lets a transpose swap two numbers instead of moving any data, and it is why reshaping a 10 GB array costs the same as reshaping a tiny one."
       },
       {
         stem: "You store a quantity column as `int16` and a value of 40,000 arrives. What happens?",
-        options: [
-          "NumPy raises an OverflowError",
-          "It wraps silently to −25,536 and flows through the pipeline as a valid number",
-          "It is clipped to 32,767",
-          "The dtype is automatically widened"
-        ],
+        options: ["NumPy raises an OverflowError on the assignment", "It wraps silently to −25,536 and flows on as valid", "It is clipped to 32,767, the largest int16 value", "The column's dtype is widened automatically"],
         answer: 1,
         why: "Integer overflow in NumPy is silent by design. That makes it a data corruption rather than a crash — which is why downcasting needs headroom and a range assertion at load rather than a one-off check against today's data."
       },
       {
         stem: "Which column should not be downcast from `float64` to `float32`?",
-        options: [
-          "A model feature ranging −4.2 to 4.9",
-          "A currency total reaching 84,000.55, because `float32`'s seven significant digits are already exhausted",
-          "An embedding vector",
-          "A normalised score"
-        ],
+        options: ["A model feature ranging from −4.2 to 4.9", "A currency total reaching 84,000.55", "An embedding vector of 384 dimensions", "A normalised score between 0 and 1"],
         answer: 1,
         why: "`float32` gives roughly seven significant digits, and 84,000.55 needs seven. Sums over the column would lose pennies — and a total that does not reconcile is an incident, unlike a feature whose seventh digit is noise anyway."
       },
       {
         stem: "`b = a.reshape(3, 4); b[0, 0] = 999`. What is `a[0]`?",
-        options: [
-          "Unchanged, because reshape returns a new array",
-          "999 — reshape returns a view sharing the same memory",
-          "An error, because shapes differ",
-          "It depends on the dtype"
-        ],
+        options: ["Unchanged, since reshape returns a new array", "999, because reshape returns a view", "An error, because the shapes differ", "It depends on the dtype of the array"],
         answer: 1,
         why: "Reshape rewrites the shape and strides over the existing buffer, so `b.base is a` and writes go to the shared memory. When a reshape *cannot* be expressed as strides — such as on a transposed array — NumPy copies instead, silently."
       }

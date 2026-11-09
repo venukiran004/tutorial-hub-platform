@@ -591,45 +591,25 @@ def test_no_conditions_keeps_everything():
     questions: [
       {
         stem: "`b = a[a > 5]; b[0] = 0`. What happened to `a`?",
-        options: [
-          "Its first element above 5 became 0",
-          "Nothing — boolean masking returned a copy, so the write went into a separate array",
-          "It raised an error",
-          "It depends on the dtype"
-        ],
+        options: ["Its first element above 5 became 0", "Nothing: masking returned a copy", "It raised an error on the write", "It depends on the array's dtype"],
         answer: 1,
         why: "Boolean masking is fancy indexing and always copies. Note that `a[a > 5] = 0` on one line *does* reach `a` — that form is `__setitem__` on `a` rather than indexing followed by assignment, and the visual similarity is what makes this bug survive review."
       },
       {
         stem: "Why does `age > 30 & age < 60` give a wrong or confusing result?",
-        options: [
-          "`&` is not a valid NumPy operator",
-          "`&` binds tighter than `>`, so it parses as `age > (30 & age) < 60`",
-          "NumPy requires np.logical_and",
-          "The comparison order is reversed"
-        ],
+        options: ["`&` is not a valid NumPy operator at all", "`&` binds tighter than the comparisons", "NumPy requires np.logical_and for this", "The comparison order is reversed here"],
         answer: 1,
         why: "Bitwise operators have higher precedence than comparison in Python, so the grouping is not what it reads as. Every comparison in a compound mask needs its own parentheses: `(age > 30) & (age < 60)`."
       },
       {
         stem: "You slice 100 rows out of a 4 GB array, return them from a function, and memory never drops. Why?",
-        options: [
-          "NumPy caches arrays",
-          "The slice is a view, and a view keeps its parent's entire buffer alive",
-          "The garbage collector runs infrequently",
-          "The rows were copied twice"
-        ],
+        options: ["NumPy caches every array it creates", "The slice is a view holding the whole buffer", "The garbage collector runs too rarely", "The rows were copied twice on return"],
         answer: 1,
         why: "A view holds a reference into the parent's memory, so nothing can be freed while it exists. This is exactly the profile of a long-running service whose resident set climbs while the heap shows only small arrays — `.copy()` on the small result releases the parent."
       },
       {
         stem: "A preprocessing function does `X[X < lo] = lo` and returns `X`. What is the risk?",
-        options: [
-          "It is slower than np.clip",
-          "It modifies the caller's array in place, so the 'raw' data the caller still holds has silently changed",
-          "It cannot handle 2-D arrays",
-          "The comparison fails on integers"
-        ],
+        options: ["It runs more slowly than np.clip would", "It mutates the caller's array in place", "It cannot handle two-dimensional arrays", "The comparison fails on integer arrays"],
         answer: 1,
         why: "`X_clean` and `X_raw` end up as the same object, so later comparisons against the original compare it against itself, and re-running compounds the effect. Copy by default and make in-place an explicit opt-in, so the caller chooses and the safe path is the one you get for free."
       }

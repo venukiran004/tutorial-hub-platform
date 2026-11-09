@@ -761,45 +761,25 @@ def test_the_original_alignment_bug():
     questions: [
       {
         stem: "`a + b` on two Series of length 3 returns four rows, two of them NaN. What happened?",
-        options: [
-          "A bug in pandas",
-          "Alignment — the result is the union of the two label sets, with NaN where either side lacks a label",
-          "The dtypes differed",
-          "One Series had duplicates"
-        ],
+        options: ["A bug in how pandas adds Series", "Alignment on the union of the labels", "The two dtypes differed", "One Series had duplicate labels"],
         answer: 1,
         why: "pandas matches on index labels before combining, so partially overlapping indexes produce their union. This is deliberate and usually right — but it means a length check never fires, and a derived column can come back entirely missing without an exception."
       },
       {
         stem: "`orders[\"tier\"] = customers[\"tier\"]` where orders has a RangeIndex and customers is indexed by customer_id. What is the result?",
-        options: [
-          "The tiers are copied in row order",
-          "Row positions are matched against customer IDs, so most values are NaN and any that land belong to the wrong customer",
-          "A ValueError for mismatched length",
-          "The customers index is adopted by orders"
-        ],
+        options: ["The tiers are copied across in row order", "Positions meet ids: mostly NaN or wrong rows", "A ValueError for the mismatched lengths", "orders adopts the customers' index"],
         answer: 1,
         why: "Series assignment aligns on labels. Wherever a customer ID coincides numerically with a row position, a value lands and it is the wrong one — a partial, plausible mixture that survives review far longer than an all-NaN column would."
       },
       {
         stem: "You `set_index(\"user_id\")` on a million-row frame and `.loc` lookups are no faster. Why?",
-        options: [
-          "The frame is too large",
-          "The index is not sorted — without `sort_index()` a lookup still scans",
-          "`.loc` never uses the index",
-          "user_id has duplicates"
-        ],
+        options: ["The frame is too large for an index", "The index is not sorted, so lookups scan", "`.loc` never uses the index for lookups", "user_id contains duplicate values"],
         answer: 1,
         why: "The speedup comes from a binary search over a monotonic index. Check `index.is_monotonic_increasing`; unsorted, `.loc` falls back to a scan and you have paid the cost of an index for none of the benefit. A MultiIndex additionally raises on slicing when unsorted."
       },
       {
         stem: "After a merge, `groupby(\"tier\")` returns fewer total rows than went in. What is the most likely cause?",
-        options: [
-          "The aggregation dropped duplicates",
-          "Rows whose tier is NaN were dropped, because groupby excludes NaN keys by default",
-          "The merge was an inner join",
-          "groupby sorts and truncates"
-        ],
+        options: ["The aggregation dropped duplicate rows", "groupby drops NaN keys by default", "The merge was an inner join", "groupby sorts and then truncates"],
         answer: 1,
         why: "Unmatched rows carry a NaN key and silently leave the output. `dropna=False` keeps them as an explicit NaN group, which turns a shrinking report into a visible coverage problem — and asserting that the summary's count equals the input row count catches it every time."
       }

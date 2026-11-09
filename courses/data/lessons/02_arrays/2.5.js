@@ -664,45 +664,25 @@ def test_empty_bucket_totals_zero():
     questions: [
       {
         stem: "Which expression gives the running maximum of an array?",
-        options: [
-          "`np.max.accumulate(a)`",
-          "`np.maximum.accumulate(a)`",
-          "`a.cummax()`",
-          "`np.running_max(a)`"
-        ],
+        options: ["`np.max.accumulate(a)`", "`np.maximum.accumulate(a)`", "`a.cummax()` on the array", "`np.running_max(a)`"],
         answer: 1,
         why: "`np.maximum` is the element-wise binary ufunc and carries the `accumulate` method; `np.max` is the reduction function and has no methods. There is no dedicated NumPy function for this, which is exactly why the ufunc methods are worth knowing — it turns a drawdown loop into one line."
       },
       {
         stem: "A chained expression `(a * b + c) / 2` on a 400 MB array peaks near 1.6 GB. What reduces it?",
-        options: [
-          "Convert to float32",
-          "Write into one reused buffer with `out=`, or use in-place operators after the first allocation",
-          "Split into chunks",
-          "Use np.vectorize"
-        ],
+        options: ["Convert both arrays to float32 first", "Reuse one buffer via out= and in-place ops", "Split the arrays into smaller chunks", "Wrap the expression in np.vectorize"],
         answer: 1,
         why: "Each operation in the chain allocates a full-size temporary. `np.multiply(a, b, out=result)` followed by in-place `+=` and `/=` reuses a single buffer, cutting peak to the result size. Note that in-place operators refuse to upcast, which will catch a dtype change the out-of-place form absorbed."
       },
       {
         stem: "Why does `np.where(x > 0, np.log(x), 0)` emit a RuntimeWarning?",
-        options: [
-          "np.where does not accept negative values",
-          "`np.log(x)` is evaluated on the whole array before where selects from it, including the non-positive values",
-          "The dtypes of the branches differ",
-          "The condition array is the wrong shape"
-        ],
+        options: ["np.where does not accept negative values", "np.log runs on the whole array first", "The dtypes of the two branches differ", "The condition array is the wrong shape"],
         answer: 1,
         why: "Both branches are computed in full and then selected between. `np.log(x, out=out, where=x > 0)` never evaluates the logarithm outside the condition — no warning, no `-inf`, and half the work skipped. Initialise `out` first, because untouched positions keep whatever was there."
       },
       {
         stem: "You need a piecewise transform with no NumPy equivalent, on ten million rows. What is the order of options?",
-        options: [
-          "np.vectorize, then a loop, then numba",
-          "Look for a ufunc method, then compose with where/select/clip, then compile with numba — never np.vectorize",
-          "Always numba",
-          "Always a list comprehension"
-        ],
+        options: ["np.vectorize, then a loop, then numba", "ufunc method, then where/select, then numba", "Always numba, for every transform there is", "Always a list comprehension over the rows"],
         answer: 1,
         why: "`np.vectorize` loops in Python and its documentation says it exists for convenience, not performance. Ufunc methods and composition cover more ground than people expect; when the logic is genuinely sequential, a compiled loop is more honest and more verifiable than a contrived array expression."
       }

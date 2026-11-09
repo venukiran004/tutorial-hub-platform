@@ -682,45 +682,25 @@ def test_column_names_survive():
     questions: [
       {
         stem: "Why is `pd.get_dummies` unsuitable for a production pipeline?",
-        options: [
-          "It is slow",
-          "It has no fit step — the columns it produces depend on the values present in whatever data it is given, so training and scoring produce different matrices",
-          "It cannot handle strings",
-          "It produces sparse output"
-        ],
+        options: ["It is too slow on large production frames", "No fit step: columns depend on the data given", "It cannot handle string columns at all", "It produces sparse output by default"],
         answer: 1,
         why: "Training data with `north` and `south` yields two columns; a batch with `north` and `east` yields two different ones. `OneHotEncoder` learns the categories at fit time and emits the same columns forever, with `handle_unknown=\"ignore\"` turning a novel value into zeros rather than a crash."
       },
       {
         stem: "A product column has 400 values, 250 of them with fewer than 30 rows. What should happen before one-hot encoding?",
-        options: [
-          "Nothing; one-hot handles it",
-          "Group the rare ones into 'other' with a threshold fit on training data — a category with eight rows is a column of noise, and the kept set also handles unseen values",
-          "Use ordinal encoding instead",
-          "Drop the column"
-        ],
+        options: ["Nothing, since one-hot handles any count", "Group rare levels into 'other', fit on train", "Switch to ordinal encoding instead", "Drop the product column altogether"],
         answer: 1,
         why: "Thirty rows estimates a proportion to roughly ±15%; below that the one-hot column is fitted to noise. Grouping trades the tail's identity for stability, and any value not in the training kept set — including one never seen — maps to 'other' without a new column."
       },
       {
         stem: "A tree model and a logistic regression share an ordered `tier` column. Which encodings?",
-        options: [
-          "Both ordinal 0–3",
-          "Tree: ordinal codes, since a threshold is 'gold or above'; linear: one-hot, since 0–3 would claim the gaps between tiers are equal",
-          "Both one-hot",
-          "Frequency encoding for both"
-        ],
+        options: ["Ordinal codes 0–3 for both of the models", "Ordinal for the tree, one-hot for the linear", "One-hot encoding for both of the models", "Frequency encoding for both of the models"],
         answer: 1,
         why: "The tree only needs the order to be reachable by thresholds. The linear model multiplies the code by one weight, which asserts platinum − gold equals silver − bronze. One-hot lets it learn four separate effects; if they come out monotonic, the order was real and the gaps are now known too."
       },
       {
         stem: "A frequency-encoded product column is computed on the full dataset before splitting. What is wrong?",
-        options: [
-          "Nothing; frequency is not the target",
-          "The test rows' counts are in the training feature — a leak; and the threshold for 'rare' was decided with test rows, so categories are one-hot in training that would be 'other' in production",
-          "Frequencies must be integers",
-          "The column will have NaN"
-        ],
+        options: ["Nothing, since frequency is not the target", "Test counts leak in, and 'rare' was set with them", "Frequencies must be stored as integers", "The column will end up containing NaN"],
         answer: 1,
         why: "Every encoder with a fit step learns from whatever it sees. On one-hot the leak is a few columns; on frequency it is every value; on target encoding it is the target itself. Fit on train, transform both, and let a Pipeline enforce it."
       }

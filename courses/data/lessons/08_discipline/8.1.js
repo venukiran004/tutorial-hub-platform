@@ -730,45 +730,25 @@ def test_pruning_is_target_free():
     questions: [
       {
         stem: "Two features `inter_a` and `inter_b` drive the target only through their product. Which selector finds them?",
-        options: [
-          "Correlation with the target",
-          "A wrapper or a model-based method — RFE or permutation importance — because only a fitted model that sees both at once can detect a dependency that exists only in combination",
-          "Mutual information",
-          "Chi-square"
-        ],
+        options: ["Correlation of each feature with the target", "A wrapper or model-based method", "Mutual information per feature", "A chi-square test per feature"],
         answer: 1,
         why: "Every single-feature score computes a marginal relationship, and each partner is marginally independent of the target. A tree model uses both, and shuffling either on held-out data costs it — that is what permutation importance measures."
       },
       {
         stem: "Impurity importance gives a near-duplicate feature 0.09; permutation importance on held-out data gives it 0.002. Which is right?",
-        options: [
-          "Impurity — it is the model's own number",
-          "Permutation — the model has the original feature, so scrambling the copy costs nothing; impurity importance split the training gain between the two copies arbitrarily",
-          "Both; they measure the same thing",
-          "Neither; correlated features cannot be ranked"
-        ],
+        options: ["Impurity, since it is the model's own number", "Permutation: the copy adds nothing held out", "Both, because they measure the same thing", "Neither; correlated features cannot be ranked"],
         answer: 1,
         why: "Impurity importance credits whichever copy the tree happened to split on, on the training data. Permutation importance asks what the model loses without the feature on data it has not seen — and with the original present, the answer is nothing. The caveat runs the other way too: shuffle the original and the model leans on the copy."
       },
       {
         stem: "Why should feature selection happen inside the cross-validation loop?",
-        options: [
-          "For speed",
-          "Because the selector uses the target — outside the loop it sees the validation folds' labels, and the folds then validate features their own labels chose, inflating the score by however much the selection overfit",
-          "So that sklearn can parallelise it",
-          "It does not matter for filter methods"
-        ],
+        options: ["For speed, since folds are smaller", "The selector uses labels; outside, it leaks", "So that sklearn can parallelise it", "It does not matter for filter methods"],
         answer: 1,
         why: "It matters for every supervised method, filter included — `f_classif` is as leaky as anything. Inside a Pipeline the selector is refit per fold on training rows only. With a selection hyperparameter to tune as well, nested CV is required."
       },
       {
         stem: "How should the number of features to keep be decided?",
-        options: [
-          "Keep everything with importance above 0.01",
-          "From the cross-validated score-vs-k curve — the smallest k within one fold-sd of the best — confirmed by stability of the selected set across folds",
-          "Keep the top 10",
-          "Keep half"
-        ],
+        options: ["Keep everything above importance 0.01", "Smallest k within a fold-sd of the best", "Keep the top 10 by importance", "Keep the better half of the features"],
         answer: 1,
         why: "An importance threshold is arbitrary and model-specific. The curve says what the model loses at each k, the fold sd says which differences are real, and stability says whether the chosen set is a property of the data or of one split. And selection is for cost, not accuracy — losing five points to save four columns is the wrong trade."
       }

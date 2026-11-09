@@ -607,45 +607,25 @@ def test_empty_after_filter():
     questions: [
       {
         stem: "`df.loc[\"a\":\"c\"]` returns how many rows, if a, b and c are consecutive labels?",
-        options: [
-          "Two — a and b",
-          "Three — `.loc` slices include the endpoint",
-          "It raises",
-          "Depends on whether the index is sorted"
-        ],
+        options: ["Two, a and b, like a Python slice", "Three: .loc includes the endpoint", "It raises a KeyError", "It depends on the index being sorted"],
         answer: 1,
         why: "Label slices are inclusive, because there is no way to name \"one past c\" when labels are strings or dates. `.iloc` slices are exclusive like ordinary Python — the asymmetry is deliberate and is the most common cause of an off-by-one in pandas."
       },
       {
         stem: "`df[df.x > 2][\"y\"] = 0` warns and the values are unchanged. Why?",
-        options: [
-          "The mask was empty",
-          "It is two separate operations — the write went into whatever the first one returned, which was a copy",
-          "`.loc` is required for numeric columns",
-          "The column dtype prevented assignment"
-        ],
+        options: ["The boolean mask selected no rows", "Two steps: the write hit a copy", "`.loc` is required for numeric columns", "The column's dtype blocked assignment"],
         answer: 1,
         why: "The first `[]` may return a view or a copy depending on internal block layout, so writing through the second is a coin flip. `df.loc[df.x > 2, \"y\"] = 0` is a single `__setitem__` on `df` itself and always lands."
       },
       {
         stem: "After `recent = df[df.date >= cutoff]`, why does `recent[\"region\"][0]` sometimes raise KeyError?",
-        options: [
-          "The column does not exist",
-          "`Series[0]` looks up the label 0, and filtering may have removed it — labels are not renumbered",
-          "Chained indexing always raises",
-          "The frame is empty"
-        ],
+        options: ["The region column does not exist there", "`[0]` is a label lookup; 0 was filtered out", "Chained indexing always raises a KeyError", "The filtered frame turned out to be empty"],
         answer: 1,
         why: "Filtering preserves labels, so the index might be `[4, 9, 17]`. This has nothing to do with views or copies: it raises when label 0 is gone and silently reads the wrong row when it survives — which is why the behaviour changes with the data."
       },
       {
         stem: "A helper does `frame[\"flag\"] = ...` and warns only when called from the pipeline. What is the fix?",
-        options: [
-          "Suppress the warning",
-          "Have the function return a new frame rather than mutating its argument, so correctness does not depend on the caller",
-          "Add `.copy()` at every call site",
-          "Use `.iloc` instead"
-        ],
+        options: ["Suppress the warning in the pipeline", "Return a new frame instead of mutating", "Add `.copy()` at every call site", "Use `.iloc` for the assignment instead"],
         answer: 1,
         why: "The function is correct with a fresh frame and ambiguous with a slice, which is precisely why unit tests miss it. Returning a new frame removes the view-or-copy question entirely and composes into a method chain; copying at the boundary is the acceptable second choice."
       }

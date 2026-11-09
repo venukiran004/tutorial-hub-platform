@@ -714,45 +714,25 @@ def test_smoothing_pulls_singletons_toward_prior():
     questions: [
       {
         stem: "A category appears once in training with label 1. What is its target encoding under OOF with smoothing (m = 10, prior = 0.1)?",
-        options: [
-          "1.0",
-          "About 0.1 — in the fold containing that row it is unseen by the other folds, so it gets the prior; and even with count 1 it would be (1 + 10 × 0.1) / 11 ≈ 0.18",
-          "0.5",
-          "NaN"
-        ],
+        options: ["1.0, its only observed label", "About 0.1, the prior", "0.5, halfway between", "NaN, since it is unseen"],
         answer: 1,
         why: "OOF means the row's own label never enters its encoding, and a singleton is unseen from the other folds' perspective. Smoothing means even a seen-once category is pulled hard toward the prior. Naively it would be exactly 1.0 — the label."
       },
       {
         stem: "Why must target encoding on time-ordered data use time order rather than random folds?",
-        options: [
-          "Random folds are slower",
-          "Random OOF encodes a January row using later rows' outcomes for the same category — outcomes not known in January, which production cannot compute",
-          "Time order gives smoother encodings",
-          "It does not matter"
-        ],
+        options: ["Random folds are slower to compute", "Random folds encode with later outcomes", "Time order gives smoother encodings", "It does not matter which is used"],
         answer: 1,
         why: "The encoding production will compute is 'this category's rate as known at the time'. Training must match that. An expanding mean within category, shifted by one row so the current row is excluded, produces exactly it — and a test that corrupts future labels and checks earlier encodings are unchanged proves it."
       },
       {
         stem: "What is the purpose of the smoothing parameter m?",
-        options: [
-          "To speed up computation",
-          "To blend a category's mean toward the global prior in proportion to how few rows it has — a category needs about m rows before it is trusted more than the prior",
-          "To handle NaN",
-          "To normalise the encoding to 0–1"
-        ],
+        options: ["To speed up the encoding computation", "To shrink thin categories toward the prior", "To handle NaN categories gracefully", "To normalise the encoding into 0–1"],
         answer: 1,
         why: "Without smoothing, a category with two rows gets an encoding of 0, 0.5 or 1 — a coin flip presented as a rate. With m = 10, that category is over 80% prior. The right m depends on the tail of the category distribution and is tuned inside the CV."
       },
       {
         stem: "How can you detect after the fact that an encoded feature leaks?",
-        options: [
-          "It cannot be detected",
-          "Compare the feature's own AUC against the target on train versus test — a large gap means the training encoding contains the label; or encode against shuffled labels and check the naive version 'predicts' them",
-          "Check for NaN",
-          "Check its correlation with other features"
-        ],
+        options: ["It cannot be detected after the fact", "Compare its train and test AUC alone", "Check the encoded column for NaN", "Check its correlation with other features"],
         answer: 1,
         why: "A feature that legitimately predicts the target does so about equally on train and test. One that contains the label predicts train far better. The shuffled-label control is decisive: no honest feature can predict random labels, and a naive target encoding does — with AUC near 0.9."
       }

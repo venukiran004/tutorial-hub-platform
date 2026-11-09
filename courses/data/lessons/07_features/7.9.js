@@ -734,45 +734,25 @@ def test_linear_needs_ratio_and_interaction_tree_needs_ratio_only():
     questions: [
       {
         stem: "A logistic regression scores 0.56 on `age` and `income` for a target that is high only when the customer is young AND rich. Adding `age × log(income)` takes it to 0.70. Why?",
-        options: [
-          "The product is on a better scale",
-          "A linear model fits one slope per feature and predicts a ramp — high when either is high; the product is large only where both are, which is the corner the target lives in",
-          "Three features beat two",
-          "The log fixed the skew"
-        ],
+        options: ["The product is on a better numeric scale", "A linear model ramps; the target is a corner", "Three features always beat two features", "The log transform fixed the income skew"],
         answer: 1,
         why: "A sum of separate effects cannot express 'both together'. The product can, with one coefficient. A tree scored 0.71 without the product — two sequential splits carve the corner — which is why interactions are a linear-model feature."
       },
       {
         stem: "Why does a gradient-boosted tree benefit from an explicit ratio column when it does not benefit from a product?",
-        options: [
-          "Ratios are smaller numbers",
-          "A product's corner is two axis-aligned splits; a ratio threshold is a diagonal line, which a tree can only approximate with a staircase of many splits",
-          "Trees cannot multiply",
-          "It does not; both are useless for trees"
-        ],
+        options: ["Ratios are smaller numbers for trees to split", "A ratio threshold is diagonal; trees staircase", "Trees cannot multiply two features together", "It does not; both are useless for trees"],
         answer: 1,
         why: "Trees draw axis-aligned rectangles. `spend / tenure > 3` is a line through the origin in `(spend, tenure)` space, and reaching it by splits alone takes many of them. The ratio hands over the diagonal in one column — three AUC points in the exercise."
       },
       {
         stem: "A per-customer mean amount is computed with `groupby.transform(\"mean\")` over the whole training set, and the rows are dated events. What is the leak?",
-        options: [
-          "The customer key is a leak",
-          "A March row's mean includes June's orders — rows that had not happened yet; production on the March date could only see orders before it",
-          "The mean should exclude the row itself",
-          "There is no leak; amount is a feature, not the target"
-        ],
+        options: ["The customer key is itself a leak", "March rows average June's orders too", "The mean should exclude the row itself", "None; amount is a feature, not the target"],
         answer: 1,
         why: "This is temporal, not target, leakage: the feature column is fine, the time window is not. The expanding mean shifted by one, or a rolling window with `closed=\"left\"`, uses only earlier events — and the corruption test catches the difference by name."
       },
       {
         stem: "What does `mean_7D / mean_90D` express?",
-        options: [
-          "The customer's average spend",
-          "A trend — above 1 means recent activity exceeds the longer-run level; the ratio of a short window to a long one is an acceleration feature",
-          "The number of orders",
-          "Seasonality"
-        ],
+        options: ["The customer's average spend overall", "A trend: recent versus long-run activity", "The number of orders in the window", "Seasonality in the customer's spend"],
         answer: 1,
         why: "Short windows react; long windows stabilise. Their ratio says whether the recent past is above or below the customer's norm — 'accelerating' or 'cooling' — which neither window says alone. Each is one rolling call; the set is the feature block."
       }

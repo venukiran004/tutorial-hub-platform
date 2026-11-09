@@ -668,45 +668,25 @@ def test_matches_a_naive_implementation():
     questions: [
       {
         stem: "You need to sort a feature matrix and its labels together. What is the correct approach?",
-        options: [
-          "`np.sort(X)` and `np.sort(y)`",
-          "`idx = np.argsort(key); X[idx]; y[idx]` — one index array applied to both",
-          "`X.sort(axis=0)` then `y.sort()`",
-          "`np.lexsort([X, y])`"
-        ],
+        options: ["`np.sort(X)` and `np.sort(y)` separately", "`idx = np.argsort(key)`, applied to both", "`X.sort(axis=0)` then `y.sort()`", "`np.lexsort([X, y])` on the pair"],
         answer: 1,
         why: "Sorting each array separately pairs every row's features with a different row's label — no error, all shape checks pass, and the model trains on noise. One index array applied to everything is the only form that cannot go wrong."
       },
       {
         stem: "Why does `np.searchsorted` sometimes return nonsense?",
-        options: [
-          "It cannot handle floats",
-          "It assumes the input is sorted and does not check — on unsorted data the binary search is meaningless",
-          "It requires unique values",
-          "The side parameter is required"
-        ],
+        options: ["It cannot handle floating-point values", "It assumes sorted input and never checks", "It requires every value to be unique", "The side parameter must always be given"],
         answer: 1,
         why: "Binary search is only defined on ordered data. There is no error and no warning, so when a whole result depends on it — an as-of join, a bucketing step — an explicit `np.diff(a) >= 0` check is worth the one linear pass."
       },
       {
         stem: "You need the 10 largest values from a million-element array. What is the efficient approach?",
-        options: [
-          "`np.sort(a)[-10:]`",
-          "`np.argpartition(a, -10)[-10:]`, then sort just those ten",
-          "`a.max()` ten times",
-          "`np.unique(a)[-10:]`"
-        ],
+        options: ["`np.sort(a)[-10:]` on the full array", "`np.argpartition(a, -10)[-10:]`, then sort", "`a.max()` called ten times with removal", "`np.unique(a)[-10:]` on the full array"],
         answer: 1,
         why: "`argpartition` is O(n) and only guarantees that everything past position −10 is larger than everything before it. A full sort is O(n log n) and about fifteen times slower here — ordering the ten survivors afterwards costs nothing."
       },
       {
         stem: "`np.intersect1d(a, b)` is used to filter a dataset. What is the risk?",
-        options: [
-          "It is slower than isin",
-          "It returns sorted unique values, so the output order no longer matches any parallel array",
-          "It cannot handle strings",
-          "It drops NaN values"
-        ],
+        options: ["It is far slower than np.isin on large arrays", "Its output is sorted and unique, so order breaks", "It cannot handle arrays of strings at all", "It silently drops NaN values from both inputs"],
         answer: 1,
         why: "Every set operation except `isin` sorts and deduplicates its output. If row order matters — because a labels array or an ID array is being filtered alongside — the correspondence is silently destroyed. `a[np.isin(a, b)]` preserves `a`'s order."
       }

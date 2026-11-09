@@ -700,45 +700,25 @@ def test_all_records_invalid(tmp="t8.bin"):
     questions: [
       {
         stem: "A structured array holds three records of three fields each. What is its shape?",
-        options: [
-          "(3, 3)",
-          "(3,) — each element is a whole record",
-          "(9,)",
-          "(3, 1)"
-        ],
+        options: ["(3, 3), one cell per field", "(3,), one element per record", "(9,), all fields flattened", "(3, 1), a column of records"],
         answer: 1,
         why: "The compound dtype makes the record the element, so the array is one-dimensional with three elements. `arr[\"age\"]` returns a strided view across all records, and `arr[0]` returns one complete record as a `np.void`."
       },
       {
         stem: "Your binary record spec says 32 bytes but your dtype's itemsize is 29. What happens if you read the file anyway?",
-        options: [
-          "NumPy raises a size mismatch error",
-          "Every record after the first is read from the wrong offset, producing plausible garbage",
-          "The last three bytes of each record are dropped harmlessly",
-          "The file is read correctly but slowly"
-        ],
+        options: ["NumPy raises a size-mismatch error", "Later records are read from wrong offsets", "Three bytes per record are dropped harmlessly", "The file is read correctly, only slowly"],
         answer: 1,
         why: "`fromfile` walks the buffer in itemsize steps, so a 3-byte shortfall accumulates and each successive record is misaligned. Nothing errors — you get valid-looking numbers. Declaring the padding explicitly and asserting `itemsize` against the spec is what prevents it."
       },
       {
         stem: "You pass a masked array to a scikit-learn estimator. What happens to the mask?",
-        options: [
-          "It is respected as missing data",
-          "It is silently dropped by `np.asarray`, exposing the underlying sentinel values",
-          "It raises a TypeError",
-          "The masked rows are removed"
-        ],
+        options: ["It is respected as missing data", "np.asarray drops it, exposing sentinels", "It raises a TypeError on fit", "The masked rows are removed first"],
         answer: 1,
         why: "Most libraries call `np.asarray` on their input, which returns the raw buffer and discards the mask. The −999 sentinels you thought you had handled are still there and flow into the model as real numbers, with no warning at the boundary."
       },
       {
         stem: "You compute VWAP per chunk while streaming a large file, then average the chunk VWAPs. What is wrong?",
-        options: [
-          "Nothing — averages compose",
-          "A weighted mean cannot be averaged: a chunk with 10 ticks would count as much as one with a million",
-          "Floating point error accumulates",
-          "The chunks must be equal sized"
-        ],
+        options: ["Nothing, because averages compose", "Weighted means cannot just be averaged", "Floating-point error accumulates", "The chunks must be equal-sized"],
         answer: 1,
         why: "VWAP is `sum(price × quantity) / sum(quantity)`, and reconstructing it needs both sums, not the ratio. Accumulate the numerator and denominator separately — then the answer is identical regardless of chunk size, which is exactly the property to test for."
       }
