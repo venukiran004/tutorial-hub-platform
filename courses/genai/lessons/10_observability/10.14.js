@@ -404,22 +404,12 @@ and no labels. ten minutes, and it ends the argument.`,
     title: "Check yourself",
     questions: [
       { stem: "What is step 8 of the runbook, and why does it end arguments?",
-        options: [
-          "Compare context recall against faithfulness, because the pair isolates a layer",
-          "Run the retriever with no model, then the generator with hand-picked perfect context \u2014 it names the broken layer with no metrics, judge or labels",
-          "Open twenty failing traces beside twenty healthy ones from before",
-          "Roll back the most recent change and observe whether the metric recovers"
-        ],
+        options: ["Compare context recall with faithfulness", "Test retriever and generator separately", "Open twenty failing and twenty healthy traces", "Roll back the latest change and watch"],
         answer: 1,
         why: "Two direct experiments settle empirically what the metrics settle statistically, and they need no judge, no ground-truth labels and no eval set \u2014 just a terminal. Comparing context recall against faithfulness is step 5 and does the same job, but it requires judged metrics in production, which many teams do not have. When both are available they should agree, and if they disagree it is the statistical answer that is suspect." },
 
       { stem: "Why is step 8 usually not runnable when you need it?",
-        options: [
-          "Because the retriever's index is rebuilt nightly and the failing state is gone",
-          "Because the retriever cannot be called outside the pipeline and the generator cannot accept hand-supplied context \u2014 two small scripts nobody has written",
-          "Because running the model with arbitrary context violates the guardrail policy",
-          "Because the gold chunks cannot be identified without a labelled set"
-        ],
+        options: ["The index is rebuilt nightly, so the state is gone", "Nobody wrote the two small isolation scripts", "Arbitrary context violates the guardrail policy", "Gold chunks need a labelled set to identify"],
         answer: 1,
         why: "It is blocked by ordinary code structure rather than anything difficult: the pieces exist but are only reachable through the orchestration, so there is no way to exercise one without the other. Both wrappers are about twenty lines and both pay for themselves on the first incident. Identifying plausible gold chunks is usually easy for a handful of failing queries even with no labelled set at all." },
 
@@ -434,12 +424,7 @@ and no labels. ten minutes, and it ends the argument.`,
         why: "The answer without its chunks, the span without its attributes, and the mean without its cohorts are the same failure at three scales, and the fix is identical each time: keep the level below the number you report. The cost objection does not hold, since the detail is the small part \u2014 metadata is roughly a ninth of payload size and chunk IDs carry no personal data at all." },
 
       { stem: "Why is \u201cadd the alert\u201d a closing condition rather than a follow-up action?",
-        options: [
-          "Because alerts are cheaper to add while the context is fresh",
-          "Because without the detector the next occurrence is also invisible for weeks \u2014 you have learned something without changing anything",
-          "Because incident reviews require an alert as an artefact",
-          "Because the alert threshold can only be computed during an incident"
-        ],
+        options: ["Alerts are cheaper while context is fresh", "Without a detector, the next one is invisible too", "Incident reviews need an alert artefact", "Thresholds can only be set mid-incident"],
         answer: 1,
         why: "The worked incident was detectable from a free integer on the retriever span for three weeks before anyone noticed, so the fix without the detector leaves the system exactly as blind as before. Treating the detector as part of the resolution rather than as follow-up work is what converts a three-week incident into a same-day page \u2014 and the threshold should come from the arithmetic, which is easier to do calmly afterwards than during." }
     ]

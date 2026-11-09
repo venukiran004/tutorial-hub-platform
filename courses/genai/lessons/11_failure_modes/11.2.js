@@ -253,42 +253,22 @@ and you tune retrieval that was already working.`,
     title: "Check yourself",
     questions: [
       { stem: "What is the most common cause of hallucination in a RAG system?",
-        options: [
-          "The model overriding its context with memorised knowledge",
-          "A retrieval miss \u2014 the relevant chunk was never retrieved, so the model filled the gap from parametric memory",
-          "An ungrounded prompt that fails to say \u201canswer only from this context\u201d",
-          "Lost in the middle, where the right chunk is present but ignored"
-        ],
+        options: ["The model overrides context with memory", "A retrieval miss filled from memory", "A prompt that never says use only context", "Lost in the middle: present but ignored"],
         answer: 1,
         why: "The chunk never arriving is by a wide margin the dominant cause, which is why the first diagnostic step is running the retriever with no model on the failing questions \u2014 if nothing clears the similarity threshold, no amount of prompt work is relevant. The other three are real and less frequent, and the key consequence is that \u201challucination despite RAG\u201d is usually a retrieval or prompting problem rather than a model problem." },
 
       { stem: "Why is a missing abstention path a top cause rather than a minor omission?",
-        options: [
-          "Because users prefer an explicit refusal to a hedged answer",
-          "Because the objective rewards a plausible continuation, so if no \u201cI cannot answer\u201d output is permitted, every allowed continuation is a claim",
-          "Because abstention reduces output tokens and therefore cost",
-          "Because providers penalise models that do not abstain"
-        ],
+        options: ["Users prefer refusals to hedged answers", "With no abstention allowed, every output is a claim", "Abstaining cuts output tokens and cost", "Providers penalise models that never abstain"],
         answer: 1,
         why: "This follows directly from the mechanism: the model has no state representing \u201cI do not know\u201d, so the only way it can decline is if declining is in the instruction set as an acceptable output. Without that, guessing is the only behaviour consistent with the instruction, and adding one paragraph of permission removes a large fraction of RAG hallucinations at essentially no cost." },
 
       { stem: "You add an abstention path and the abstention rate jumps to 30%. What does that tell you?",
-        options: [
-          "The abstention instruction is too aggressive and should be softened",
-          "Retrieval is weak \u2014 abstention converted confident wrong answers into honest refusals, but the underlying cause is unfixed",
-          "The model is now correctly calibrated and the work is done",
-          "The faithfulness gate threshold is set too high"
-        ],
+        options: ["The abstention instruction is too aggressive", "Retrieval is weak; the cause is still unfixed", "The model is calibrated and the work is done", "The faithfulness threshold is set too high"],
         answer: 1,
         why: "Abstention is mitigation rather than a fix: when the dominant cause is a retrieval miss, giving the model permission to decline changes the failure mode without removing the failure, because the user asked something the corpus could answer. That is why abstention rate is tracked in both directions \u2014 a rate near zero suggests overconfidence, and a spike is a retrieval alarm pointing at recall rather than at the prompt." },
 
       { stem: "Why can span attributes alone fail to distinguish a retrieval miss from lost-in-the-middle?",
-        options: [
-          "Because both produce an above-threshold count of zero",
-          "Because they are separated only by whether the gold chunk id is in the retrieved set, which requires a labelled set",
-          "Because chunk ids are not recorded on the retriever span",
-          "Because lost-in-the-middle only occurs with top_k above 20"
-        ],
+        options: ["Both produce zero above-threshold chunks", "Telling them apart needs labelled gold chunk ids", "Chunk ids are not recorded on the span", "Lost-in-the-middle needs top_k above 20"],
         answer: 1,
         why: "Both present as \u201cthe answer was not used,\u201d and the distinguishing fact is whether the correct chunk was retrieved at all \u2014 which you cannot know without knowing which chunk holds the answer. The practical consequence is that teams without a labelled set misdiagnose lost-in-the-middle as a miss and then tune retrieval that was already working, often by raising top_k, which makes lost-in-the-middle worse." }
     ]

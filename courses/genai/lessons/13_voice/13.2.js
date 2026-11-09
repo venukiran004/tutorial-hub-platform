@@ -197,22 +197,12 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "A team moves from a cascade to a speech-native model and budgets for the ASR line disappearing. What is wrong with that?",
-        options: [
-          "Nothing \u2014 removing the ASR stage removes its cost",
-          "ASR cost rises under speech-native because audio must be re-encoded",
-          "A transcript is still needed for QA, disputes, evals and text guardrails, so the ASR bill stays while its latency goes",
-          "The ASR line is small enough that the error does not matter"
-        ],
+        options: ["Nothing; removing ASR removes its cost", "ASR cost rises as audio is re-encoded", "Transcripts are still needed, so ASR stays", "The ASR line is too small to matter"],
         answer: 2,
         why: "Transcription moves off the critical path \u2014 it can run after the call, in batch, at a cheaper tier \u2014 but the requirement for a transcript does not come from the architecture, it comes from quality review, dispute resolution, eval construction and any text-based guardrail. So the latency is removed and the cost is not, which is why the honest comparison includes a shadow ASR line on the speech-native side." },
 
       { stem: "Of the 730 ms advantage speech-native has over the cascade, how much comes from removing the ASR and TTS stages?",
-        options: [
-          "All 730 ms \u2014 those are the two stages that were removed",
-          "530 ms; the other 200 ms is the shorter endpointing threshold a prosody-aware model can use",
-          "300 ms; the rest is the faster model",
-          "It cannot be decomposed, because the stages are not comparable"
-        ],
+        options: ["All 730 ms, from the two stages removed", "530 ms; 200 ms is shorter endpointing", "300 ms; the rest is the faster model", "It cannot be decomposed at all"],
         answer: 1,
         why: "ASR finalisation (120) plus the TTS first chunk (180) is 300 ms, and the model's first output is 230 ms faster (550 against 320), totalling 530. The remaining 200 ms is the endpointing row: 700 against 500, because a model that hears prosody can commit to end-of-turn sooner than a timer counting silence. That row matters disproportionately because it is the one a cascade can replicate with a semantic endpointer." },
 

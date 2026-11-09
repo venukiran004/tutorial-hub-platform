@@ -277,42 +277,22 @@ constraint is hard, and expensive when it is chosen on principle.`,
     title: "Check yourself",
     questions: [
       { stem: "Why are Ragas and DeepEval not alternatives to LangSmith or Langfuse?",
-        options: [
-          "Because they are open source and the others are hosted",
-          "Because they compute metric scores and have no trace storage, UI or alerting \u2014 they are what a backend calls",
-          "Because they only support offline evaluation, not production traffic",
-          "Because they lack OpenTelemetry support"
-        ],
+        options: ["They are open source while the others are hosted", "They score metrics but store and alert on nothing", "They only support offline evaluation runs", "They lack any OpenTelemetry support at all"],
         answer: 1,
         why: "They are libraries that produce numbers such as faithfulness and context recall, and several hosted platforms call them or an equivalent internally, so treating them as a platform choice produces the wrong question. The right framing is which backend you run and which metric library it calls \u2014 and because the implementation determines the number, the library is part of the metric definition you report." },
 
       { stem: "What should drive the choice of observability backend?",
-        options: [
-          "A feature matrix comparison across all candidates",
-          "Your constraints \u2014 data residency, framework, existing investment, and whether the pressing problem is retrieval or generation",
-          "The size of each tool's community and release cadence",
-          "Whichever tool the model provider recommends"
-        ],
+        options: ["A feature matrix across all the candidates", "Your constraints and your most pressing problem", "Community size and release cadence", "Whatever the model provider recommends"],
         answer: 1,
         why: "A single hard constraint typically eliminates half the list in one step: requiring that data stay inside the VPC removed three hosted platforms immediately in the worked elimination, leaving four candidates to actually evaluate. Feature comparisons are only the deciding factor in the rarer case where no constraint eliminates anything, and reading matrices for already-excluded tools is wasted effort." },
 
       { stem: "What is the real cost of the \u201cno vendor lock-in\u201d route?",
-        options: [
-          "Higher storage costs, since self-hosted retention is less efficient",
-          "The pieces you build yourself \u2014 payload storage, retrieval views, a judge pipeline, a regression runner, a prompt registry, sampling and redaction",
-          "Slower trace ingestion than a hosted collector",
-          "Loss of OpenTelemetry compatibility"
-        ],
+        options: ["Higher storage costs from self-hosted retention", "Building storage, views, judges and redaction", "Slower ingestion than a hosted collector offers", "Losing OpenTelemetry compatibility entirely"],
         answer: 1,
         why: "On a rough estimate that is around four months of one engineer, and notably the two largest items \u2014 the dataset and regression runner, and the prompt registry \u2014 are not observability at all but the operational tooling that hosted platforms bundle. That makes the comparison \u201cpaid platform versus four months of build\u201d rather than \u201cfree versus paid,\u201d which is worth paying when a constraint is hard and expensive when chosen on principle." },
 
       { stem: "What recommendation holds regardless of which backend you pick?",
-        options: [
-          "Self-host, so data never leaves your network",
-          "Instrument with the GenAI semantic conventions, so changing backend is a configuration change rather than a re-instrumentation project",
-          "Use a framework-native integration for the richest traces",
-          "Keep payloads for 90 days to allow retrospective analysis"
-        ],
+        options: ["Self-host, so data never leaves your network", "Use GenAI conventions so backends are swappable", "Use a framework-native integration for detail", "Keep payloads for 90 days for retrospectives"],
         answer: 1,
         why: "The tool category is young and consolidating, so the probability of changing backend within a couple of years is high, and standard attribute names are what make that cheap. Framework-native integrations are sometimes genuinely better and worth taking \u2014 the distinction that matters is whether the resulting lock-in was priced deliberately or acquired by accident." }
     ]

@@ -511,42 +511,22 @@ cohort B at 21% +/- 8.9 pts = [12.1%, 29.9%] --
     title: "Check yourself",
     questions: [
       { stem: "Faithfulness is 0.95 and context recall has halved to 0.48. What does that tell you?",
-        options: [
-          "Both layers are degraded and something systemic has changed",
-          "Generation is healthy and retrieval is not \u2014 the model is faithfully summarising context that is missing the answer",
-          "The judge has drifted, since the two metrics should move together",
-          "The prompt is truncating the context before the model sees it"
-        ],
+        options: ["Both layers degraded; something systemic changed", "Generation is fine; retrieval lost the answer", "The judge drifted, as they should move together", "The prompt truncates context before the model"],
         answer: 1,
         why: "Faithfulness measures whether the answer's claims are supported by the context supplied, so a high score means the generator did its job on whatever it was given; context recall measures whether that context contained what the answer needed. The pair therefore locates the fault in one query, and in particular rules out the prompt \u2014 which matters because the prompt is the most visible knob and in a RAG system usually the wrong one. Both metrics low would point at something systemic." },
 
       { stem: "A 35-point drop is decomposed as \u22123.0 (traffic mix), \u22126.0 (cohort A), \u221226.0 (cohort B). What is the problem with quoting those shares?",
-        options: [
-          "The three numbers do not sum to 35, so the decomposition is incomplete",
-          "A sequential decomposition assigns the interaction to whichever factor moves last \u2014 the mix contribution ranges from +0.0 to \u221222.5 across the six orderings",
-          "The shares are correct but the confidence intervals are too wide to quote",
-          "Cohort A should have been measured before the traffic mix"
-        ],
+        options: ["The numbers do not sum to 35", "Sequential order assigns the interaction", "The intervals are too wide to quote", "Cohort A should have come first"],
         answer: 1,
         why: "The numbers do sum correctly and reproduce exactly; the issue is that they are one of six equally valid orderings, and the reported one is the most favourable to the \"it is only a mix shift\" reading. Shapley \u2014 the mean over all orderings \u2014 gives \u221211.3 for the mix rather than \u22123.0. The cleanest demonstration is the ordering that moves cohort A first, where the mix contributes exactly zero because equal cohort accuracies make the mix irrelevant." },
 
       { stem: "Why does walking the stack bottom-up matter?",
-        options: [
-          "Because data problems are cheaper to fix than model problems",
-          "Because every layer's input is the layer below's output \u2014 debugging retrieval over a corpus missing a third of its documents means tuning something that was never broken",
-          "Because ingestion logs have longer retention than traces",
-          "Because the data layer is where most latency is spent"
-        ],
+        options: ["Data problems are cheaper to fix than model ones", "Each layer's input is the output of the one below", "Ingestion logs are retained longer than traces", "The data layer is where most latency is spent"],
         answer: 1,
         why: "In this incident the retriever, embeddings, reranker, prompt and model were all behaving exactly as designed \u2014 over a corpus that was missing 1,284 documents \u2014 so any amount of Stage 2 or Stage 3 investigation would have found healthy components and wasted a week. Verifying that the right content got in, intact and current, is a ten-minute check that happens before any model is examined at all." },
 
       { stem: "Which statements about this incident are not order-dependent?",
-        options: [
-          "That the traffic mix accounts for 3 points and cohort B for 26",
-          "That cohort B's accuracy fell from 0.86 to 0.21, its share grew from 10% to 40%, and 1,284 PDFs were skipped at ingest",
-          "That cohort B is the largest single contributor to the drop",
-          "That the mix shift is not a regression at all"
-        ],
+        options: ["Mix accounts for 3 points and cohort B for 26", "Cohort B's accuracy, share and the skipped PDFs", "Cohort B is the largest single contributor", "The mix shift is not a regression at all"],
         answer: 1,
         why: "Those are directly measured facts requiring no attribution model, which is exactly why an incident report should lead with them. The decomposed shares vary with ordering, and even \"cohort B is the largest contributor\" holds in only three of six orderings \u2014 though the Shapley attribution does support it at \u221216.3 against the mix's \u221211.3. Calling the mix shift \"not a regression\" depends entirely on measuring it first." }
     ]

@@ -248,42 +248,22 @@ the two triggers you CONTROL, not the model:
     title: "Check yourself",
     questions: [
       { stem: "Why is hallucination described as the default behaviour of an ungrounded model?",
-        options: [
-          "Because most models are undertrained on factual data",
-          "Because next-token prediction optimises plausibility and has no term for truth or any state representing \u201cI do not know\u201d",
-          "Because temperature above zero introduces randomness that produces false statements",
-          "Because tokenisation loses the information needed to recall facts precisely"
-        ],
+        options: ["Most models are undertrained on facts", "Its objective rewards plausibility, not truth", "Sampling above zero produces falsehoods", "Tokenisation loses precise facts"],
         answer: 1,
         why: "The objective rewards a likely-looking continuation, so after \u201cQ3 revenue was\u201d the most probable next tokens form a number regardless of whether the model has seen the filing. There is no internal signal marking a region of the distribution as unevidenced, which is why abstention has to be granted explicitly rather than assumed. Temperature changes how adventurous the sampling is, never whether the model knows." },
 
       { stem: "A RAG answer is perfectly supported by a retrieved document, but the document is out of date. What failed?",
-        options: [
-          "Faithfulness, because the answer does not match reality",
-          "Nothing in faithfulness \u2014 the answer is faithful; factuality failed, and the cause is the corpus",
-          "Both faithfulness and factuality, since the two always move together",
-          "Answer relevancy, because the answer addresses a stale version of the question"
-        ],
+        options: ["Faithfulness, as it does not match reality", "Factuality, not faithfulness; the corpus is stale", "Both, as the two always move together", "Answer relevancy, for a stale question"],
         answer: 1,
         why: "Faithfulness asks only whether the claims are supported by the supplied context, and they are \u2014 so a faithfulness judge will score this answer well, which is exactly why the two metrics must be kept separate. The failure is factuality, owned by whoever maintains the index rather than by the prompt or the model. This is the same structure as the observability incident where faithfulness stayed at 0.95 while the retrieved context was wrong." },
 
       { stem: "An entailment model returns contradiction 0.98 for one claim and neutral 0.99 for another. What does that distinguish?",
-        options: [
-          "A confident hallucination from an uncertain one",
-          "Intrinsic hallucination, which contradicts the source, from extrinsic, which adds what the source omits",
-          "A factual error from a formatting error",
-          "A retrieval failure from a generation failure"
-        ],
+        options: ["Confident versus uncertain hallucination", "Contradicting the source versus adding to it", "A factual error versus a formatting one", "A retrieval failure versus a generation one"],
         answer: 1,
         why: "Contradiction means the context says something incompatible, which is the definition of intrinsic; neutral means the context is simply silent, which is extrinsic and unverifiable from the given source. The three-way output therefore hands you a classification that is usually defined separately from detection \u2014 and the two call for different fixes, prompt precedence versus an abstention path." },
 
       { stem: "Which hallucination triggers are under your control rather than the model's?",
-        options: [
-          "Knowledge gaps and long-tail facts, by fine-tuning on more data",
-          "Leading prompts and over-long outputs \u2014 asking for five studies when three exist, or more summary than the source supports",
-          "Conflicting context, by raising the retrieval threshold",
-          "All five, since every trigger is a prompt-engineering problem"
-        ],
+        options: ["Knowledge gaps, by fine-tuning on more data", "Leading prompts and over-long outputs", "Conflicting context, via a higher threshold", "All five, as each is a prompt problem"],
         answer: 1,
         why: "Both are instructions the model cannot satisfy honestly: a request for a fixed count of items it cannot find, and a length target exceeding the supported content, each force invention. In a sample triage of ten real cases, four fell into these two categories, and both are free to fix by asking for what exists and capping output length. Conflicting context is a corpus problem, not a prompting one." }
     ]

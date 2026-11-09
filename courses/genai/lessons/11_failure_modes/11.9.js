@@ -331,42 +331,22 @@ the dangerous neighbour is the one to name:
     title: "Check yourself",
     questions: [
       { stem: "Why is a cascade always more expensive than a router at the same escalation rate?",
-        options: [
-          "Because the strong model is invoked twice on escalated queries",
-          "Because the cheap model runs on every query, including the ones that then escalate",
-          "Because cascades cannot use prompt caching on the second call",
-          "Because confidence estimation requires an extra model call"
-        ],
+        options: ["The strong model runs twice on escalations", "The cheap model runs on every query", "Cascades cannot cache the second call", "Confidence needs an extra model call"],
         answer: 1,
         why: "The router pays cheap-on-easy plus strong-on-hard, while the cascade pays cheap-on-everything plus strong-on-hard \u2014 so the premium is exactly the cheap model's price on the escalated share, measured at 1.3 points on an 80/20 split with a 15x gap. The premium shrinks as the price gap widens and grows as more traffic escalates, so the pattern is least attractive precisely when the cheap model is only modestly cheaper." },
 
       { stem: "What does a cascade buy in exchange for that premium?",
-        options: [
-          "Lower latency, because the cheap model answers first",
-          "No classifier \u2014 it uses the cheap model's own output as the escalation signal",
-          "Better worst-case quality, since two models see every query",
-          "Simpler billing, since only one model is charged per query"
-        ],
+        options: ["Lower latency, as the cheap model answers first", "No classifier; the cheap output is the signal", "Better worst-case quality from two models", "Simpler billing, with one model per query"],
         answer: 1,
         why: "A router needs something that predicts difficulty before any answer exists, which is a model to build, evaluate and maintain, and whose misclassifications become a quality ceiling with no second opinion. The cascade replaces that with a confidence check on a real answer, which is measurable after the fact. Latency is worse rather than better: an escalated query pays both latencies in series, so p95 becomes the sum." },
 
       { stem: "The usual advice is a semantic-cache threshold of \u22650.95. What did measurement show?",
-        options: [
-          "That 0.95 is correct and its example pair scores 0.96",
-          "That its own motivating example pair scores 0.8526 \u2014 a miss at 0.95 \u2014 and the safe band is roughly 0.72\u20130.85",
-          "That any threshold below 0.99 produces wrong hits",
-          "That the threshold should be raised to 0.98 for safety"
-        ],
+        options: ["That 0.95 is right; its pair scores 0.96", "Its own example misses at 0.95; ~0.72–0.85 is safe", "Any threshold below 0.99 gives wrong hits", "It should be raised to 0.98 for safety"],
         answer: 1,
         why: "\"How do I reset my password?\" against \"I forgot my password, what do I do?\" scored 0.8526 on all-MiniLM-L6-v2, so the recommended threshold would reject the pair used to motivate the feature. A sweep gave 4 of 4 intended hits with zero wrong hits at 0.85, and 0.72 was the highest threshold admitting no wrong hits \u2014 making 0.95 too strict for this model and confirming that the value is model-dependent." },
 
       { stem: "\u201cHow do I reset my colleague's password?\u201d scores 0.7150 against \u201chow do I reset my password?\u201d. Why is that case instructive?",
-        options: [
-          "Because it shows embeddings handle possessives poorly",
-          "Because it is the same topic with a different subject, so the correct answer differs while the embedding barely does",
-          "Because it falls inside every usable threshold band",
-          "Because it demonstrates that longer queries score lower"
-        ],
+        options: ["Embeddings handle possessives poorly", "Same topic, different subject, different answer", "It sits inside every usable threshold band", "Longer queries always score lower"],
         answer: 1,
         why: "Semantic nearness tracks topic, and here the topic is identical while the entity the answer concerns has changed \u2014 which is exactly the class of query where a cache hit returns a confident answer to a different question. It generalises to anything carrying a user, account, date or balance, and the mitigation is to key the cache on tenant and user rather than on the vector alone, and to exclude personalised or time-sensitive answers entirely." }
     ]

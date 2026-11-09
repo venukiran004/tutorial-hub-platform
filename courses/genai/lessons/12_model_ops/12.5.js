@@ -354,42 +354,22 @@ and it is why 12.2 puts the model INSIDE the prompt artefact.`,
     title: "Check yourself",
     questions: [
       { stem: "Why log the served model rather than the requested one?",
-        options: [
-          "Because the requested field is sometimes omitted by providers",
-          "Because an alias reads identically before and after a re-point \u2014 only the served field moves, and a roll is gradual",
-          "Because the served model determines billing and the requested one does not",
-          "Because the requested field cannot be indexed for alerting"
-        ],
+        options: ["Providers sometimes omit the requested field", "An alias looks the same after a re-point", "Billing follows the served model only", "The requested field cannot be indexed"],
         answer: 1,
         why: "The entire point of an alias is that your request does not change, so the requested field is constant by construction and carries no information about a roll. The served field is the only ground truth, and because rolls are gradual \u2014 around a fifth of traffic on day one in one measured case \u2014 it also lets you slice quality by responding version rather than by date, which turns a comparison of two mixtures into a clean one." },
 
       { stem: "Which drift signals are actionable on a single occurrence?",
-        options: [
-          "Mean output tokens and cost per 1k requests, since both are computed per request",
-          "A served-model mismatch and a deprecation header \u2014 both are facts rather than estimates, so no rate or window is needed",
-          "JSON-parse failure rate and refusal rate, since any failure is a defect",
-          "The nightly golden-set eval, since it runs on a fixed dataset"
-        ],
+        options: ["Mean output tokens and cost per 1k requests", "A served-model mismatch and a deprecation header", "JSON-parse failure rate and refusal rate", "The nightly golden-set evaluation run"],
         answer: 1,
         why: "Most signals here are rates requiring a baseline, a window and a threshold before a movement means anything, whereas a mismatch between the requested and served model has exactly one explanation and a Sunset header is an announcement. That makes them the cheapest high-value alerts available \u2014 and the deprecation header is additionally the earliest signal, since it arrives while the model is still working normally." },
 
       { stem: "The detector table assigns \u201ccost per 1k requests, \u0394 > 15%\u201d to catch a tokeniser change. Does it?",
-        options: [
-          "Yes \u2014 tokeniser changes typically shift costs well above 15%",
-          "No \u2014 a measured 4.9% token shift moves cost only 3.9%, and it takes a 20% shift to fire the alert",
-          "Only for output-heavy workloads, where output pricing dominates",
-          "Only if prompt caching is disabled"
-        ],
+        options: ["Yes; tokeniser changes exceed 15%", "No; a 4.9% shift moves cost 3.9%", "Only for output-heavy workloads", "Only with prompt caching disabled"],
         answer: 1,
         why: "It catches pricing changes, which are large, and misses tokeniser changes, whose realistic magnitude is far too small \u2014 five tokenisers measured on the same document spanned only 4.9%. Lowering the threshold to 5% is not a fix either, since it would fire on ordinary traffic-mix variation and get disabled. This failure mode therefore has to be prevented by measuring the truncation guard against the target tokeniser before migrating." },
 
       { stem: "Why log the model ID and prompt version together rather than separately?",
-        options: [
-          "To reduce the number of log fields and storage cost",
-          "Because a prompt is only valid against a model \u2014 if both changed you cannot attribute a regression and will debug the wrong one",
-          "Because the prompt version is derived from the model version",
-          "Because alerting systems require composite keys"
-        ],
+        options: ["To cut log fields and storage cost", "Prompts are valid only per model", "The prompt version derives from the model", "Alerting needs composite keys"],
         answer: 1,
         why: "There are four states and only two are diagnosable: model changed alone means re-run the suite, prompt changed alone means roll the prompt back, both changed means the cause is unattributable, and neither logged means you cannot even establish which state you are in. That is the argument for putting the model inside the prompt artefact, so the artefact carries its own validity condition and the log carries the pair by construction." }
     ]

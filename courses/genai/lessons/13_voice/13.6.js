@@ -190,22 +190,12 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "A voice agent speaks a few words, cuts out, restarts and cuts out again, with nobody speaking to it. What is the cause?",
-        options: [
-          "The endpointing threshold is set too low, so silence is detected mid-utterance",
-          "The microphone is picking up the speaker output, so barge-in fires on the agent's own voice",
-          "The playout buffer is too shallow for the network conditions",
-          "The TTS stream is being cancelled by a timeout in the synthesis request"
-        ],
+        options: ["Endpointing too low, detecting mid-utterance", "The mic hears the agent, firing barge-in", "The playout buffer is too shallow", "A synthesis timeout cancels the stream"],
         answer: 1,
         why: "Without acoustic echo cancellation the voice activity detector sees speech for as long as the agent is talking, so the interrupt fires on the agent's own output, then fires again on the audio still queued, indefinitely. It survives development because headphones prevent the microphone from hearing the output, and it appears on the first speakerphone. The fix is enabling the canceller already present in WebRTC, the telephony stack or the OS layer and feeding it the reference signal \u2014 not writing one." },
 
       { stem: "An implementation cancels the TTS request on interruption but the user still hears the agent for a moment. What is missing?",
-        options: [
-          "A longer fade-out ramp, since 50 ms is audible",
-          "The playout buffer flush \u2014 audio already queued must be discarded, not just left to drain",
-          "A faster VAD, since detection is taking too long",
-          "Cancellation of the model's token stream, which is still feeding the synthesiser"
-        ],
+        options: ["A longer fade-out, since 50 ms is audible", "Flushing the queued playout buffer", "A faster VAD to detect speech sooner", "Cancelling the model's token stream"],
         answer: 1,
         why: "Stopping production is not the same as discarding the queue: whatever is already in the jitter buffer continues to play, so the user hears the agent carry on for the buffer's depth after interrupting, which reads exactly like being ignored. This is the most commonly omitted of the four stages, and it also explains why buffer depth is a direct term in the barge-in budget \u2014 a 200 ms buffer makes a 200 ms target unreachable." },
 
@@ -220,12 +210,7 @@ EC.receiveLesson({
         why: "The model is reading its own transcript correctly \u2014 that sentence really is in the history, because the history recorded what was generated while the user experienced what was played. After an interruption those two diverge and nothing in the system notices, which makes it a state-management bug that no prompting can fix. Over a 10-turn call with 3 interruptions it accumulated 42 of 240 words, 17.5% of the agent's believed context." },
 
       { stem: "Why does a well-built barge-in implementation buffer the user's audio even while it is still deciding whether the speech was a backchannel?",
-        options: [
-          "To improve ASR accuracy by providing more acoustic context",
-          "Because a misclassified continuer would otherwise lose the user's actual words and cost a turn",
-          "To measure engagement for quality metrics",
-          "Because the echo canceller requires a continuous input signal"
-        ],
+        options: ["More acoustic context improves ASR accuracy", "A misread continuer would lose the user's words", "To measure engagement for quality metrics", "The echo canceller needs continuous input"],
         answer: 1,
         why: "Distinguishing \u201cmm-hm\u201d from a real interruption is a judgement that will sometimes be wrong, and the asymmetry matters: if you classify a genuine interruption as a continuer and discarded the audio, the user has to say it all again. Buffering regardless makes the error recoverable, which is a better engineering posture than trying to make the classifier perfect \u2014 and it costs almost nothing." }
     ]

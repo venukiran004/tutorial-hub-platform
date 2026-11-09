@@ -359,42 +359,22 @@ prompt caching applies to the FIXED PREFIX: system prompt + stable few-shot
     title: "Check yourself",
     questions: [
       { stem: "Why is capping output from 400 to 90 tokens worth 22.1% in one calculation and 10.1% in another?",
-        options: [
-          "Because output pricing differs between providers",
-          "Because the input levers shrank the denominator \u2014 the same change is a larger share of a smaller bill",
-          "Because the first figure includes cache savings and the second does not",
-          "Because 90 tokens triggers a different pricing tier"
-        ],
+        options: ["Output pricing differs between providers", "Input cuts shrank the total first", "One figure includes cache savings", "90 tokens hits another pricing tier"],
         answer: 1,
         why: "Nothing about the change differs; only the baseline it is measured against. Applied to the original 8,000-token prompt it is 10.1% of the bill, and applied after three input levers have removed 5,000 input tokens it is 22.1% \u2014 2.2x the apparent value. This is the same order-dependence that affects any sequential decomposition, and the practical rule is to state which baseline a quoted saving refers to." },
 
       { stem: "Which cost lever has no quality trade-off?",
-        options: [
-          "Capping max_tokens, since the failure is visible in finish_reason",
-          "Prompt caching the fixed prefix, because the cached tokens are byte-identical to the uncached ones",
-          "Trimming few-shot examples, since two or three match ten",
-          "Asking for JSON output, since it is both shorter and more parseable"
-        ],
+        options: ["Capping max_tokens, visible in finish_reason", "Caching the fixed prefix: identical bytes", "Trimming few-shot examples to two or three", "Asking for JSON, which is shorter"],
         answer: 1,
         why: "Every other lever changes what the model sees or produces and therefore has a risk column \u2014 format drift, a retrieval miss, a lost pronoun referent, truncation, schema violations. Caching changes only how the provider processes an identical prefix, so there is no quality question to measure, and after the other input levers that prefix is 45% of the remaining input. Its only requirement is that the prefix stays genuinely stable and genuinely first." },
 
       { stem: "Which lever needs a quality measurement attached rather than a token count?",
-        options: [
-          "Dropping boilerplate, since it is easy to let drift back",
-          "Reranking to top-k, because cutting too far buys a retrieval miss \u2014 the most common cause of hallucination",
-          "Adding \u201cbe concise\u201d, since its effect on length is unpredictable",
-          "Summarising history, since summary quality varies"
-        ],
+        options: ["Dropping boilerplate, which drifts back", "Reranking to top-k, risking retrieval misses", "Adding \"be concise\", with uneven effect", "Summarising history of varying quality"],
         answer: 1,
         why: "It is simultaneously the largest single input saving at 2,000 tokens and the change that can remove the chunk containing the answer, so a token count alone cannot tell you whether it was safe. The honest report pairs the saving with recall at the new k against recall at the old one. Summarising history also carries a real risk \u2014 a dropped pronoun referent \u2014 mitigated by keeping the last couple of turns verbatim." },
 
       { stem: "What does `retrieved[:top_k]` assume, and why does it matter?",
-        options: [
-          "That top_k is smaller than the number retrieved, or it is a no-op",
-          "That the list was already reranked \u2014 otherwise it discards by retrieval order rather than by relevance",
-          "That each chunk is the same length, so the token saving is predictable",
-          "That the chunks are deduplicated"
-        ],
+        options: ["That top_k is smaller than the list", "That the list was already reranked", "That chunks are all the same length", "That the chunks are deduplicated"],
         answer: 1,
         why: "Slicing keeps the first k items, so the operation is only \"keep the most relevant\" if relevance determined the order. Applied to a raw similarity-ordered list it is far weaker, and applied to an unordered one it is arbitrary \u2014 which is why the comment flags the assumption. The whole point of retrieving 50 and reranking is that the reranker, not the retriever, decides which three survive." }
     ]

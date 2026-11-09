@@ -332,32 +332,17 @@ the headline 70%% total saving survives: with the corrected
     title: "Check yourself",
     questions: [
       { stem: "Why decompose the bill into line items rather than working from the total?",
-        options: [
-          "Because providers bill per line item and the invoice is itemised",
-          "Because the per-unit figures \u2014 250 tokens per example, 400 per chunk \u2014 make each lever computable instead of estimated",
-          "Because the total includes retries that must be excluded",
-          "Because input and output are billed on different invoices"
-        ],
+        options: ["Providers bill per line and itemise it", "Per-unit figures make each lever computable", "The total includes retries to exclude", "Input and output come on separate invoices"],
         answer: 1,
         why: "Once you know an example costs 250 tokens and a chunk 400, \u201ctrim to 3 examples\u201d and \u201crerank to 3 chunks\u201d become exact arithmetic rather than guesses, and the levers can be ranked against each other before any of them is built. It is also what makes an error visible: rebuilding the chain from the parts is how the 200-token discrepancy in the rerank row surfaces at all." },
 
       { stem: "What happens to the input share of cost as the input levers are applied?",
-        options: [
-          "It stays roughly constant, since all line items shrink proportionally",
-          "It falls from 87.0% to 72.7%, so the advice to attack input first is correct and self-limiting",
-          "It rises, because output tokens are reduced faster than input",
-          "It falls below 50%, making output the dominant cost"
-        ],
+        options: ["Constant, as every line shrinks together", "87.0% to 72.7%: correct but self-limiting", "It rises, as output shrinks faster", "Below 50%, making output dominant"],
         answer: 1,
         why: "Output never changes by a single token through the three input levers, so as input shrinks its share of a smaller bill declines \u2014 and output rises from 13.0% to 27.3% of cost without being touched. That is the signal to switch levers: capping `max_tokens` and requesting structured output become the next proportional saving, rather than a fourth input trim with a smaller base to work on." },
 
       { stem: "Which line item should not be treated as waste?",
-        options: [
-          "The conversation history, since prior turns carry necessary context",
-          "The retrieved RAG context \u2014 it is load-bearing, and cutting it trades cost against recall",
-          "The few-shot examples, since removing them degrades format adherence",
-          "The system prompt, since it is the largest fixed cost"
-        ],
+        options: ["Conversation history, carrying needed context", "Retrieved context, which is load-bearing", "Few-shot examples, which keep the format", "The system prompt, the largest fixed cost"],
         answer: 1,
         why: "Few-shot examples and full transcripts are genuinely wasteful \u2014 two or three examples usually match ten, and a running summary replaces resending everything \u2014 whereas retrieved chunks are the substance the answer is grounded in. That is why the lever is phrased as reranking to top-k rather than retrieving fewer: it removes the low-value chunks while keeping recall, since a retrieval miss is the most common cause of hallucination." },
 

@@ -362,42 +362,22 @@ and it is listed first. 9 of 20 cases (45%) need (c).`,
     title: "Check yourself",
     questions: [
       { stem: "Which single mitigation addresses the most causes for the least cost?",
-        options: [
-          "The faithfulness gate, because it catches any unsupported claim regardless of cause",
-          "A grounded system prompt with an explicit abstention path \u2014 four of the six causes in seven lines, at zero latency",
-          "Citation validation, because fabricated sources are the most common failure",
-          "Lowering temperature to zero, because it removes sampling randomness"
-        ],
+        options: ["The faithfulness gate, catching any cause", "A grounded prompt with an abstention path", "Citation validation for fabricated sources", "Temperature zero to remove randomness"],
         answer: 1,
         why: "The four rules each target a distinct cause: answering only from context fixes the ungrounded prompt, an exact abstention string supplies the missing option, forbidding outside knowledge instructs precedence over parametric memory, and preferring a short exact answer caps length-driven drift. The gate catches more kinds of failure but costs a measured 94% latency increase, and fabricated sources are among the rarer causes." },
 
       { stem: "Why is a 0.9 faithfulness threshold ambiguous?",
-        options: [
-          "Because different entailment models calibrate differently",
-          "Because the score is quantised by claim count \u2014 on a four-claim answer it means \u201czero unsupported\u201d, on a twenty-claim answer \u201cat most two\u201d",
-          "Because claims of different lengths should be weighted differently",
-          "Because 0.9 is below the typical supported-claim entailment score"
-        ],
+        options: ["Entailment models calibrate differently", "Its meaning depends on the claim count", "Long claims should be weighted more", "0.9 is below typical entailment scores"],
         answer: 1,
         why: "With n claims the only achievable scores are multiples of 1/n, so the threshold's practical meaning shifts with answer length: a four-sentence answer can only score 0, 0.25, 0.5, 0.75 or 1.0, making 0.9 equivalent to a zero-tolerance rule. A longer answer silently becomes more permissive under the same threshold, which is an argument for expressing the gate as an absolute count of unsupported claims." },
 
       { stem: "A faithfulness gate fires on an answer where the retriever returned nothing above threshold. What remedy?",
-        options: [
-          "Regenerate with a stricter prompt, as the usual preference order suggests",
-          "Abstain and escalate \u2014 regenerating against the same insufficient context cannot succeed",
-          "Drop the unsupported claims and serve what remains",
-          "Lower the gate threshold, since the context is weak"
-        ],
+        options: ["Regenerate with a stricter prompt", "Abstain and escalate instead", "Drop the claims; serve the rest", "Lower the threshold for weak context"],
         answer: 1,
         why: "The cause is upstream: the context does not contain the answer, so a stricter prompt produces either the same hallucination or an abstention after paying twice for generation. The standard list puts regeneration first, which is exactly wrong for the single most common cause \u2014 which is why the remedy should be selected from the diagnosed cause, available for free from the retriever span attributes." },
 
       { stem: "Why is JSON mode a stronger abstention mechanism than a prose instruction?",
-        options: [
-          "Because structured output uses fewer tokens",
-          "Because a nullable answer field makes abstention a structurally available output rather than a discouraged one",
-          "Because JSON cannot contain fabricated facts",
-          "Because schema validation runs before the model generates"
-        ],
+        options: ["Structured output uses fewer tokens", "A nullable field makes abstaining available", "JSON cannot contain fabricated facts", "Validation runs before generation"],
         answer: 1,
         why: "The model emits what the instruction space permits, so a prose request to abstain competes against the pull of a plausible continuation, while a schema in which `answer: null` with `unsupported: true` is valid makes declining the easiest well-formed response. It also composes with validation: a response that does not fit the schema is rejected mechanically rather than judged. JSON still carries fabricated field values perfectly well." }
     ]

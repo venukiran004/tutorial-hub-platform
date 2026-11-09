@@ -173,42 +173,22 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "In the itemised 3-minute call, which line is largest and why is that counter-intuitive?",
-        options: [
-          "The LLM, because token pricing applies to both input and output",
-          "TTS at 39.6%, 16.9% above the model \u2014 it is billed per character, and characters do not feel expensive",
-          "ASR, because it is billed for the full call duration including silence",
-          "They are within a few per cent of each other, so no line dominates"
-        ],
+        options: ["The LLM, priced on input and output", "TTS at 39.6%, billed per character", "ASR, billed including silence", "No line dominates; all are close"],
         answer: 1,
         why: "Three unrelated meters \u2014 per minute, per character, per token \u2014 defeat intuition, and per-character pricing is the least visible of the three: everyone has a token dashboard and nobody thinks of characters as costly, so an answer running 400 characters instead of 150 is not registered as a cost decision. That is precisely what makes TTS the line most directly controlled by a prompt change." },
 
       { stem: "The itemised call prices 4,200 input tokens. Accumulated across 10 turns the figure is 10,525. Why?",
-        options: [
-          "The system prompt is counted once per call rather than once per turn",
-          "Each turn resends the whole conversation, so input grows quadratically while output stays linear",
-          "Speculative prefill adds extra input tokens",
-          "Token counting differs between the two methods"
-        ],
+        options: ["The system prompt counts once per call", "Each turn resends the whole conversation", "Speculative prefill adds input tokens", "The two counting methods differ"],
         answer: 1,
         why: "A voice turn sends the system prompt plus every prior exchange plus the new message, so the prompt grows from 625 to 1,480 tokens over ten turns and the cumulative input is the sum of all ten prompts. Output is one response per turn at roughly constant length, so it is linear. That makes 4,200 plausible as one late turn's prompt and 2.5x too low as a call total \u2014 the same shape 11.10 measured for agent loops." },
 
       { stem: "Prompt caching cut the input line by 87.9%. What makes so much of the prompt cacheable?",
-        options: [
-          "The model caches semantically similar prefixes across turns",
-          "The system prompt and all prior conversation history are byte-identical to what was already sent",
-          "Audio tokens cache more efficiently than text tokens",
-          "The cache stores the response, so repeated questions are free"
-        ],
+        options: ["Semantically similar prefixes are cached", "Prompt and history are byte-identical", "Audio tokens cache more efficiently", "Cached responses make repeats free"],
         answer: 1,
         why: "Each turn's prompt differs from the previous one only by the last exchange, so everything before the new user message is a byte-identical prefix that can be read at a fraction of the input price. This also explains why a timestamp or turn counter at the top of the prompt is so costly \u2014 it invalidates the prefix on every call, with no error and no symptom beyond a hit rate nobody is watching." },
 
       { stem: "Finance asks whether a cheaper model would close a 4x cost gap against chat. What is the better answer?",
-        options: [
-          "Yes \u2014 the model is the largest controllable line in a voice call",
-          "Prompt caching and writing for the ear are worth 59.4% together with no quality risk; a smaller model is the only lever that trades accuracy",
-          "No \u2014 the gap is entirely ASR and TTS, so nothing can be done about it",
-          "Reduce call duration, since ASR is billed per minute"
-        ],
+        options: ["Yes; the model is the largest controllable line", "Caching and ear-writing save 59.4%, risk-free", "No; the gap is all ASR and TTS", "Shorten calls, as ASR bills per minute"],
         answer: 1,
         why: "Most of the gap is two lines chat does not have at all, $0.0450 of recognition and synthesis before the model is involved, and the model line is inflated by conversation resending rather than by price. Caching is 31.9% of the call for a configuration change and the prompt rewrite is 27.5% while also improving the product. Doing those first means that if a cheaper model is still wanted, it becomes an accuracy decision rather than a cost one." }
     ]

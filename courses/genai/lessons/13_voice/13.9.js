@@ -187,42 +187,22 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "The same eight transcripts give 10.6% WER and 41.2% entity error rate. Why is the gap so large?",
-        options: [
-          "The entity set is too small for a stable estimate",
-          "WER's denominator is mostly easy function words, while the recogniser's language model resolves rare words toward frequent ones",
-          "Entity error rate double-counts errors that WER counts once",
-          "The transcripts were chosen to contain difficult entities"
-        ],
+        options: ["The entity set is too small to be stable", "WER is mostly easy words; rare words get biased", "Entity error double-counts WER errors", "The transcripts were chosen for hard entities"],
         answer: 1,
         why: "Two effects compound in the same direction. The denominator: a phrase like \u201ci would like to speak to someone about my\u201d is nine words of free accuracy padding every sentence, diluting WER with words that were never at risk. And the mechanism: a recogniser's language model exists to resolve acoustic ambiguity toward likely sequences, which is exactly wrong for names and codes \u2014 so the errors concentrate on the words that carry the task." },
 
       { stem: "In the measured set, which entities were recognised perfectly and why?",
-        options: [
-          "Common first names, because they are frequent in training data",
-          "Every entity spoken digit by digit or letter by letter \u2014 short, acoustically distinct words in a tiny closed vocabulary",
-          "Amounts, because currency has a predictable grammar",
-          "Dates, because they can be constrained to a calendar"
-        ],
+        options: ["Common first names, frequent in training", "Digit- and letter-by-letter entities", "Amounts, with predictable grammar", "Dates, constrained to a calendar"],
         answer: 1,
         why: "Ten entities across an account number and an alphanumeric claim code came through with zero errors, while names, amounts and dates accounted for all seven failures. Individually spoken digits give the language model almost no room to interfere, which makes the input format a design lever rather than a given \u2014 asking a caller to read a number one digit at a time converts the hardest recognition problem into the easiest one." },
 
       { stem: "Why is \u201cconfirm when recogniser confidence is low\u201d the wrong policy?",
-        options: [
-          "Confidence scores are not available from most recognition APIs",
-          "Confidence is poorly calibrated on the rare words that fail, and says nothing about whether being wrong matters",
-          "It confirms too few slots to be useful",
-          "Low confidence correlates with background noise rather than with error"
-        ],
+        options: ["Most APIs provide no confidence scores", "Confidence is miscalibrated and ignores stakes", "It confirms too few slots to be useful", "Low confidence tracks noise, not errors"],
         answer: 1,
         why: "A recogniser can be confidently wrong about a name it has never encountered, so the signal is weakest exactly where the errors concentrate. And confidence carries no information about consequence \u2014 a misheard free-text problem description is harmless while a misheard transfer amount moves the wrong money. Confirming by consequence and by the error-proneness of the slot type uses two things you know before the call even starts." },
 
       { stem: "A user's payee name comes back as \u201cshivon\u201d but the account has a payee called \u201cSiobhan\u201d. What is the best handling?",
-        options: [
-          "Ask the user to spell the payee name",
-          "Ask the user to repeat the whole request more clearly",
-          "Phonetically match the transcript against the account's known payee list and recover it silently",
-          "Reject the turn and route to a human agent"
-        ],
+        options: ["Ask the user to spell the payee name", "Ask the user to repeat the request", "Match phonetically against known payees", "Reject the turn and route to a human"],
         answer: 2,
         why: "The valid value set is known \u2014 a payee is one of this account's payees \u2014 and the two strings are far apart in spelling but close in sound, so a metaphone-style comparison resolves it with no model change and no user-visible repair. That is strictly better than any confirmation strategy, because a repair the user never notices costs nothing. Spelling mode is a third resort, after matching and one targeted confirmation, since rhyming letters are themselves frequently misheard." }
     ]

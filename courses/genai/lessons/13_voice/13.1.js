@@ -212,22 +212,12 @@ EC.receiveLesson({
         why: "A lognormal with the same median and a larger sigma puts much more mass in the right tail, and the right tail is where the perception bands bite. Computed over a 12-turn call the difference becomes 17% against 96% chance of at least one turn that feels like thinking \u2014 so these two agents are ranked identically by any p50 dashboard and are completely different products." },
 
       { stem: "Why does a six-option menu read aloud behave differently from six options on a screen?",
-        options: [
-          "Speech synthesis introduces errors that accumulate across a long list",
-          "Audio is serial and unskimmable, and the listener holds it in working memory \u2014 roughly three items",
-          "The list takes longer to deliver, so the user is more likely to interrupt",
-          "Screen readers reorder options, so the ordering cannot be relied upon"
-        ],
+        options: ["Synthesis errors build up over a long list", "Audio is serial; memory holds about three", "Longer lists invite the user to interrupt", "Screen readers reorder the options"],
         answer: 1,
         why: "A screen lets the user skim, re-read and compare at their own pace; audio arrives at the speaker's pace and is gone. With working memory good for about three items, a six-item spoken list is effectively the first item and the last one, which is why spoken answers have to be restructured rather than merely shortened. This is the no-scrollback and no-parallel-attention constraints acting together." },
 
       { stem: "A dashboard shows median time to first audio of 740 ms against an 800 ms target, but customers call the agent slow. What is the first thing to check?",
-        options: [
-          "Whether the model has been updated recently, which would change the latency profile",
-          "Whether the ASR confidence threshold is set too high",
-          "Whether the endpointing silence timer is inside the measured interval, and what p95 is",
-          "Whether the TTS voice is one users find unnatural"
-        ],
+        options: ["Whether the model was updated recently", "Whether the ASR confidence is set too high", "Whether endpointing is inside the metric, and p95", "Whether users find the TTS voice unnatural"],
         answer: 2,
         why: "Two independent ways a 740 ms median coexists with a slow-feeling agent. If the metric starts at end-of-endpointing rather than end-of-speech, a 700 ms silence timer sits entirely outside it and the true figure is 1,440 ms. And even if the measurement is honest, a wide distribution can put a bad moment in most calls while the median stays green \u2014 so the p95/p50 ratio is the diagnostic, not the median." }
     ]

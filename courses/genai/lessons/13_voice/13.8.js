@@ -195,22 +195,12 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "A team adds a regex that strips markdown from responses before synthesis. What problem remains?",
-        options: [
-          "None \u2014 removing the markers removes the mispronunciation",
-          "The structure the markers carried remains, so a six-item list is still six items the listener cannot hold",
-          "The regex will also strip legitimate punctuation",
-          "Latency increases because of the extra processing step"
-        ],
+        options: ["None; removing markers fixes everything", "The list structure remains too long to hear", "It strips legitimate punctuation too", "The extra step increases latency"],
         answer: 1,
         why: "The audio stops saying \u201casterisk\u201d, which feels like a fix and gets shipped, but the response is still a 377-character numbered list with lettered sub-options delivered serially over 27 seconds to someone who cannot skim or re-read. Keep the regex as a last line of defence since a model will occasionally emit formatting anyway \u2014 but if it is doing real work on most responses, the prompt is wrong and the structure is the larger problem." },
 
       { stem: "How should a voice agent speak the reference number 4021?",
-        options: [
-          "\u201cFour thousand and twenty-one\u201d, which is how the number is read",
-          "\u201cFour zero two one\u201d, because an identifier is spoken digit by digit",
-          "\u201cForty twenty-one\u201d, which is shorter and natural",
-          "It should be spelled rather than spoken"
-        ],
+        options: ["\"Four thousand and twenty-one\"", "\"Four zero two one\", digit by digit", "\"Forty twenty-one\", short and natural", "Spelled out rather than spoken"],
         answer: 1,
         why: "Quantities are spoken as quantities and identifiers digit by digit, and models get this wrong in both directions without explicit instruction. It matters more than it sounds: the only reason to read a caller a reference number is so they can write it down, and \u201cfour thousand and twenty-one\u201d cannot be transcribed reliably \u2014 so the error defeats the entire purpose of the utterance." },
 
@@ -225,12 +215,7 @@ EC.receiveLesson({
         why: "Delivery went from 26.9 to 9.7 seconds, TTS from $0.00565 to $0.00204 and output tokens from $0.00141 to $0.00051 \u2014 one change, three budgets, same proportion. That makes brevity unique in this module: endpointing trades interruptions, speculative prefill trades wasted tokens, a smaller model trades accuracy, and shortening the response trades nothing, which is why it belongs in the prompt as a hard limit." },
 
       { stem: "Why is \u201cone or two sentences, one question, at most three items\u201d better than \u201cbe concise\u201d?",
-        options: [
-          "It is shorter, so it consumes fewer prompt tokens",
-          "Countable constraints are checkable by the model while generating and auditable afterwards",
-          "It prevents the model from using markdown",
-          "Vague instructions are ignored entirely by most models"
-        ],
+        options: ["It is shorter, using fewer prompt tokens", "Countable limits are checkable and auditable", "It prevents the model using markdown", "Vague instructions are ignored entirely"],
         answer: 1,
         why: "A vague length instruction gives the model no shared referent for how long is too long, so it is among the least reliably followed things in a prompt. A countable constraint can be checked during generation and audited after, and it makes the production metric obvious \u2014 mean output characters per turn, which is simultaneously the leading indicator for delivery time, for the largest line in the cost model, and for prompt drift." }
     ]

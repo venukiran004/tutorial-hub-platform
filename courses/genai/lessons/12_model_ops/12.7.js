@@ -325,42 +325,22 @@ showed is exactly the state you reach AFTER trimming input.`,
     title: "Check yourself",
     questions: [
       { stem: "At day 10 the shadow run shows accuracy 0.86 \u2192 0.88 and valid JSON 99.7% \u2192 94.2%. What is the lesson?",
-        options: [
-          "The new model is better overall and the JSON rate will recover with prompt tuning",
-          "The quality gate passed while the contract gate failed \u2014 an accuracy-only suite would have shipped a broken parser",
-          "The golden set is too small to resolve a 2-point accuracy change",
-          "Shadow runs overstate format problems because they replay stale traffic"
-        ],
+        options: ["Better overall; JSON will recover with tuning", "Quality passed while the contract failed", "The golden set cannot resolve two points", "Shadow runs overstate format problems"],
         answer: 1,
         why: "Every signal a quality-focused suite watches improved, including latency, while one request in eighteen became unparseable \u2014 which for the consumer of that output is a total failure rather than a degraded answer. The 40 contract cases in a 400-case golden set caught what the 240 production cases scored as a win, which is the entire argument for having a contract slice and for giving its gate an absolute floor." },
 
       { stem: "What was the fix for the 44% verbosity increase?",
-        options: [
-          "Adding a \u201cbe concise\u201d instruction and lowering max_tokens",
-          "Deleting instructions \u2014 enabling strict schema mode, dropping \u201crespond only in JSON\u201d and trimming the CoT scaffolding",
-          "Switching to a smaller model variant",
-          "Reducing the number of few-shot examples"
-        ],
+        options: ["\"Be concise\" plus a lower max_tokens", "Deleting instructions, with strict schema", "Switching to a smaller model variant", "Fewer few-shot examples"],
         answer: 1,
         why: "Both deleted instructions were compensating for weaknesses the new model does not have \u2014 it supports strict schema mode natively and reasons without being told to \u2014 so each one had become actively harmful, inflating output and cost. The result beat the old model on every axis: JSON at 99.9%, output tokens at 295 against the old 310, accuracy 0.89. It also explains why each prompt version needs a changelog, since a line with no recorded purpose gets kept out of caution." },
 
       { stem: "The example states +44% output produces +38% cost. What does checking it show?",
-        options: [
-          "Both figures are correct for any prompt size",
-          "The output figure is right, but +38% cost implies a 226-token input \u2014 at 1,842 tokens the rise is +19.9%",
-          "The output figure is wrong; 445/310 is +31%",
-          "Cost would rise more than 44%, since output tokens are priced higher"
-        ],
+        options: ["Both are right for any prompt size", "+38% implies a tiny input; it is ~+20%", "The output figure is wrong; it is +31%", "Cost rises over 44%, as output costs more"],
         answer: 1,
         why: "445 divided by 310 is 1.4355, so the verbosity figure checks out exactly; the cost figure then depends on input size, which the example never states, and solving for it gives 226 tokens at $3/$15 per million. At realistic prompt sizes the rise is roughly half the quoted number. The lesson survives \u2014 verbosity creep was the right thing to catch \u2014 which is why the detector should be mean output tokens rather than a cost threshold." },
 
       { stem: "Why is removing the old code paths at day 85 rather than day 90 significant?",
-        options: [
-          "Because the provider may retire the model early",
-          "So the retirement date lands on code that has not depended on the old model for a week \u2014 which is what makes \u201cnothing happens\u201d achievable",
-          "Because old paths must be removed before the fine-tune is re-trained",
-          "To free quota for the new model before the cutover"
-        ],
+        options: ["The provider might retire the model early", "So retirement lands on already-free code", "Old paths go before the fine-tune retrains", "To free quota before the cutover"],
         answer: 1,
         why: "The objective on day 90 is that the retirement is a non-event, and that requires the dependency to have been gone long enough to be confident nothing still reaches it \u2014 a removal on the day itself provides no evidence either way. The same logic shapes the rest of the schedule: the canary completes at day 40, leaving fifty days of margin for the embedding and fine-tune work rather than finishing against the deadline." }
     ]

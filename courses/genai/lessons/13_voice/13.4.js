@@ -180,42 +180,22 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "Rewriting the 1,650 ms budget as a dependency graph with full streaming gives what time to first audio?",
-        options: [
-          "About 1,230 ms, because the synthesis stages overlap generation",
-          "Exactly 1,650 ms \u2014 unchanged, because the first-audio path is a hard dependency chain",
-          "It cannot be computed without knowing the token rate",
-          "About 990 ms, since ASR and prefill can run concurrently"
-        ],
+        options: ["About 1,230 ms, as synthesis overlaps", "Exactly 1,650 ms: a dependency chain", "Uncomputable without the token rate", "About 990 ms, as ASR and prefill overlap"],
         answer: 1,
         why: "Overlap can compress work that hangs off a chain but cannot shorten the chain itself, and the path to first audio is entirely sequential by construction: endpointing, then finalisation, then the network, then prefill, then enough tokens for a clause, then synthesis, then playout. Streaming did save 420 ms on the complete response \u2014 real value for long answers and a precondition for barge-in \u2014 but zero on the figure the team is usually judged on." },
 
       { stem: "Speculative prefill saves 175 ms under conservative assumptions and 290 ms under optimistic ones. What determines which you get?",
-        options: [
-          "The model's prefill throughput, which varies with load",
-          "How often the partial transcript's prefix survives finalisation unchanged, which is measurable from your own traffic",
-          "Whether the endpointing threshold is long enough for prefill to complete",
-          "The size of the system prompt relative to the transcript"
-        ],
+        options: ["Prefill throughput, which varies with load", "How often the partial prefix survives", "Whether endpointing gives prefill time", "System prompt size versus transcript"],
         answer: 1,
         why: "Speculation prefills the system prompt, history and the partial transcript during the endpointing window. When the final transcript arrives, whatever prefix is byte-identical is reusable and only the corrected tail needs prefilling \u2014 so the saving is set by how stable your partials are, which depends on your audio quality, domain vocabulary and recogniser. The conservative 175 ms is the right figure to put in a plan until you have measured your own." },
 
       { stem: "A team ships partial transcripts, token streaming and chunked synthesis, and time to first audio is unchanged. What should the retrospective conclude?",
-        options: [
-          "The streaming implementation has a bug, since overlap must reduce latency",
-          "Nothing was gained and the quarter was wasted",
-          "The work moved total response time and enabled barge-in, but the chosen metric only moves when a dependency is broken",
-          "Time to first audio is the wrong metric and should be replaced by total response time"
-        ],
+        options: ["Streaming has a bug, as overlap must always help", "Nothing was gained and the quarter was wasted", "It helped total time; first audio needs a broken dependency", "First audio is the wrong metric; use total time"],
         answer: 2,
         why: "The outcome is predictable from the dependency graph rather than evidence of a defect: streaming compresses what hangs off the critical path, so it improved the full response by 420 ms and made interruption handling possible, while leaving the head of the turn exactly where it was. The fix is process rather than code \u2014 state which number a project moves before starting it, since streaming improves the tail and speculation or endpointing improves the head." },
 
       { stem: "Why does the stage table carry a third column giving the reason each stage exists?",
-        options: [
-          "To document the code for future maintainers",
-          "Because it converts \u201cmake every stage smaller\u201d into a negotiation about specific named risks",
-          "Because the reasons are needed to compute the sensitivity analysis",
-          "To distinguish stages that can be parallelised from those that cannot"
-        ],
+        options: ["To document the code for maintainers", "It turns shrinking into named risk trade-offs", "The reasons feed the sensitivity analysis", "To mark which stages can run in parallel"],
         answer: 1,
         why: "Durations alone invite a demand that all of them shrink. With reasons attached, cutting the playout buffer is visibly a decision to accept more mid-word gaps on poor connections, and cutting the endpoint silence is a decision to interrupt users more often \u2014 so each proposal names what is being traded. That is half the value of the program, and it is why the budget is a planning artefact rather than a measurement." }
     ]

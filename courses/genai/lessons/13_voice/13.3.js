@@ -178,32 +178,17 @@ EC.receiveLesson({
         why: "The 700 ms silence wait is 42.4% of the turn, larger than both LLM stages combined at 33.3%. The significance is where effort goes: the model is legible, owned, benchmarked and interesting, so it gets months of attention for a 10.6% win, while the threshold is a constant copied from a quickstart with no owner at all. Biggest term, least examined \u2014 a pattern worth looking for outside voice too." },
 
       { stem: "The sensitivity table shows halving each stage. Which row does it quietly misrepresent?",
-        options: [
-          "The network row, because round trips cannot be halved by engineering",
-          "The playout buffer, because its latency is not real",
-          "The endpointing row, because halving the threshold changes behaviour \u2014 interruptions rise from 6.1% to 26.8%",
-          "The TTS row, because synthesis time depends on text length"
-        ],
+        options: ["The network row; round trips cannot halve", "The playout buffer; its latency is not real", "Endpointing; halving it raises interruptions", "TTS; synthesis depends on text length"],
         answer: 2,
         why: "Every other row is a pure engineering win \u2014 a faster tier, a nearer region, a shallower buffer \u2014 with no behavioural consequence. Cutting the silence threshold to 350 ms makes the agent talk over its user in more than one turn in four, so the table is showing a benefit with the cost column omitted for exactly one row. The fix is a semantic endpointer, which gets the latency without the interruption rate, rather than a smaller constant." },
 
       { stem: "With all seven candidate optimisations applied, the cascade reaches 735 ms. Why is that figure interesting?",
-        options: [
-          "It is the theoretical minimum for any voice architecture",
-          "It is below the unoptimised speech-native pipeline's 920 ms, inverting the architecture comparison",
-          "It shows the optimisations are redundant, since their savings overlap",
-          "It is inside the under-300 ms band where the agent is indistinguishable from a person"
-        ],
+        options: ["It is the minimum for any voice architecture", "It beats unoptimised speech-native's 920 ms", "The optimisations overlap, so are redundant", "It is under 300 ms, indistinguishable from people"],
         answer: 1,
         why: "The architecture comparison in 13.2 contrasts 1,650 with 920 and makes speech-native look structurally faster. But a fully optimised cascade at 735 ms beats an unoptimised speech-native pipeline, so the comparison was partly between two architectures and partly between a tuned system and an untuned one. That is the same ordering error that made the speech-native premium look 2.2x cheaper than it is." },
 
       { stem: "Product asks for 800 ms. The search says 785 ms is reachable in 14 weeks with five changes. What should you add to that answer?",
-        options: [
-          "That the estimate should be padded, since latency work usually overruns",
-          "That 800 ms is unnecessary because users cannot perceive differences below one second",
-          "That the route requires a distilled model, so there is an unmeasured accuracy cost \u2014 and that 1,000 ms is 7 weeks with no quality risk",
-          "That the jitter buffer reduction makes the result unreliable on mobile networks"
-        ],
+        options: ["Pad the estimate, as latency work overruns", "800 ms is unnecessary; nobody perceives it", "It needs a distilled model; 1,000 ms is safe", "Jitter buffer cuts fail on mobile networks"],
         answer: 2,
         why: "Both halves matter. The 900 and 800 ms targets are the only ones requiring the distilled model, which is the single candidate that trades answer quality, and a latency table has no accuracy column \u2014 so the schedule is 14 weeks plus whatever it takes to find out. Offering 1,000 ms at 7 weeks with no quality risk reframes the request usefully, since 1,000 is already inside the responsive band that 800 was a guess at." }
     ]

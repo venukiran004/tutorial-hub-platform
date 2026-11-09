@@ -340,42 +340,22 @@ alert rule:
     title: "Check yourself",
     questions: [
       { stem: "Why log both `gen_ai.request.model` and `gen_ai.response.model`?",
-        options: [
-          "Because some providers rename models between the request and the response",
-          "Because when a provider rolls an alias forward only the response field changes \u2014 so the difference from your pinned version is a direct detector",
-          "Because the request field is unavailable when using a gateway",
-          "Because billing is computed from the response model and quality from the request model"
-        ],
+        options: ["Some providers rename models in the response", "An alias roll changes only the response field", "The request field is unavailable via gateways", "Billing uses one and quality uses the other"],
         answer: 1,
         why: "The alias you request stays constant by definition, which is the whole purpose of an alias, so the request field cannot reveal a roll \u2014 in the worked log it read `chat-large` on every day including after the change. Only the responding version moves, and comparing it against the pinned string is one comparison on one attribute that fires before any quality metric has the samples to move." },
 
       { stem: "A provider alias roll shows 19.9% of traffic on the new version one day and 100% the next. What does that break?",
-        options: [
-          "Nothing \u2014 a gradual roll is safer because it limits exposure",
-          "A before-and-after quality comparison by date, because day one mixes two models and shows only a fraction of any real effect",
-          "The alert, which cannot fire until the roll is complete",
-          "Token accounting, since the two versions price differently"
-        ],
+        options: ["Nothing; a gradual roll limits exposure", "Before-after comparisons by date", "The alert, until the roll completes", "Token accounting across two prices"],
         answer: 1,
         why: "With a fifth of traffic on the new version, a genuine regression contributes roughly a fifth of its magnitude to the day's average \u2014 which for any realistic effect size lands inside the confidence interval and reads as noise. The fix uses the same attribute that detected the roll: slice quality by responding version rather than by date, which yields two clean populations from one day's traffic and turns a mixed comparison into a paired one." },
 
       { stem: "What does framework auto-instrumentation give you, and what does it not?",
-        options: [
-          "It gives both the tree and the attributes, so no manual work is needed",
-          "It gives the span tree for free but none of your domain attributes \u2014 above_threshold, chunk IDs, the template hash, the index version",
-          "It gives the attributes but not the parent relationships",
-          "It gives only metrics, not traces"
-        ],
+        options: ["Both tree and attributes, so no manual work", "The tree, but none of your domain attributes", "The attributes, but not parent relationships", "Only metrics, never traces"],
         answer: 1,
         why: "A generic instrumentor can see that a retriever was called and how long it took, which is most of the plumbing and real value, but it cannot know that the number of chunks clearing your similarity threshold matters or what your index version is. That is why an audited service typically shows a well-formed tree with low attribute coverage and none of the version pins \u2014 the skeleton is free and the five attributes that resolve incidents are not." },
 
       { stem: "Beyond portability, why prefer a standard attribute name like `gen_ai.usage.input_tokens`?",
-        options: [
-          "Because standard names compress better in the exporter",
-          "Because it is set by exactly one thing, so aggregating on it cannot be accidentally satisfied by another span",
-          "Because vendors validate standard names and reject malformed ones",
-          "Because standard names are indexed by default and custom ones are not"
-        ],
+        options: ["Standard names compress better on export", "Only one thing sets it, so sums stay correct", "Vendors reject malformed standard names", "Standard names are indexed by default"],
         answer: 1,
         why: "Aggregating by a structural property instead \u2014 such as summing token counts over spans whose kind is CLIENT \u2014 works until a refactor changes the structure, and in the worked case it overstated cost by 63% after prompt assembly moved to a service, with no error raised. A name owned by one operation is unambiguous, which makes the aggregation correct rather than merely conventional." }
     ]

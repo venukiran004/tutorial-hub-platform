@@ -320,42 +320,22 @@ it restores general behaviour -- so the forgetting becomes reversible.`,
     title: "Check yourself",
     questions: [
       { stem: "Why is fine-tuning a poor way to add facts?",
-        options: [
-          "Because training sets are too small to contain enough facts",
-          "Because the facts go stale, cannot be cited, and the model hallucinates around them \u2014 training on your domain makes invented facts more fluent",
-          "Because weights cannot represent factual information, only style",
-          "Because retrieval is always cheaper than a training run"
-        ],
+        options: ["Training sets are too small to hold enough facts", "Facts go stale, lack citations and invite invention", "Weights hold only style, never facts", "Retrieval is always cheaper than training"],
         answer: 1,
         why: "Each of the three is independently disqualifying: updating a baked-in fact requires another training run rather than an index write, a weight-encoded fact has no source to validate a citation against, and because the objective rewards plausibility a model trained on your domain produces more convincing fabrications in that domain. Weights can certainly encode facts \u2014 the problem is that doing so removes every operational property you want from a fact." },
 
       { stem: "Task accuracy rises 70% to 92% and a general benchmark falls 85% to 61%. Why is this hard to catch?",
-        options: [
-          "Because general benchmarks are noisy at small sample sizes",
-          "Because the task metric improves \u2014 the +22 points is the number being watched, and the \u221224 is invisible unless a general eval was in the suite beforehand",
-          "Because the regression appears only after several weeks of serving",
-          "Because fine-tuned models do not expose general-capability metrics"
-        ],
+        options: ["General benchmarks are noisy at small sizes", "The watched task metric improves meanwhile", "It appears only after weeks of serving", "Fine-tunes hide general-capability metrics"],
         answer: 1,
         why: "Every metric the team was tracking reports success, so the fine-tune looks like a clean win in the ticket, the demo and the dashboard while general ability has collapsed. A baseline measured after the run cannot reveal what was lost, which is why the general benchmark has to be in the suite before training \u2014 the same structure as any single metric that only ever improves under a tuning knob." },
 
       { stem: "A fine-tuned task is 15% of the traffic a shared model serves. What follows from the forgetting figures?",
-        options: [
-          "The fine-tune is still a net win, since the task gain exceeds the general loss",
-          "The fine-tune makes the product worse while making the task metric better \u2014 the break-even task share is around half",
-          "The traffic mix is irrelevant, since the general benchmark is not production traffic",
-          "The fine-tune should be applied and the general path routed to a different provider"
-        ],
+        options: ["Still a net win, as the task gain is larger", "Product worse, task metric better", "Irrelevant; benchmarks are not traffic", "Apply it and route general traffic elsewhere"],
         answer: 1,
         why: "A 22-point gain on 15% of traffic against a 24-point loss on the other 85% is heavily net negative, and the break-even point where the two balance is a task share of roughly 52%. The better resolution is not a routing workaround but an adapter: one intact base serving both a specialised and a general route, which removes the need to choose at all." },
 
       { stem: "What is LoRA's strongest argument in this context?",
-        options: [
-          "Lower training cost, since only small adapter weights are updated",
-          "Reversibility \u2014 the base stays intact, so detaching the adapter restores general behaviour and makes forgetting a configuration change",
-          "Higher task accuracy than full fine-tuning",
-          "It avoids catastrophic forgetting entirely"
-        ],
+        options: ["Lower training cost from small adapters", "Reversibility: detach to restore the base", "Higher task accuracy than full tuning", "It avoids forgetting entirely"],
         answer: 1,
         why: "Training and serving cost savings are real \u2014 many adapters on one shared base rather than many full models \u2014 but the property that changes the risk profile is that a damaged artefact becomes a detachable one. LoRA does not prevent forgetting; an adapter trained too hard on a narrow task still over-specialises. What it changes is that the failure is undoable without retraining the base." }
     ]

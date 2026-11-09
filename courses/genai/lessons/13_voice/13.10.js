@@ -206,42 +206,22 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "With a 900 ms tool call, adding a filler takes the longest silence from 2,550 ms to 890 ms. What happened to the total turn duration?",
-        options: [
-          "It fell by 1,660 ms, since the tool now runs concurrently",
-          "It is unchanged \u2014 the filler splits one long silence into two short ones",
-          "It rose by 900 ms, the time the filler takes to speak",
-          "It depends on whether the filler audio is pre-rendered"
-        ],
+        options: ["It fell 1,660 ms, as the tool overlaps", "Unchanged: one silence became two", "It rose 900 ms, the filler's length", "It depends on pre-rendered audio"],
         answer: 1,
         why: "The tool runs underneath the filler, so nothing is removed from the critical path and the response arrives at the same moment. What changes is the distribution of silence: instead of one 2,550 ms gap in the band where users say \u201chello?\u201d, there is a 760 ms gap, speech, then an 890 ms gap. Since perception is banded rather than linear, that is a completely different experience for the same duration." },
 
       { stem: "It is commonly said a filler arrives at 300 ms. Measured from end of speech with a fixed 700 ms endpointer, what is it?",
-        options: [
-          "300 ms, since the filler needs no model call",
-          "760 ms, because the filler cannot be spoken until the endpointer commits",
-          "1,650 ms, the same as any other first audio",
-          "480 ms, once synthesis of the canned phrase is counted"
-        ],
+        options: ["300 ms, as it needs no model call", "760 ms, after the endpointer commits", "1,650 ms, like any other first audio", "480 ms, counting canned synthesis"],
         answer: 1,
         why: "A filler skips prefill and generation, and pre-rendered audio skips synthesis too \u2014 but it still cannot be spoken before the system has decided the user stopped talking, which is the 700 ms threshold, plus 60 ms of playout. This is the same instrumentation error 13.3 warns about, now inside the module's own claim. The 300 ms figure is reachable, but only with the semantic endpointer from 13.5: a 300 ms backstop plus playout gives 360 ms." },
 
       { stem: "Why is \u201cI've cancelled that for you\u201d an unsafe filler?",
-        options: [
-          "It is longer than necessary, which wastes the latency window",
-          "It states a completed action before the tool has returned, and on a call the only repair is a contradiction",
-          "It may be misheard as a question",
-          "Destructive actions should never be acknowledged verbally"
-        ],
+        options: ["It is too long and wastes the window", "It claims success before the tool returns", "It may be misheard as a question", "Destructive actions must never be voiced"],
         answer: 1,
         why: "Anything spoken before the result exists cannot be retracted, and in chat a correction reads as a sequence while on a call the user has already heard the claim \u2014 so the agent's next sentence must contradict its previous one, which reads as incompetence rather than as an update. For a destructive action it is worse, since the caller may hang up believing it happened. The mechanical rule is that a filler describes what the agent is doing, never what it has done or expects to find." },
 
       { stem: "Tool latency has a 280 ms median and callers say the agent goes dead on lookups. What are the two problems?",
-        options: [
-          "The tool is too slow and needs caching",
-          "There is no filler \u2014 so even a 280 ms tool gives a 1,930 ms silence \u2014 and the p95 is almost certainly far above the median",
-          "The endpointing threshold is too long, adding to the perceived wait",
-          "The responses are too verbose, so the turn runs long"
-        ],
+        options: ["The tool is too slow and needs caching", "No filler, and the p95 far exceeds the median", "The endpointing threshold is too long", "The responses are too verbose"],
         answer: 1,
         why: "The base pipeline is 1,650 ms before the tool is involved at all, so a healthy 280 ms tool still lands in the band where users repeat themselves \u2014 the filler is the fix and it is one line. And tool latency is heavy-tailed in a way model latency usually is not, so the transcripts containing \u201chello?\u201d are the p95 calls; a median tells you almost nothing about them, which is why the p95 is the figure to ask for next." }
     ]

@@ -423,42 +423,22 @@ in EITHER direction depending on the two models' score scales.`,
     title: "Check yourself",
     questions: [
       { stem: "What is the highest-value part of an LLM abstraction layer?",
-        options: [
-          "Normalising the response text, since every provider formats it differently",
-          "Normalising `tool_calls` \u2014 text abstracts easily, and tool-call shapes are where provider differences actually live",
-          "Caching responses behind the logical name",
-          "Enforcing a common token-counting method"
-        ],
+        options: ["Normalising response text across providers", "Normalising tool_calls, where providers differ", "Caching responses behind logical names", "Enforcing one token-counting method"],
         answer: 1,
         why: "Every provider returns a string, so text is the easy part; what breaks an agent loop is whether several tool calls arrive per turn or one, whether optional fields come back omitted or null, and whether numbers arrive as strings. Normalising once at the boundary means the loop is written against a single shape permanently \u2014 and this is the surface that fails hard, in code paths tests rarely cover." },
 
       { stem: "Why does the JSON gate need an absolute floor and not just \u201c\u2265 old\u201d?",
-        options: [
-          "Because the old model's rate may have been measured on different traffic",
-          "Because a relative gate alone passes a migration from 94% to 95% \u2014 an improvement, and still a parser failure one request in twenty",
-          "Because schema compliance is not comparable across models",
-          "Because absolute gates are easier to automate"
-        ],
+        options: ["The old rate may come from other traffic", "94% to 95% still fails one in twenty", "Schema compliance differs across models", "Absolute gates are easier to automate"],
         answer: 1,
         why: "A contract either holds or it does not, so direction of travel is insufficient \u2014 \"better than before\" is compatible with a failure rate that breaks downstream code on five per cent of requests. The 99.5% absolute floor encodes that a parse failure is a defect rather than a quality score, which is also why the contract slice of the golden set exists separately from the accuracy cases." },
 
       { stem: "Measured, what happens if you carry a well-chosen similarity threshold from one embedding model to another?",
-        options: [
-          "It transfers safely, since both models are trained on similar data",
-          "It may break the guard entirely \u2014 the old band's centre of 0.514 gave 0.000 wrong-answers on the old model and 0.700 on the new",
-          "It becomes too strict, refusing most answerable queries",
-          "It has no effect, since thresholds are normalised by the vector store"
-        ],
+        options: ["It transfers safely; training data is similar", "It may break the guard entirely", "It becomes too strict, refusing most", "No effect; stores normalise thresholds"],
         answer: 1,
         why: "The two models' safe bands were (0.386, 0.642] and (0.576, 0.738], overlapping in a window only 0.066 wide, so a threshold transfers only if it happens to sit inside that narrow region. Outside it the failure is directional and silent: seven in ten questions the corpus could not answer were answered anyway, with every quality gate green. It can also fail the other way \u2014 the new model's band centre wrongly abstained on answerable queries on the old model." },
 
       { stem: "Why is \u201cre-tune for an equal abstain rate\u201d the wrong target?",
-        options: [
-          "Because abstain rate cannot be measured reliably in production",
-          "Because it preserves the volume of refusals rather than their quality \u2014 and the measured starting threshold already wrongly abstained on 58% of answerable queries",
-          "Because the new model's abstain rate is not comparable to the old one's",
-          "Because abstain rate depends on traffic mix rather than the threshold"
-        ],
+        options: ["Abstain rate is unmeasurable in production", "It keeps refusal volume, not refusal quality", "Abstain rates do not compare across models", "Abstain rate depends on traffic, not threshold"],
         answer: 1,
         why: "Matching a rate reproduces however many refusals the old configuration made, including the wrong ones \u2014 and since 0.78 was refusing well over half of the answerable queries, matching it carries that fault forward. The quantity worth preserving is the pair of error rates, wrong-answers and wrong-abstains together, which is the same two-sided argument that applies to any guardrail threshold." }
     ]

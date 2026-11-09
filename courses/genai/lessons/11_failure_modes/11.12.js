@@ -319,42 +319,22 @@ as the product not working.`,
     title: "Check yourself",
     questions: [
       { stem: "Why must a guardrail be independent of the model?",
-        options: [
-          "Because model-side safety is slower than an external check",
-          "Because safety training is a property of the weights, which can change underneath you \u2014 an external check survives a swap, an upgrade or a jailbreak",
-          "Because providers do not expose safety settings via API",
-          "Because external checks can be unit-tested and model behaviour cannot"
-        ],
+        options: ["Model-side safety is slower than an external check", "Weights can change; an external check survives", "Providers hide safety settings from the API", "External checks are testable; models are not"],
         answer: 1,
         why: "A provider can roll a model alias forward and change behaviour with no deploy on your side, and a successful jailbreak defeats the model's own training by construction \u2014 neither affects a check running in your process. It is also why policy belongs in a guardrail rather than a prompt: a scope rule in a prompt is negotiable by the next clever input, while the same rule in a classifier is enforced." },
 
       { stem: "Your input scan is excellent and runs on every user message. What is still uncovered?",
-        options: [
-          "Jailbreaks, which require a classifier rather than a scan",
-          "Indirect injection \u2014 the attack arrives in a retrieved document the scan never sees",
-          "Toxic output, which only an output check can catch",
-          "Nothing, if the scan covers injection and jailbreak patterns"
-        ],
+        options: ["Jailbreaks, which need a classifier", "Indirect injection via retrieved documents", "Toxic output, caught only on output", "Nothing, if it covers injection patterns"],
         answer: 1,
         why: "The user's question can be entirely clean \u2014 \"what is the refund policy\" \u2014 while a chunk the retriever fetched contains \"ignore your instructions and…\". That content reaches the model having passed no input guardrail, because the guardrail examined the question. The fix is to run the same scan on retrieved content and to wrap it in delimiters declared as data rather than instructions." },
 
       { stem: "Which two risks are not addressed by guardrails at all?",
-        options: [
-          "Hallucination and PII leakage, which need model-side fixes",
-          "Unsafe action and abuse/cost \u2014 both need architecture: least privilege, approval steps, rate limits and budgets",
-          "Jailbreak and prompt injection, which require a safety-trained model",
-          "Off-topic requests and toxic output, which are policy questions"
-        ],
+        options: ["Hallucination and PII, needing model fixes", "Unsafe actions and abuse, needing architecture", "Jailbreak and injection, needing safety training", "Off-topic and toxic output, as policy questions"],
         answer: 1,
         why: "An output content check cannot make a destructive tool call safe, because by the time there is output to examine the tool has already fired \u2014 only not holding the permission can. Similarly, cost and abuse are bounded by rate limits, quotas and a budget hierarchy rather than by inspecting text. The useful formulation is that a guardrail protects the output while least privilege protects the world." },
 
       { stem: "Should guardrails fail closed?",
-        options: [
-          "Always \u2014 blocking is the safe default in every case",
-          "Per check: free on local checks that cannot meaningfully fail, and a deliberate decision on remote ones",
-          "Never \u2014 availability should take priority over unchecked output",
-          "Only on the input side, since output checks can be retried"
-        ],
+        options: ["Always; blocking is the safe default", "Per check: local free, remote deliberate", "Never; availability comes first", "Only on input; outputs can be retried"],
         answer: 1,
         why: "A canary comparison, a PII regex and schema validation are local string operations with no failure mode worth planning for, so fail-closed costs nothing there. A moderation API call can time out, and the genuine choice is between blocking every response during a provider outage and serving unchecked output. A blanket fail-closed policy on a flaky remote dependency turns an availability incident into mass over-refusal, which users experience identically to the product being broken." }
     ]

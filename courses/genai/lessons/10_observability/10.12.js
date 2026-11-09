@@ -354,42 +354,22 @@ IF YOU COULD ONLY HAVE TWO
     title: "Check yourself",
     questions: [
       { stem: "Your daily eval set is 200 examples at a 0.95 baseline. Where do you set the quality alert?",
-        options: [
-          "At any drop below 95%, so no regression is missed",
-          "Below 91.9% \u2014 two sigma is 3.08 points, so anything smaller is indistinguishable from noise",
-          "At 90%, a round number safely below the baseline",
-          "At one sigma, to catch regressions earlier"
-        ],
+        options: ["Any drop below 95%, missing nothing", "Below 91.9%, two sigma", "At 90%, a safe round number", "At one sigma, to catch it early"],
         answer: 1,
         why: "The standard error is \u221a(0.95 \u00d7 0.05 / 200), which gives a two-sigma band of 3.08 points \u2014 so a 2-point move happens routinely with nothing wrong and an \"any drop\" alert fires every other day until somebody disables it. Setting a round number instead is the common shortcut and it is arbitrary in both directions. One sigma would roughly triple the false-positive rate, which is the opposite of what a page needs." },
 
       { stem: "Why can a threshold tuned on an accuracy metric not be copied onto a context-precision metric?",
-        options: [
-          "Because the two metrics use different judges",
-          "Because `p(1\u2212p)` peaks at 0.5 \u2014 at N = 200 the band is 3.08 points at p = 0.95 and 6.93 at p = 0.60",
-          "Because context precision is computed weekly rather than daily",
-          "Because precision metrics are bounded differently"
-        ],
+        options: ["The two metrics use different judges", "p(1−p) peaks at 0.5, widening the band", "Context precision is computed weekly", "Precision metrics are bounded differently"],
         answer: 1,
         why: "The variance of a proportion depends on the proportion itself and is largest in the middle of the range, so a mid-range metric is more than twice as noisy as a high one at the same sample size. A threshold that works at a 0.95 baseline will therefore page constantly at 0.60 while looking perfectly sensible in both places \u2014 which is why thresholds are computed per metric, and why relative conditions such as \"2 sigma below the rolling mean\" are safer since they carry their own baseline." },
 
       { stem: "A runbook says \u201cslice every metric\u201d and the alerting guide says \u201calert on 2 sigma.\u201d What is the problem?",
-        options: [
-          "Nothing \u2014 they address different stages of an investigation",
-          "They are in tension: every slice divides the sample, so the detectable effect grows as \u221ak \u2014 twelve tenants on 200/day resolve to only 10.68 points",
-          "Slicing invalidates the 2-sigma calculation because slices are correlated",
-          "Slicing requires labelled data that alerting does not have"
-        ],
+        options: ["Nothing; they cover different stages", "Slicing shrinks samples, widening detectable effects", "Slices are correlated, breaking the 2-sigma maths", "Slicing needs labels that alerting lacks"],
         answer: 1,
         why: "Both instructions are individually correct and they cannot both be followed on a daily window, because a 200-example set split twelve ways leaves 17 per slice and a band wide enough to miss anything short of a collapse. The resolution is to separate the activities: slice freely when investigating a known effect, sparingly when alerting on an unknown one, and put small slices on a weekly window where 17 a day becomes about 4 points of resolution." },
 
       { stem: "Why do empty-retrieval rate and mean top-1 score escape the \u221aN arithmetic?",
-        options: [
-          "Because they are computed hourly rather than daily",
-          "Because they are high-volume rates whose movements are large \u2014 0.4% to 11.2% is a twenty-eightfold change needing no confidence interval",
-          "Because they are deterministic and therefore have no variance",
-          "Because they are measured on the full corpus rather than a sample"
-        ],
+        options: ["They are computed hourly, not daily", "Their movements are huge, high-volume rates", "They are deterministic, with no variance", "They use the full corpus, not a sample"],
         answer: 1,
         why: "They are computed on every request rather than on a sampled eval set, and the changes they exhibit during a real incident are enormous rather than marginal, so detecting them requires no statistical subtlety at all. That is the second reason to prefer them beyond their zero cost: the sample-size constraint applies to judged and labelled metrics, and these are exactly the metrics it does not bind \u2014 making them both the cheapest and the fastest signals available." }
     ]

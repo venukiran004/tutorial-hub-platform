@@ -349,42 +349,22 @@ gate discards the half that carries the signal.`,
     title: "Check yourself",
     questions: [
       { stem: "Why does the model identifier belong inside the prompt artefact?",
-        options: [
-          "So the deployment can select a provider without a config lookup",
-          "Because a prompt is fitted to a model's behaviour \u2014 few-shot ordering, scaffolding, format instructions \u2014 so the template is only valid against that model",
-          "Because providers require the model to be named in the template",
-          "To allow the same prompt to be reused across models automatically"
-        ],
+        options: ["So deployment can pick a provider without lookup", "A prompt is fitted to one model's behaviour", "Providers require the model in the template", "So the prompt can be reused across models"],
         answer: 1,
         why: "Prompts are model-specific artefacts rather than portable configuration, so recording the model is a statement about validity rather than convenience \u2014 and it is what makes logging the model and prompt version as a pair enforceable, since a regression otherwise cannot be attributed to one or the other. It is also why a provider rolling an alias degrades a prompt with no change on your side." },
 
       { stem: "A prompt change improves tone noticeably. What delta does the standard gate report?",
-        options: [
-          "A positive delta proportional to the quality improvement",
-          "Possibly negative — measured, a change whose judged quality rose a full point reported −0.050 and was blocked",
-          "A negative delta, since tone changes risk format drift",
-          "It cannot be computed without a judge score in the gate"
-        ],
+        options: ["A positive delta matching the quality gain", "Possibly negative, and blocked", "Negative, as tone risks format drift", "None without a judge in the gate"],
         answer: 1,
         why: "The pass rate is computed from deterministic checks, so an output that still produces valid JSON of the right length containing the right strings scores identically however much better it reads. That makes the gate a safety net against breakage rather than a measure of improvement \u2014 and reading `ship: True` as \"this change is better\" is reading something the function does not report, which is why subjective gains need a live A/B." },
 
       { stem: "The gate uses `min_delta=-0.02`. When is that threshold meaningful?",
-        options: [
-          "Always \u2014 a 2-point drop is a consistent signal regardless of suite size",
-          "Only on a suite of roughly 460 cases or more; below that the margin exceeds 2 points and the gate is deciding inside the noise",
-          "Only when the pass rate is below 0.5, where variance is highest",
-          "Only when the eval set is sampled from production traffic"
-        ],
+        options: ["Always; 2 points is consistent at any size", "Only with ~460+ cases; otherwise it is noise", "Only when the pass rate is below 0.5", "Only when sampled from production traffic"],
         answer: 1,
         why: "At a pass rate near 0.9 the binomial margin is about \u00b14.3 points on 100 cases and \u00b12.9 on 400, so a 2-point tolerance is smaller than the uncertainty and will pass real regressions and block imaginary ones at similar rates. The remedy is not a different constant but a paired comparison on the same cases, which removes the dominant variance from example difficulty and is computable from data the gate already collects." },
 
       { stem: "What data does the aggregate-rate gate discard?",
-        options: [
-          "The judge's reasoning strings, which explain each score",
-          "The per-case outcomes under both prompts \u2014 which support a paired test detecting improvements the rate comparison cannot",
-          "The prompt changelog, which records why each line exists",
-          "The model version, which is needed to attribute a regression"
-        ],
+        options: ["The judge's reasoning for each score", "Per-case outcomes for a paired test", "The changelog of why lines exist", "The model version for attribution"],
         answer: 1,
         why: "Running both prompts over the same eval set produces matched pairs, and collapsing them into two aggregate rates throws away the pairing that makes a comparison powerful \u2014 McNemar on the disagreements, or a paired test on judged scores, can detect a real difference on tens of cases where the unpaired comparison fails at hundreds. The rows are already returned by the harness; the gate simply does not use them." }
     ]

@@ -202,42 +202,22 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "Why is 13.6's 200 ms barge-in target unreachable on a telephony deployment?",
-        options: [
-          "SIP signalling adds latency to the cancellation message",
-          "The carrier network requires a deeper playout buffer, and the flush of that buffer is a direct term in the barge-in budget",
-          "Narrowband audio slows voice activity detection beyond the budget",
-          "DTMF detection must complete before speech can be classified"
-        ],
+        options: ["SIP signalling delays the cancel message", "Carriers need a deeper playout buffer", "Narrowband audio slows voice detection", "DTMF detection must finish first"],
         answer: 1,
         why: "Barge-in is VAD 30 plus stopping synthesis 20 plus a 50 ms fade plus flushing whatever audio is already queued \u2014 so a 120 ms carrier buffer gives 220 ms against a limit of about 200. The implementation can be perfectly correct and the budget still unachievable, which makes it a contradiction to resolve rather than a defect to fix: a shallower buffer and more gaps, a shorter fade, ducking instead of stopping, or accepting 220 ms and watching the complaint rate." },
 
       { stem: "The fully offline in-car pipeline comes out at 1,590 ms, faster than telephony's 1,860. What is its real constraint?",
-        options: [
-          "Thermal limits on sustained on-device inference",
-          "It loses three of the eight techniques \u2014 no provider means no prompt caching, and a small local model has no cancellable prefill or streamed synthesis",
-          "Accuracy, since a small model cannot match a cloud one",
-          "Nothing \u2014 it is the best target on the numbers"
-        ],
+        options: ["Thermal limits on sustained on-device inference", "It loses caching, cancellable prefill and streaming", "Accuracy, since small models trail cloud models", "Nothing at all; it is the best target on paper"],
         answer: 1,
         why: "Removing the network removes 190 ms of round trip and buffer, which more than pays for slower local generation, so latency is not the problem. The problem is that most of the toolbox this module built is simply unavailable, and a missing capability is harder than a slow component because you cannot optimise around it. That is what forces the three-tier design rather than a single pipeline with fallbacks." },
 
       { stem: "Why does spelling a name over the phone fail more often than on a laptop?",
-        options: [
-          "Phone callers speak faster because they are usually in a hurry",
-          "8 kHz telephony removes everything above 4 kHz, which is where the fricatives s, f and th are distinguished",
-          "The codec introduces random packet loss that corrupts individual letters",
-          "Telephony recognisers use smaller models to meet latency budgets"
-        ],
+        options: ["Callers speak faster when hurried", "8 kHz removes the fricative band", "The codec drops random packets", "Telephony uses smaller recognisers"],
         answer: 1,
         why: "G.711 narrowband audio discards the frequency band that carries most of the acoustic distinction between s, f and th, so letters that were already confusable become more so \u2014 which compounds 13.9's rhyming-letter problem, where B, C, D, E, G, P, T and V are the worst cases. This is a recognition consequence of the deployment target rather than a latency one, and it argues for phonetic matching against a known list in preference to spelling mode." },
 
       { stem: "An in-car assistant fails in tunnels. What is the correct framing of the fix?",
-        options: [
-          "Add retry logic and a longer network timeout",
-          "Cache recent responses on the device for replay when offline",
-          "Decide which requests must work offline \u2014 that tiering is the product specification and determines the grammar, model size and test plan",
-          "Fall back to a text interface when connectivity drops"
-        ],
+        options: ["Retry logic and a longer timeout", "Cache recent responses for replay", "Decide which requests must work offline", "Fall back to a text interface"],
         answer: 2,
         why: "Retries cannot help when there is no network, and the real omission is that the product was never defined in terms of offline capability. The tiering is the spec: wake word and voice activity detection always on device since endpointing must never depend on a network, a compact recogniser over a closed command grammar for navigation, calls, climate and media, and the cloud only for open-ended requests with a graceful refusal. The tier-two/tier-three boundary is a product decision that must precede the build." }
     ]

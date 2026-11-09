@@ -380,42 +380,22 @@ in the entire guardrail stack.`,
     title: "Check yourself",
     questions: [
       { stem: "Block rate jumps from 2% to 10%. What has happened?",
-        options: [
-          "An attack campaign \u2014 that is the only cause of a sudden block-rate spike",
-          "Unknowable from block rate alone: an attack, a misfiring guardrail, or a deliberate tightening all give the same number",
-          "A broken guardrail, since real attack volumes rarely change that fast",
-          "A threshold change, since attacks would also raise jailbreak success rate"
-        ],
+        options: ["An attack campaign; nothing else spikes it", "Unknowable from block rate alone", "A broken guardrail; attacks rarely surge", "A threshold change; attacks raise success too"],
         answer: 1,
         why: "In a simulation of those three scenarios, three of four cases produced an identical 9.8% block rate while requiring completely different responses \u2014 investigate, roll back, or confirm the change was intended. Precision is what separates them: rising precision means the extra blocks are genuine attacks, collapsing precision means the guardrail is misfiring. Distinguishing a broken guardrail from an intentional tightening needs jailbreak success rate: a real tightening catches more attacks (10.0% to 4.2%) while a break catches exactly as many as before." },
 
       { stem: "Why is a canary-token hit alerted on differently from block rate?",
-        options: [
-          "Because it is cheaper to compute",
-          "Because any single occurrence is an incident \u2014 the string exists nowhere but the system prompt, so no rate or threshold is needed",
-          "Because it has a lower false-negative rate than other checks",
-          "Because prompt leaks are more severe than other guardrail failures"
-        ],
+        options: ["It is cheaper to compute", "One occurrence is an incident", "Its false negatives are lower", "Leaks are the most severe"],
         answer: 1,
         why: "Most metrics in this area need a rate, a window and a two-sigma band before a movement means anything, whereas a canary string appearing in output has exactly one explanation and is therefore actionable on one request. Its false-negative rate is actually high \u2014 a paraphrased leak emits no token \u2014 which is the trade for near-zero false positives, and it is what makes it a high-precision tripwire rather than a complete defence." },
 
       { stem: "Why is every useful guardrail metric part of a pair?",
-        options: [
-          "Because dashboards conventionally show metrics in pairs for comparison",
-          "Because a guardrail is a classifier and every classifier has two error directions \u2014 reporting one gives a number that improves monotonically as you push the threshold one way",
-          "Because single metrics are too noisy at typical traffic volumes",
-          "Because paired metrics allow computing F1"
-        ],
+        options: ["Dashboards conventionally pair metrics", "A classifier has two error directions", "Single metrics are too noisy at volume", "Pairs allow F1 to be computed"],
         answer: 1,
         why: "Jailbreak success rate falls monotonically with strictness and faithfulness rises monotonically with abstention, so in each case a lone metric rewards pushing in one direction until the product breaks. The partner reveals the cost: over-refusal for the first, context recall for the second. F1 is precisely the wrong response, since collapsing the pair into one number re-hides the trade-off it exists to expose." },
 
       { stem: "What is the module's closing rule about metrics?",
-        options: [
-          "Prefer metrics that can be computed without labels",
-          "A single number that only ever improves is measuring one error direction \u2014 find the direction it is not measuring",
-          "Always report F1 alongside precision and recall",
-          "Alert on every metric that has an actionable threshold"
-        ],
+        options: ["Prefer metrics computable without labels", "A number that only improves misses a direction", "Always report F1 beside precision and recall", "Alert on every metric with a threshold"],
         answer: 1,
         why: "The pattern recurs across the module: jailbreak success rate, faithfulness over all requests, and cost per request all move in a reassuring direction while a cost accumulates somewhere unmeasured. The diagnostic is the monotonicity itself \u2014 a real-world quantity that only ever gets better under a tuning knob is almost certainly one side of a trade, and the other side is where the problem has gone." }
     ]

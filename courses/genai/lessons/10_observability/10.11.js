@@ -373,42 +373,22 @@ judged/day at 2%: 2,000
     title: "Check yourself",
     questions: [
       { stem: "Why does a judge call cost more than the generation it scores?",
-        options: [
-          "Because judges are run on larger models than the generator",
-          "Because the judge's input is the generation's input plus the generation's output plus a rubric \u2014 2,356 tokens against 1,842",
-          "Because judge calls cannot use prompt caching",
-          "Because judges require multiple samples for self-consistency"
-        ],
+        options: ["Judges run on larger models than generators", "Its input is the generation's input plus output", "Judge calls cannot use prompt caching", "Judges need several samples each"],
         answer: 1,
         why: "Deciding whether a claim is supported requires reading both the retrieved context and the answer containing the claim, so the judge necessarily sees everything the generator saw plus everything it produced. At the same prices that works out to $0.00932 against $0.00874, or 107% \u2014 which turns \"score everything\" from a conservative default into a decision that more than doubles model spend, and is why sampling rates of one to five per cent are arithmetic rather than convention." },
 
       { stem: "A stratified sample and a flat sample both cover 4.88% of traffic. What differs?",
-        options: [
-          "Nothing material \u2014 the cost and the information are equivalent",
-          "The flat sample catches 4.88% of thumbs-down answers; the stratified one catches 100% of them",
-          "The stratified sample is biased and therefore unusable for reporting levels",
-          "The flat sample resolves slices better because it is evenly distributed"
-        ],
+        options: ["Nothing material; cost and information match", "Flat gets 4.88% of thumbs-down; stratified gets all", "Stratified is biased, so unusable for levels", "Flat resolves slices better, being even"],
         answer: 1,
         why: "Stratifying means taking every trace the free checks already flagged \u2014 thumbs-down, empty retrievals, low top scores, escalations \u2014 plus a random slice, so the budget lands on traces that carry information rather than being spread over traffic that mostly worked. Bias is a real concern and is precisely why the random 2% baseline stratum is kept: it is what allows a level such as \"faithfulness on normal traffic is 0.91\" to be stated at all." },
 
       { stem: "What is surprising about the precision of a 2% daily online judge sample?",
-        options: [
-          "It is less precise than an offline suite because production traffic is noisier",
-          "At 2,000 judged answers it resolves to 1.28 points at 2 sigma, against roughly \u00b15.3 for a 200-example offline suite",
-          "It cannot be sliced, because each stratum is too small",
-          "Its precision is limited by judge disagreement rather than sample size"
-        ],
+        options: ["Production noise makes it less precise", "It resolves 1.28 points, beating ±5.3 offline", "Strata are too small to slice", "Judge disagreement limits it, not size"],
         answer: 1,
         why: "Production supplies volume that a hand-curated dataset cannot match, so the online metric is the precise one and the offline suite is the blunt instrument \u2014 which inverts the usual complaint. What the offline suite provides instead is control: fixed examples, known labels, and no confounding from traffic mix. Judge reliability is a separate and real limitation, which is why an agreement figure belongs alongside any judged score." },
 
       { stem: "Why must a judge never sit in the request path?",
-        options: [
-          "Because judge models have lower availability than generation models",
-          "Because it adds around a second of latency and a second failure mode \u2014 including deciding what the user gets if the judge times out",
-          "Because scoring requires the full trace, which is only written after the response",
-          "Because provider rate limits apply per request chain"
-        ],
+        options: ["Judge models are less available than generators", "It adds latency and a new failure mode", "Scoring needs the trace, written only afterwards", "Rate limits apply per request chain"],
         answer: 1,
         why: "On a 3,134 ms request a judge adds roughly 1,100 ms, a 35% increase, for a score that can be computed afterwards from the stored trace at no latency cost at all. The second failure mode is the sharper objection: a judge timeout forces a choice between delaying the user further and serving an unscored response, neither of which is a problem that needed to exist. Traces are written as spans close, so the data is available either way." }
     ]

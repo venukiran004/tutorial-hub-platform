@@ -190,12 +190,7 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "Four voice turns all have a time to first audio of 1,610 ms, and three are broken. What is the strongest conclusion?",
-        options: [
-          "The turns are equivalent in user experience, since the latency matches",
-          "Aggregate duration carries no diagnostic information, so per-stage spans are required rather than merely useful",
-          "1,610 ms is too slow regardless of the cause",
-          "The measurement boundary must be wrong for all four"
-        ],
+        options: ["They are equivalent, as latency matches", "Totals say nothing; per-stage spans are needed", "1,610 ms is too slow whatever the cause", "The boundary must be wrong for all four"],
         answer: 1,
         why: "A spread of zero across four turns with three unrelated pathologies means the aggregate is not a weak signal, it is no signal \u2014 so the case for spans does not rest on any general appeal to observability. It gets worse than uninformative in one case: the over-patient-endpointer turn has a faster model than the healthy turn, so the only visible fact points away from the actual defect." },
 
@@ -210,22 +205,12 @@ EC.receiveLesson({
         why: "The interrupted turn's five latency spans are byte-identical to the healthy turn's, so no timing metric anywhere can separate them \u2014 64 words generated against 19 played is the only difference. That pair then serves three unrelated purposes: whether the history truncation from 13.6 ran, the real interruption rate that 13.5's endpointing decision depends on, and 45 words of synthesis billed but never heard." },
 
       { stem: "A dashboard shows a healthy median time to first audio and no endpointing span. What should you suspect?",
-        options: [
-          "That endpointing is fast enough not to warrant a span",
-          "That the clock starts when the endpointer fires, so the largest term is outside the metric",
-          "That the trace is sampled and the span was dropped",
-          "That endpointing is handled by a separate service with its own dashboard"
-        ],
+        options: ["Endpointing is too fast to need a span", "The clock starts after endpointing fires", "The trace was sampled and dropped it", "Another service owns endpointing"],
         answer: 1,
         why: "The absence of the span and the healthy median are the same fact: if time to first audio is measured from the endpointer firing rather than from end of speech, then the 700-plus milliseconds of waiting is neither in the number nor represented as a child. The error is self-concealing \u2014 the data contains no evidence of its own incompleteness, so a team can correctly observe that the model is the largest visible component and optimise it for a year." },
 
       { stem: "13.12 requires an audio eval set, and audio is biometric data. How is that reconciled?",
-        options: [
-          "Store audio only in aggregate form, as acoustic features",
-          "Two stores with two policies \u2014 a small, explicitly consented, permanent eval set and a short rolling debugging window",
-          "Retain audio for the shortest period that any eval cycle needs",
-          "Replace recorded audio with synthesised audio in the eval set"
-        ],
+        options: ["Store only aggregate acoustic features", "Two stores: consented eval set, short debug window", "Keep audio only as long as any eval needs", "Use synthesised audio in the eval set"],
         answer: 1,
         why: "The two requirements are different in kind rather than in degree: evaluation needs a small set to persist indefinitely so results stay comparable, and debugging needs recent calls regardless of which ones. One policy covering both is either too short for the eval set or too long for everything else. Note also that span attributes carry no PII and can be retained longest, which argues for putting diagnosis into attributes rather than relying on returning to the audio." }
     ]

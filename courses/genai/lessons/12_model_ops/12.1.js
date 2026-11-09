@@ -363,42 +363,22 @@ flagging is better than failing: the case is not broken, it is unmeasured.`,
     title: "Check yourself",
     questions: [
       { stem: "Why do deterministic checks belong at the bottom of the ladder rather than being outgrown?",
-        options: [
-          "Because they are the only checks that work on non-deterministic output",
-          "Because they measure contract compliance, which fails independently of quality \u2014 accuracy rose 0.86 to 0.88 while valid JSON fell 99.7% to 94.2%",
-          "Because judges cannot evaluate structured output",
-          "Because they are required for online evaluation and offline suites use metrics"
-        ],
+        options: ["They alone work on non-deterministic output", "Contract compliance fails independently of quality", "Judges cannot evaluate structured output", "Online evaluation requires them specifically"],
         answer: 1,
         why: "A model can get better at the task and simultaneously start wrapping its JSON in code fences, which breaks every parser downstream while improving the quality score \u2014 so the two rungs answer different questions rather than the same question at different precisions. They are also the only rung cheap enough to run on all live traffic, which means one implementation serves both the offline suite and the online checks." },
 
       { stem: "A case has only subjective criteria and no deterministic checks. What does the standard harness report?",
-        options: [
-          "A failure, since nothing could be verified",
-          "A pass, because `all([])` is `True` in Python \u2014 so it passes unconditionally without verifying anything",
-          "It is skipped and excluded from the pass rate",
-          "An error, since the checks dictionary is empty"
-        ],
+        options: ["A failure, as nothing was verified", "A pass, as `all([])` is True", "Skipped and excluded from the rate", "An error for the empty dictionary"],
         answer: 1,
         why: "`pass` is computed as `all(det.values())`, and the `all` of an empty sequence is true by definition, so such a case contributes a pass to the rate while nothing about it was actually checked. A suite composed entirely of these would report 100%. The better handling is to flag them as unverified rather than failing them, because the case is not broken \u2014 it is unmeasured." },
 
       { stem: "Why should an LLM judge report rather than gate?",
-        options: [
-          "Because judge calls are too slow to run in a deploy pipeline",
-          "Because the judge has four known biases while the deterministic checks have none, so the reliable rung should decide pass or fail",
-          "Because judged scores cannot be aggregated into a pass rate",
-          "Because gating on a judge violates the eval-set contract"
-        ],
+        options: ["Judge calls are too slow for deploy pipelines", "Its known biases mean reliable checks should decide", "Judged scores cannot form a pass rate", "Gating on a judge breaks the eval contract"],
         answer: 1,
         why: "Position bias, verbosity bias, self-preference and the instability of absolute scoring all mean a judged verdict can move without the output changing, which is a poor property for a gate. Recording the score alongside a deterministic pass/fail keeps the subjective signal visible without letting it block a deploy on noise \u2014 and the controls for those biases, especially preferring pairwise comparisons, make the reported score more useful." },
 
       { stem: "What does validating the judge against human labels protect you from?",
-        options: [
-          "Judge API outages during an eval run",
-          "Reporting a judged score whose reliability is unknown \u2014 80% raw agreement was measured at kappa 0.5840 once chance was removed",
-          "Position bias, which human labels eliminate",
-          "Drift in the eval set over time"
-        ],
+        options: ["Judge API outages during an eval run", "A judged score of unknown reliability", "Position bias, which labels eliminate", "Drift in the eval set over time"],
         answer: 1,
         why: "Raw agreement flatters a judge because two raters agree by luck a large fraction of the time \u2014 in the measured case chance agreement alone was 51.92%, turning an apparently strong 80% into a moderate kappa of 0.58. Without that calibration the judged score is an uncalibrated instrument, which is why the agreement figure belongs beside any judged metric. Position bias needs the both-orders protocol, a separate control." }
     ]

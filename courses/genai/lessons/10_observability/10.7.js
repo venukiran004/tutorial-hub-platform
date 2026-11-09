@@ -379,42 +379,22 @@ the fix: roll up from an explicit marker set ONLY by the model call,
     title: "Check yourself",
     questions: [
       { stem: "Why does a production tracer need `contextvars` rather than a list attribute for the span stack?",
-        options: [
-          "Because `contextvars` is faster than list operations",
-          "Because a shared stack lets two concurrent requests interleave \u2014 one pops a span and the other's span inherits the wrong parent, producing a well-formed tree that is wrong",
-          "Because lists cannot store span IDs safely across threads",
-          "Because `contextvars` automatically propagates across HTTP boundaries"
-        ],
+        options: ["contextvars is faster than list operations", "A shared stack mis-parents concurrent requests", "Lists cannot hold span IDs safely across threads", "contextvars propagates across HTTP automatically"],
         answer: 1,
         why: "The failure is silent, which is what makes it dangerous: the resulting tree is structurally valid and attributes work are attributed to the wrong parent, so nothing errors and the data is wrong. `ContextVar` gives each task its own view, and the token returned by `set` must be reset in `finally` so nesting also unwinds correctly. It does not cross a process boundary \u2014 that needs a header, which is a separate mechanism." },
 
       { stem: "Why is \u201cfirst token arrived\u201d an event rather than a span?",
-        options: [
-          "Because it occurs before the span's start timestamp",
-          "Because it is a point in time with no duration \u2014 a span has a start and an end, and modelling it as a span would misrepresent the structure",
-          "Because events are cheaper to store than spans",
-          "Because the first token is produced by the provider rather than your code"
-        ],
+        options: ["It occurs before the span's start timestamp", "It is an instant with no duration", "Events are cheaper to store than spans", "The provider, not your code, produces it"],
         answer: 1,
         why: "A span represents an interval of work and the first token is an instant inside the generation interval, so recording it as a span would invent a start and an end it does not have. The practical payoff is that it makes TTFT measurable at all: in the worked run the event lands at 880 ms inside a span ending at 2,848 ms, which splits 2,371 ms of generation into 880 before the first token and 1,968 after." },
 
       { stem: "Rolling up token counts by filtering on span kind CLIENT is correct today. Why is it fragile?",
-        options: [
-          "Because some providers report token counts asynchronously after the span closes",
-          "Because two spans legitimately carry prompt_tokens, and moving prompt assembly to a service makes the filter match both \u2014 overstating cost by 63% with no error",
-          "Because INTERNAL spans can be reclassified by the exporter",
-          "Because CLIENT spans include retries, which double-count by design"
-        ],
+        options: ["Some providers report tokens after the span closes", "Moving assembly to a service double-counts silently", "Exporters can reclassify INTERNAL spans", "CLIENT spans include retries by design"],
         answer: 1,
         why: "`build_prompt` records the token count of the prompt it assembled and `llm.generate` records the count it sent, so both hold 1,842 for different and valid reasons, and only the kind filter separates them. An ordinary refactor that turns prompt assembly into a service call changes the kind and silently doubles the input total \u2014 $0.00874 becomes $0.01426. The fix is to aggregate from an attribute only the model call sets." },
 
       { stem: "A reranker times out, retrieval falls back to raw search order, and the request succeeds. What statuses should the trace show?",
-        options: [
-          "ERROR on the request, because a component failed",
-          "ERROR on the rerank span, OK on retrieve because it recovered, and OK on the request because it succeeded",
-          "ERROR on both rerank and retrieve, since the degradation propagated",
-          "OK everywhere, with the timeout recorded only as a log line"
-        ],
+        options: ["ERROR on the request, because a part failed", "ERROR on rerank; OK on retrieve and request", "ERROR on both rerank and retrieve", "OK everywhere; the timeout only in a log"],
         answer: 1,
         why: "Attaching the error to the span that raised it, and letting a parent that handled it report OK, is what allows three honest statuses to describe one degradation \u2014 the reranker failed, retrieval coped, the user got an answer. A flat log would collapse this into a single line saying something failed. It is worth pairing with an alert on the fallback rate, because a silent fallback is still a quality change." }
     ]

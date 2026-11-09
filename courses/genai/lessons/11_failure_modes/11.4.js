@@ -440,42 +440,22 @@ misses the on-topic ones you would not. that is the wrong way round.`,
     title: "Check yourself",
     questions: [
       { stem: "Why should the entailment decision rule test for the absence of entailment rather than the presence of contradiction?",
-        options: [
-          "Because contradiction scores are less reliable than entailment scores",
-          "Because an extrinsic hallucination reads as neutral \u2014 the source is silent rather than contradictory \u2014 so a contradiction rule misses the whole category",
-          "Because entailment and contradiction always sum to one",
-          "Because neutral is only produced when the model is uncertain"
-        ],
+        options: ["Contradiction scores are less reliable", "Extrinsic hallucinations read as neutral", "Entailment and contradiction sum to one", "Neutral appears only when uncertain"],
         answer: 1,
         why: "Extrinsic hallucinations add claims the context never mentions, so there is nothing to contradict and the model correctly returns neutral \u2014 measured at 0.9857 for a fabricated citation. A rule keyed on contradiction above a threshold would pass every claim of that kind. The measured borderline case makes it concrete: a \"24/7 support\" claim against a \"business hours\" context came back neutral 0.5800 and contradiction 0.3980, which an absence-of-entailment rule flags and a contradiction rule does not." },
 
       { stem: "What happens when cosine similarity is substituted for entailment in a faithfulness score?",
-        options: [
-          "It works slightly worse but remains usable with a tuned threshold",
-          "The supported and unsupported ranges overlap completely, and the highest-scoring claim is a hallucination",
-          "It becomes more sensitive to contradictions and less to omissions",
-          "It fails only on claims shorter than one sentence"
-        ],
+        options: ["Slightly worse, but usable with tuning", "The ranges overlap; a hallucination tops it", "More sensitive to contradictions only", "It fails only on very short claims"],
         answer: 1,
         why: "Measured, supported claims spanned 0.4679 to 0.7982 and unsupported ones 0.0503 to 0.8108, so no threshold separates them \u2014 and the invented refund policy scored 0.8108 against the true claim's 0.7982. The two differ by a number and a negation, which embeddings barely register, so an on-topic fabrication is maximally similar to the truth it displaces. Best achievable accuracy over any threshold was 86% against a 57% majority baseline, and the cases it gets wrong are exactly the ones that matter." },
 
       { stem: "Cosine flags the fake citation easily at 0.0503. Why is that not reassuring?",
-        options: [
-          "Because the score is too close to zero to be meaningful",
-          "Because it catches it for being off-topic rather than unsupported \u2014 so it detects what a human would spot instantly and misses what nobody notices",
-          "Because fake citations are rare in production",
-          "Because the same claim scores well under entailment"
-        ],
+        options: ["The score is too close to zero to mean anything", "It flags off-topic text, not unsupported text", "Fake citations are rare in production", "The same claim scores well under entailment"],
         answer: 1,
         why: "A fabricated paper in a document about refunds is lexically unrelated to everything around it, so low similarity reflects topic drift rather than any judgement about support. That makes the failure profile inverted: the detector is reliable on hallucinations that wandered off the subject and unreliable on those that stayed on it and changed a number \u2014 which is the harder, more dangerous case and the reason entailment is needed." },
 
       { stem: "A measured NLI gate costs 739 ms per claim on CPU against roughly 1,100 ms for an LLM judge call. What follows?",
-        options: [
-          "Use the judge, since it is faster and better calibrated",
-          "Neither belongs in the request path at those latencies \u2014 a blocking gate needs a GPU or a small NLI model, otherwise score asynchronously",
-          "Batch the NLI calls, which removes the latency problem",
-          "Reduce the number of claims by scoring per paragraph instead"
-        ],
+        options: ["Use the judge, as it is faster and calibrated", "Neither belongs in the request path at that speed", "Batch the NLI calls to remove the latency", "Score per paragraph to reduce the claims"],
         answer: 1,
         why: "A four-claim answer costs about three seconds of NLI, and staying inside a 10% budget on a 3,134 ms request would need 78 ms per claim \u2014 roughly nine times faster than measured. Batching helped only 1.25x because each claim is still a forward pass over the whole context. Scoring per paragraph would discard the per-claim granularity that makes the result actionable, so the real options are faster hardware, a smaller model, or asynchronous scoring." }
     ]

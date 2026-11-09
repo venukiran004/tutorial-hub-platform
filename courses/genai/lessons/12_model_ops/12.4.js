@@ -322,42 +322,22 @@ expressed in the TARGET model's tokens, re-measured on migration.`,
     title: "Check yourself",
     questions: [
       { stem: "Which failure mode is the single most common version incident?",
-        options: [
-          "A pinned snapshot being retired on its sunset date",
-          "A floating alias being silently re-pointed to a new snapshot \u2014 your outputs change with an empty change log",
-          "An embedding model deprecation forcing a full re-index",
-          "A new model launching with a lower rate-limit tier"
-        ],
+        options: ["A pinned snapshot retiring on schedule", "A floating alias silently re-pointed", "An embedding deprecation forcing re-index", "A launch with a lower rate-limit tier"],
         answer: 1,
         why: "A retirement is scheduled and announced, so it is painful but predictable, whereas an alias re-point changes behaviour overnight with nothing in your git log \u2014 on-call sees an error-rate spike and no cause. The fix is to pin snapshots in production and log the model the API returned rather than the one requested, since the requested field reads identically before and after the roll." },
 
       { stem: "Measured on a 3,036-word mixed document, what did five tokenisers show?",
-        options: [
-          "A 9.2% spread, matching the illustration",
-          "A 4.9% spread \u2014 narrower than illustrated \u2014 but all five exceeded a 4,096 guard, losing 11.6% to 15.7%",
-          "Identical token counts, since modern tokenisers converge",
-          "A spread of over 20%, driven by the code and table content"
-        ],
+        options: ["A 9.2% spread, as illustrated", "4.9% spread; all overflowed a 4,096 guard", "Identical counts; tokenisers converge", "Over 20%, driven by code and tables"],
         answer: 1,
         why: "The inter-model variation was smaller than the illustration suggested, which sounds reassuring and is not the finding: every tokeniser ran at 1.53 to 1.60 tokens per word against the illustration's implied 1.34 to 1.46, so a guard set from a word count fails for all of them simultaneously. Mixed content is the cause \u2014 code, markdown tables and formatted numbers fragment far more than prose." },
 
       { stem: "Why is silent truncation described as the worst class of migration bug?",
-        options: [
-          "Because it affects the largest number of requests",
-          "Because no exception is raised and no metric moves \u2014 the tail of the document simply is not in the prompt and answers quietly degrade",
-          "Because it cannot be fixed without changing provider",
-          "Because it only manifests under high load"
-        ],
+        options: ["It affects the most requests", "Nothing errors and no metric moves", "It requires changing provider", "It only shows under heavy load"],
         answer: 1,
         why: "A truncation your own code performs before the call produces a perfectly successful request with less context, so there is nothing to alert on \u2014 and the downstream symptom is a model confabulating the section it never received. Output truncation at least sets a `length` finish reason that can be monitored; input truncation has no equivalent signal, which is why it has to be measured on the target tokeniser rather than watched for." },
 
       { stem: "Why is an embedding-model deprecation categorically more expensive than a chat-model one?",
-        options: [
-          "Because embedding calls are priced higher per token",
-          "Because vectors from two models are not comparable, so there is no partial migration \u2014 it is a full re-index plus threshold recalibration",
-          "Because embedding models are deprecated with shorter notice",
-          "Because the index cannot be rebuilt without downtime"
-        ],
+        options: ["Embedding calls cost more per token", "Vectors do not compare: full re-index", "Embedding deprecations give less notice", "The index cannot rebuild without downtime"],
         answer: 1,
         why: "You cannot re-embed only the new documents and leave the rest, because similarity between vectors from different models is meaningless \u2014 it is all or nothing per index. The token cost is actually trivial, around $40 for 5 million chunks at 400 tokens, and the real expense is the rebuild, the dual storage during cutover, and re-tuning every similarity threshold, which is the step most often skipped. Zero-downtime rebuilds are achievable via dual-indexing." }
     ]

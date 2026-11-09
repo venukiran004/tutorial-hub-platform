@@ -275,42 +275,22 @@ silently fails a validator written for opaque ids.`,
     title: "Check yourself",
     questions: [
       { stem: "A bot says \u201c30 days to return opened software\u201d when the KB says 14 days, unopened only. What was the root cause?",
-        options: [
-          "The model fabricated a number it had memorised from other companies' policies",
-          "Chunking \u2014 a generic refund chunk was retrieved and the specific \u201copened software\u201d clause was not, so the model generalised a real policy",
-          "Temperature was too high, producing a random number",
-          "The citation validator was not enabled"
-        ],
+        options: ["It fabricated a number memorised elsewhere", "Chunking: the specific clause was not retrieved", "Temperature was too high, giving a random value", "The citation validator was not switched on"],
         answer: 1,
         why: "The model did not invent from nothing: it had a genuine refund policy in front of it and a question about a special case the retrieved chunk did not cover, so it extended the policy \u2014 which is why the answer reads so convincingly. That makes it a retrieval miss with chunking as the mechanism, and the fix is a reranker plus a free prompt line about escalating when the documents do not cover the exact case." },
 
       { stem: "Why does a fake citation score as \u201cneutral\u201d rather than \u201ccontradiction\u201d on an entailment check?",
-        options: [
-          "Because entailment models are unreliable on proper nouns and numbers",
-          "Because the context is silent about the citation rather than contradicting it \u2014 which is the extrinsic signature",
-          "Because the citation is formatted correctly and so appears plausible to the model",
-          "Because neutral is the default label when confidence is low"
-        ],
+        options: ["Entailment models are weak on proper nouns", "The context is silent, not contradictory", "Its format looks plausible to the model", "Neutral is the default at low confidence"],
         answer: 1,
         why: "Extrinsic hallucination adds claims the source never mentions, so there is nothing in the context to contradict \u2014 measured at neutral 0.9857 with contradiction only 0.0130. That distinction is operationally useful: a contradiction points at prompt precedence and the model overriding its context, while a neutral points at the model being asked for something the context could not supply." },
 
       { stem: "An answer cites chunk c12, which was retrieved, but claims the opposite of what c12 says. What happens?",
-        options: [
-          "The citation validator rejects it, since the claim does not match the chunk",
-          "It passes the subset check \u2014 a citation is a pointer, not a proof, so a second entailment check is required",
-          "The entailment check is unnecessary because the id resolves correctly",
-          "It is caught by the no-citations clause"
-        ],
+        options: ["The validator rejects the mismatched claim", "It passes; a citation is a pointer, not proof", "Entailment is unneeded once the id resolves", "The no-citations clause catches it"],
         answer: 1,
         why: "Validating that every cited id appears in the retrieved set is enough to reject a fabricated source, which is a real and common failure, but it establishes only that the pointer resolves. Whether the pointed-to chunk supports the sentence is a separate question about a different pair of inputs, which is why citation accuracy needs both checks \u2014 id membership and per-claim entailment." },
 
       { stem: "A summariser produces three accurate paragraphs then invents a penalty in the fourth. What does this imply for measurement?",
-        options: [
-          "That the whole output should be discarded when any claim fails",
-          "That faithfulness must be scored per sentence, because confabulation is positionally biased towards the end and a whole-answer verdict does not locate it",
-          "That summarisation is unsuitable for grounded applications",
-          "That the context window was exceeded mid-generation"
-        ],
+        options: ["Discard the whole output when any claim fails", "Score per sentence; errors cluster at the end", "Summarisation is unsuitable for grounding", "The context window was exceeded mid-way"],
         answer: 1,
         why: "The cause is a length target exceeding the supported content, so the model continues in the same register after the real material runs out \u2014 which makes the ending the risky part while the trustworthy opening invites exactly the wrong spot-check. Per-sentence scoring gives 0.750 *and* names the offending sentence, which is what makes dropping, flagging or regenerating it possible; a whole-answer \u201cunsupported\u201d leaves you hunting." }
     ]

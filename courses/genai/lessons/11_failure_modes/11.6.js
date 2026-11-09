@@ -411,42 +411,22 @@ SAMPLE SIZE: WHAT A GOLDEN SET CAN RESOLVE
     title: "Check yourself",
     questions: [
       { stem: "Why does mean faithfulness rise when retrieval degrades?",
-        options: [
-          "Because weaker context produces shorter answers with fewer claims to check",
-          "Because an abstention makes no claims and therefore scores 1.0, so a higher abstention rate pulls the mean up",
-          "Because the judge becomes more lenient when context is sparse",
-          "Because faithfulness is normalised by context length"
-        ],
+        options: ["Weaker context yields fewer claims to check", "Abstentions make no claims, so score 1.0", "The judge becomes lenient on sparse context", "It is normalised by context length"],
         answer: 1,
         why: "Faithfulness is the fraction of claims the context supports, and the fraction of an empty set is 1.0 \u2014 correct arithmetic over the wrong population. Measured on a degrading system, overall faithfulness moved only within 0.883 to 0.924 and non-monotonically, reading higher at recall 0.20 than at 0.48 because 60% abstention dragged it back up. Over answered requests only, the same data falls 0.920 to 0.750 monotonically." },
 
       { stem: "Why must hallucination rate include an \u201cand not abstained\u201d clause?",
-        options: [
-          "To avoid double-counting answers that are both unfaithful and uncited",
-          "Because without it every correct abstention counts as a hallucination \u2014 turning a rate of 0.40 into 0.70 on the worked set",
-          "Because abstentions have no faithfulness score to compare against the threshold",
-          "Because abstention rate is already reported separately"
-        ],
+        options: ["To avoid double-counting uncited answers", "Otherwise correct abstentions count as errors", "Abstentions have no score to compare", "Abstention rate is reported separately"],
         answer: 1,
         why: "An abstention is the desired behaviour when context is insufficient, so counting it as a hallucination inverts the metric and penalises the fix. Abstentions do have a faithfulness score \u2014 1.0 \u2014 which is precisely the denominator problem, so the clause is needed for a different reason: to keep the hallucination count about answers actually given. It also makes the exact abstention wording load-bearing, since the check is a substring match." },
 
       { stem: "Abstention rate is 0.35. Is that good or bad?",
-        options: [
-          "Bad \u2014 any rate above about 10% indicates an over-strict guardrail",
-          "Unanswerable alone \u2014 read against context recall: with recall 0.48 retrieval is weak, with recall 0.95 the prompt or threshold is too strict",
-          "Good \u2014 a high abstention rate means the model is well calibrated",
-          "Bad \u2014 it means the faithfulness gate is firing too often"
-        ],
+        options: ["Bad: over 10% means an over-strict guardrail", "It depends on context recall alongside it", "Good: high abstention means calibration", "Bad: the faithfulness gate fires too often"],
         answer: 1,
         why: "Abstention is the system declining to answer, which is correct when the context is insufficient and wrong when it is not, so the number is meaningless without knowing which situation obtains. The pair resolves it: weak recall means abstention is masking a retrieval problem, while good recall means retrieval is fine and something downstream is too conservative \u2014 and those have opposite fixes." },
 
       { stem: "A golden set of ten cases reports a hallucination rate of 0.20. What can you conclude?",
-        options: [
-          "That the rate is approximately 20% and can be tracked for improvement",
-          "Very little about the level \u2014 ten cases carry roughly \u00b125 points, so it is a smoke test rather than a measurement",
-          "That the set is too small to detect a grounding regression at all",
-          "That the rate should be recomputed over answered requests only"
-        ],
+        options: ["About 20%, trackable for improvement", "Little: ±25 points makes it a smoke test", "Too small to detect any regression", "Recompute over answered requests only"],
         answer: 1,
         why: "The binomial margin at N=10 and p=0.2 is about \u00b124.8 points, so the interval spans essentially the whole plausible range and no claim about movement from 0.20 to 0.15 is supportable. The suite remains worth having, because a grounding regression that breaks everything is a large effect a small set can see \u2014 the limitation is resolution on small changes, which is the same arithmetic that applies to any small eval set." }
     ]

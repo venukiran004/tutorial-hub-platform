@@ -425,32 +425,17 @@ turns a budget into a decision you have time to make.`,
         why: "Measured against four scenarios the cap fired once, on a client making 50,000 calls whose own daily spend was $1,100. Ten times the traffic left every user at $0.40, and a 3x prompt bloat left every user at $0.97 \u2014 both under the cap while costing 10x and 2.5x the baseline respectively. A per-user cap bounds what one client can do to you, not what your bill can do to you." },
 
       { stem: "Why is prompt bloat the hardest cost failure to detect?",
-        options: [
-          "Because token counts are not logged per request",
-          "Because nothing about the request pattern changes \u2014 same users, same call counts, same latency \u2014 only cost per request moves",
-          "Because it only affects cached prefixes",
-          "Because providers do not expose input token counts separately"
-        ],
+        options: ["Token counts are not logged per request", "Only cost per request moves; nothing else", "It only affects cached prefixes", "Providers hide input token counts"],
         answer: 1,
         why: "Every signal a per-user or per-call control watches stays identical: the same people make the same number of requests at the same speed with the same error rate, and the bill rises 2.5x. That leaves cost per request as the only quantity that moved, which is why it belongs on the alert list with a threshold against its rolling mean rather than merely on a dashboard." },
 
       { stem: "Why alert on run rate rather than cumulative spend?",
-        options: [
-          "Because cumulative spend is harder to compute accurately",
-          "Because cumulative spend crosses a monthly budget on the last day by definition \u2014 a run-rate projection sees a 10% overrun on day 5",
-          "Because run rate is less sensitive to daily noise",
-          "Because providers report run rate directly"
-        ],
+        options: ["Cumulative spend is hard to compute", "Run rate sees an overrun weeks earlier", "Run rate is less noisy day to day", "Providers report run rate directly"],
         answer: 1,
         why: "A monthly budget is by construction the amount you can spend in a month, so a cumulative alert triggers when the month is nearly over and the only remaining action is switching the feature off. Projecting the current rate forward surfaces the same 10% overrun twenty-five days earlier from identical data. Cost is also an unusually reliable signal to alert tightly on, since it is measured on every request rather than a sample." },
 
       { stem: "Why does the scope hierarchy need six levels rather than one good cap?",
-        options: [
-          "For defence in depth, since any single control might be misconfigured",
-          "Because each level catches a failure shape the level below is blind to \u2014 a per-call limit cannot see a loop, a per-user cap cannot see bloat",
-          "Because providers enforce limits at different scopes",
-          "Because finance requires per-tenant attribution"
-        ],
+        options: ["Defence in depth against misconfiguration", "Each level catches what the one below misses", "Providers enforce limits at different scopes", "Finance needs per-tenant attribution"],
         answer: 1,
         why: "The levels are not redundant copies of one check: `max_tokens` bounds a response and cannot see a loop, a per-run budget cannot see a thousand users each running one loop, a per-user cap cannot see traffic growth or bloat, and a per-feature alert cannot see a tenant abusing something else. The global daily ceiling is the backstop for the failure nobody enumerated, which is why it is worth having despite being crude." }
     ]

@@ -339,42 +339,22 @@ a product decision rather than a technical one.`,
     title: "Check yourself",
     questions: [
       { stem: "Why is a canary token hit described as proof rather than evidence?",
-        options: [
-          "Because moderation models confirm it independently",
-          "Because the string exists nowhere but the system prompt, so its appearance in output has only one explanation \u2014 a near-zero false-positive rate by construction",
-          "Because it is checked before any other guardrail",
-          "Because canary tokens are cryptographically signed"
-        ],
+        options: ["Moderation models confirm it independently", "The string exists only in the system prompt", "It is checked before any other guardrail", "Canary tokens are cryptographically signed"],
         answer: 1,
         why: "A unique secret planted in the system prompt cannot reach the output by any route other than the model reproducing its instructions, so the inference is definitional rather than probabilistic \u2014 unlike moderation, PII regexes or a faithfulness gate, all of which have thresholds and measured false-positive rates. The mirror-image limitation is a high false-negative rate: a model that paraphrases its instructions leaks the content without emitting the token." },
 
       { stem: "Why prefer a dedicated moderation model over hand-rolled regex?",
-        options: [
-          "Because regex cannot express per-category scores",
-          "Because patterns lose to open-ended surface forms \u2014 measured on the related injection task, they caught 0 of 13 paraphrases and wrongly blocked 6 of 10 benign inputs",
-          "Because moderation APIs are faster than local regex",
-          "Because regex cannot be updated without a deploy"
-        ],
+        options: ["Regex cannot express per-category scores", "Patterns lose to open-ended rephrasing", "Moderation APIs are faster than regex", "Regex cannot change without a deploy"],
         answer: 1,
         why: "Toxicity has even more varied phrasings than injection and more benign collisions \u2014 a slur list catches slurs, misses every circumlocution, and blocks legitimate medical or historical discussion. A moderation API is also considerably slower than local regex at around 42 ms, so speed is an argument against it rather than for it; the case rests entirely on accuracy in both error directions." },
 
       { stem: "Why order the output checks cheapest first?",
-        options: [
-          "To keep the total latency within the SLO",
-          "Because it allows failing fast \u2014 a canary hit at 0.1 ms makes a 42 ms moderation call pointless",
-          "Because expensive checks are less reliable",
-          "Because the schema check must run before moderation can parse the output"
-        ],
+        options: ["To keep total latency within the SLO", "To fail fast before costly calls", "Expensive checks are less reliable", "Schema must run before moderation"],
         answer: 1,
         why: "If an earlier check has already determined the response cannot be served, every later check is wasted work \u2014 and since the cheap checks are also the local ones that cannot fail due to a network problem, the ordering is simultaneously latency-optimal and correctness-optimal. The total latency does matter, but fail-fast is what makes the ordering more than cosmetic, since the clean path still pays for everything." },
 
       { stem: "Which output checks can meaningfully run on a single chunk of a streamed response?",
-        options: [
-          "All of them, on a sufficiently large sliding window",
-          "The local ones \u2014 canary and secrets/PII \u2014 because a leak occurs within one chunk; moderation and faithfulness need the whole answer",
-          "Only schema validation, since JSON can be parsed incrementally",
-          "None, which is why streaming must always be buffered"
-        ],
+        options: ["All of them, on a large enough window", "The local ones: canary, secrets and PII", "Only schema validation, parsed incrementally", "None, so streams must always be buffered"],
         answer: 1,
         why: "An API key or a canary token appears in some specific chunk, so a per-chunk scan with a sliding window catches it at the moment it is emitted. Tone is a property of a passage and a faithfulness judgement may require the sentence after the one being read, so neither is decidable on a fragment \u2014 and JSON is only valid once complete. The resulting design runs local checks inline and semantic ones asynchronously, which detects rather than prevents." }
     ]

@@ -311,42 +311,22 @@ a blocklist fails OPEN: a new attribute nobody classified is exported.`,
     title: "Check yourself",
     questions: [
       { stem: "Why prefer tail sampling over head sampling?",
-        options: [
-          "Because tail sampling is cheaper at equivalent retention",
-          "Because head sampling decides before it can know whether the request mattered \u2014 at 5% it keeps 5% of failures, while tail keeps all of them for about 1.3x the storage",
-          "Because head sampling cannot be applied per-tenant",
-          "Because tail sampling compresses better once outcomes are known"
-        ],
+        options: ["Tail sampling is cheaper at equal retention", "Head sampling decides before knowing outcomes", "Head sampling cannot be applied per tenant", "Tail sampling compresses better afterwards"],
         answer: 1,
         why: "The decision point is the whole difference: head sampling is uncorrelated with outcome by construction, so its sample contains failures in the same proportion as traffic does. Measured at 100,000 requests a day with errors, slow requests and low scores at 6.7% combined, tail sampling cost 0.122 GB/day against head's 0.091 and retained 6,700 interesting traces against 335 \u2014 a third more storage for twenty times the coverage." },
 
       { stem: "What makes the \u201c100% metadata, sampled payloads\u201d split work?",
-        options: [
-          "That metadata is queried more often than payloads",
-          "That metadata is roughly 2 KB against an 18 KB payload, and every dimension you aggregate or alert on is metadata",
-          "That payloads can be reconstructed from metadata if needed",
-          "That vendors charge separately for the two"
-        ],
+        options: ["Metadata is queried more often than payloads", "Metadata is small and holds what you alert on", "Payloads can be rebuilt from the metadata", "Vendors charge for the two separately"],
         answer: 1,
         why: "The nine-to-one size ratio means payload sampling is where all the savings are, and the attributes you actually query \u2014 model version, index version, token counts, chunks above threshold, top score, chunk IDs, latency \u2014 are all small. So you keep what you aggregate on for everybody and what you read during an investigation for a chosen few, which turns the question from \u201chow few\u201d into \u201cwhich few.\u201d Payloads cannot be reconstructed, which is exactly why the choice matters." },
 
       { stem: "Why use an allowlist of exportable attributes rather than a blocklist?",
-        options: [
-          "Because allowlists are shorter and easier to maintain",
-          "Because an allowlist fails closed \u2014 an attribute nobody classified is withheld, where a blocklist exports it",
-          "Because blocklists cannot express pattern matches",
-          "Because regulators require allowlists specifically"
-        ],
+        options: ["Allowlists are shorter to maintain", "An allowlist fails closed", "Blocklists cannot use patterns", "Regulators require allowlists"],
         answer: 1,
         why: "New attributes are added by whoever is instrumenting the next feature, who is usually not thinking about data export, so the default behaviour for an unclassified attribute determines whether the system leaks over time. An allowlist withholds it and someone notices a missing field; a blocklist ships it and nobody notices anything. Allowlists are typically longer to maintain, which is the cost of failing in the safe direction." },
 
       { stem: "Which attributes did the worked allowlist withhold, and what is notable about them?",
-        options: [
-          "The token counts and latency, because they reveal usage patterns",
-          "user_id, query and chunk_text \u2014 which are also the three largest fields, so size and sensitivity track together",
-          "The model and index versions, because they are commercially sensitive",
-          "The trace and session IDs, because they are linkable"
-        ],
+        options: ["Token counts and latency, revealing usage", "user_id, query and chunk text, the largest", "Model and index versions, for commercial reasons", "Trace and session IDs, as they are linkable"],
         answer: 1,
         why: "Both the user's own words and the retrieved corpus text are free text written by or about a person, which is simultaneously what makes them sensitive and what makes them large \u2014 so the truncation policy and the privacy policy address the same fields from two directions. Chunk IDs stay on the allowlist and do the investigative work instead: tiny, no personal data, and sufficient to establish which documents the model actually saw." }
     ]

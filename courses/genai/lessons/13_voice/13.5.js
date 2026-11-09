@@ -195,22 +195,12 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "What does the interruption rate in the threshold table actually represent?",
-        options: [
-          "An empirical error rate measured from the voice activity detector's accuracy",
-          "The fraction of intra-utterance pauses longer than the threshold \u2014 a tail probability of a fittable distribution",
-          "The probability that the recogniser produces a wrong transcript at the turn boundary",
-          "A quality rating assigned by human reviewers listening to calls"
-        ],
+        options: ["A measured voice-detector error rate", "The tail probability of long pauses", "The chance of a wrong final transcript", "A quality rating from human reviewers"],
         answer: 1,
         why: "Pauses inside an utterance are modelled as lognormal with a 220 ms median, and any pause longer than the threshold is a turn where the agent wrongly concludes the user has finished. That makes the interruption rate the right tail of a distribution you can fit from your own recordings by segmenting audio and measuring every intra-utterance gap \u2014 so it is a measurable property of your callers rather than an opaque quality of your endpointer." },
 
       { stem: "Minimising E[added] = T + P(pause > T) x repair cost gives optima of 395\u2013620 ms. What does that say about the conventional 700 ms?",
-        options: [
-          "It is too aggressive, since it interrupts 6.1% of turns",
-          "It is too patient \u2014 the threshold is paid on every turn while an interruption is paid on only 6.1% of them",
-          "It is correct, because the optima are within the normal range of variation",
-          "The comparison is invalid because latency and interruptions are not commensurable"
-        ],
+        options: ["Too aggressive, interrupting 6.1% of turns", "Too patient: paid every turn, saving 6.1%", "Correct, within the normal range", "Invalid; the two are not commensurable"],
         answer: 1,
         why: "The asymmetry drives the result: 700 ms of waiting is charged on every single turn, whereas the cost of cutting someone off is charged on the 6.1% of turns where a pause runs long. Balancing those favours less patience than convention. The magnitude is conditional, though \u2014 700 ms loses about 149 ms a turn when a repair costs 1,000 ms and only 13 ms when it costs 3,000, so it is defensible where interruptions genuinely hurt." },
 
@@ -225,12 +215,7 @@ EC.receiveLesson({
         why: "A genuine frontier forbids improving in both directions at once, so a Pareto improvement is evidence that the constraint was never real \u2014 it came from the variable being optimised. The frontier existed because silence duration is a proxy for whether someone finished a thought; scoring completion directly, from syntax and prosody, moves the whole curve instead of finding a better point on it. That pattern is worth recognising generally." },
 
       { stem: "Support reports the agent interrupts callers. The team proposes raising the threshold from 700 to 1,200 ms. What is the problem?",
-        options: [
-          "Nothing \u2014 it cuts interruptions from 6.1% to 1.2%, which is the stated complaint",
-          "It adds 500 ms to every turn, pushing the pipeline to 2,150 ms and making expected added time worse",
-          "1,200 ms exceeds the maximum most voice activity detectors support",
-          "It will increase ASR error rates because more silence is included in the audio"
-        ],
+        options: ["Nothing; it cuts interruptions to 1.2%", "It adds 500 ms to every turn", "1,200 ms exceeds most detectors' limits", "Extra silence raises ASR error rates"],
         answer: 1,
         why: "The change trades a problem on 6% of turns for a penalty on 100% of them: time to first audio goes to 2,150 ms, out of the band where users wonder whether they were heard and into the one where they say \u201chello?\u201d, and expected added time rises from 822.8 to 1,223.7 ms. Better to find where interruptions cluster and set a per-context threshold, since this model argues for going down from 700 rather than up." }
     ]

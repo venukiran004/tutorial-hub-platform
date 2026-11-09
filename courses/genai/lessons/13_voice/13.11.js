@@ -176,42 +176,22 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "Both the buggy and corrected state machines pass reachability and dead-end checks. What does that tell you?",
-        options: [
-          "The buggy machine is acceptable, since structural validation passes",
-          "The checks a diagram can express are satisfied by the broken machine, which is why it survives review",
-          "Reachability analysis is not applicable to state machines with transient states",
-          "The dead-end check is implemented incorrectly"
-        ],
+        options: ["The buggy machine is fine, as it validates", "Diagram checks pass even on the broken one", "Reachability does not apply to transients", "The dead-end check is implemented wrongly"],
         answer: 1,
         why: "A drawing shows states and edges, so it can reveal a missing state or an edge going nowhere \u2014 and the broken machine has neither problem. The defect is a present edge missing an action: INTERRUPTED correctly returns to LISTENING and fails to truncate the conversation history on the way. That is invisible in any box-and-arrow picture and is four lines of assertion over a transition table, which is the entire argument for keeping the table." },
 
       { stem: "Why does the THINKING state need its own interrupt transition?",
-        options: [
-          "Because tool calls happen there and may need cancelling",
-          "Because it is 950 of the turn's 1,650 ms and it is silent, which is exactly when users speak \u2014 usually to correct themselves",
-          "Because the ASR is still producing partials that could trigger barge-in",
-          "It does not \u2014 interruption only matters while the agent is producing audio"
-        ],
+        options: ["Tool calls there may need cancelling", "It is long and silent, when users speak", "ASR partials could trigger barge-in", "It does not; only speech can be interrupted"],
         answer: 1,
         why: "The word \u201cinterruption\u201d suggests it only applies while the agent is talking, but most of the turn is spent in THINKING and that state is silent \u2014 the condition that provokes a caller into speaking, most often to correct something they just said. Without the edge, the voice event has nowhere to go, the generation underway is never cancelled, and the agent confidently answers a question that has been withdrawn." },
 
       { stem: "In the replay, the buggy machine threw at step 8 but the real defect occurred at step 5. Why is that typical?",
-        options: [
-          "Because the trace was constructed to produce that ordering",
-          "A missing action corrupts state silently while a missing edge throws, so the symptom and the defect are usually in different places",
-          "Because exceptions in state machines are always deferred to the next transition",
-          "Because the history truncation is lazy and only evaluated when needed"
-        ],
+        options: ["The trace was built to produce that order", "Missing actions corrupt silently; edges throw", "Exceptions are deferred to the next transition", "History truncation is evaluated lazily"],
         answer: 1,
         why: "The two defect kinds fail differently: an unhandled event raises immediately and loudly, while an edge that exists but omits an action proceeds normally and leaves the system in a wrong state. So the stack trace pointed at THINKING while the conversation history had already been corrupted three steps earlier \u2014 which is why validating the table beats debugging the symptom, and why the silent class of defect needs an explicit invariant." },
 
       { stem: "A caller says \u201cmy savings balance \u2014 no, sorry, the current account\u201d and the agent reads the savings balance. What is the diagnosis?",
-        options: [
-          "The prompt needs to instruct the model to watch for self-corrections",
-          "No interrupt transition out of THINKING, so the correction never reached the model and generation was never cancelled",
-          "The endpointer committed too early, truncating the user's utterance",
-          "The ASR failed to transcribe the correction"
-        ],
+        options: ["The prompt should watch for self-corrections", "No interrupt out of THINKING; never cancelled", "The endpointer truncated the utterance", "The ASR failed to transcribe the correction"],
         answer: 1,
         why: "The correction arrived during the silent THINKING state, and with no transition for it the voice event has nowhere to go: the in-flight generation is never cancelled and an answer to the withdrawn question completes. The fix is an edge plus an action \u2014 THINKING on user_interrupts goes to INTERRUPTED with cancel_generation, and the superseded user message is replaced rather than appended, or the history holds two questions. \u201cThe model should have noticed\u201d is the wrong diagnosis when the information never reached it." }
     ]

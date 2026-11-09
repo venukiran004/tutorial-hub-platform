@@ -390,42 +390,22 @@ AND THE TWO GAPS CLOSED
     title: "Check yourself",
     questions: [
       { stem: "What do the free local guardrails cost on a 3,134 ms request?",
-        options: [
-          "About 60 ms, which is 2% and usually acceptable",
-          "2.4 ms \u2014 0.1% \u2014 so the latency objection to adding them is arithmetically wrong",
-          "Roughly 138 ms once all checks are included",
-          "It depends entirely on input length"
-        ],
+        options: ["About 60 ms, which is 2%", "2.4 ms, about 0.1%", "Roughly 138 ms in total", "It depends on input length"],
         answer: 1,
         why: "The jailbreak scan, PII redaction, canary check, secrets scan and schema validation are all local string operations totalling 2.4 ms, so no latency argument against them survives contact with the arithmetic. The genuine cost of that layer is over-refusal \u2014 measured at 6 of 10 benign-but-tricky inputs wrongly blocked \u2014 which is a correctness problem rather than a speed one." },
 
       { stem: "With the measured CPU faithfulness gate, what does parallelising the output stage save?",
-        options: [
-          "About 47% of guardrail latency, as with a fast gate",
-          "Roughly 1.5% \u2014 one check is about 68x every other combined, so parallelism is a rounding error",
-          "Nothing, because the checks are inherently sequential",
-          "It doubles the saving, since the gate runs alongside moderation"
-        ],
+        options: ["About 47%, as with a fast gate", "About 1.5%; one check dominates", "Nothing; the checks are sequential", "Double, with gate and moderation"],
         answer: 1,
         why: "Parallelising a stage reduces it to its slowest member, and when that member is 2,957 ms the other 42.1 ms of checks disappear into it. The general lesson is to establish whether one term dominates before optimising the others \u2014 the same error as tuning a vector search at 8.7% of a request while the model accounts for 76%. With a fast gate the same parallelisation genuinely saves about 47%." },
 
       { stem: "What is missing from the standard `guarded_chat` pipeline?",
-        options: [
-          "A rate limiter before the model call",
-          "The retrieved context is never scanned or redacted \u2014 only `user_input` is, so indirect injection passes every check",
-          "The canary token is not added to the system prompt",
-          "The guardrail events are not logged"
-        ],
+        options: ["A rate limiter before the model call", "Retrieved context is never scanned", "The canary is missing from the prompt", "Guardrail events are not logged"],
         answer: 1,
         why: "`scan_input` and `redact` both take `user_input`, while the `context` parameter is passed directly into the model call, so a poisoned retrieved chunk bypasses the entire input stage. What makes this instructive rather than merely a bug is that the function reads as complete \u2014 every check is present and the untrusted input that evades them is the parameter nobody classified as input. The canary is added and events are logged." },
 
       { stem: "Why reorder the output checks to put local ones first?",
-        options: [
-          "Because local checks are more reliable than remote ones",
-          "To fail fast \u2014 a canary hit at 0.1 ms makes a 42 ms moderation call pointless, saving about 421x on a blocked response",
-          "Because moderation requires the schema check to have passed",
-          "To reduce the clean-path latency of the output stage"
-        ],
+        options: ["Local checks are more reliable than remote ones", "To fail fast before the costly remote call", "Moderation requires the schema check first", "To cut the clean-path latency of the stage"],
         answer: 1,
         why: "The standard implementation evaluates both moderation and the leak scan before the conditional, so a response already known to be unservable still pays for the network call. Short-circuiting changes nothing on the clean path \u2014 which pays for everything either way \u2014 and saves the expensive call on exactly the requests you least want to spend money on. It is also true that local checks cannot fail, which is a separate argument for fail-closing on them." }
     ]

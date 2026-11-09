@@ -180,12 +180,7 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "Adding partial transcripts, token streaming and chunked synthesis left time to first audio unchanged at 1,650 ms. Why?",
-        options: [
-          "The implementation must be buffering somewhere, since overlap always reduces latency",
-          "The first-audio path is a sequential dependency chain with no parallelism available to exploit",
-          "Partial transcripts are discarded, so they contribute nothing",
-          "The playout buffer dominates and hides the improvement"
-        ],
+        options: ["Something must be buffering, as overlap always helps", "First audio is a chain with nothing to overlap", "Partial transcripts are discarded entirely", "The playout buffer hides the improvement"],
         answer: 1,
         why: "Each link on the path to the first sound requires its predecessor's output \u2014 you cannot synthesise an ungenerated clause, generate from an unprefilled prompt, or prefill a transcript you do not have \u2014 so scheduling it better changes nothing. Streaming compresses the work hanging off that chain, which is why the full response improved by 420 ms, barge-in became possible, and long answers improved substantially. Streaming improves the tail; only speculation or endpointing improves the head." },
 
@@ -200,22 +195,12 @@ EC.receiveLesson({
         why: "Both figures are normalised per turn, so they compare directly, and the ungated speculation is an order of magnitude worse value: it performs eight prefills where one was needed and a discarded prefill is billed identically to a used one. The optimisation described as cheap is, without gating, the worst-value latency purchase in the module \u2014 and the difference between $0.504 and $0.025 is entirely policy, since gating plus prompt caching fixes it." },
 
       { stem: "Why does prompt caching matter more for a voice turn than for a chat turn?",
-        options: [
-          "Voice prompts are longer, so more of the prompt is cacheable",
-          "A voice turn may prefill the same stable prefix several times within one turn, so the cache does proportionally more work",
-          "Audio tokens are cached differently from text tokens",
-          "Voice latency requirements mean cache reads are faster than computation"
-        ],
+        options: ["Voice prompts are longer, so more is cacheable", "One turn can prefill the same prefix repeatedly", "Audio tokens are cached differently", "Cache reads are faster than computation"],
         answer: 1,
         why: "A chat turn prefills once; a speculating voice turn prefills on one or more partials and again on the final transcript, and the system prompt plus history is byte-identical every time. At 88% stable, caching those reads at 10% of input price removed 79% of the speculation premium. This is also why putting a timestamp or turn counter at the top of the prompt is so damaging here \u2014 it invalidates the prefix on every prefill, silently and with no error." },
 
       { stem: "The inference bill rose 40% on flat traffic after a latency project, with no model or prompt change. What is the first diagnostic?",
-        options: [
-          "Check whether the context window grew as conversations lengthened",
-          "Compare the count of prefill operations against the count of completed turns",
-          "Check whether the output token limit was raised",
-          "Audit the retry policy for failed synthesis requests"
-        ],
+        options: ["Whether context grew with longer conversations", "Prefill operations versus completed turns", "Whether the output token limit was raised", "The retry policy for failed synthesis"],
         answer: 1,
         why: "An ungated speculative prefill runs about eight prefills per completed turn, and every discarded one is billed in full \u2014 which produces a large rise in input-token cost with no error, no latency regression and no model change, so nothing in the usual diagnostic set points at it. The ratio of prefills to turns makes it immediately visible, which is why that ratio belongs on the dashboard permanently rather than being computed during an incident." }
     ]

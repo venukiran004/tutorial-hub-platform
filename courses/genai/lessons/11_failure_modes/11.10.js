@@ -304,42 +304,22 @@ the three enforcement points that do work, inside the loop:
     title: "Check yourself",
     questions: [
       { stem: "A 12-step agent is estimated at 12x a single call. What does measurement give?",
-        options: [
-          "About 12x, confirming the estimate",
-          "24.4x \u2014 because every thought and tool result re-enters the prompt, so step n pays for the outputs of steps 1 to n\u22121",
-          "Around 30x, matching the 20\u201330 call figure",
-          "Less than 12x, because later steps have shorter outputs"
-        ],
+        options: ["About 12x, confirming the estimate", "24.4x: each step re-pays earlier outputs", "About 30x, matching the usual figure", "Under 12x, as later outputs shrink"],
         answer: 1,
         why: "Repeating an identical call twelve times gives 10.0x, while a run with a growing context costs 24.4x \u2014 the naive estimate understates it by about 2.4x. The growth makes cost roughly quadratic in step count rather than linear: the prompt went from 3,200 to 13,650 tokens, so the final step alone cost 4.1x the first. The 20\u201330 call figure is about reflection adding calls, which is a separate multiplier on top of this one." },
 
       { stem: "Why does trimming tool output beat any per-call optimisation in an agent?",
-        options: [
-          "Because tool outputs are usually larger than model outputs",
-          "Because the bloat compounds \u2014 a page pasted at step 3 is paid again as prompt at every step from 4 to 12",
-          "Because tool calls are billed at a higher rate than generations",
-          "Because trimming reduces the number of steps required"
-        ],
+        options: ["Tool outputs are larger than model outputs", "Bloat is re-paid on every later step", "Tool calls are billed at a higher rate", "Trimming reduces the steps required"],
         answer: 1,
         why: "Every other lever improves one call, while trimming what re-enters the context improves that call and every subsequent one, which is why cutting tool output from 800 tokens to 100 saved 43% of a whole run. The same compounding logic makes capping reflection passes a cost control: each pass adds its own output to the context and then triggers a generation over the enlarged context." },
 
       { stem: "Why can a per-call token limit not stop a runaway agent loop?",
-        options: [
-          "Because providers enforce per-call limits inconsistently",
-          "Because every individual call is within limits \u2014 the failure is the number of calls, not the size of any one",
-          "Because the limit applies only to output tokens",
-          "Because tool results are not counted against the per-call limit"
-        ],
+        options: ["Providers enforce per-call limits unevenly", "Each call is within limits; the count is not", "The limit applies only to output tokens", "Tool results are not counted against it"],
         answer: 1,
         why: "A 16,000-token cap allowed 13 steps and 28x a single call's cost before any single request hit it, since none was individually oversized. Enforcement therefore has to live inside the loop as a cumulative token and dollar budget, a maximum step count, and a cap on reflection passes \u2014 and the step cap is the one that bounds the quadratic growth in advance rather than after most of the money is spent." },
 
       { stem: "How should streaming appear in a cost analysis?",
-        options: [
-          "As a token saving, since partial responses can be truncated early",
-          "Not as a saving at all \u2014 only as the reason a faster, more expensive model is unnecessary",
-          "As a 50% discount, equivalent to the batch API",
-          "As a latency cost, since streaming adds protocol overhead"
-        ],
+        options: ["As a saving, since responses can be cut early", "Not a saving; it may avoid a faster model", "As a 50% discount, like the batch API", "As a latency cost from protocol overhead"],
         answer: 1,
         why: "Streaming transmits the same tokens and is billed identically; what it changes is what the user experiences, and therefore whether anyone argues for a pricier model purely for perceived speed. That makes it a UX change with a cost side-effect rather than a line item. It also reorders which latency fixes are worth buying, since against time-to-first-token the pipeline before the model matters far more than the model itself." }
     ]

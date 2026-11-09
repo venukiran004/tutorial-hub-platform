@@ -164,42 +164,22 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "The same agent scored 100% on reference transcripts and 38% on recognised ones. What does that show?",
-        options: [
-          "The agent has a reasoning defect that only appears on noisy input",
-          "The text harness measures the agent in isolation rather than the agent behind a recogniser",
-          "The recognised transcripts were drawn from harder cases",
-          "Task success is not a meaningful metric for voice agents"
-        ],
+        options: ["A reasoning defect on noisy input", "Text tests skip the recogniser in front", "Recognised cases were harder", "Task success is meaningless for voice"],
         answer: 1,
         why: "The agent is correct on every transcript it receives \u2014 the 100% is an accurate measurement of its reasoning. What it is not is a measurement of the deployed system, because in production the input is recognised text, and five of eight recognised transcripts contained an entity error. The number is right and it answers a question about a system nobody shipped, which is why keeping the harness and renaming what it reports is the correct response." },
 
       { stem: "Why does a human reviewer reading transcripts fail to catch these errors?",
-        options: [
-          "Transcripts are too long to review carefully at scale",
-          "The agent's response is fluent and correct for the transcript it received, so nothing in the transcript looks wrong",
-          "Reviewers are not given the correct action labels",
-          "Entity errors are usually subtle spelling differences"
-        ],
+        options: ["Transcripts are too long to review at scale", "The reply fits the transcript, so nothing looks wrong", "Reviewers lack the correct action labels", "Entity errors are subtle spelling differences"],
         answer: 1,
         why: "The defect is a mismatch between the audio and the transcript, and the transcript is the only artefact the reviewer has. \u201cTransferring two hundred and fifteen dollars to savings\u201d is a well-formed, relevant, appropriate response to the recognised text, so it reads as a success \u2014 and an LLM judge scoring the same transcript has exactly the same blind spot. Catching it requires comparing the transcript against the audio." },
 
       { stem: "Which of the four eval layers can a text harness measure?",
-        options: [
-          "All four, with timing estimated from token counts",
-          "Only the task layer \u2014 and it measures that on an input the user never produced",
-          "Recognition and task, since both operate on text",
-          "None, which is why text harnesses should be removed"
-        ],
+        options: ["All four, with timing from token counts", "Only task, on input users never produced", "Recognition and task, both on text", "None, so text harnesses should go"],
         answer: 1,
         why: "Recognition needs audio by definition, interaction needs timing that a text harness does not have, and experience needs audio to rate. Task is the only reachable layer, which makes it the dangerous one \u2014 measurable and misleading together. The harness is still worth keeping as a fast reasoning regression test in CI; the error is calling its output task success." },
 
       { stem: "A team reports 12% call abandonment. Why is that figure not actionable?",
-        options: [
-          "Because abandonment is primarily driven by factors outside the agent",
-          "Because the same 12% concentrated on one turn or dialogue state is a specific bug, and spread evenly it is a different problem",
-          "Because 12% is within normal variation for voice products",
-          "Because abandonment cannot be attributed without listening to every call"
-        ],
+        options: ["It is mostly driven by outside factors", "Where it concentrates decides the bug", "12% is normal variation for voice", "It needs every call listened to"],
         answer: 1,
         why: "The aggregate hides the shape, and the shape is what names the fix. Twelve per cent concentrated on the third turn of authentication points at a misheard name or a confusing prompt with a clear owner; the same twelve per cent spread evenly across turns points at latency or voice quality. Tracking by turn index and dialogue state distinguishes them, which is the same reasoning that made per-context endpointing thresholds the cheap fix in 13.5." }
     ]

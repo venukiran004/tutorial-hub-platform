@@ -325,42 +325,22 @@ so the deliverable is not a number. it is a sentence somebody owns:
     title: "Check yourself",
     questions: [
       { stem: "Why is over-refusal harder to notice than a harmful response getting through?",
-        options: [
-          "Because refusals are not logged by most guardrail implementations",
-          "Because a harmful answer generates a complaint while a wrong refusal generates a user who tries once and leaves \u2014 nothing records it",
-          "Because over-refusal only affects a small fraction of traffic",
-          "Because refusal messages are generic and therefore unsearchable"
-        ],
+        options: ["Most guardrails do not log refusals", "Wrong refusals leave silently; harm gets reported", "It only affects a small slice of traffic", "Generic refusal text cannot be searched"],
         answer: 1,
         why: "The two errors differ in visibility rather than in frequency, and the consequence is structural: teams tighten in response to failures they can see and never loosen in response to failures they cannot, so thresholds ratchet towards strictness over time. The fix is to put the over-refusal rate on a dashboard measured against a benign-but-tricky set, which is why that set has to exist at all." },
 
       { stem: "The F1-optimal moderation threshold is 0.50. Why not use it?",
-        options: [
-          "Because F1 is biased towards the majority class",
-          "Because F1 weights the two errors equally, and a missed harmful response and a wrongly refused medical question are not interchangeable",
-          "Because F1 cannot be computed without a labelled benign set",
-          "Because 0.50 is the default and defaults are rarely optimal"
-        ],
+        options: ["F1 is biased toward the majority class", "F1 weights two unequal errors equally", "F1 needs a labelled benign set first", "0.50 is a default, rarely optimal"],
         answer: 1,
         why: "A symmetric metric cannot express which error you care about, so optimising it silently assumes the costs are equal \u2014 and for a safety guardrail they almost never are. Stating a cost ratio explicitly and minimising a weighted loss moves the chosen threshold across the entire range as the ratio varies from 0.2 to 100, which demonstrates that no threshold is correct without that ratio being stated." },
 
       { stem: "What happens to both error rates moving the threshold from 0.5 to 0.8?",
-        options: [
-          "Both improve, since a higher threshold is more selective",
-          "Over-refusal falls from 6.0% to 0.1% while harmful-miss rises from 10.3% to 67.7%",
-          "Harmful-miss falls while over-refusal rises",
-          "Block rate falls but neither error rate changes materially"
-        ],
+        options: ["Both improve, as it is more selective", "Over-refusal falls; harmful-miss soars", "Harmful-miss falls; over-refusal rises", "Block rate falls; errors barely move"],
         answer: 1,
         why: "A higher threshold blocks less, so fewer legitimate requests are refused and more harmful content passes \u2014 and the magnitudes are wildly asymmetric here, trading 5.9 points of over-refusal for 57 points of harmful-miss. That steepness is the practical finding: a threshold moved by 0.1 changes both rates by a factor of two or more, so an intuitively chosen value is unlikely to be anywhere a deliberate process would have landed." },
 
       { stem: "Why must a red-team suite be paired with a benign suite?",
-        options: [
-          "To provide a baseline for measuring classifier calibration",
-          "Because an attack-only suite makes every tightening look like an improvement, including one that refuses most legitimate traffic",
-          "Because benign cases are needed to compute F1",
-          "Because attack prompts can be mistaken for benign ones by annotators"
-        ],
+        options: ["To baseline the classifier's calibration", "Attack-only suites reward every tightening", "Benign cases are needed to compute F1", "Annotators confuse attack and benign"],
         answer: 1,
         why: "Jailbreak success rate falls monotonically as the guardrail gets stricter, so a suite measuring only attacks rewards tightening without limit \u2014 at threshold 0.9 it would report excellent results while the product refused ordinary questions. Pairing it means a change that improves one rate and worsens the other surfaces as a trade to be decided rather than an unambiguous win." }
     ]
