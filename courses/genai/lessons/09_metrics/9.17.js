@@ -323,42 +323,22 @@ tier-1 gate would skip 134 of 400 judge calls (34%)`,
     title: "Check yourself",
     questions: [
       { stem: "What should drive the choice of evaluation metric?",
-        options: [
-          "The metric most widely used for that task in published papers",
-          "How constrained the output is \u2014 one correct answer, executable, reference-bounded, a ranking, or open-ended",
-          "Whichever metric correlates best with human judgement on your data",
-          "The cheapest metric that produces a number"
-        ],
+        options: ["The metric most used in published papers", "How constrained the output is", "Whatever correlates best with humans", "The cheapest metric that gives a number"],
         answer: 1,
         why: "The constraint on the output determines what is measurable at all: string comparison works when a reference bounds the space and fails when it does not, which is why overlap metrics score a correct paraphrase near zero on open-ended tasks. Correlation with human judgement is a good validation check once a metric is chosen, but it cannot be the primary criterion because you need the metric before you have the correlation. Cost matters for tiering, not for whether a metric is valid." },
 
       { stem: "Why is \u201cNDCG@6 = 0.96\u201d not a comparable figure between two teams?",
-        options: [
-          "Because NDCG depends on the size of the corpus",
-          "Because there are two standard gain functions \u2014 the same ranking scores 0.9724 with linear gain and 0.9575 with exponential, and the convention is rarely stated",
-          "Because NDCG is only valid with binary relevance judgements",
-          "Because NDCG cannot be compared across different values of k"
-        ],
+        options: ["NDCG depends on the size of the corpus", "Two standard gain functions give different values", "NDCG is only valid with binary relevance", "NDCG cannot be compared across values of k"],
         answer: 1,
         why: "Exponential gain weights a grade-3 document seven times a grade-1 one while linear gain weights it three times, and both are standard and implemented in real libraries. On the verified example the difference is 1.5 points, which is larger than many claimed improvements. How the ideal ranking is constructed and how ties are broken are further unstated choices, which is why the implementation has to be reported alongside the number." },
 
       { stem: "A change moves P@5 from 0.3200 to P@10 0.2200 and R@5 from 0.6333 to R@10 0.9500. What happened?",
-        options: [
-          "The retrieval quality degraded and recall is a misleading metric here",
-          "Nothing degraded \u2014 returning more results trades precision for recall, and which one matters depends on what consumes the output",
-          "The relevance judgements are inconsistent, since both metrics should move together",
-          "The system improved, since recall gained more than precision lost"
-        ],
+        options: ["Quality degraded; recall misleads here", "Nothing degraded: precision traded for recall", "The labels are inconsistent with each other", "It improved, as recall gained more"],
         answer: 1,
         why: "These are the same retrieved list measured at two cut-offs, so precision necessarily falls and recall necessarily rises as k grows. For a generator that can ignore irrelevant context, recall is what matters and k = 10 is clearly better; for a list a person reads from the top, precision is what matters. Reporting one without the other is how a straight trade gets declared an improvement, and the choice of k is a product decision rather than a metric result." },
 
       { stem: "Why should deterministic checks run before judge calls rather than alongside them?",
-        options: [
-          "Because judges are less reliable than deterministic checks",
-          "Because cheap tiers gate expensive ones \u2014 a malformed or exactly-matching response needs no quality score, which skipped 34% of judge calls on a recent run",
-          "Because deterministic checks must pass for a judge to be valid",
-          "Because running them in parallel exceeds rate limits"
-        ],
+        options: ["Judges are less reliable than deterministic checks", "Cheap tiers gate expensive ones, skipping calls", "Deterministic checks must pass for a judge to count", "Running both in parallel exceeds rate limits"],
         answer: 1,
         why: "Ordering the tiers is a cost and latency saving with no loss of information: a response that failed schema validation has nothing meaningful to score for quality, and one that matched the reference exactly needs no further adjudication. On the measured run that was 134 of 400 calls. It also helps debugging, since when tier 1 fails the later tiers are noise \u2014 a malformed JSON response does not need a faithfulness score." }
     ]

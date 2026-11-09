@@ -249,42 +249,22 @@ print("ROUGE-1 precision %.4f  recall %.4f  F1 %.4f" % (p, r, f))`,
     title: "Check yourself",
     questions: [
       { stem: "On the same pair, ROUGE-1 F1 is 0.9091 and ROUGE-2 F1 is 0.6667. Why is the bigram variant so much harsher?",
-        options: [
-          "Because bigram counts are smaller, so each match carries more weight",
-          "Because the dropped token destroys two bigrams and introduces one that is not in the reference \u2014 every token sits in up to two bigrams",
-          "Because ROUGE-2 uses precision while ROUGE-1 uses recall",
-          "Because clipping applies only at bigram level and above"
-        ],
+        options: ["Bigram counts are smaller, so matches weigh more", "One dropped token breaks two bigrams", "ROUGE-2 uses precision; ROUGE-1 uses recall", "Clipping applies only at bigram level"],
         answer: 1,
         why: "Removing the second \"the\" costs one unigram from the overlap but eliminates both `on-the` and `the-mat`, replacing them with `on-mat`, which the reference does not contain \u2014 so overlap falls from 5/6 to 3/5. Generalising, one changed token breaks up to n n-grams at order n, which is exactly why higher orders capture local word order. Both variants use the same precision, recall and F1 definitions, and clipping applies at every order." },
 
       { stem: "A candidate's tokens are reordered. ROUGE-1 stays at 0.9091 while ROUGE-L drops to 0.7273. What does this show?",
-        options: [
-          "ROUGE-L is more sensitive to length differences than ROUGE-1",
-          "ROUGE-1 depends only on the bag of unigrams, so it cannot detect a reordering at all, while LCS is order-sensitive",
-          "The reordering changed the candidate's token count",
-          "ROUGE-L penalises any candidate that is not contiguous with the reference"
-        ],
+        options: ["ROUGE-L is more length-sensitive", "ROUGE-1 is blind to word order", "The reordering changed the token count", "ROUGE-L penalises non-contiguous text"],
         answer: 1,
         why: "Unigram overlap is computed from counts, so any permutation of the same tokens gives an identical score \u2014 the metric is structurally blind to order. Longest common subsequence must respect the order in which tokens appear, so scrambling reduces the achievable subsequence length. ROUGE-L explicitly allows gaps, so it is not a contiguity requirement; that is the distinction between subsequence and substring." },
 
       { stem: "ROUGE-1 and ROUGE-L both give 0.9091 on the worked pair. Is this a bug?",
-        options: [
-          "Yes \u2014 LCS and unigram overlap should differ whenever lengths differ",
-          "No \u2014 the candidate's tokens all appear in the reference and in the same order, so the LCS length equals the unigram overlap",
-          "Yes \u2014 ROUGE-L should be lower because the candidate is shorter",
-          "No \u2014 the two variants are mathematically equivalent for single sentences"
-        ],
+        options: ["Yes; LCS and overlap differ when lengths differ", "No; all tokens appear in order, so they match", "Yes; ROUGE-L should be lower for shorter text", "No; the two are equivalent for one sentence"],
         answer: 1,
         why: "When word order is preserved, the longest common subsequence can include every matched token, so its length coincides with the clipped unigram overlap and the precision, recall and F1 are identical. They diverge as soon as order differs, which makes \"equal ROUGE-1 with lower ROUGE-L\" the diagnostic signature of a reordering. They are not equivalent in general, as the reordered case demonstrates." },
 
       { stem: "Why should ROUGE never be reported as a standalone quality measure?",
-        options: [
-          "Because it requires multiple reference summaries to be reliable",
-          "Because it cannot see meaning \u2014 a factually inverted sentence was measured scoring ROUGE-1 and ROUGE-2 of exactly 1.0000, tying the exact copy",
-          "Because F1 conflates precision and recall",
-          "Because it is undefined when the candidate is longer than the reference"
-        ],
+        options: ["It needs several references to be reliable", "It cannot see meaning: inversions score 1.0", "F1 conflates precision and recall", "It is undefined for longer candidates"],
         answer: 1,
         why: "Swapping two tokens preserves the unigram multiset by construction and can preserve nearly all bigrams, so a sentence asserting the opposite of the reference can score perfectly. That is stronger than the usual warning that a wrong answer \"scores well\". The remedy is to keep ROUGE as a relative regression signal on a frozen reference set and gate quality on a reference-free faithfulness check, with mean length tracked because recall metrics reward more text." }
     ]

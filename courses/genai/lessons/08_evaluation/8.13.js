@@ -292,42 +292,22 @@ for s in STRATEGY:
     title: "Check yourself",
     questions: [
       { stem: "What should be built before any evaluation metric?",
-        options: [
-          "A golden dataset, since metrics need cases to run against",
-          "Tracing \u2014 logged tool calls, arguments, retrieved ids and scores \u2014 because agent checks and the production loop both depend on it and silent failures are invisible without it",
-          "A judge calibration sample, since the judge gates everything downstream",
-          "A CI gate, so regressions are blocked from the first commit"
-        ],
+        options: ["A golden dataset for metrics to run against", "Tracing of calls, arguments, ids and scores", "A judge calibration sample to gate the rest", "A CI gate to block regressions from day one"],
         answer: 1,
         why: "Without a trace, a loop and a premature give-up are indistinguishable, PII leaving through a tool argument is undetectable, and production failures cannot be sampled into a golden set \u2014 so the measurement surface has to exist first. Four of six measured production incidents failed silently with every check passing, which is only discoverable from logged detail. The golden set, judge calibration and CI gate all come next and all consume the trace." },
 
       { stem: "Which of these metrics does NOT need an additional piece of context reported alongside it?",
-        options: [
-          "Faithfulness, which needs its claim-extraction and derivation policy",
-          "Schema validity, which is a deterministic check with no judgement in the denominator",
-          "Precision@k, which needs its k",
-          "Cohen's \u03ba, which needs its class balance"
-        ],
+        options: ["Faithfulness, with its claim policy", "Schema validity, a deterministic check", "Precision@k, which needs its k", "Cohen's κ, which needs class balance"],
         answer: 1,
         why: "Schema validity is a parse that either succeeds or fails, so there is no judgement to report. The other three all have a judgement or a parameter in the denominator \u2014 faithfulness depends on how aggressively claims are split and whether derived claims count, precision@k is bounded by the relevant-item count over k, and \u03ba is not comparable across different marginal distributions. Perplexity and pass@k belong to the same family, needing corpus plus tokeniser and n plus temperature respectively." },
 
       { stem: "Why is judge calibration described as the step that gets skipped?",
-        options: [
-          "Because it requires statistical expertise most teams lack",
-          "Because it is the only step that costs human labelling, and skipping it means every downstream number comes from an instrument nobody verified",
-          "Because \u03ba is difficult to interpret without a published threshold",
-          "Because it must be repeated whenever the judge model is updated"
-        ],
+        options: ["It needs statistical expertise teams lack", "It alone costs human labelling to do", "κ is hard to read without a threshold", "It must be redone with each judge update"],
         answer: 1,
         why: "The surrounding steps cost thought or model calls, which are cheap; calibration needs humans, which is why it is deferred. The minimum is modest \u2014 about 100 labelled cases with 30 double-labelled for a ceiling \u2014 and at a few dollars per label that is a one-off few hundred dollars. The consequence of skipping it is severe: a judge saying \"good\" to everything reached 95.1% raw agreement with \u03ba of exactly zero, so raw agreement cannot distinguish skill from degeneracy." },
 
       { stem: "Why should an evaluation strategy avoid a single aggregate quality score?",
-        options: [
-          "Because aggregates are harder to compute across heterogeneous metrics",
-          "Because an aggregate hides a failure confined to one slice \u2014 a regressing query type or language is small precisely because traffic is skewed toward the rest",
-          "Because stakeholders will over-interpret a single number",
-          "Because reference-free metrics cannot be meaningfully averaged"
-        ],
+        options: ["Aggregates are hard to compute across metrics", "An aggregate hides failures in small slices", "Stakeholders over-read a single number", "Reference-free metrics cannot be averaged"],
         answer: 1,
         why: "This is the module's recurring structural lesson: an aggregate weighted by traffic cannot surface a problem in a minority segment, and the segment is a minority for the same reason the aggregate is dominated by other traffic. Measured instances include an image row of 0.00 behind an overall 0.76, and self-consistency improving an aggregate while degrading a sub-50% slice. The practical consequence is reporting per slice and gating per slice rather than on the mean." }
     ]

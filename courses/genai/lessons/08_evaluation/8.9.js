@@ -236,42 +236,22 @@ print(Counter(classify(t) for t in TRACES if not t["resolved"]))`,
     title: "Check yourself",
     questions: [
       { stem: "Why should agent cost be reported per resolved task rather than per request?",
-        options: [
-          "Because requests vary in length, making per-request figures noisy",
-          "Because cost per request rewards an agent that gives up quickly \u2014 a failed attempt is cheap, yet it resolved nothing and was still paid for",
-          "Because resolved tasks are easier to count reliably in production logs",
-          "Because latency and cost must share a denominator to be comparable"
-        ],
+        options: ["Requests vary in length, making figures noisy", "Per request rewards cheap, unresolved give-ups", "Resolved tasks are easier to count in logs", "Latency and cost must share a denominator"],
         answer: 1,
         why: "An agent that abandons difficult tasks early looks excellent on cost per request and is worse at its job. Using resolved tasks as the denominator charges the unresolved attempts to the successes, which is what the business actually pays. It also connects properly to the step-count trade-off: more steps buy accuracy, and this metric prices that without pretending either extreme is free." },
 
       { stem: "An agent fails a task. What distinguishes a loop from a premature give-up, and why does it matter?",
-        options: [
-          "Nothing distinguishes them from the trace; both require a judge to classify",
-          "Step count at the cap plus repeated identical tool-and-argument pairs indicates a loop, while early termination with no answer and no error indicates a give-up \u2014 and they need opposite fixes",
-          "Loops produce an error while give-ups do not",
-          "Give-ups are more expensive, since the agent retries before stopping"
-        ],
+        options: ["Nothing in the trace; both need a judge", "Repeats at the cap versus an early empty stop", "Loops raise errors while give-ups do not", "Give-ups cost more, as the agent retries"],
         answer: 1,
         why: "Both appear as \"failed\" in an aggregate success rate while requiring opposite changes \u2014 a tighter stopping condition for a loop and a looser one for a give-up. Both are detectable deterministically from the trace, with the argument values rather than just the tool names being what makes loop detection work. Hitting the step cap alone is ambiguous, since a long trajectory may be legitimate." },
 
       { stem: "What is the weakness of scoring an agent on final outcome only?",
-        options: [
-          "It cannot be automated, since outcomes are open-ended",
-          "It rewards a right answer reached through bad reasoning \u2014 and for agents that includes a trajectory that touched a write endpoint it should not have",
-          "It requires a gold trace for every task",
-          "It conflates latency with correctness"
-        ],
+        options: ["It cannot be automated for open outcomes", "It rewards right answers from bad trajectories", "It needs a gold trace for every task", "It conflates latency with correctness"],
         answer: 1,
         why: "This is the same defect as an outcome-only reward model, where a lucky correct answer is reinforced exactly as much as sound reasoning. It matters more for agents because their actions have side effects, so a successful outcome can coexist with an incident. Outcome-only is defensible for a read-only agent where the path is genuinely free; otherwise the deterministic assertions catch the side-effect class cheaply without needing a judge." },
 
       { stem: "Which agent evaluation checks belong in CI rather than in a sampled judged evaluation?",
-        options: [
-          "Task success, since it is the headline metric",
-          "Tool selection, argument schema validity, presence of citations, step caps, error paths and cost \u2014 all deterministic and therefore free to run on every commit",
-          "Trajectory quality, since a gold trace makes it deterministic",
-          "Argument semantics, since schema validation covers it"
-        ],
+        options: ["Task success, the headline metric", "Deterministic checks like schemas and caps", "Trajectory quality against a gold trace", "Argument semantics via schema validation"],
         answer: 1,
         why: "Those checks are assertions over the trace with no model call, so frequency costs nothing \u2014 and frequency is what catches regressions. Argument semantics is explicitly not covered by schema validation: a syntactically perfect call can ask entirely the wrong question, which needs a gold trace or a judge. Gold-trace matching is deterministic but penalises a different correct path, so it suits only tasks with one sensible route." }
     ]

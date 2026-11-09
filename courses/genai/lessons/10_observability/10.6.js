@@ -304,42 +304,22 @@ questions this trace CANNOT answer:
     title: "Check yourself",
     questions: [
       { stem: "Why log the score of the best candidate the reranker dropped?",
-        options: [
-          "To compute the reranker's precision against a labelled set",
-          "Because it distinguishes a reranker correctly discarding weak candidates from one that threw away the right answer",
-          "Because dropped candidates still incur a cost that must be attributed",
-          "To detect when the candidate pool was smaller than top_k"
-        ],
+        options: ["To compute reranker precision on labels", "It separates good drops from lost answers", "Dropped candidates still incur a cost", "To detect a pool smaller than top_k"],
         answer: 1,
         why: "The kept top score alone cannot reveal an inverted ranking: if the dropped best scored 0.81 while the kept top scored 0.79, the reranker demoted a stronger candidate and the trace looks perfectly healthy. Together with `candidates_in`, `kept` and the chunk IDs, this is what turns a ranking suspicion into an observation \u2014 and it is the trace-level counterpart of the good-recall-poor-MRR signature." },
 
       { stem: "Which unpinned component has the signature \u201cevery similarity score drops at once, across all cohorts, on one date\u201d?",
-        options: [
-          "The index, after a rebuild dropped documents",
-          "The embedding model, because queries and stored vectors must live in the same space",
-          "The chunking config, after chunk size changed",
-          "The reranker, after a model upgrade"
-        ],
+        options: ["The index, after a rebuild dropped docs", "The embedding model", "The chunking config's chunk size", "The reranker, after an upgrade"],
         answer: 1,
         why: "When the embedding model version moves, query vectors are produced in a different space from the stored document vectors, so similarity collapses uniformly rather than for one cohort \u2014 which is exactly what makes it distinguishable from an ingestion gap, where the drop is concentrated. The only correct fix is re-embedding the entire corpus, since a half-migrated index is worse than either version alone." },
 
       { stem: "Why are chunk IDs preferred over chunk text in a trace?",
-        options: [
-          "Because IDs are indexed and text is not",
-          "Because IDs are tiny, carry no personal data, and answer which documents the model saw \u2014 which is the question that matters",
-          "Because chunk text changes between requests and IDs do not",
-          "Because vendors reject payloads over a size limit"
-        ],
+        options: ["IDs are indexed and text is not", "Tiny, private, and say what the model saw", "Chunk text changes between requests", "Vendors reject oversized payloads"],
         answer: 1,
         why: "The incident-resolving observation is \u201cevery retrieved chunk came from the old manual and not one from the new documentation appears at any rank,\u201d which is entirely an ID-level fact. Text would confirm it at roughly a hundred times the storage cost, and it is also where the PII you are trying not to export to a vendor lives. The sensible default is truncated text with complete IDs and scores." },
 
       { stem: "An audit reports 38% attribute coverage. Why is that the wrong number to present?",
-        options: [
-          "Because coverage should be weighted by span frequency",
-          "Because it invites a shrug \u2014 the actionable framing is the list of questions the traces cannot answer",
-          "Because percentages are misleading when span counts differ",
-          "Because the required schema is a recommendation rather than a standard"
-        ],
+        options: ["Coverage should be weighted by frequency", "It invites a shrug; list the open questions", "Percentages mislead when counts differ", "The schema is only a recommendation"],
         answer: 1,
         why: "A percentage sounds like a backlog item, while \u201cyou cannot tell whether the provider rolled the model, whether the index changed, whether someone edited the prompt, or which chunks the model saw\u201d is the same fact stated as consequences and tends to get fixed. The audit also cannot judge correctness: a `model` attribute recording an alias rather than a pinned version counts as coverage and delivers none of the value." }
     ]

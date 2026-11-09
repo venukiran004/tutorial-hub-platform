@@ -283,42 +283,22 @@ the cheap model is 4.1x cheaper per request and 53% of the cost per resolution`,
     title: "Check yourself",
     questions: [
       { stem: "Which two retrieval metrics cost nothing to compute, and why does that matter?",
-        options: [
-          "Context recall and context precision, because they can be computed from the same judge call",
-          "Empty-retrieval rate and mean top-1 score, because the retriever already computes both and they move before answer quality does",
-          "Recall@k and MRR, because labelled qrels are reusable across releases",
-          "Index size and freshness, because the indexer job already reports them"
-        ],
+        options: ["Context recall and precision, from one judge call", "Empty-retrieval rate and top-1 score, which lead", "Recall@k and MRR, with reusable qrels", "Index size and freshness, from the indexer"],
         answer: 1,
         why: "Both are attributes the retriever has in hand at the moment of the search and discards \u2014 recording them is a `set_attribute` call rather than a judge, a labelled set or a nightly job. Their value is that they are upstream of answer quality, so they move hours or weeks earlier: in the worked incident they went from 0.4% to 11.2% and from 0.78 to 0.41 well before the accuracy drop surfaced. Context recall and precision do need a judge, and recall@k needs labels." },
 
       { stem: "Why is cost per resolved conversation a better metric than cost per request?",
-        options: [
-          "Because it is easier to attribute to a team budget",
-          "Because cost per request rewards a cheap answer that fails \u2014 three cheap failures cost more than one good answer while looking better per request",
-          "Because conversations are the unit providers bill on",
-          "Because it accounts for prompt caching, which per-request cost does not"
-        ],
+        options: ["It is easier to attribute to a team budget", "Per request rewards cheap answers that fail", "Providers bill per conversation", "It accounts for prompt caching"],
         answer: 1,
         why: "A metric defined over the wrong unit moves in the right direction while the product gets worse, and the per-request unit makes failure look cheap because it sends the user round again rather than charging for it. On plausible numbers a model that is 4.1x cheaper per request is only about 2x cheaper per resolution once its extra turns are counted, and a slightly higher turn count reverses the comparison entirely while the per-request figure is unchanged." },
 
       { stem: "Why is fallback rate described as a quality metric rather than a system metric?",
-        options: [
-          "Because fallbacks are usually caused by prompt errors rather than infrastructure",
-          "Because a fallback to a cheaper model is a correctness change that the system layer records as a successful request",
-          "Because fallback latency is higher than primary latency",
-          "Because fallback models are not covered by the provider's SLA"
-        ],
+        options: ["Fallbacks usually come from prompt errors", "A fallback changes correctness yet looks successful", "Fallback latency exceeds primary latency", "Fallback models lack the provider's SLA"],
         answer: 1,
         why: "The request completed, so every system signal reports success, while the answer was produced by a different and usually weaker model than the one that was evaluated and pinned. That makes an undeclared fallback a silent quality regression, which is why it needs its own alert rather than being folded into an error-rate panel. Deliberate cascades are a legitimate cost strategy; the problem is a fallback nobody is told about." },
 
       { stem: "What is the decision test for a dashboard metric?",
-        options: [
-          "Whether the metric can be computed in under a second",
-          "Whether you can name the action its movement triggers \u2014 if not, it is being collected rather than monitored",
-          "Whether the metric has been correlated with user satisfaction",
-          "Whether the metric appears in the provider's own documentation"
-        ],
+        options: ["Whether it computes in under a second", "Whether its movement triggers a named action", "Whether it correlates with satisfaction", "Whether the provider documents it"],
         answer: 1,
         why: "The test is deliberately harsh because dashboards accumulate numbers people like to look at: requests per minute, mean latency and monthly token totals typically trigger nothing, while p95 against an SLO triggers a page and cost per resolved conversation triggers a routing discussion. The inverse test is just as useful \u2014 for every failure you have had, name the metric that would have caught it, which in the worked incident was a number the system computed on every request and nobody recorded." }
     ]

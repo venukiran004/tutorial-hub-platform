@@ -247,42 +247,22 @@ raise SystemExit(1 if fails else 0)`,
     title: "Check yourself",
     questions: [
       { stem: "A change leaves overall recall@6 at 0.838 and faithfulness at 0.921, above thresholds of 0.80 and 0.90 \u2014 but one query type is at 0.714 recall and one language at 0.862 faithfulness. What should the gate do?",
-        options: [
-          "Pass, since the aggregate metrics clear their thresholds",
-          "Fail \u2014 gating per slice is the point, because the aggregate is weighted by traffic and the regressing slices are small precisely because traffic is skewed",
-          "Pass, but raise a warning for manual review of the two slices",
-          "Fail only if the slices represent more than 10% of traffic"
-        ],
+        options: ["Pass, as the aggregates clear their thresholds", "Fail: the gate exists to catch small slices", "Pass, but flag both slices for manual review", "Fail only if the slices exceed 10% of traffic"],
         answer: 1,
         why: "A mean-based gate merges this change while two segments have regressed below the bar, and the segments are small for the same reason the mean is dominated by other traffic. Per-slice gating is stricter and occasionally annoying, and it is the version that catches what the suite was built for. This is the same structure as an aggregate retrieval score of 0.76 concealing a modality scoring 0.00." },
 
       { stem: "Why should golden-set thresholds be committed before the first run?",
-        options: [
-          "To satisfy audit requirements for change control",
-          "Because a threshold chosen after seeing a result is a negotiation rather than a gate \u2014 and the right threshold often looks unremarkable when you reach it",
-          "Because thresholds cannot be computed until the suite has a baseline",
-          "Because CI systems cache thresholds from the first successful run"
-        ],
+        options: ["To satisfy change-control audit requirements", "A threshold set after a result is a negotiation", "Thresholds need a baseline run to compute", "CI caches thresholds from the first success"],
         answer: 1,
         why: "Retrospective thresholds get tuned until the current run passes, and the failure is gradual: each individually-defensible relaxation accumulates into a suite that never blocks anything. The difficulty is real because the correct decision point is often undramatic \u2014 in an alignment run the true quality peak occurred where no metric looked alarming \u2014 so judgement after the fact is unreliable. Versioning them and reviewing changes like code is the mitigation." },
 
       { stem: "Why should PII checks cover tool arguments as well as outputs?",
-        options: [
-          "Because tool arguments are logged at a higher verbosity than outputs",
-          "Because tool arguments are an egress point \u2014 an agent putting customer details into a search query sends them onward while the user-visible answer stays clean",
-          "Because schema validation cannot detect PII in structured fields",
-          "Because outputs are already covered by the refusal-correctness check"
-        ],
+        options: ["Arguments are logged more verbosely than outputs", "Arguments are an egress point for customer data", "Schema validation cannot detect PII in fields", "Outputs are covered by refusal checks already"],
         answer: 1,
         why: "Data leaves the system wherever it is sent, not only where the user sees it, so checking the final answer catches only one path. This Covers the retrieval case where post-filtering by tenant achieved the same recall as pre-filtering while putting 19 other-tenant chunks through the top 5 \u2014 read, scored and logged, with a clean final answer. Detecting this class requires logged tool arguments, which is why the trace matters." },
 
       { stem: "Why prefer reference-free metrics for the bulk of a regression suite?",
-        options: [
-          "They are more accurate than reference-based metrics on open-ended output",
-          "Gold answers encode what was correct when written, so they go stale as the product and corpus change \u2014 at which point the suite fails for the wrong reason and someone edits the test",
-          "They require no judge model and so run faster in CI",
-          "They are the only metrics that can be computed per slice"
-        ],
+        options: ["They are more accurate on open-ended output", "Gold answers go stale as the product changes", "They need no judge, so they run faster in CI", "They are the only metrics computable per slice"],
         answer: 1,
         why: "Maintenance is the issue: a stale gold answer produces a failure that is not a real regression, and the natural response is to edit the test, which erodes the suite. Faithfulness, answer relevancy and context precision score the output against inputs the system produced, so they keep working as things move. They generally do need a judge, which is a cost, and a small reference-based set for answer correctness remains worth keeping with periodic review." }
     ]

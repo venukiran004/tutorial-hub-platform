@@ -250,42 +250,22 @@ print("formatting stripped averaged %.3f  (delta %+.3f)"
     title: "Check yourself",
     questions: [
       { stem: "A judge scores model A winning 62% when A is shown first and 45% when B is shown first. What is the correct reported win rate and what is the bias?",
-        options: [
-          "62%, since the first ordering is the natural presentation \u2014 and the bias is unmeasurable",
-          "53.5% order-averaged, with a 17-point position bias measured directly as the difference between the two orderings",
-          "45%, the conservative estimate, with no bias measurable from two runs",
-          "53.5%, with the bias equal to the deviation from 50%"
-        ],
+        options: ["62%, the natural order; bias unmeasurable", "53.5% averaged; a 17-point position bias", "45%, the conservative estimate; no bias", "53.5%; bias is the deviation from 50%"],
         answer: 1,
         why: "Averaging the two orderings cancels the systematic preference for a presentation slot, giving an unbiased estimate, while the difference between them quantifies that preference on your own judge rather than from a published figure. The deviation from 50% is the estimated quality difference, not the bias. Reporting only the first ordering would have presented a comfortable win where the truth is close to a tie." },
 
       { stem: "After averaging, the win rate is 53.5% on 100 comparisons. What should you conclude?",
-        options: [
-          "A real but smaller win \u2014 ship with reduced expectations",
-          "Undecided \u2014 the 95% interval is roughly \u00b110 points at that sample size, so it contains 50%",
-          "The judge is biased against the new model and needs recalibration",
-          "The comparison should be rerun with a stronger judge"
-        ],
+        options: ["A real but smaller win; ship it anyway", "Undecided: ±10 points includes 50%", "The judge is biased against the new model", "Rerun the comparison with a stronger judge"],
         answer: 1,
         why: "A proportion near 0.5 on 100 samples has a standard error of about 0.05, giving a 95% margin near 10 points \u2014 so 53.5% cannot be distinguished from a tie. Correcting for position bias fixed one problem and left the sample-size problem untouched, which is why both corrections are needed before a shipping decision. Describing it as \"a real but smaller win\" overstates what the data supports." },
 
       { stem: "Why can a panel of three judges from different families not fix verbosity bias?",
-        options: [
-          "Because averaging three scores increases variance rather than reducing it",
-          "Because essentially every model family shares a preference for longer answers, so there is no disagreement to average away",
-          "Because verbosity bias only affects pointwise scoring, not pairwise",
-          "Because the panel must share a tokeniser for scores to be comparable"
-        ],
+        options: ["Averaging three scores raises variance", "Every family shares the length preference", "Verbosity bias only affects pointwise scoring", "The panel must share a tokeniser"],
         answer: 1,
         why: "A panel attenuates biases that differ between families \u2014 self-preference and formatting are good candidates \u2014 by averaging over disagreement. A bias all members share is reproduced rather than cancelled, and length preference is near-universal across families. The reliable check for verbosity is therefore to bin win rates by length and look for flat within-bin rates alongside a positive aggregate." },
 
       { stem: "What does a high flip rate tell you that an averaged win rate does not?",
-        options: [
-          "The direction of the position bias",
-          "Whether the judge is reliable at all \u2014 averaging removes the systematic component and leaves the noise, so a high flip rate means the judge is marginal regardless of correction",
-          "The sample size needed to detect the effect",
-          "Whether the two candidates differ in length"
-        ],
+        options: ["The direction of the position bias", "Whether the judge is reliable at all", "The sample size needed to detect it", "Whether the candidates differ in length"],
         answer: 1,
         why: "Averaging produces an unbiased point estimate but says nothing about how consistently the judge behaves. A flip rate near a quarter means a large fraction of verdicts reverse purely on presentation order, so the corrected number rests on noisy judgements and no prompt tuning repairs that. Reporting the averaged rate as the headline with the gap or flip rate beside it gives both the estimate and its trustworthiness." }
     ]

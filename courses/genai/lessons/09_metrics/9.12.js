@@ -245,42 +245,22 @@ print("  unweighted %.3f   linear-weighted %.3f"
     title: "Check yourself",
     questions: [
       { stem: "A judge and a human agree on 80 of 100 cases. The judge says PASS 62 times and the human 58 times. What is \u03ba and why is it so much lower than 0.80?",
-        options: [
-          "0.80 \u2014 \u03ba equals observed agreement when both raters use similar label frequencies",
-          "0.584 \u2014 chance agreement from the margins is 0.5192, so more than half the observed agreement was free and \u03ba measures only what was earned above it",
-          "0.620 \u2014 \u03ba is bounded by the more confident rater's PASS rate",
-          "0.280 \u2014 \u03ba is the observed agreement minus the chance agreement"
-        ],
+        options: ["0.80, equal to agreement for similar margins", "0.584: half the agreement was chance", "0.620, capped by the more confident rater", "0.280, agreement minus chance agreement"],
         answer: 1,
         why: "Chance agreement is the sum over labels of the product of the two margins: 0.62 \u00d7 0.58 plus 0.38 \u00d7 0.42, which is 0.5192. \u03ba then normalises the earned agreement by what was available \u2014 0.2808 over 0.4808, giving 0.5840. The raw difference of 0.2808 is the numerator rather than \u03ba itself, and \u03ba equals observed agreement only when chance agreement is zero, which does not occur with real label distributions." },
 
       { stem: "Two scenarios show identical raw agreement near 0.91 but \u03ba of 0.819 and 0.453. What differs?",
-        options: [
-          "The sample sizes, which affect \u03ba's variance",
-          "The class balance \u2014 chance agreement rose from 0.502 to 0.830 as one label came to dominate, leaving less achievable agreement above chance",
-          "One used weighted \u03ba and the other unweighted",
-          "The number of label categories"
-        ],
+        options: ["The sample sizes, affecting κ's variance", "Class balance: chance agreement rose", "Weighted versus unweighted κ", "The number of label categories"],
         answer: 1,
         why: "When one label dominates, two raters agree frequently by luck alone, so the denominator 1 \u2212 chance shrinks and the same observed agreement represents far less skill. This is why a \u03ba figure is not comparable to another \u03ba without its marginal distribution reported alongside \u2014 the same reason a perplexity needs its corpus and a precision needs its k. Sample size affects the confidence interval rather than the point estimate." },
 
       { stem: "Your judge scores \u03ba = 0.584 and two humans on the same rubric score \u03ba = 0.65. What follows?",
-        options: [
-          "The judge is unusable and should be replaced with human review",
-          "The judge is at about 90% of the achievable ceiling, so the rubric is the limiting factor rather than the model",
-          "The human labels are unreliable and should be recollected",
-          "\u03ba should be recomputed with the humans pooled as a single rater"
-        ],
+        options: ["The judge is unusable; switch to human review", "At ~90% of the ceiling, the rubric is the limit", "The human labels are unreliable; relabel them", "Pool the humans as one rater and recompute"],
         answer: 1,
         why: "Perfect agreement is not available in principle, because preference labels are stochastic \u2014 measured on a synthetic set with known latent truth, Bayes-optimal accuracy was 78.6% rather than 100%. A judge close to the human ceiling has extracted most of what the labels contain, and further gains would mean fitting annotator disagreement. The productive work is clarifying the rubric so that human-human agreement rises, which lifts the ceiling for everyone." },
 
       { stem: "Your rubric is a described 1\u20135 scale. Why is unweighted Cohen's \u03ba the wrong coefficient?",
-        options: [
-          "Because \u03ba requires binary labels and is undefined for five categories",
-          "Because it treats a 4-against-5 disagreement as exactly as bad as 1-against-5, and on an ordinal scale adjacent-category disagreement dominates",
-          "Because it cannot handle more than two raters",
-          "Because ordinal scales require Krippendorff's alpha specifically"
-        ],
+        options: ["κ needs binary labels, undefined for five", "It treats 4 versus 5 as badly as 1 versus 5", "It cannot handle more than two raters", "Ordinal scales need Krippendorff's alpha"],
         answer: 1,
         why: "An ordinal scale has meaningful distance between categories, and most judge-human disagreement on a described scale is off-by-one \u2014 which unweighted \u03ba penalises as a total failure. Measured, unweighted gave 0.411 where linear-weighted gave 0.643 on the same labels, enough to make a usable judge look unusable. \u03ba handles any number of nominal categories; the multi-rater case is where Fleiss or Krippendorff apply." }
     ]

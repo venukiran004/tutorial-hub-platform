@@ -273,42 +273,22 @@ print("\\nstring EM  %.1f   parsed EM  %.1f"
     title: "Check yourself",
     questions: [
       { stem: "Why is a change to the exact-match normaliser treated as a change to the metric definition?",
-        options: [
-          "Because normalisers are computationally expensive to re-run",
-          "Because it moves every historical score \u2014 one step was worth 5.8 points on a real set, which is indistinguishable from a model improvement in a trend chart",
-          "Because normalisation must be applied identically to predictions and references",
-          "Because different normalisers produce different tokenisations"
-        ],
+        options: ["Normalisers are costly to re-run", "It shifts every historical score", "It must match on both sides", "Normalisers tokenise differently"],
         answer: 1,
         why: "Adding or removing a step shifts the entire series, so a trend chart cannot distinguish a normaliser change from a genuine improvement \u2014 which makes it a definition change rather than an implementation detail. The practical consequence is versioning it with the eval set and reviewing changes as you would a gate threshold. Applying it to both sides is necessary and not the reason it needs versioning." },
 
       { stem: "\u201cper year 18 days\u201d scores token F1 of exactly 1.0000 against \u201c18 days per year\u201d. What does this reveal?",
-        options: [
-          "A bug in the harmonic mean when precision and recall are both 1",
-          "Token F1 compares bags of tokens, so it cannot detect a reordering \u2014 the same blind spot that makes ROUGE-1 insensitive to a scrambled sentence",
-          "The normaliser removed the word order deliberately",
-          "Exact match should have been used, since the answer is short"
-        ],
+        options: ["A harmonic-mean bug at precision and recall 1", "Token F1 compares bags, so order is invisible", "The normaliser removed word order deliberately", "Exact match should be used for short answers"],
         answer: 1,
         why: "Multiset intersection is order-independent, so any permutation of the same tokens yields identical precision and recall. For short factual answers this is usually harmless and occasionally desirable; where order carries meaning it is a real failure, and it is the same structural property measured in the unigram ROUGE variant. The score is correct arithmetic, not a bug." },
 
       { stem: "Two distinct gold answers collapse to the same string under your normaliser. What does that indicate?",
-        options: [
-          "The gold set contains duplicates that should be removed",
-          "The normaliser is too aggressive for this task \u2014 article-stripping is right for QA and wrong where an article carries meaning",
-          "Exact match should be replaced with token F1",
-          "The normaliser is applied in the wrong order"
-        ],
+        options: ["The gold set has duplicates to remove", "The normaliser is too aggressive here", "Replace exact match with token F1", "The normaliser runs in the wrong order"],
         answer: 1,
         why: "A collision means the normaliser has erased a distinction the task cares about, which inflates exact match by treating different answers as the same. Article-stripping is the usual culprit: standard for SQuAD-style QA, wrong for a catalogue where \"A record\" and \"record\" differ. That is why normalisers are task-specific and should be written rather than imported, and why a collision count is the audit to run." },
 
       { stem: "Why compare parsed objects rather than strings for structured output?",
-        options: [
-          "Because parsing is faster than string comparison at scale",
-          "Because key order, whitespace and numeric formatting are serialisation details rather than content \u2014 two JSON objects with different key order are one answer",
-          "Because string comparison cannot handle nested structures",
-          "Because the parser applies normalisation automatically"
-        ],
+        options: ["Parsing beats string comparison on speed", "Formatting differences are not content", "Strings cannot handle nested structures", "The parser normalises automatically"],
         answer: 1,
         why: "String comparison reports a failure for {\"a\":1,\"b\":2} against {\"b\":2,\"a\":1}, which are identical objects \u2014 along with trailing commas, whitespace and 1.0 against 1. Parsing both and comparing values gives the right answer, and the parse step doubles as a schema-validity check, so a failure to parse is itself an informative signal rather than just a scoring inconvenience." }
     ]

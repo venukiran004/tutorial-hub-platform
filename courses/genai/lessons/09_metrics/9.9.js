@@ -278,42 +278,22 @@ for q, n in dist.most_common():
     title: "Check yourself",
     questions: [
       { stem: "A system reports high faithfulness and low context recall. What does this diagnose?",
-        options: [
-          "A generation problem \u2014 the model is not using the context it was given",
-          "A retrieval problem \u2014 the model is faithful to context that did not contain the answer, which looks like a success on the headline metric",
-          "A labelling problem in the ground-truth answers",
-          "Nothing \u2014 the two metrics measure independent properties"
-        ],
+        options: ["Generation: the model ignores the given context", "Retrieval: faithful to context lacking the answer", "Labelling errors in the ground-truth answers", "Nothing; the two measure independent properties"],
         answer: 1,
         why: "Faithfulness only asks whether claims are supported by what was retrieved, so a model grounded in irrelevant context scores well while answering nothing useful. This is the misdiagnosed quadrant precisely because the headline number looks healthy \u2014 the concrete case being a refund-policy query that retrieved a document about invented policies, which is on-topic and not an answer. The reverse pattern, low faithfulness with high recall, is the generation problem." },
 
       { stem: "Why log which claim was unsupported rather than just the faithfulness score?",
-        options: [
-          "Because the score is unreliable without the claim count",
-          "Because the score prompts an investigation while the failing claim is the thing a person can act on",
-          "Because scores cannot be aggregated across cases without the claims",
-          "Because the judge's claim extraction needs auditing for correctness"
-        ],
+        options: ["The score is unreliable without the count", "The failing claim is what a person can fix", "Scores cannot be aggregated without claims", "Claim extraction needs auditing itself"],
         answer: 1,
         why: "A score of 0.80 says something is wrong somewhere; \"the policy was updated in March\" identifies a specific fabrication to investigate. It is the same argument that applies to agent traces and production incidents \u2014 the aggregate detects and the record diagnoses. Logging claims also makes the metric auditable, since a reader can check the judgement on each claim rather than accepting a holistic score, which is a secondary benefit." },
 
       { stem: "The same answer and context yield faithfulness of 0 under one claim-extraction policy and 0.75 under another. Why?",
-        options: [
-          "One policy used a stronger judge model",
-          "The denominator is the number of claims, so how aggressively the answer is split changes both numerator and denominator \u2014 one unsupported sentence against four claims with three supported",
-          "The second policy counted derived claims as supported",
-          "The context was truncated differently between runs"
-        ],
+        options: ["One policy used a stronger judge model", "How the answer is split changes the ratio", "The second counted derived claims as supported", "The context was truncated differently"],
         answer: 1,
         why: "Faithfulness is supported claims over total claims and both halves depend on the decomposition, so a single sentence judged unsupported scores 0 while the same content split finely can score 0.75. The derivation question \u2014 whether an arithmetically entailed claim counts as supported \u2014 is a separate second policy that also moves the number, measured at 0.5 against 1.0 on one worked example. Both must be reported for the figure to be comparable." },
 
       { stem: "Which Ragas metric is most often omitted, and what does its absence hide?",
-        options: [
-          "Context precision \u2014 it hides retrieval noise",
-          "Answer relevancy \u2014 it hides an on-topic non-answer, which is hard to notice because the failures look like good answers",
-          "Context recall \u2014 it hides missed documents",
-          "Faithfulness \u2014 it hides hallucination"
-        ],
+        options: ["Context precision, hiding retrieval noise", "Answer relevancy, hiding on-topic non-answers", "Context recall, hiding missed documents", "Faithfulness, hiding hallucination"],
         answer: 1,
         why: "A response can be entirely faithful to the context, entirely about the right subject, and still not answer the question \u2014 which no faithfulness or retrieval metric detects. That is the RAG-side version of hedging, where a vague non-answer reads as careful and avoids the penalty a confident error attracts. It needs only the question and the answer, so it is cheap, and its absence is unusually hard to notice because the failures it catches are superficially good." }
     ]

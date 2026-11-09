@@ -251,42 +251,22 @@ print("pairwise self-consistency : %.3f" % pw)`,
     title: "Check yourself",
     questions: [
       { stem: "Why is reference-guided judging described as the easiest of the three modes?",
-        options: [
-          "Because it requires fewer output tokens from the judge",
-          "Because the standard is supplied rather than recalled \u2014 comparing an answer to a known-correct one is a simpler task than evaluating quality in the abstract",
-          "Because it eliminates position bias",
-          "Because it can be computed deterministically"
-        ],
+        options: ["The judge outputs fewer tokens", "The standard is supplied, not recalled", "It eliminates position bias", "It can be computed deterministically"],
         answer: 1,
         why: "\"Is this as good as this gold answer?\" gives the judge an explicit anchor, turning evaluation into comparison. The same inversion was measured elsewhere: correctness against a gold answer was unambiguous exactly where reference-free faithfulness depended on an unstated policy, because someone had already decided what the right answer was. The cost is needing the gold answer, which bounds it by annotation effort." },
 
       { stem: "What is wrong with a rubric that says \u201crate helpfulness 1\u20135\u201d without describing the points?",
-        options: [
-          "Five points is too coarse a scale for quality judgements",
-          "The judge invents its own anchors and invents different ones for different prompts, so scores drift in a way that looks like variation in answer quality",
-          "It prevents the judge from producing structured output",
-          "Odd-numbered scales bias judges toward the midpoint"
-        ],
+        options: ["Five points is too coarse for quality", "The judge invents its own drifting anchors", "It prevents structured output from the judge", "Odd scales bias judges toward the middle"],
         answer: 1,
         why: "Without described anchors the scale is reconstructed by the judge on each call, so the same answer can receive different scores depending on what else was in the prompt \u2014 and that instability is indistinguishable from real quality variation in the aggregate. Describing each point turns the task into classification, which models do substantially better, and makes disagreements auditable against the written description." },
 
       { stem: "Why ask the judge for its reasoning before the verdict rather than after?",
-        options: [
-          "Because reasoning tokens are cheaper when generated first",
-          "Because a verdict produced first is then rationalised \u2014 reasoning first makes the score a conclusion rather than a guess",
-          "Because JSON must be the last token sequence for parsing to succeed",
-          "Because it reduces position bias in pairwise comparisons"
-        ],
+        options: ["Reasoning tokens are cheaper when generated first", "A verdict given first is then rationalised", "JSON must come last for parsing to succeed", "It reduces position bias in pairwise judging"],
         answer: 1,
         why: "If the score is emitted first, any subsequent explanation is constructed to justify it rather than to reach it, so the trace stops being evidence. Reasoning first also yields an auditable record of which claims were considered supported. Requiring structured output after the reasoning is a separate benefit \u2014 it turns an unparseable response into a detectable failure rather than a silently miscounted score." },
 
       { stem: "What is the main practical limitation of G-Eval?",
-        options: [
-          "It requires a pairwise setup, so it cannot produce absolute scores",
-          "It needs token log-probabilities to weight the score, which many APIs do not expose",
-          "It is substantially more expensive per judgement than a plain rubric",
-          "It cannot incorporate a described rubric"
-        ],
+        options: ["It needs a pairwise setup, so no absolute scores", "It needs token log-probabilities many APIs hide", "It costs far more per judgement than a rubric", "It cannot incorporate a described rubric"],
         answer: 1,
         why: "G-Eval takes the expectation over score tokens using the model's own probabilities, which removes the quantisation of discrete 3-or-4 scores \u2014 so a judge genuinely torn returns 3.5. That requires access to log-probabilities, putting it in the same availability bracket as perplexity: unavailable wherever the API does not expose them. It works with a rubric and costs essentially the same as the underlying call." }
     ]

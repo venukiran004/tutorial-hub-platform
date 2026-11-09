@@ -228,42 +228,22 @@ for key, v in m.items():
     title: "Check yourself",
     questions: [
       { stem: "An answer claims \u201c18 vacation days per year\u201d; the retrieved context says only \u201c1.5 vacation days per month\u201d. What is the faithfulness score?",
-        options: [
-          "1.0 \u2014 the claim is arithmetically correct, so it is supported",
-          "Either 1.0 or 0.5 depending on whether the judge policy counts a derived claim as supported \u2014 and the policy is usually unwritten",
-          "0.0 \u2014 the claim does not appear in the context at all",
-          "Undefined, since faithfulness requires a gold answer"
-        ],
+        options: ["1.0, as the arithmetic is right", "1.0 or 0.5, by an unwritten policy", "0.0, as the claim is not in context", "Undefined without a gold answer"],
         answer: 1,
         why: "The claim is *entailed* by the context (1.5 \u00d7 12 = 18) but not *stated* in it, so a strict judge asking whether it is supported can reasonably say no while a lenient one accepting derivation says yes. Both readings are defensible, which means the score reflects a policy decision as much as the answer \u2014 exactly why the claim-extraction and support policy must be written into the judge prompt. Faithfulness is reference-free and needs no gold answer." },
 
       { stem: "Recall@2 is 1.0 and precision@2 is 0.5, with exactly one relevant chunk in the corpus for that question. What is the correct fix?",
-        options: [
-          "Add a re-ranker to push the irrelevant chunk below the relevant one",
-          "Retrieve fewer chunks or filter the irrelevant one out before ranking \u2014 at k=2 with one relevant chunk, 0.5 is the ceiling and no ordering beats it",
-          "Improve the embedding model so the irrelevant chunk scores lower",
-          "Tune the prompt to instruct the model to ignore irrelevant context"
-        ],
+        options: ["Add a re-ranker to push the bad chunk lower", "Retrieve fewer or filter: 0.5 is the ceiling", "Improve the embedder so the bad chunk drops", "Tell the model to ignore irrelevant context"],
         answer: 1,
         why: "Precision@k is bounded by the number of relevant items over k, so with one relevant chunk and k=2 the maximum achievable is 0.5 \u2014 the retriever is already at its limit. Re-ranking changes order, not membership, and the second slot has nothing relevant available to fill it. The fix is to decline to fill the slot, which is what a relevance threshold or metadata filter does. Prompt changes are ruled out because the diagnosis is retrieval-side." },
 
       { stem: "Why is answer correctness unambiguous in this example while faithfulness is not?",
-        options: [
-          "Because correctness is computed deterministically by string matching",
-          "Because the gold answer also states 18 days per year, so someone already decided what the right answer was \u2014 the reference-based metric resolves what the reference-free one must guess",
-          "Because correctness only considers the headline claim and ignores the rest",
-          "Because faithfulness requires claim decomposition and correctness does not"
-        ],
+        options: ["Correctness is a deterministic string match", "The gold answer already settles what is right", "Correctness checks only the headline claim", "Only faithfulness needs claim decomposition"],
         answer: 1,
         why: "The gold answer encodes a human decision that \"18 per year\" is the correct response, which settles the question that a faithfulness judge has to resolve by policy. This inverts the usual trade \u2014 reference-free metrics are cheaper and scale further, but here the reference-based one is less ambiguous \u2014 and it is a good argument for keeping a small gold set alongside a large reference-free suite. Correctness is still judge-mediated rather than a string match." },
 
       { stem: "What assumption does the derived claim \u201c18 days per year\u201d quietly import?",
-        options: [
-          "That the employee works a full-time schedule",
-          "That there are twelve accruing months with no cap, pro-rating or carry-over limit \u2014 none of which the context states",
-          "That vacation days and expense days are tracked separately",
-          "That accrual begins on the employee's start date"
-        ],
+        options: ["That the employee works full time", "Twelve months, no cap or pro-rating", "That leave and expenses are separate", "That accrual starts on the start date"],
         answer: 1,
         why: "Multiplying a monthly accrual by twelve assumes the accrual runs for all twelve months and is uncapped, which real policies frequently contradict. The gold answer makes the same assumption, so correctness passes \u2014 which is precisely how a derived claim can be scored correct and faithful while resting on something unstated. It is the general hazard of accepting derivation as grounding: each inferential step imports premises the context never supplied." }
     ]

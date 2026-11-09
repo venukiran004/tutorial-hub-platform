@@ -272,42 +272,22 @@ print("to detect +2 points on an 0.82 baseline: %.0f examples per arm"
     title: "Check yourself",
     questions: [
       { stem: "Model A scores 0.82 and model B scores 0.85 on the same 200-example suite. What does the arithmetic say?",
-        options: [
-          "B is better by 3 points, which is a small but real improvement",
-          "They are indistinguishable \u2014 the 95% margin on 0.82 at N = 200 is \u00b15.3 points, so 0.85 lies inside the interval",
-          "B is better, but the difference needs a paired test to confirm",
-          "Nothing, because confidence intervals do not apply to accuracy scores"
-        ],
+        options: ["B is better by 3 points, small but real", "Indistinguishable: ±5.3 points at N = 200", "B is better, pending a paired test", "Nothing; intervals do not apply here"],
         answer: 1,
         why: "The standard error is \u221a(0.82 \u00d7 0.18 / 200) = 0.0272, giving a 95% interval of [0.767, 0.873] \u2014 which contains 0.85. The gap is well inside the margin, so the data supports no preference. A paired test would genuinely improve the power of the comparison by removing example-difficulty variance, which is why it is the recommended next step rather than simply collecting more examples." },
 
       { stem: "Why can a 50-example suite not detect a 2-point improvement?",
-        options: [
-          "Because the examples are unlikely to be representative at that size",
-          "Because the 95% margin at N = 50 is \u00b110.6 points, which is a property of sample size rather than sample quality",
-          "Because proportions require at least 100 observations to be valid",
-          "Because small suites cannot be stratified by slice"
-        ],
+        options: ["Fifty examples are unlikely to be representative", "The margin at N = 50 is ±10.6 points", "Proportions need at least 100 observations", "Small suites cannot be stratified by slice"],
         answer: 1,
         why: "The margin depends on N through 1/\u221aN, so no amount of care in selecting examples narrows it \u2014 at 50 examples the uncertainty is five times the effect you are trying to detect. This is the arithmetic behind the general caution that a small private eval set can show a model is clearly worse while being unable to separate two close candidates. Representativeness and stratification are real and separate concerns." },
 
       { stem: "Why does a paired comparison need far fewer examples than two independent runs?",
-        options: [
-          "Because it halves the number of model calls required",
-          "Because it removes the variance from example difficulty \u2014 each example is its own control, so only the per-example differences are tested",
-          "Because paired tests use a one-sided hypothesis",
-          "Because McNemar's test has more statistical power by construction"
-        ],
+        options: ["It halves the model calls required", "Each example is its own control", "Paired tests are one-sided", "McNemar's test is more powerful"],
         answer: 1,
         why: "Variation in how hard the examples are is usually the dominant source of noise, and comparing two independent samples has to estimate through it. Running both variants on the same examples cancels it, so the test asks whether the change helped case by case. McNemar makes this concrete by using only the disagreements \u2014 cases where both variants pass or both fail carry no information about which is better, and discarding them is where the power comes from." },
 
       { stem: "Why bootstrap an interval for NDCG or a judge mean rather than using the closed form?",
-        options: [
-          "Because the bootstrap is more accurate for all metrics",
-          "Because the closed form assumes a proportion, and these are not \u2014 which is exactly why they are usually reported with no interval at all",
-          "Because NDCG is bounded in [0, 1] and proportions are not",
-          "Because judge means violate the independence assumption"
-        ],
+        options: ["Bootstrap is more accurate for every metric", "The closed form assumes a proportion", "NDCG is bounded while proportions are not", "Judge means violate independence"],
         answer: 1,
         why: "There is no \u221a(p(1\u2212p)/N) for a metric that is not a proportion, so the standard route is unavailable and the usual response is to omit the interval entirely. Resampling examples with replacement, recomputing, and taking percentiles works for any metric computable from a sample and needs no distributional assumption. The key detail is resampling examples rather than individual scores, since the example is the unit of variation." }
     ]

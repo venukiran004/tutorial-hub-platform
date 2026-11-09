@@ -230,42 +230,22 @@ print("backbone roberta-large, rescaled with baseline = True")`,
     title: "Check yourself",
     questions: [
       { stem: "Why is a raw BERTScore of 0.85 potentially meaningless?",
-        options: [
-          "Because the metric is undefined for candidates shorter than the reference",
-          "Because any two fluent sentences embed fairly similarly, so the usable range is compressed near the top \u2014 0.85 can mean \u201cunrelated\u201d without baseline rescaling",
-          "Because greedy matching inflates scores above their true value",
-          "Because IDF weighting is off by default"
-        ],
+        options: ["It is undefined for shorter candidates", "Without rescaling, the range is compressed high", "Greedy matching inflates every score", "IDF weighting is switched off by default"],
         answer: 1,
         why: "Contextual embeddings of unrelated fluent English sentences are already fairly close, so scores do not spread over [0, 1] and the absolute value carries little information. Baseline rescaling subtracts the score of a random pair so that 0 means \"no better than random\", which makes the number interpretable \u2014 and rescaled and unrescaled scores are therefore different metrics that must not be mixed. The operative rule is to compare BERTScores only against each other." },
 
       { stem: "What does BERTScore's greedy matching mean for a repetitive candidate?",
-        options: [
-          "Repetition is penalised more heavily than in BLEU, since each copy competes",
-          "Repetition is not penalised as BLEU's clipping penalises it \u2014 each copy independently finds the same good reference match, raising precision",
-          "Repeated tokens are deduplicated before matching",
-          "The score becomes undefined because the assignment is not one-to-one"
-        ],
+        options: ["Repetition is penalised more than in BLEU", "Repeats each find a match, raising precision", "Repeated tokens are deduplicated first", "The score becomes undefined"],
         answer: 1,
         why: "Each candidate token independently takes its best reference match, so two candidate tokens may claim the same reference token \u2014 unlike an optimal one-to-one assignment, which would be more principled and much slower. That leaves the degenerate case BLEU's clipping closes partly open here. IDF weighting mitigates it by downweighting the common tokens most likely to be repeated, and it is an optional argument worth checking." },
 
       { stem: "Why is chrF described as the underrated option?",
-        options: [
-          "Because it correlates better with human judgement than BERTScore",
-          "Because it needs no tokeniser and no language resources, and character n-grams are robust to morphology \u2014 making it strong value for a multilingual suite",
-          "Because it is the only one of the three that detects factual errors",
-          "Because it provides interpretable absolute scores"
-        ],
+        options: ["It correlates with humans better than BERTScore", "No tokeniser needed, robust to morphology", "It alone detects factual errors", "It gives interpretable absolute scores"],
         answer: 1,
         why: "Needing no tokeniser removes an entire class of comparability problem, and character n-grams handle inflection and typos that word-level n-grams fragment on \u2014 \"walk\", \"walked\" and \"walking\" share no word unigram but most character 4-grams. It is also very cheap. It does not detect factual errors; measured, it scored a factually inverted sentence higher than BLEU did, because character n-grams are even less sensitive to attachment." },
 
       { stem: "A correct paraphrase scores 0.5841 and a factually inverted sentence scores 0.9233 under BERTScore. What does this establish?",
-        options: [
-          "The backbone model is poorly suited to the domain",
-          "Semantic similarity is not correctness \u2014 swapping two numbers yields a sentence semantically near the reference and factually opposite, and embeddings represent nearness",
-          "Baseline rescaling was not applied",
-          "The greedy matching assigned the swapped tokens incorrectly"
-        ],
+        options: ["The backbone is poorly suited to the domain", "Semantic similarity is not correctness", "Baseline rescaling was not applied", "Greedy matching paired the swap wrongly"],
         answer: 1,
         why: "BERTScore does genuinely improve on BLEU for the paraphrase, lifting it off the floor from 0.0000 \u2014 that part works. But no similarity function can rank an inverted sentence below a paraphrase, because the distinction is not one of similarity: the inversion reuses the content words and differs only in attachment. Catching it requires a faithfulness check or a verifier rather than a better embedding." }
     ]

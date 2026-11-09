@@ -266,42 +266,22 @@ only the second one names the bug, and it is one integer.`,
     title: "Check yourself",
     questions: [
       { stem: "Why are evals treated as a separate signal rather than as metrics?",
-        options: [
-          "Because they are computed offline rather than in production",
-          "Because they judge the meaning of a request and response \u2014 needing a model or human, costing money per observation, and carrying uncertainty no latency number has",
-          "Because they are stored in a different database from metrics",
-          "Because they are only available for text outputs"
-        ],
+        options: ["They are computed offline, not in production", "They judge meaning, at a cost, with uncertainty", "They are stored in a separate database", "They are only available for text outputs"],
         answer: 1,
         why: "Metrics are derived from the machinery \u2014 counts, durations, bytes \u2014 while an eval score is a judgement about content, which is a different kind of observation with a different cost and reliability profile. Judges flip under swapped ordering and 80% raw agreement can be a kappa of 0.58, so an eval score needs its agreement figure reported alongside it in a way that a latency measurement never does. Evals also run on live traffic, not only offline." },
 
       { stem: "An investigation knows accuracy fell and has traces open, but cannot decide whether retrieval or the prompt is at fault. Which rung is missing?",
-        options: [
-          "Component logs \u2014 the cause is always in a log line",
-          "Span attributes \u2014 the tree gives stage timings, but the mechanism lives in top_score, above_threshold and the chunk IDs",
-          "Metrics \u2014 the drop has not been confirmed as statistically real",
-          "Evals \u2014 the answers have not been scored by a judge"
-        ],
+        options: ["Component logs; the cause is in a log line", "Span attributes like top_score and chunk ids", "Metrics; the drop is not yet confirmed", "Evals; the answers are not yet judged"],
         answer: 1,
         why: "A trace tree without domain attributes can tell you retrieval took 624 milliseconds, which does not distinguish a retriever that found nothing from a model that ignored what it found. The attributes that settle it are the number of chunks above the similarity threshold, the top score, and the chunk IDs. This is the rung teams most often lack, because auto-instrumentation supplies the tree for free while the domain attributes have to be added by hand." },
 
       { stem: "Why do you open traces after slicing the metric rather than before?",
-        options: [
-          "Because traces are expensive to query and slicing warms the cache",
-          "Because traces are the signal you keep least of, so the sliced metric is what tells you which twenty are worth opening",
-          "Because traces are only generated for failed requests",
-          "Because slicing a metric requires a trace ID as input"
-        ],
+        options: ["Traces are costly; slicing warms the cache", "Slicing shows which few traces to open", "Traces exist only for failed requests", "Slicing a metric needs a trace ID first"],
         answer: 1,
         why: "Traces do not compress and are sampled and expired within weeks, so you have far fewer of them than metric points and cannot browse them. The sliced metric identifies the population that moved, which turns \u201copen some traces\u201d into \u201copen twenty failing traces from this cohort and twenty healthy ones from before.\u201d That pairing is what makes reading them productive rather than anecdotal." },
 
       { stem: "What does it mean that aggregated metrics are kept forever and payloads for two to four weeks?",
-        options: [
-          "That metrics are more important than traces for debugging",
-          "That retention matches the question each signal answers \u2014 incidents are found in weeks, trends in months \u2014 and follows from cardinality rather than from budget preference",
-          "That payload storage is unreliable beyond a month",
-          "That traces should be deleted once an incident closes"
-        ],
+        options: ["Metrics matter more than traces for debugging", "Retention follows each signal's question and cardinality", "Payload storage is unreliable beyond a month", "Traces should be deleted when an incident closes"],
         answer: 1,
         why: "A metric is a number per time bucket per label combination and compresses enormously; a trace is a tree of spans with attributes and text payloads and does not. That asymmetry is arithmetic rather than policy, and the resulting split happens to align with what each signal is for \u2014 you investigate an incident within weeks of it happening, but you compare against a baseline from months ago." }
     ]

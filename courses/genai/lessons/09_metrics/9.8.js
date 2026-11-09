@@ -320,42 +320,22 @@ print("diagnosis: recall@10 %.4f, MRR %.4f -> %s"
     title: "Check yourself",
     questions: [
       { stem: "A retriever shows recall@10 of 0.9500 and MRR of 0.6222. What does this combination diagnose?",
-        options: [
-          "A retrieval problem \u2014 the embedding model is failing to find relevant chunks",
-          "A ranking problem \u2014 the right chunks are being found but placed too low, so a reranker is the fix rather than a new embedding model",
-          "A labelling problem \u2014 the ground truth sets are too large",
-          "Nothing \u2014 the two metrics are not comparable"
-        ],
+        options: ["Retrieval: the embedder misses relevant chunks", "Ranking: found but placed low; add a reranker", "Labelling: the ground-truth sets are too big", "Nothing; the two metrics are not comparable"],
         answer: 1,
         why: "High recall means the relevant chunks are present in the returned window; low reciprocal rank means the first one appears late. Reordering what was returned is exactly what a reranker does, so this is the cheap fix rather than the expensive one. The contrasting signature is low recall, where a chunk never appears in the window at all \u2014 no reordering can produce it, and that needs better chunking, embeddings or hybrid search." },
 
       { stem: "Average precision for a query with four relevant chunks and hits at ranks 1, 3 and 6 is (1/1 + 2/3 + 3/6)/4 = 0.5417. Why divide by 4 rather than 3?",
-        options: [
-          "Because the fourth hit would have been at rank 8 by extrapolation",
-          "Because dividing by all relevant chunks is how a never-retrieved chunk is punished \u2014 it adds 0 to the numerator and still 1 to the denominator",
-          "Because average precision is normalised by the retrieval window size",
-          "Because precision must be averaged over the full ranking, not just the hits"
-        ],
+        options: ["The fourth hit is extrapolated to rank 8", "A missed chunk adds 1 to the denominator", "AP is normalised by the window size", "Precision averages over the full ranking"],
         answer: 1,
         why: "The fourth relevant chunk was never returned, so it contributes no precision term while still enlarging the divisor \u2014 which drops the score from 0.7222 to 0.5417. That design is what makes AP sensitive to a permanent miss, unlike precision@k, which simply does not know the chunk exists. It is also what distinguishes AP from averaging precision only at the ranks where hits occurred." },
 
       { stem: "NDCG on the same ranking and labels computes to 0.9724 one way and 0.9575 another. What differs?",
-        options: [
-          "The discount function \u2014 log base 2 against natural log",
-          "The gain function \u2014 linear relevance against 2^relevance minus 1, both standard and both widely implemented",
-          "Whether the ideal ordering includes the zero-relevance item",
-          "Whether the metric was truncated at k"
-        ],
+        options: ["The discount: log base 2 versus natural log", "The gain: linear versus 2^rel − 1", "Whether ideal ordering keeps zero items", "Whether the metric was truncated at k"],
         answer: 1,
         why: "Linear gain uses the relevance grade directly while exponential gain uses 2^rel \u2212 1, which emphasises top grades more heavily. Both appear in textbooks and libraries, so neither is incorrect \u2014 but the figures are not comparable, and the convention is typically a default argument rather than something reported. They coincide at binary relevance, since 2\u00b9\u22121 = 1 and 2\u2070\u22121 = 0, and diverge as the grade scale widens." },
 
       { stem: "Why is precision@k described as a poor headline metric for retrieval?",
-        options: [
-          "Because it requires graded relevance labels",
-          "Because it is not monotonic in k and is bounded by the relevant-set size \u2014 one query scored P@5 of 0.4000 while its average precision was 1.0000",
-          "Because it ignores the total number of relevant chunks",
-          "Because it cannot be computed when no relevant chunks are retrieved"
-        ],
+        options: ["It requires graded relevance labels", "Bounded by relevant-set size, not monotone", "It ignores the number of relevant chunks", "It is undefined with no relevant results"],
         answer: 1,
         why: "Precision jumps at hits and decays at misses, so precision@5 and precision@10 can rank two retrievers differently \u2014 and with only 2 relevant chunks, precision@5 cannot exceed 0.4 however perfect the ordering. The measured case had a query with every relevant chunk at the top scoring AP of 1.0000 and P@5 of 0.4000, which is the gap that argues for reporting MAP. It needs only binary labels and is well-defined at zero." }
     ]

@@ -325,42 +325,22 @@ for name, s in sorted(scores.items(), key=lambda kv: kv[1]):
     title: "Check yourself",
     questions: [
       { stem: "Two models have mean stated confidence of 0.749 and 0.752, with accuracies of 0.758 and 0.544. What does this show about reporting mean confidence?",
-        options: [
-          "That the second model needs more training data to improve accuracy",
-          "That mean confidence cannot detect miscalibration \u2014 the averages are nearly identical while one model is overconfident by about twenty points, which is why ECE bins and compares within bins",
-          "That confidence elicitation failed for the second model",
-          "That the two models should be compared on the same evaluation set"
-        ],
+        options: ["The second model needs more training data", "Mean confidence hides miscalibration; ECE bins", "Confidence elicitation failed for the second", "They should be compared on the same set"],
         answer: 1,
         why: "A global average can match while the relationship between confidence and accuracy is badly wrong, so a dashboard showing mean confidence would call these models equivalent. ECE separates them at 0.0136 against 0.2075 by comparing confidence to accuracy inside each bin. It is the same reason win rates are binned by length rather than reporting mean length alongside \u2014 an aggregate comparison cannot detect structure that cancels." },
 
       { stem: "A reliability table shows all five confidence bins with negative gaps of similar magnitude. What does this indicate and what fixes it?",
-        options: [
-          "Noise \u2014 more evaluation data is needed before drawing a conclusion",
-          "Systematic overconfidence \u2014 a single temperature parameter fitted on held-out data should correct it",
-          "A non-monotone miscalibration requiring a learned per-bin correction",
-          "That the confidence elicitation is returning a constant value"
-        ],
+        options: ["Noise; more data is needed before concluding", "Systematic overconfidence; fit one temperature", "Non-monotone error needing per-bin correction", "The elicitation returns a constant value"],
         answer: 1,
         why: "Consistency is the signal: gaps all in the same direction and of similar size mean the confidences need shifting, which is a one-parameter problem. Alternating signs would indicate noise and a need for more data; negative at high confidence with positive at low would be the non-monotone case needing a more flexible correction. This is why the scalar ECE should be read alongside the table rather than on its own." },
 
       { stem: "Why is measuring only jailbreak resistance insufficient for safety evaluation?",
-        options: [
-          "Because attack suites do not cover every known jailbreak technique",
-          "Because the trivially optimal model refuses everything \u2014 it scores perfectly and is useless \u2014 so an over-refusal set is needed as the other direction",
-          "Because jailbreak resistance correlates poorly with toxicity scores",
-          "Because refusal rates are not comparable across model families"
-        ],
+        options: ["Attack suites miss some known jailbreak methods", "Refusing everything scores perfectly and is useless", "Jailbreak resistance tracks toxicity poorly", "Refusal rates do not compare across families"],
         answer: 1,
         why: "Optimising only the direction that penalises harmful outputs has a degenerate solution, and a refusal is never wrong the way an incorrect answer is \u2014 so one-directional evaluation makes refusing risk-free. This is the safety-flavoured version of hedging as a reward hack. Coverage gaps in attack suites are a genuine separate concern; the structural problem is that the metric as stated has a useless optimum." },
 
       { stem: "A RAG system reports a groundedness score of 0.94. What can still be wrong?",
-        options: [
-          "Nothing \u2014 groundedness is the strongest available faithfulness measure",
-          "A faithfully-quoted falsehood \u2014 groundedness asks whether claims are supported by retrieved context, not whether the context answers the question or is true",
-          "The score cannot be trusted without a reference answer for each case",
-          "Groundedness requires human labels, so 0.94 is a judge estimate"
-        ],
+        options: ["Nothing; it is the strongest faithfulness measure", "A faithfully quoted falsehood or a non-answer", "It is untrustworthy without reference answers", "It needs human labels, so 0.94 is an estimate"],
         answer: 1,
         why: "Groundedness is reference-free and measures claim support against what was retrieved, which usefully isolates the generator from the retriever \u2014 most \"the model is wrong\" failures are retrieval failures. But it passes an answer that accurately reflects a retrieved document which does not actually answer the question: a refund-policy query retrieving a document titled \"Scenario 1: The Invented Policy\" is on-topic, quotable and not an answer. Truth against ground truth is a separate, more expensive measurement." }
     ]

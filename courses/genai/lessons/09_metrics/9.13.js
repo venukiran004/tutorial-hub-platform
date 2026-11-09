@@ -256,42 +256,22 @@ print("failures:", dict(m["failures"]))`,
     title: "Check yourself",
     questions: [
       { stem: "Why should every agent metric be reported with n and temperature?",
-        options: [
-          "To allow reproduction of the exact trajectories",
-          "Because a single run is a sample rather than a measurement \u2014 non-determinism means the same input gives different trajectories, so a one-shot figure is one draw presented as a result",
-          "Because temperature determines the step cap",
-          "Because cost scales with the number of samples"
-        ],
+        options: ["To reproduce the exact trajectories", "One run is a single draw, not a measurement", "Temperature determines the step cap", "Cost scales with the number of samples"],
         answer: 1,
         why: "Temperature, tool latency and model non-determinism all mean repeated runs on the same input diverge, so reporting a single success figure treats one draw from a distribution as a property of the system. The honest form is pass@1 alongside pass@k with the budget attached, and the gap between them separates flakiness from incapability. Exact reproduction is generally not achievable anyway, which is the underlying reason." },
 
       { stem: "An agent costs $0.0218 per request and $0.0266 per resolved task. Which should be reported and why?",
-        options: [
-          "Per request, since it is the figure the infrastructure bill reflects",
-          "Per resolved task \u2014 per request rewards an agent that abandons hard cases cheaply, and the 22% gap is exactly the attempts that resolved nothing",
-          "Both are equivalent once failure rates are stable",
-          "Per request, with the failure rate reported separately"
-        ],
+        options: ["Per request, the figure the bill reflects", "Per resolved task: cheap failures are excluded", "Both, as they converge once failures stabilise", "Per request, with failure rate separately"],
         answer: 1,
         why: "Using requests as the denominator makes giving up look efficient, since a failed attempt is cheap \u2014 the opposite of the incentive you want. Charging unresolved attempts to the successes reflects what the business pays per outcome. It also prices retries honestly: one retry at a pass@1 of 0.70 adds 30% per request, and cost per success stays flat only if failures are independent, which makes it a trade rather than a free win." },
 
       { stem: "An agent fails 18% of tasks. Why is that number insufficient to act on?",
-        options: [
-          "Because 18% is within the noise of a non-deterministic system",
-          "Because it conflates loops with give-ups, which need opposite fixes \u2014 measured at 19 against 11 among 36 failures",
-          "Because failures should be reported per tool rather than in aggregate",
-          "Because the figure excludes partial successes"
-        ],
+        options: ["18% is within non-deterministic noise", "Loops and give-ups need opposite fixes", "Failures should be reported per tool", "It excludes partial successes"],
         answer: 1,
         why: "A loop needs a tighter stopping condition and a premature give-up needs a looser one, so an aggregate containing both points at neither. Both are detectable deterministically from the trace: hitting the step cap with repeated identical tool-and-argument pairs indicates a loop, while early termination with no answer and no error indicates a give-up. Keying on arguments rather than tool names alone is what makes the loop detection work." },
 
       { stem: "When is outcome-only scoring defensible for an agent?",
-        options: [
-          "Whenever a final-state check is available, since it is the cheapest option",
-          "When the agent is read-only and the path genuinely does not matter \u2014 otherwise a successful outcome can coexist with an incident",
-          "When a gold trace is unavailable for comparison",
-          "When the task has a single correct action sequence"
-        ],
+        options: ["Whenever a final-state check is available", "When read-only and the path does not matter", "When a gold trace is unavailable", "When there is one correct action sequence"],
         answer: 1,
         why: "Side effects are the issue: a trajectory that reached the right answer after calling a write endpoint it should not have touched scores a pass under outcome scoring and is a problem. It also rewards a right answer reached through invalid reasoning, the same defect as an outcome-only reward model. The practical compromise is outcome scoring plus the deterministic assertions, which catch the side-effect and loop classes without a judge. A single correct sequence actually argues for gold-trace matching." }
     ]

@@ -288,42 +288,22 @@ same winner: False`,
     title: "Check yourself",
     questions: [
       { stem: "In this trace, what does optimising the vector search to zero achieve?",
-        options: [
-          "Roughly a 20% reduction, since retrieval is 19.9% of the request",
-          "Roughly 274 ms of 3,134 \u2014 about 9% \u2014 because the vector search is 8.7% while the model is 75.7%",
-          "Nothing, because the vector search runs concurrently with generation",
-          "Roughly 40%, since search and rerank together dominate retrieval"
-        ],
+        options: ["About 20%, as retrieval is 19.9% of it", "About 9%: 274 ms of 3,134", "Nothing, as search overlaps generation", "About 40%, with search and rerank"],
         answer: 1,
         why: "The waterfall gives the share directly: 274 ms of a 3,134 ms request. Retrieval as a whole is 19.9%, but that includes the embedding call and the reranker, and eliminating only the search leaves those in place. The point of computing the share first is that it rejects a plausible-sounding optimisation before anyone spends a sprint on it \u2014 the model at 75.7% is where the latency is." },
 
       { stem: "What does the CLIENT span total of 2,988 of 3,134 ms tell you?",
-        options: [
-          "That the service is making too many outbound calls and should batch them",
-          "That 95.3% of the request is waiting on other systems, so profiling your own code cannot meaningfully help",
-          "That the trace is missing spans for in-process work",
-          "That the network is the bottleneck and should be moved closer"
-        ],
+        options: ["Too many outbound calls; batch them", "95.3% is waiting on other systems", "Spans for in-process work are missing", "The network is the bottleneck"],
         answer: 1,
         why: "CLIENT marks every span that calls out of the process, so their total is the share of the request that is somebody else's SLA rather than your code \u2014 and at 95.3% there is almost nothing left for a profiler to find. Your own code is the 4.2% of INTERNAL self time. This is the first ratio to establish in a latency investigation because it decides which class of fix is even available: streaming, a shorter prompt, a faster model, or concurrency." },
 
       { stem: "Every span has status OK and the answer is wrong. What caught it?",
-        options: [
-          "The faithfulness judge, which scored the answer against its context",
-          "A span attribute \u2014 docs_above_threshold was 0 and the reranker's top_score was 0.31 against a normal 0.78",
-          "The output guardrail, which flagged the response as ungrounded",
-          "The prompt token count, which was abnormally low"
-        ],
+        options: ["The faithfulness judge on its context", "A span attribute on the retrieval scores", "The output guardrail flagging it", "An abnormally low prompt token count"],
         answer: 1,
         why: "The status, duration, token counts, cost and finish reason are all normal, because the pipeline did exactly what it was asked \u2014 the model faithfully summarised five weakly related chunks. The only evidence is two integers the retriever computed and would otherwise have discarded. A faithfulness judge would in fact score this answer well, since it is faithful to the context it was given; the context is what was wrong." },
 
       { stem: "Why is a self time of 7 ms on the retrieve span good news?",
-        options: [
-          "Because it means the retrieval wrapper is doing nothing but coordinating, so all 624 ms is accounted for in its children",
-          "Because 7 ms is below the clock resolution and can be ignored",
-          "Because it proves the children ran concurrently",
-          "Because it indicates the reranker was skipped"
-        ],
+        options: ["The wrapper only coordinates; children explain it all", "7 ms is below the clock's resolution, so ignore it", "It proves the child spans ran concurrently", "It shows that the reranker step was skipped"],
         answer: 0,
         why: "Self time is the span's duration minus its children's, so 624 minus 617 means the parent added 7 ms of coordination and every other millisecond is real work in a child span that you can see and attribute. A large self time would be the warning sign \u2014 it would mean real time is being spent somewhere that no child span covers, which is uninstrumented work such as serialisation or a connection-pool wait." }
     ]

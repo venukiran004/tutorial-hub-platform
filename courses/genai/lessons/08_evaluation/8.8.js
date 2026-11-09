@@ -254,42 +254,22 @@ print("passes             : %d" % rows.count("pass"))`,
     title: "Check yourself",
     questions: [
       { stem: "On the same corpus and queries, dense retrieval scored nDCG 0.63 against BM25's 0.60, while BM25 scored MRR 0.85 against dense's 0.84. What explains the disagreement?",
-        options: [
-          "Measurement noise \u2014 the differences are within the confidence interval",
-          "MRR only considers the rank of the first relevant result, so it rewards one well-placed chunk, while nDCG evaluates the whole ordering",
-          "BM25 retrieves fewer chunks, inflating its rank-based scores",
-          "nDCG requires graded relevance labels, which were unavailable for BM25"
-        ],
+        options: ["Noise; the gaps are inside the interval", "MRR sees the first hit; nDCG the whole list", "BM25 retrieves fewer chunks, inflating ranks", "nDCG needs graded labels BM25 lacked"],
         answer: 1,
         why: "The definitions differ in what they can see: MRR stops at the first hit and is indifferent to everything below it, so a retriever placing one good chunk at rank 1 beats one placing five good chunks at ranks 2 to 6. nDCG and MAP account for the full ranking. This means \"which retriever is better\" has no metric-independent answer, and the choice of metric encodes whether the generator needs one good chunk or broad coverage." },
 
       { stem: "Precision@k on a corpus falls from 0.75 at k=1 to 0.26 at k=20. What does this indicate?",
-        options: [
-          "The ranking degrades sharply beyond the top few results",
-          "Arithmetic \u2014 with a median of about 6 relevant chunks per query, precision@20 cannot exceed 0.30 regardless of ranking quality",
-          "The relevance labels are incomplete beyond the top-ranked chunks",
-          "The index contains near-duplicates that dilute precision at higher k"
-        ],
+        options: ["Ranking degrades sharply past the top few", "Arithmetic: ~6 relevant caps P@20 at 0.30", "Labels are incomplete past the top ranks", "Near-duplicates dilute precision at high k"],
         answer: 1,
         why: "Precision's denominator is k, so once k exceeds the number of relevant items available the metric is capped below 1 by construction \u2014 at a median of 6 relevant chunks, 6/20 is the ceiling at k=20. The ranking may be perfect and precision will still fall. This makes precision@k comparable only at a fixed k and a poor headline, and it is why nDCG, which normalises against the ideal ordering, is the better default." },
 
       { stem: "Why does a faithfulness score need its claim-extraction policy reported?",
-        options: [
-          "Because different judges disagree about whether claims are supported",
-          "Because the denominator is the number of claims, so how aggressively an answer is split changes the score \u2014 one unsupported sentence scores 0, while the same sentence split into four claims with three supported scores 0.75",
-          "Because atomic claims must be extracted before the context can be retrieved",
-          "Because the policy determines whether the metric is reference-free"
-        ],
+        options: ["Different judges disagree on support", "Splitting into more claims changes the ratio", "Claims must be extracted before retrieval", "It decides whether the metric is reference-free"],
         answer: 1,
         why: "Faithfulness is supported claims over total claims, and both numerator and denominator depend on the decomposition step. Two teams both reporting \"RAGAS faithfulness\" can therefore be computing materially different quantities. Judge disagreement on support is a separate real source of noise. This is the same pattern as perplexity needing its corpus and \u03ba needing its class balance \u2014 a ratio whose denominator is a judgement must have that judgement stated." },
 
       { stem: "A combined end-to-end RAG score drops after a large document ingest. Why is that score insufficient to act on?",
-        options: [
-          "Because end-to-end scores are judge-based and therefore noisy",
-          "Because it cannot say whether retrieval or generation degraded, and the prompt is the cheapest thing to change \u2014 so the team tunes prompts against what is usually a retrieval problem",
-          "Because ingest affects only latency, not quality",
-          "Because the golden set becomes stale after the corpus changes"
-        ],
+        options: ["End-to-end scores are judge-based and noisy", "It cannot say whether retrieval or generation broke", "Ingest affects only latency, never quality", "The golden set goes stale when the corpus changes"],
         answer: 1,
         why: "A single number localises nothing, and the natural response is to edit the most editable component. Measured, the causes behave very differently: adding 20,000 off-topic chunks changed recall@5 by nothing, while near-duplicates at a third that index size dropped it to 55% \u2014 so the diagnosis matters and an end-to-end score does not supply it. Separating the stages is what makes the number actionable rather than merely thorough." }
     ]

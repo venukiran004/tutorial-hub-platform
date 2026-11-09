@@ -247,42 +247,22 @@ print("gap is %s" % ("FLAKINESS -- retries will help"
     title: "Check yourself",
     questions: [
       { stem: "With n = 10 samples and c = 1 correct, pass@10 computes to exactly 1.0. What does this mean?",
-        options: [
-          "A 10%-reliable model succeeds essentially always given ten attempts",
-          "A boundary condition \u2014 drawing all ten samples necessarily includes the correct one, so no estimation occurs and the figure says nothing about the model",
-          "The estimator is biased for small n and should be corrected",
-          "pass@k is undefined when c is 1 and should be reported as pass@1"
-        ],
+        options: ["A 10% model nearly always wins in ten tries", "A boundary case: all samples are drawn", "The estimator is biased for small n", "pass@k is undefined when c is 1"],
         answer: 1,
         why: "The n \u2212 c < k branch returns 1.0 whenever there are fewer failures than k, which at n = k holds for any c \u2265 1 \u2014 you are selecting every sample you have. The true pass@10 for a 10%-reliable model is around 0.65, so the boundary value diverges substantially from reality. This is why harnesses sample 100 or 200 to report pass@10, and why computing at two sample sizes is the cheap test for being in this regime." },
 
       { stem: "Pass@10 computes to 0.4162 from 100 samples and 0.4150 from 200 samples at the same success rate. What does the agreement establish?",
-        options: [
-          "That 100 samples is the minimum viable sample size",
-          "That the estimator is recovering a property of the model rather than of the sample size \u2014 which is what \u201cunbiased\u201d means",
-          "That the temperature was held constant between runs",
-          "That the task is deterministic at that success rate"
-        ],
+        options: ["100 samples is the minimum viable size", "It measures the model, not the sample size", "Temperature was constant between the runs", "The task is deterministic at that rate"],
         answer: 1,
         why: "An unbiased estimator should give the same answer regardless of how many samples it was computed from, so stability across sample sizes is the practical correctness check. Contrast the boundary case, where pass@10 reads 1.0 at n = 10 and around 0.65 at large n \u2014 a large drift signalling that n is too small. The check costs one extra run and settles whether a reported figure is an estimate or an artefact." },
 
       { stem: "A product gives the user one attempt. The team reports pass@5 of 0.95 as its quality metric. What is wrong?",
-        options: [
-          "pass@5 overstates reliability because it assumes independent samples",
-          "The user experiences pass@1 \u2014 with no retry, pass@5 is a flakiness diagnostic rather than a product metric",
-          "pass@5 cannot be computed without a verifier",
-          "The metric should be pass@1 multiplied by five"
-        ],
+        options: ["pass@5 assumes independent samples", "Users get pass@1; pass@5 is diagnostic", "pass@5 cannot be computed without a verifier", "It should be pass@1 multiplied by five"],
         answer: 1,
         why: "Both figures are true about the same system; which is relevant is a product fact. Without a retry path, the user's experience is one draw, so pass@1 is the product number and the gap to pass@5 measures how much failure is non-determinism rather than incapability. That gap is genuinely useful \u2014 it tells you whether retries would help \u2014 but as a diagnostic, not as the headline." },
 
       { stem: "Why must temperature be reported alongside a pass@k figure?",
-        options: [
-          "Because temperature affects whether the unit tests pass",
-          "Because it moves pass@1 and pass@k in opposite directions \u2014 more diversity raises pass@k at large k while usually lowering pass@1",
-          "Because the estimator assumes greedy decoding",
-          "Because temperature determines the number of samples needed"
-        ],
+        options: ["Temperature changes whether tests pass", "It moves pass@1 and pass@k oppositely", "The estimator assumes greedy decoding", "It sets the number of samples needed"],
         answer: 1,
         why: "Higher temperature produces more varied samples, making it likelier that at least one of k succeeds while making any single sample less likely to be the model's best attempt. So the same model and the same k can report materially different pass@k under different sampling settings, which is why a bare figure hides three parameters \u2014 k, n and temperature \u2014 and why cross-paper comparisons so often fail." }
     ]

@@ -192,42 +192,22 @@ print("base %.3f -> fine-tuned %.3f  (%+.1f%%)"
     title: "Check yourself",
     questions: [
       { stem: "A perplexity implementation computes the mean log-probability in nats and then raises 2 to that power. What happens?",
-        options: [
-          "It raises an error, since the bases are incompatible",
-          "It returns a plausible-looking but wrong number, off by a factor involving ln 2 \u2014 which is why the uniform-distribution identity is the test to write",
-          "It returns the correct value, since perplexity is base-independent",
-          "It returns bits-per-byte instead of perplexity"
-        ],
+        options: ["It raises, since the bases are incompatible", "A plausible but wrong number, off by ln 2", "The right value, as perplexity is base-free", "It returns bits-per-byte instead"],
         answer: 1,
         why: "Nothing errors: the arithmetic succeeds and produces a number in a plausible range, which is what makes the bug dangerous. The test that catches it is the identity that N tokens each with probability 1/V must give exactly PPL = V \u2014 a crossed base returns V raised to a power of ln 2 instead. Perplexity is not base-independent; the base of the log and the base of the exponential must match." },
 
       { stem: "Model A uses a more efficient tokeniser than Model B and reports a higher perplexity on the same text. What should you conclude?",
-        options: [
-          "Model B is better at modelling that text",
-          "Nothing about quality \u2014 fewer tokens means the same total surprise divided by a smaller denominator, and A is also cheaper to serve since inference cost is per token",
-          "The comparison is valid if both were evaluated on the same corpus",
-          "A has a smaller vocabulary, which limits its expressiveness"
-        ],
+        options: ["Model B models that text better", "Nothing about quality: fewer tokens", "The comparison holds on one corpus", "A's smaller vocabulary limits it"],
         answer: 1,
         why: "Perplexity divides a fixed total surprise by a token count that is a property of the tokeniser \u2014 measured, one model and one text can read anywhere from 86.10 to 183.80 across five real tokenisers. So the efficient tokeniser looks worse on the metric while being cheaper to run, meaning the metric and the cost point in opposite directions. Holding the corpus fixed does not rescue the comparison; bits-per-byte does, because its denominator is the byte length." },
 
       { stem: "What is perplexity's most underrated legitimate use?",
-        options: [
-          "Comparing instruction-tuned models during model selection",
-          "Detecting whether a fine-tune damaged the base model, since it holds tokeniser and corpus fixed and needs no labels",
-          "Estimating inference cost, since both scale with token count",
-          "Ranking candidate answers at generation time"
-        ],
+        options: ["Comparing chat models during selection", "Detecting fine-tune damage, label-free", "Estimating inference cost per token", "Ranking candidate answers at generation"],
         answer: 1,
         why: "A fine-tune can preserve task performance while degrading general capability, and perplexity on a fixed held-out set detects that sensitively for free \u2014 one measurement showed generic perplexity doubling from 5.282 to 10.777 after a domain fine-tune. Model selection among instruction-tuned models is the use to avoid, since alignment raises perplexity and selecting on it prefers the least aligned model. It says nothing directly about inference cost, which depends on model size." },
 
       { stem: "Why is a perplexity of 164.88 on a technical passage not evidence that the model is poor?",
-        options: [
-          "Because perplexity above 100 is normal for all models",
-          "Because perplexity is a property of a model *and* a corpus \u2014 a 2019-era model meeting 2025 technical vocabulary is legitimately surprised, and the metric is reporting that correctly",
-          "Because the passage was too short for a stable estimate",
-          "Because technical text has higher entropy than prose in general"
-        ],
+        options: ["Perplexity over 100 is normal for every model", "It depends on the corpus as well as the model", "The passage was too short for a stable estimate", "Technical text has higher entropy than prose"],
         answer: 1,
         why: "The single-digit figures usually quoted come from standard corpora that models were trained to fit; unfamiliar vocabulary produces genuine surprise, which perplexity measures accurately. This is the second of its three comparability failures, alongside tokenisation and the usefulness gap \u2014 and it is why the valid uses hold both the tokeniser and the corpus fixed. A perplexity quoted without its corpus is half a number." }
     ]

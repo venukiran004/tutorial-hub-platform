@@ -207,42 +207,22 @@ and the one that can costs nothing -- it is an integer already on the span.`,
     title: "Check yourself",
     questions: [
       { stem: "Why do classical monitoring signals fail to detect an LLM quality problem?",
-        options: [
-          "Because LLM services are too slow for latency thresholds to be meaningful",
-          "Because the failure mode is a successful request \u2014 200, normal latency, normal cost, wrong answer",
-          "Because LLM providers do not expose error codes",
-          "Because tracing is not supported by most LLM frameworks"
-        ],
+        options: ["LLM services are too slow for latency thresholds", "The failure is a successful request with a bad answer", "LLM providers do not expose error codes", "Most LLM frameworks do not support tracing"],
         answer: 1,
         why: "Status codes, latency, error rate and cost all describe the machinery rather than the content of the output, so a retriever that returns five irrelevant chunks and a model that faithfully summarises them produce a request that is successful at every layer. This is why correctness has to be instrumented as its own signal with its own alerts, rather than inferred from the absence of errors. Latency and errors remain necessary; they are simply not sufficient." },
 
       { stem: "What does non-determinism specifically force you to change about debugging?",
-        options: [
-          "You must set temperature to 0 in production so failures become reproducible",
-          "You must capture the actual request \u2014 inputs, chunks, assembled prompt, raw output \u2014 because you cannot reproduce the failure by replaying it",
-          "You must log every request at DEBUG level rather than INFO",
-          "You must run every request twice and compare the outputs"
-        ],
+        options: ["Set temperature 0 so failures reproduce", "Capture the actual request; replay fails", "Log every request at DEBUG level", "Run every request twice and compare"],
         answer: 1,
         why: "Replaying an input does not reproduce the output, so the evidence has to be captured at the time rather than regenerated later. Setting temperature to 0 does not make a server deterministic either \u2014 batch composition alone shifts logits, which was measured at around 2e-04 for an identical prompt in a single process with no sampling. That is why the trace has to hold the retrieved chunks and the assembled prompt, not merely the question and the answer." },
 
       { stem: "A team says \u201cnothing changed, so the model must have got worse on its own.\u201d What is wrong with that?",
-        options: [
-          "Nothing \u2014 models do degrade over time as weights decay",
-          "The change log covers code but not the provider's weights behind an alias, a re-index, a prompt edited outside version control, or the traffic mix",
-          "The statement is unfalsifiable and therefore not worth investigating",
-          "Models only change when explicitly fine-tuned, so the claim is correct"
-        ],
+        options: ["Nothing; model weights decay over time", "Many changes sit outside the code's change log", "The claim is unfalsifiable, so skip it", "Models change only when fine-tuned"],
         answer: 1,
         why: "Each of those four is a deploy of something that influences behaviour, and none of them appears in a git log \u2014 which is why version pins on the model, embedding model, prompt template, index and chunking config are what make \u201cnothing changed\u201d a provable claim rather than an assumption. Weights do not decay in place. The productive reflex is to assume something changed and go and find which of the five it was." },
 
       { stem: "Why is a pre-deploy eval suite insufficient as a production quality signal?",
-        options: [
-          "Because eval suites are usually written by the same engineers who wrote the prompt",
-          "Because the things that break production \u2014 corpus changes, traffic shifts, provider rolls \u2014 all happen after the suite has passed, and a small suite cannot resolve a small regression anyway",
-          "Because offline metrics do not correlate with human judgement",
-          "Because eval suites cannot be automated in CI"
-        ],
+        options: ["The prompt's authors wrote the suite too", "Production breaks after the suite has passed", "Offline metrics ignore human judgement", "Eval suites cannot be automated in CI"],
         answer: 1,
         why: "A suite answers whether a change broke the cases it contains, which is a different question from whether the system is working now. The failures that matter most arrive after deploy and are invisible to a fixed dataset. On top of that, a 200-example suite carries roughly a five-point margin, so it cannot resolve small movements \u2014 production has the volume and the suite has the control, and they do different jobs." }
     ]

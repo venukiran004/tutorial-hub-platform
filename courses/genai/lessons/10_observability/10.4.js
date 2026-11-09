@@ -350,42 +350,22 @@ sum of retrieve's children = 454 ms but wall clock = 374 ms`,
     title: "Check yourself",
     questions: [
       { stem: "Why should a multi-turn conversation be many traces rather than one?",
-        options: [
-          "Because trace storage limits the number of spans per trace",
-          "Because the root span's duration is the user-visible latency \u2014 making a conversation one trace turns that into the conversation length and destroys every latency percentile",
-          "Because each turn uses a different model version",
-          "Because sessions cannot carry attributes"
-        ],
+        options: ["Trace storage limits the spans in one trace", "One trace turns latency into conversation length", "Each turn uses a different model version", "Sessions cannot carry attributes of their own"],
         answer: 1,
         why: "The root span's duration is what every latency percentile is computed from, so if the root covers a whole conversation then p95 describes conversation length rather than response time and nobody can act on it. The correct structure is a session ID carried as an attribute on the root span of each per-turn trace, which keeps turn latency meaningful while still allowing the whole conversation to be queried \u2014 and the multi-turn bugs like context growth need exactly that grouping." },
 
       { stem: "A span's duration is 624 ms and its children total 617 ms. What does the 7 ms tell you?",
-        options: [
-          "That 7 ms of the span's work was not instrumented and is probably a bug",
-          "That the span's own orchestration cost 7 ms, so essentially all of its time was real work in its children",
-          "That the children overlapped by 7 ms",
-          "That the clock resolution is 7 ms"
-        ],
+        options: ["7 ms went uninstrumented, which is probably a bug", "Its own orchestration took 7 ms; the rest was real", "The child spans overlapped each other by 7 ms", "The clock's resolution is only about 7 ms"],
         answer: 1,
         why: "Self time is the span's duration with its children subtracted, and a small positive self time means the parent is doing almost nothing but coordinating \u2014 which is exactly what you want from a retrieval wrapper. It is the diagnostic that separates framework overhead from real work: a parent with large self time is spending real time on something that is not in any child span, and that is worth instrumenting more finely." },
 
       { stem: "You compute self time and get a negative number. What happened?",
-        options: [
-          "The span list is corrupt and the parent pointers are wrong",
-          "The children overlapped \u2014 concurrency means their durations sum to more than the parent's wall-clock time",
-          "A child span outlived its parent, which is always an instrumentation bug",
-          "The clock went backwards between the two reads"
-        ],
+        options: ["Corrupt span list with wrong parent pointers", "The children overlapped, running concurrently", "A child outlived its parent, a bug", "The clock went backwards between reads"],
         answer: 1,
         why: "Once two children run concurrently their durations sum to more than the parent spans in wall-clock terms, so naive subtraction goes negative \u2014 which is information rather than an error, and the right response is to treat it as evidence of concurrency and switch to the critical path. This is also why summing span durations is not a valid way to compute total time in any system with parallelism; only the parent links tell you which branch determined the total." },
 
       { stem: "What is the symptom of a context-propagation bug?",
-        options: [
-          "Spans with ERROR status and no exception type recorded",
-          "Many single-span traces with no children, alongside parent traces with unexplained gaps where the work should be",
-          "Duplicate span IDs within one trace",
-          "Attributes missing from CLIENT spans only"
-        ],
+        options: ["ERROR spans with no exception type", "Orphan single-span traces and gapped parents", "Duplicate span IDs within one trace", "Attributes missing from CLIENT spans"],
         answer: 1,
         why: "When the current span ID is not passed across a thread, async task, queue or HTTP boundary, the child cannot find its parent and becomes a root of its own \u2014 so one request produces several unrelated traces. The parent trace then shows a gap covering work that did happen but was recorded elsewhere, which reads like a performance problem and is actually a wiring problem. Thread pools, `contextvars` in async code, and serialising context into queue messages are the three places it usually breaks." }
     ]

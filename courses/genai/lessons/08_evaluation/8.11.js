@@ -270,42 +270,22 @@ for effect in (0.01, 0.02, 0.05):
     title: "Check yourself",
     questions: [
       { stem: "Why is implicit feedback usually more useful than thumbs up/down?",
-        options: [
-          "Because it is easier to instrument in most products",
-          "Because it is emitted by everyone who uses the product, while explicit feedback has a low response rate and is self-selected toward people who were annoyed",
-          "Because implicit signals are deterministic while explicit ones are subjective",
-          "Because explicit feedback cannot be used for training without pairing"
-        ],
+        options: ["It is easier to instrument in most products", "Everyone emits it; explicit votes are self-selected", "Implicit signals are deterministic; votes are not", "Explicit feedback cannot train without pairs"],
         answer: 1,
         why: "A thumbs-down rate measures annoyance among the motivated minority rather than quality across users, because only a few percent respond and they are not a random sample. Copy rates, regenerate clicks and abandonment are produced by the whole population. The trade is that implicit signals are proxies whose relationship to quality must be validated \u2014 abandonment in particular can mean a bad answer or a satisfied user." },
 
       { stem: "A canary at 5% of traffic for one day shows no regression. What have you established?",
-        options: [
-          "That the change is safe and beneficial, so it can be rolled out",
-          "That nothing catastrophic happened \u2014 which is a different question, and a different sample size, from whether the change helped",
-          "That the change is neutral, since no metric moved significantly",
-          "That the guardrail metrics are correctly configured"
-        ],
+        options: ["The change is safe and beneficial; roll it out", "Only that nothing catastrophic happened", "The change is neutral, as no metric moved", "The guardrail metrics are configured correctly"],
         answer: 1,
         why: "Catching a catastrophic regression needs far fewer samples than resolving a small improvement \u2014 detecting a two-point change on an 82% baseline takes roughly 2,283 sessions per arm, and a one-point change four times that, because the requirement scales quadratically as the effect shrinks. So a canary should be sized for safety and an A/B for significance, and reading a quiet canary as a win is the error to avoid." },
 
       { stem: "Why monitor the retrieval \u201cno results\u201d rate specifically?",
-        options: [
-          "Because it indicates index corruption before queries start failing",
-          "Because it is nearly free and leads \u2014 it rises when queries move away from the corpus, before answer quality visibly degrades, since the fallback still produces something plausible",
-          "Because it is the only drift signal that can be computed without labels",
-          "Because it correlates directly with the business deflection rate"
-        ],
+        options: ["It reveals index corruption before failures", "It is free and leads quality degradation", "It is the only label-free drift signal", "It tracks the business deflection rate"],
         answer: 1,
         why: "It is a leading indicator of distribution shift: queries drift away from what the corpus covers, retrieval starts coming back empty, and the system keeps answering from a fallback path that reads fine \u2014 which is precisely where hallucination lives. Several drift signals need no labels, including tracking the embedding centroid of incoming queries; this one is distinguished by being both free and early rather than by being the only label-free option." },
 
       { stem: "An implicit signal improves after a change. What is the main confound to rule out?",
-        options: [
-          "Seasonality in the traffic distribution",
-          "That the signal moved for a product reason rather than a quality one \u2014 moving a copy button changes the copy rate with no model change, which an A/B controls for and a trend line does not",
-          "That the signal's correlation with quality has the wrong sign",
-          "That the sample size was insufficient to detect the change"
-        ],
+        options: ["Seasonality in the traffic distribution", "A product change, not a quality one, moved it", "The signal's correlation has the wrong sign", "The sample was too small to detect it"],
         answer: 1,
         why: "Implicit signals are mediated by the interface, so any UI change alters them independently of answer quality \u2014 and in a product where several things ship each week, a time series attributes the movement to whatever else happened. A randomised comparison isolates the change. Sign errors and insufficient power are both genuine problems, addressed respectively by one-off hand-label validation and by sizing the test, but the interface confound is what specifically undermines a trend-based reading." }
     ]

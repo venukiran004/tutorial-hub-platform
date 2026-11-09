@@ -217,42 +217,22 @@ print("family counts:", {f: sum(1 for v in FAMILY.values() if v[0] == f)
     title: "Check yourself",
     questions: [
       { stem: "Why does the rule of thumb reach for family 3 (model-based) only when families 2 and 4 are unavailable?",
-        options: [
-          "Because model-based metrics are more expensive per evaluation",
-          "Because family 3 is the only family that needs its own validation \u2014 a judge is a model whose agreement with humans must be measured before its numbers mean anything",
-          "Because model-based metrics cannot be computed deterministically",
-          "Because rubrics are harder to write than gold answers"
-        ],
+        options: ["Model-based metrics cost more per evaluation", "A judge must itself be validated against humans", "Model-based metrics are not deterministic", "Rubrics are harder to write than gold answers"],
         answer: 1,
         why: "An executed test or a labelled relevant set carries its own guarantee; a judge does not. Measured, a judge outputting \"good\" for every case achieved 95.1% raw agreement with humans and \u03ba of exactly zero \u2014 better raw agreement than a genuinely informative judge \u2014 so a model-based score with no calibration study behind it is an instrument nobody checked. Cost and non-determinism are real secondary concerns." },
 
       { stem: "Perplexity appears on a product quality dashboard. What is wrong with that?",
-        options: [
-          "Nothing, provided the tokeniser is held constant across comparisons",
-          "It is a family-1 metric \u2014 it compares models using their own probabilities and cannot see whether an answer is true, useful or on-topic",
-          "It should be reported as bits-per-byte instead",
-          "It cannot be computed for instruction-tuned models"
-        ],
+        options: ["Nothing, if the tokeniser is held constant", "It uses the model's own probabilities, not truth", "It should be reported as bits-per-byte", "It cannot be computed for chat models"],
         answer: 1,
         why: "Intrinsic metrics measure the model's surprise at text, which is a property of the model rather than of an answer's usefulness \u2014 a model can be confidently fluent and wrong with excellent perplexity. Its valid use is comparing checkpoints during training on a fixed tokeniser and corpus. Holding the tokeniser constant fixes comparability but not relevance, and bits-per-byte is the right form for cross-tokeniser comparison rather than a fix for this misfiling." },
 
       { stem: "What makes family 4 (behavioural) usable on a system you did not build?",
-        options: [
-          "Its metrics are standardised across vendors",
-          "It needs only an observable outcome \u2014 no access to the model's probabilities, no gold answer and no rubric",
-          "It can be computed from API logs without instrumentation",
-          "It is the only family with established confidence intervals"
-        ],
+        options: ["Its metrics are standardised across vendors", "It needs only an observable outcome", "It can be computed from raw API logs", "It alone has established intervals"],
         answer: 1,
         why: "A checkable outcome is externally visible, so pass@k, retrieval recall and task success all work on a black box. Family 1 requires the model's internals, which a hosted API does not expose, and family 2 requires someone to have written a gold answer. This is why a family-4 measurement can show a pipeline improving \u2014 adding BM25 and rank fusion raised recall@5 from 95% to 100% \u2014 where no intrinsic metric could." },
 
       { stem: "Why does this module compute each metric by hand rather than calling a library?",
-        options: [
-          "Because library implementations frequently contain bugs",
-          "Because the conventions that change a metric's value live in default arguments \u2014 NDCG's two standard gain formulations give 0.9724 and 0.9575 on identical data",
-          "Because hand computation is faster for small evaluation sets",
-          "Because library versions differ in how they handle missing labels"
-        ],
+        options: ["Library implementations are often buggy", "Default arguments silently change the value", "Hand computation is faster on small sets", "Libraries treat missing labels differently"],
         answer: 1,
         why: "A function call returns a number with its convention hidden, which is how two teams compare incomparable figures \u2014 and this course's own two reference files use different NDCG gain formulations, neither incorrectly. Computing once by hand reveals what the judgement was, which is the general requirement that a metric whose denominator is a judgement must have that judgement reported. Library correctness is not the concern." }
     ]

@@ -265,42 +265,22 @@ print("paraphrase with smoothing: %.6f"
     title: "Check yourself",
     questions: [
       { stem: "Why does BLEU clip n-gram matches to the count?",
-        options: [
-          "To normalise for differing candidate and reference lengths",
-          "Because without it a repetitive candidate scores perfectly \u2014 five occurrences of \u201cthe\u201d against two in the reference would give 5/5 unigram precision instead of 2/5",
-          "To prevent the geometric mean from exceeding 1.0",
-          "Because the brevity penalty assumes unique n-grams"
-        ],
+        options: ["To normalise for differing lengths", "So repetition cannot score perfectly", "To keep the geometric mean below 1", "The brevity penalty needs unique n-grams"],
         answer: 1,
         why: "Precision counts matches over candidate n-grams, so repeating a correct token inflates the numerator without bound unless each match is capped at the count. The `min(candidate_count, reference_count)` term closes that degenerate optimum. Length is handled separately by the brevity penalty, and precisions cannot exceed 1.0 once clipped by construction." },
 
       { stem: "A correct paraphrase of the reference scores BLEU-4 of exactly 0.000000. Why zero rather than merely low?",
-        options: [
-          "Because the brevity penalty is zero when no n-grams match",
-          "Because the geometric mean has a zero factor \u2014 if any p_n is 0, the whole product is 0 regardless of the other precisions",
-          "Because clipping removes all matches when wording differs",
-          "Because unigram precision is zero for a full paraphrase"
-        ],
+        options: ["The brevity penalty is zero with no matches", "One zero factor zeroes the geometric mean", "Clipping removes all matches on rewording", "Unigram precision is zero for a paraphrase"],
         answer: 1,
         why: "A paraphrase can share unigrams while sharing no bigram, so p\u2082 hits zero and the geometric mean collapses \u2014 exactly 0, not approximately. This is the property that makes sentence-level BLEU unusable without smoothing and that makes BLEU fundamentally a corpus-level metric, where counts are pooled across sentences before dividing. The brevity penalty is a multiplier in (0, 1] and never zero." },
 
       { stem: "Add-one smoothing takes a correct paraphrase from 0.000000 to 0.312394. What does this tell you?",
-        options: [
-          "Smoothing repairs BLEU's paraphrase blindness",
-          "Smoothing fixes the mathematical degeneracy but not the blindness \u2014 0.312 is still a poor score for a correct translation",
-          "The smoothing constant was set too low to be useful",
-          "The paraphrase shares more n-grams than expected"
-        ],
+        options: ["Smoothing repairs BLEU's paraphrase blindness", "It fixes the maths, not the blindness", "The smoothing constant was set too low", "The paraphrase shares more n-grams than thought"],
         answer: 1,
         why: "Two distinct failures are in play: the single-zero property, which is a property of the geometric mean and which smoothing addresses, and insensitivity to meaning, which no reweighting inside BLEU can address. The score moving from exactly zero to 0.312 shows the first fixed and the second intact. Addressing the second requires leaving surface n-grams, which is what METEOR, chrF and BERTScore do." },
 
       { stem: "A hand check gives BLEU-4 of 0.5787 where the commonly quoted value is 0.5789. What is the most likely explanation?",
-        options: [
-          "The reference rounded the brevity penalty incorrectly",
-          "Rounding propagation in the check \u2014 multiplying displayed intermediates 0.8187 \u00d7 0.7071 gives 0.5787, while full precision gives 0.578930",
-          "A different number of n-gram orders was used",
-          "The reference applied smoothing and the check did not"
-        ],
+        options: ["The reference rounded the brevity penalty", "Rounding of the displayed intermediates", "A different number of n-gram orders", "Smoothing applied in one but not the other"],
         answer: 1,
         why: "Four-decimal intermediates carry error that compounds through a chain of multiplications, so a disagreement in the last decimal after several steps is almost always the verifier's rounding rather than the source's arithmetic. Recomputing at full precision settles it \u2014 here it vindicated the reference. This is a general discipline for hand-verification: recompute at full precision before concluding anything is wrong." }
     ]

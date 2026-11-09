@@ -242,42 +242,22 @@ print("cost/request $%.5f   cost/RESOLVED $%.5f   monthly $%,.0f"
     title: "Check yourself",
     questions: [
       { stem: "A system has TTFT 400 ms, TPOT 25 ms/token and 200 output tokens. Why are TTFT and TPOT reported separately rather than as the 5,400 ms total?",
-        options: [
-          "Because the total is only an approximation of real latency",
-          "Because with streaming the user sees text at 400 ms and reads along, while without it they wait 5.4 seconds \u2014 identical metrics, completely different product",
-          "Because TPOT varies more than TTFT across requests",
-          "Because the total cannot be compared across providers"
-        ],
+        options: ["The total only approximates real latency", "Streaming makes the same totals feel different", "TPOT varies more than TTFT across requests", "Totals cannot be compared across providers"],
         answer: 1,
         why: "The total is the right number for a non-streaming API and misleading for a streaming one, where what the user experiences is the wait before anything appears. At 25 ms per token the text arrives at 40 tokens per second, above the roughly 25 tokens per second that reads comfortably, so generation outruns the reader and the total is never felt as a wait. That makes enabling streaming one of the cheapest latency improvements available." },
 
       { stem: "Why is TPOT described as a threshold rather than a quantity to minimise?",
-        options: [
-          "Because it is bounded below by the model's architecture",
-          "Because once generation outruns reading speed, further improvements are invisible to the user \u2014 40 against 50 tokens per second are both faster than anyone reads",
-          "Because TPOT is dominated by TTFT in the total",
-          "Because it only applies to non-streaming requests"
-        ],
+        options: ["Architecture bounds it from below", "Past reading speed, gains are invisible", "TTFT dominates it in the total", "It applies only without streaming"],
         answer: 1,
         why: "Below roughly 25 tokens per second the text lags the reader and TPOT is felt; above it the generation is already ahead and shaving milliseconds changes nothing experienced. That reorders the usual instinct to maximise throughput, and it Covers the finding that tuning a vector index optimises about 1% of a RAG request while the re-ranker decision optimises the rest \u2014 the number people reach for is often not the one users feel." },
 
       { stem: "Three pipeline stages each have a p95 latency of 1 second. What is the pipeline's p95?",
-        options: [
-          "3 seconds, since latencies add",
-          "Well under 3 seconds, because the stages rarely hit their tails simultaneously \u2014 unless their latencies are correlated, in which case it can be worse",
-          "1 second, since the slowest stage dominates",
-          "Undefined without the full distributions"
-        ],
+        options: ["3 seconds, since latencies add up", "Under 3 s, unless tails are correlated", "1 second, as the slowest stage dominates", "Undefined without the full distributions"],
         answer: 1,
         why: "Percentiles do not compose additively: reaching 3 seconds requires all three stages to be in their tails at once, which is rare under independence. Adding component p95s therefore gives a pessimistic figure that leads to over-provisioning, while assuming independence can be optimistic when a shared cause such as queueing correlates the stages. The practical response is to measure the pipeline end to end rather than summing budgets." },
 
       { stem: "Why does a semantic cache hit rate need its negative test set described?",
-        options: [
-          "Because hit rate depends on the embedding model used",
-          "Because the similarity threshold is a correctness decision rather than a performance one \u2014 a loose threshold produces a high hit rate by serving wrong cached answers",
-          "Because prompt caches and semantic caches are measured differently",
-          "Because hit rate is not comparable across traffic distributions"
-        ],
+        options: ["Hit rate depends on the embedding model", "Loose thresholds buy hits with wrong answers", "Prompt and semantic caches differ in measurement", "Hit rate varies with traffic distribution"],
         answer: 1,
         why: "A semantic cache returns a previous answer for a merely similar query, so loosening the threshold raises the hit rate while increasing the chance of answering the wrong question \u2014 which is worse than a miss. Measured elsewhere, the score distributions of answerable and unanswerable queries overlap substantially, so no threshold cleanly separates them. That makes the negative set the thing that licenses the reported hit rate. Prompt caching is exempt since its output is identical." }
     ]
