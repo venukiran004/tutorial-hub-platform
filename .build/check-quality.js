@@ -1,9 +1,10 @@
 /* Content-quality ratchet. Three checks that the render tests cannot see:
 
-   1. Quizzes answerable by length. A question counts when the correct option
-      is at least 1.5x the mean length of its distractors. AUTHORING.md forbids
-      this; thousands of older questions break it. The count per course may
-      only go down: a course that adds one fails the gate.
+   1. Quizzes answerable by length. A question fails outright when the correct
+      option is at least 1.3x the mean length of its distractors (AUTHORING.md);
+      every question passed this in November 2026, so there is no allowance.
+      A softer tell is ratcheted per course: how often the correct option is
+      the single longest one. Chance is 1 in 4; the count may only go down.
    2. Prose that argues with a source the learner never sees ("the common
       form gives", "the usual output prints"), left by an automated rewrite.
       Same ratchet.
@@ -45,7 +46,7 @@ function codeOf(bs, acc) {
 
 const counts = {}, hard = [];
 for (const course of fs.readdirSync(path.join(root, "courses")).sort()) {
-  const c = counts[course] = { quizByLength: 0, quizTotal: 0, unseenSource: 0 };
+  const c = counts[course] = { quizByLength: 0, quizLongest: 0, quizTotal: 0, unseenSource: 0 };
   const dir = path.join(root, "courses", course, "lessons");
   if (!fs.existsSync(dir)) continue;
   for (const f of lessonFiles(dir)) {
@@ -61,7 +62,12 @@ for (const course of fs.readdirSync(path.join(root, "courses")).sort()) {
       c.quizTotal++;
       const others = o.filter((_, i) => i !== a).map(x => String(x).length);
       const mean = others.reduce((s, x) => s + x, 0) / others.length;
-      if (String(o[a]).length >= 1.5 * mean) c.quizByLength++;
+      if (String(o[a]).length >= 1.3 * mean) {
+        c.quizByLength++;
+        hard.push(`${path.relative(root, f)}: quiz "${String(q.stem).slice(0, 60)}" is answerable by length (correct option >= 1.3x mean distractor)`);
+      }
+      const lens = o.map(x => String(x).length), mx = Math.max(...lens);
+      if (lens[a] === mx && lens.filter(x => x === mx).length === 1) c.quizLongest++;
     }
     const prose = JSON.stringify(L, (k, v) => (k === "code" || k === "svg" || k === "out") ? undefined : v);
     c.unseenSource += (prose.match(LEAK) || []).length;
@@ -76,8 +82,8 @@ const base = fs.existsSync(BASE) ? JSON.parse(fs.readFileSync(BASE, "utf8")) : {
 let fail = hard.length > 0, improved = false;
 const rows = [];
 for (const [course, c] of Object.entries(counts)) {
-  const b = base[course] || { quizByLength: Infinity, unseenSource: Infinity };
-  for (const k of ["quizByLength", "unseenSource"]) {
+  const b = Object.assign({ quizLongest: Infinity, unseenSource: Infinity }, base[course]);
+  for (const k of ["quizLongest", "unseenSource"]) {
     if (c[k] > b[k]) { fail = true; rows.push(`  FAIL ${course} ${k}: ${c[k]} > baseline ${b[k]}`); }
     else if (c[k] < b[k]) improved = true;
   }
@@ -86,13 +92,15 @@ hard.forEach(h => rows.push("  FAIL " + h));
 const tq = Object.values(counts).reduce((s, c) => s + c.quizByLength, 0);
 const tt = Object.values(counts).reduce((s, c) => s + c.quizTotal, 0);
 const tl = Object.values(counts).reduce((s, c) => s + c.unseenSource, 0);
+const tg = Object.values(counts).reduce((s, c) => s + c.quizLongest, 0);
 if (update || !fs.existsSync(BASE)) {
   const nb = {};
-  for (const [k, c] of Object.entries(counts)) nb[k] = { quizByLength: c.quizByLength, unseenSource: c.unseenSource };
+  for (const [k, c] of Object.entries(counts)) nb[k] = { quizLongest: c.quizLongest, unseenSource: c.unseenSource };
   fs.writeFileSync(BASE, JSON.stringify(nb, null, 1) + "\n");
   console.log("check-quality: baseline written");
 }
 rows.forEach(r => console.log(r));
 console.log(`check-quality: ${fail ? "FAIL" : "ok"} — ${tq} of ${tt} quiz questions answerable by length, ` +
+  `${tg} (${(100 * tg / Math.max(tt, 1)).toFixed(1)}%) with the correct option longest, ` +
   `${tl} unseen-source phrases${improved && !update ? " (improved: run with --update to lock it in)" : ""}`);
 process.exit(fail ? 1 : 0);

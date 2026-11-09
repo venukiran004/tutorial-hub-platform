@@ -1,66 +1,66 @@
 {
  "adk": {
-  "quizByLength": 0,
+  "quizLongest": 100,
   "unseenSource": 0
  },
  "data": {
-  "quizByLength": 0,
+  "quizLongest": 129,
   "unseenSource": 0
  },
  "dl": {
-  "quizByLength": 0,
+  "quizLongest": 106,
   "unseenSource": 0
  },
  "dsa": {
-  "quizByLength": 0,
+  "quizLongest": 7,
   "unseenSource": 0
  },
  "genai": {
-  "quizByLength": 0,
+  "quizLongest": 345,
   "unseenSource": 0
  },
  "interview": {
-  "quizByLength": 0,
+  "quizLongest": 7,
   "unseenSource": 0
  },
  "langchain": {
-  "quizByLength": 0,
+  "quizLongest": 191,
   "unseenSource": 0
  },
  "maths": {
-  "quizByLength": 0,
+  "quizLongest": 68,
   "unseenSource": 0
  },
  "mcp": {
-  "quizByLength": 0,
+  "quizLongest": 50,
   "unseenSource": 0
  },
  "ml": {
-  "quizByLength": 0,
+  "quizLongest": 186,
   "unseenSource": 0
  },
  "mlops": {
-  "quizByLength": 0,
+  "quizLongest": 26,
   "unseenSource": 0
  },
  "nlp": {
-  "quizByLength": 0,
+  "quizLongest": 141,
   "unseenSource": 0
  },
  "practice": {
-  "quizByLength": 0,
+  "quizLongest": 0,
   "unseenSource": 0
  },
  "python": {
-  "quizByLength": 0,
+  "quizLongest": 88,
   "unseenSource": 0
  },
  "sql": {
-  "quizByLength": 0,
+  "quizLongest": 111,
   "unseenSource": 0
  },
  "sysdesign": {
-  "quizByLength": 0,
+  "quizLongest": 118,
   "unseenSource": 0
  }
 }

@@ -157,6 +157,10 @@ Quiz questions: `stem`, 4 `options`, `answer` is the 0-based index, `why` is 60+
 chars and must explain why the *wrong* answers are wrong, not just why the right
 one is right. Write the distractors to the same length and specificity as the
 answer: if the correct option is always the longest, the quiz tests nothing.
+`.build/check-quality.js` enforces this: a correct option at 1.3x or more of the
+mean distractor length fails the gate, and the share of questions whose correct
+option is the single longest may only fall (chance is 25%). Make a distractor
+the longest about as often as the answer is.
 
 Interview questions: `q`, `level` ("core" | "advanced" | "expert"; "mid", "Senior"
 and "Staff" also take a colour and keep their wording), `strong` (what

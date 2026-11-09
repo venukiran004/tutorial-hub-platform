@@ -694,12 +694,7 @@ def test_no_recursion_error_on_long_strings():
       },
       {
         stem: "A tabulated edit-distance solution returns 0 for `(\"abc\", \"\")`. What is wrong?",
-        options: [
-          "The loop bounds are off by one, so the last row is never computed",
-          "Empty strings need a special case before the loop, because the table has no rows",
-          "The `min` in the recurrence should be a `max`, because edits accumulate",
-          "The base row and column were left as zeros — `dp[i][0]` must be `i` and `dp[0][j]` must be `j`"
-        ],
+        options: ["The loop bounds are off by one, so the last row is skipped", "Empty strings need a special case, as the table has no rows", "The recurrence's `min` should be a `max`, as edits accumulate", "The base row and column were left at zero instead of i and j"],
         answer: 3,
         why: "The base row and column are the recursion's base cases, and leaving them zero silently makes every empty-input case free. It is the most common tabulation bug, and it passes any test that never involves an empty string."
       },
