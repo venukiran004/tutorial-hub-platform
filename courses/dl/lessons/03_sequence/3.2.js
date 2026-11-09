@@ -157,19 +157,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why is the RNN gradient a product of identical Jacobians rather than different ones?",
-      options: ["Because the sequence is long", "Because the same `W_hh` is used at every time step", "Because tanh is used throughout", "Because the hidden state is fixed-size"],
+      options: ["Because the sequence is long", "The same W_hh at every step", "Because tanh is used throughout", "The hidden state is fixed-size"],
       answer: 1,
       why: "Weight sharing across time means the Jacobian `∂h_j/∂h_{j−1}` is the same matrix at every step, so flowing back n steps is essentially `W_hh` to the power n. In a feed-forward network each layer has distinct weights and the effects tend to average out; here they compound, governed entirely by the largest eigenvalue." },
     { stem: "Does gradient clipping solve the vanishing gradient problem?",
-      options: ["Yes, it rescales gradients to a usable size", "No — it caps large gradients but cannot restore a gradient that has decayed to zero", "Yes, if the threshold is set low enough", "Only for LSTMs"],
+      options: ["Yes, it rescales gradients to a usable size", "No: it caps large ones, cannot revive zeros", "Yes, if the threshold is set low enough", "Only when the model is an LSTM"],
       answer: 1,
       why: "Clipping rescaled a measured norm of 753 down to 1.0, so it handles explosion completely. But a vanished gradient carries no directional information to preserve — at T=100 the earliest gradient was exactly 0.000e+00 after underflow, and no rescaling recovers a direction from zero. Vanishing requires an architectural fix." },
     { stem: "In truncated BPTT with chunk size 35, what happens to the hidden state at a chunk boundary?",
-      options: ["It is reset to zero", "It is detached and carried forward, so its value is unchanged", "It is averaged with the previous chunk", "It is recomputed from scratch"],
+      options: ["It is reset to zero", "Detached, value carried on", "Averaged with the last chunk", "Recomputed from scratch"],
       answer: 1,
       why: "`detach()` removes the tensor from the autograd graph without altering its value, so the forward pass is bit-identical to an untruncated run. The network's memory of distant history is fully intact; only the ability to *train* on dependencies longer than the chunk is lost." },
     { stem: "Why does the tanh derivative make things worse as training progresses?",
-      options: ["It becomes numerically unstable", "A well-trained network has confident, saturated states where `tanh'` is small", "It changes sign", "It grows beyond 1"],
+      options: ["It becomes numerically unstable late on", "Trained states saturate, so tanh′ is small", "Its derivative changes sign during training", "Its derivative grows beyond 1 over time"],
       answer: 1,
       why: "`tanh'` peaks at 1.0 when the pre-activation is 0 and falls quickly — 0.42 at z=1, 0.07 at z=2. As the network learns and hidden states become large and confident, the derivative shrinks, so gradient flow degrades exactly as the model gets better at its task." }
   ] },

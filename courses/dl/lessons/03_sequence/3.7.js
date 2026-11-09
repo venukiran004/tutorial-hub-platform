@@ -135,19 +135,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What is the fundamental limitation of basic seq2seq?",
-      options: ["It cannot handle different input and output lengths", "The entire source must be compressed into a single fixed-size context vector", "It is too slow to train", "It requires teacher forcing"],
+      options: ["It cannot map unequal input and output lengths", "The whole source squeezes into one fixed vector", "It is far too slow to train on real data", "It requires teacher forcing to work at all"],
       answer: 1,
       why: "The encoder computes a state at every position and discards all but the last, so one vector must carry a hundred tokens' worth of content as easily as five. Quality degrades beyond about 20–30 tokens, and the fact that *reversing the source sentence* improved results is direct evidence that this is a plumbing problem rather than a capacity one." },
     { stem: "What is exposure bias?",
-      options: ["Overfitting to the training set", "The model is trained on correct prefixes but must condition on its own predictions at inference", "Bias from imbalanced classes", "Gradient explosion in the decoder"],
+      options: ["Overfitting to the training set", "Trained on true prefixes, run on own", "Bias from imbalanced output classes", "Gradient explosion in the decoder"],
       answer: 1,
       why: "Teacher forcing means the decoder only ever sees correct prefixes during training, so it has no experience of recovering from its own mistakes. At inference one early error puts it in an unfamiliar state and errors compound — output that starts well and degenerates, often into repetition." },
     { stem: "Why is teacher-forced validation loss a poor proxy for generation quality?",
-      options: ["It is computed on the wrong data", "It measures a task the model never performs at inference — every step gets a correct prefix", "It uses a different loss function", "It ignores the EOS token"],
+      options: ["It is computed on the wrong data", "It never tests the model's own prefixes", "It uses a different loss function", "It ignores the end-of-sequence token"],
       answer: 1,
       why: "Teacher-forced loss degrades gently with length because each step is scored given a correct prefix regardless of earlier errors. Free-running accuracy collapses, since getting the whole sequence right requires every step to be right. Evaluate generation by generating." },
     { stem: "What does scheduled sampling do, and what is its drawback?",
-      options: ["Samples training data adaptively; slower training", "Gradually replaces ground-truth decoder inputs with the model's own predictions; the objective becomes inconsistent", "Schedules the learning rate; needs tuning", "Samples from the output distribution; adds randomness"],
+      options: ["Samples data adaptively; slower training", "Feeds back own outputs; objective inconsistent", "Schedules the learning rate; needs tuning", "Samples outputs; adds randomness"],
       answer: 1,
       why: "It starts fully teacher-forced and hands over to the model's own predictions as training proceeds, so the model learns to recover from its errors. The cost is that the training distribution shifts during training and the objective no longer corresponds to maximising the true sequence's likelihood — it often helps empirically but is not a clean fix." }
   ] },

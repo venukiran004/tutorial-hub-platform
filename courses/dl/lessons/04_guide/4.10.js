@@ -146,19 +146,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why must time series be split temporally rather than randomly?",
-      options: ["Random splits are slower", "A random split lets the model train on windows that overlap or postdate the test period", "Temporal splits produce more data", "It only matters for RNNs"],
+      options: ["Random splits are slower to compute", "Random splits train on later windows", "Temporal splits produce more data", "It only matters for RNNs"],
       answer: 1,
       why: "Overlapping sliding windows put near-identical examples in both sets, and a random split also lets the model learn from periods after the test window. Note the measured caveat: on a stationary synthetic series the inflation was negligible — the effect scales with how non-stationary the data is, and real series are much less well-behaved." },
     { stem: "What is the persistence baseline and why does it matter?",
-      options: ["Predicting the training mean", "Predicting that tomorrow equals today — often very hard to beat", "A moving average", "The model's previous prediction"],
+      options: ["Predicting the training mean", "Tomorrow equals today", "A seven-day moving average", "The model's previous prediction"],
       answer: 1,
       why: "It scored RMSE 3.977 here against the LSTM's 3.105. On real financial series it is frequently not beaten at all, and a predictions-versus-actuals plot looks convincing for a model that merely echoes its last input. If your forecaster does not beat persistence, it is not a forecaster." },
     { stem: "The series is built as trend + seasonality + N(0, 3). What is the best achievable RMSE?",
-      options: ["0", "About 3.0 — the noise is unlearnable by construction", "About 1.0", "It depends on the model"],
+      options: ["0, a perfect fit", "About 3.0", "About 1.0", "Depends on model"],
       answer: 1,
       why: "The noise term is independent of everything the model can observe, so no amount of capacity predicts it. The LSTM's 3.105 is within 3.5 % of that floor, meaning it has extracted essentially all the learnable structure and further tuning would be wasted effort." },
     { stem: "The measured random-split test error was slightly *worse* than the temporal split. What explains this?",
-      options: ["The measurement is wrong", "The series is stationary, so the test period is statistically identical to training and there is nothing for the leak to hide", "Random splits are always better", "The model overfitted"],
+      options: ["The measurement itself is wrong", "Stationary data leaves the leak nothing to hide", "Random splits are always the better choice", "The model overfitted the temporal split"],
       answer: 1,
       why: "Trend plus fixed-period cycle plus constant-variance noise means the test window poses no distributional challenge, so a temporal split is not harder and a random split gains nothing. The leak becomes large when there are regime changes or shifting volatility — which real series have and synthetic ones often do not." }
   ] },

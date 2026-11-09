@@ -172,19 +172,19 @@ with torch.no_grad():
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What is `∂C_t/∂C_{t−1}` in an LSTM?",
-      options: ["`W_hh^T diag(tanh')`", "The forget gate `f_t`", "The input gate `i_t`", "Always 1"],
+      options: ["W_hhᵀ diag(tanh′)", "The forget gate f_t", "The input gate i_t", "Always exactly 1"],
       answer: 1,
       why: "Because the cell update is additive — `C_t = f⊙C_{t−1} + i⊙g` — differentiating leaves the forget gate alone. This was verified exactly against autograd. There is no weight matrix and no activation derivative in that path, which is precisely why the gradient survives where a vanilla RNN's does not." },
     { stem: "Why initialise the forget-gate bias to 1.0?",
-      options: ["To make the network forget faster", "So `f` starts near 0.73 rather than 0.5, preserving gradient flow early in training", "To prevent exploding gradients", "To match the input gate"],
+      options: ["To make the network forget faster", "So f starts near 0.73, keeping gradient", "To prevent exploding gradients", "To match the input gate's bias"],
       answer: 1,
       why: "A zero bias gives `f ≈ 0.5`, halving the gradient at every step before learning starts — 0.5^50 is 8.9e-16. A bias of 1 gives 0.73, and 0.73^50 is 1.5e-07, a factor of 1.6e+08 better. The network can learn to forget later, but it cannot learn from a gradient that has already vanished." },
     { stem: "Which LSTM components are sigmoids and which is a tanh, and why does it matter?",
-      options: ["All four are sigmoids", "i, f, o are sigmoids (gates in (0,1)); the candidate g is a tanh (content in (−1,1))", "All four are tanh", "i and f are tanh; g and o are sigmoids"],
+      options: ["All four are sigmoids", "i, f, o sigmoid; g is tanh", "All four are tanh", "i, f tanh; g, o sigmoid"],
       answer: 1,
       why: "The sigmoids are valves deciding how much passes; the tanh is the actual content being written, and its negative range lets the cell subtract as well as add. Swapping them — easy to do when porting between frameworks with different gate orderings — trains without error but learns badly." },
     { stem: "How many parameters does an LSTM have relative to a vanilla RNN of the same size?",
-      options: ["The same", "Twice as many", "Exactly four times as many", "Eight times as many"],
+      options: ["The same number", "Twice as many", "Exactly four times", "Eight times as many"],
       answer: 2,
       why: "Four gates each need their own input and recurrent weight matrices and biases, so the count is 4h(h+d) against the RNN's h(h+d). Measured at d=100, h=256: 366,592 against 91,648, a ratio of exactly 4.00." }
   ] },

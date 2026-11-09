@@ -178,19 +178,19 @@ def greedy(src, max_len=12):
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why scale embeddings by `√d_model` before adding positional encoding?",
-      options: ["To prevent overflow", "Embeddings are initialised small, so without scaling the positional signal would dominate token identity", "To normalise the attention scores", "It is required by LayerNorm"],
+      options: ["To prevent numerical overflow", "Small embeddings drown in position", "To normalise the attention scores", "Because LayerNorm requires it"],
       answer: 1,
       why: "Embedding weights start with small variance while sinusoidal encodings have components of order 1. Without scaling up the embeddings first, position would swamp token identity at the first layer. It is a magnitude-matching step, the same family of concern as the √d_k division in attention." },
     { stem: "The model reached 99.4 % exact match. Why is exact match a better metric here than per-token accuracy?",
-      options: ["It is easier to compute", "Per-token accuracy can look high while most sequences contain at least one error", "It handles padding better", "They are equivalent"],
+      options: ["It is easier to compute", "Token accuracy hides bad sequences", "It handles padding much better", "The two are equivalent metrics"],
       answer: 1,
       why: "Getting a whole sequence right requires every token to be right, so per-token accuracy of 95 % on nine-token sequences could mean fewer than two thirds of sequences are fully correct. For generation tasks the sequence is the unit the user cares about, so that is what should be measured." },
     { stem: "Cross-attention argmax reads [5, 4, 3, 2, 1, 0, 0] for a six-token source. What does that show?",
-      options: ["A bug in the mask", "The model learned the reversal alignment — target i attends to source 5−i", "Attention collapsed onto one position", "The positional encoding failed"],
+      options: ["A bug in the causal mask", "It learned the reversal alignment", "Attention collapsed onto one position", "The positional encoding failed"],
       answer: 1,
       why: "That is exactly the anti-diagonal the reversal task requires, discovered from examples with no supervision on alignment. The trailing 0 is the end-of-sequence token, which has no source counterpart. Cross-attention makes the learned alignment directly inspectable." },
     { stem: "Your transformer's training loss collapses to near zero in 200 steps and generation is gibberish. What is wrong?",
-      options: ["Learning rate too high", "Missing causal mask or target shift — the model is reading the answer", "Too few parameters", "Wrong positional encoding"],
+      options: ["The learning rate is far too high to converge", "No causal mask or shift: it reads the answer", "The model has too few parameters for the task", "The positional encoding is wrong for decoding"],
       answer: 1,
       why: "Near-zero loss on next-token prediction is implausible, so assume leakage. Without a causal mask each position attends to the token it is predicting; without the target shift it is handed that token directly. Both make training trivial and generation impossible, and neither raises an error." }
   ] },

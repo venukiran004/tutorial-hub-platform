@@ -120,19 +120,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Which problem does attention alone NOT solve, requiring recurrence to be removed?",
-      options: ["Long-range dependencies", "Sequential computation preventing parallel training", "The fixed-size context vector", "Vanishing gradients"],
+      options: ["Long-range dependencies", "Sequential training", "The fixed context vector", "Vanishing gradients"],
       answer: 1,
       why: "Bahdanau attention already gave a direct path to every encoder state, fixing both the bottleneck and path length — but the encoder was still an RNN running step by step. Only removing the recurrence makes all positions computable simultaneously, which is what the transformer contributed." },
     { stem: "Why did transformers scale when RNNs did not?",
-      options: ["They have more parameters", "Parallel training means throughput is not capped by sequence length", "They need less data", "They are more accurate per parameter"],
+      options: ["They have many more parameters", "Parallel training, not length-capped", "They need far less training data", "More accuracy for each parameter"],
       answer: 1,
       why: "The modern recipe needs training runs over enormous datasets to finish in reasonable time. An RNN's throughput is bounded by its sequential chain regardless of hardware, so it cannot absorb that much data. The architectural advantages are real but secondary to simply being trainable at scale." },
     { stem: "Which transformer family suits document classification best?",
-      options: ["Decoder-only", "Encoder-only, such as BERT", "Encoder-decoder", "None — use an LSTM"],
+      options: ["Decoder-only, like GPT", "Encoder-only, like BERT", "Encoder-decoder, like T5", "None; use an LSTM"],
       answer: 1,
       why: "Classification needs a fixed-size representation of a fully available input, which is exactly what bidirectional self-attention over the whole document produces. Decoder-only models can do it at scale but are architecturally aimed at generation, and encoder-decoder adds a decoder you do not need." },
     { stem: "What is the transformer's main cost compared to an RNN?",
-      options: ["More parameters", "O(n²) attention memory — 34 GB for one 32k-token sequence", "Slower inference always", "It cannot handle long sequences at all"],
+      options: ["Many more parameters", "O(n²) attention memory", "Always slower inference", "No long sequences at all"],
       answer: 1,
       why: "The attention matrix is T×T per head, so doubling context quadruples memory. An RNN's state is O(1) regardless of length, which is why recurrence remains preferable for streaming and for sequences long enough that quadratic memory becomes prohibitive." }
   ] },

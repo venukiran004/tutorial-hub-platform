@@ -134,19 +134,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why are transformers described as data-hungry?",
-      options: ["They have more parameters", "They encode almost no structural assumption, so relationships must be learned from data", "They train slowly", "They need large batches"],
+      options: ["They have far more parameters that must be fitted", "Little built-in structure, so data must teach it", "They train slowly on any hardware you can get", "They need very large batches before they converge"],
       answer: 1,
       why: "A CNN is given translation equivariance for free; a transformer must discover from examples that adjacent tokens relate and that order matters. Weaker assumptions mean more to learn, which needs more data — and rewards it with a higher ceiling, which is why ViT loses to a ResNet on small datasets and wins on very large ones." },
     { stem: "How many parameters does an LSTM have relative to a vanilla RNN at the same sizes?",
-      options: ["The same", "3×", "Exactly 4×", "8×"],
+      options: ["The same", "Three times", "Exactly 4×", "Eight times"],
       answer: 2,
       why: "Four gates each need their own input and recurrent matrices: measured 395,264 against 98,816 at input=128, hidden=256. GRU sits at exactly 3× with its three gates. A single transformer layer at comparable width costs about twice the LSTM." },
     { stem: "For a tabular classification problem with 10,000 rows, what would you try first?",
-      options: ["A deep neural network", "Gradient-boosted trees", "An LSTM", "A transformer"],
+      options: ["A deep neural network", "Gradient-boosted trees", "An LSTM over the rows", "A transformer encoder"],
       answer: 1,
       why: "On most tabular problems XGBoost or LightGBM match or beat neural networks, train in seconds, handle missing values and mixed types natively, and need little tuning. Neural networks become competitive with high-cardinality categoricals that benefit from embeddings, or when fusing tabular data with text or images." },
     { stem: "When is a recurrent model still clearly the right choice?",
-      options: ["For all NLP tasks", "Streaming inference with bounded memory, and sequences long enough that O(n²) attention is prohibitive", "When the dataset is large", "When pretrained models are available"],
+      options: ["For every kind of NLP task, without exception", "Streaming with bounded memory, or huge lengths", "Whenever the training dataset is very large", "Whenever strong pretrained models are available"],
       answer: 1,
       why: "An LSTM carries a fixed-size state however long the stream runs, while a transformer's attention is quadratic and its KV cache grows with context — 369 MB per sequence at 10,000 tokens for a modest model. For real-time processing under a memory budget, recurrence still wins." }
   ] },

@@ -125,11 +125,11 @@ def lr_at(step, base_lr, warmup, total):
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why can a dead ReLU never recover?",
-      options: ["Its weights are set to zero", "Its gradient is exactly zero, so nothing can change the weights that would revive it", "It is removed from the graph", "The optimiser skips it"],
+      options: ["Its weights are set to zero", "Its gradient is exactly zero", "It is removed from the graph", "The optimiser skips it"],
       answer: 1,
       why: "ReLU's derivative is 0 for negative input, so a unit whose pre-activation is negative for every example emits zero and receives exactly zero gradient. The only thing that could change its weights is the gradient it is not receiving — measured as exactly 0.0 for all 64 units in a layer with a strongly negative bias." },
     { stem: "Why is warmup near-mandatory for transformer training?",
-      options: ["Transformers have more parameters", "The earliest gradients are large and uninformed, and post-norm residuals attenuate gradients to early layers further", "It speeds up convergence", "Attention requires it numerically"],
+      options: ["Transformers have more parameters", "Early gradients are large and uninformed", "It speeds up convergence in general", "Attention requires it numerically"],
       answer: 1,
       why: "At initialisation the model knows nothing, so full-sized steps move weights a long way in essentially arbitrary directions. Post-norm transformers make it worse because the residual path is normalised at every block, attenuating gradients reaching early layers — which is exactly why the original paper's schedule includes a warmup term." },
     { stem: "Which activation cannot produce permanently dead units?",
@@ -137,7 +137,7 @@ def lr_at(step, base_lr, warmup, total):
       answer: 1,
       why: "LeakyReLU has a small non-zero slope for negative input, so the gradient is never exactly zero and a unit driven negative can still recover. GELU and ELU share that property, which is part of why GELU became standard in transformers. Any activation with an exactly-zero derivative region has an absorbing state." },
     { stem: "Your loss spikes at step 1160 and reaches NaN by 1170. What is the recovery?",
-      options: ["Restart training from scratch", "Roll back to a checkpoint from before the spike and resume at a lower learning rate", "Increase the batch size", "Switch optimiser"],
+      options: ["Restart training from scratch", "Roll back, resume at a lower LR", "Increase the batch size instead", "Switch to another optimiser"],
       answer: 1,
       why: "The weights are poisoned, so continuing is futile, but the run before the spike was healthy. Rolling back to a pre-spike checkpoint and resuming with a lower LR and a different data order is the standard recovery — which requires checkpointing often enough, and keeping several, since the most recent may already contain the damage." }
   ] },

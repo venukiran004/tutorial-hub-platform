@@ -155,19 +155,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why does greedy decoding produce suboptimal sequences?",
-      options: ["It is too fast", "Locally optimal token choices do not compose into a globally optimal sequence", "It ignores the EOS token", "It cannot handle long sequences"],
+      options: ["It is simply too fast", "Local bests do not compose", "It ignores the EOS token", "It cannot handle long text"],
       answer: 1,
       why: "The worked example is exact: picking `cat` at 0.9 leads to a sequence scoring 0.09, while `dog` at 0.7 leads to 0.56. Greedy commits at each step with no mechanism to revisit, so a high-probability first token can lock it into a poor branch." },
     { stem: "Why does unnormalised beam search prefer short sequences?",
-      options: ["Short sequences are more likely to be correct", "Each additional token adds a negative log-probability, so any extension scores worse than its prefix", "The beam fills up with short candidates", "EOS has unusually high probability"],
+      options: ["Short sequences are more often correct", "Each token adds negative log-probability", "The beam fills with short candidates", "EOS has an unusually high probability"],
       answer: 1,
       why: "Log-probabilities are negative and accumulate, so raw score falls linearly with length — from −2.10 at 3 tokens to −16.80 at 24 with identical per-token quality. In the measured run, widths 3 and 5 both chose a two-token output that terminated immediately." },
     { stem: "What does setting α = 1.0 in length normalisation do?",
-      options: ["Disables normalisation", "Scores by mean log-probability per token, removing all length preference", "Doubles the penalty for long sequences", "Makes beam search equivalent to greedy"],
+      options: ["Disables normalisation", "Mean log-prob per token", "Doubles the length penalty", "Matches greedy decoding"],
       answer: 1,
       why: "Dividing by `L^1.0` gives the per-token average, which was a constant −0.700 across lengths 3 to 24 in the measurement. That removes the truncation bias entirely but leaves no preference for brevity either, so output tends to ramble. The usual compromise is α between 0.6 and 0.8." },
     { stem: "When should you use sampling instead of beam search?",
-      options: ["Never — beam search is always better", "For open-ended generation, where the highest-probability text is bland and repetitive", "For machine translation", "When the sequence is short"],
+      options: ["Never, as beam search is always better", "Open-ended text, where top output is bland", "For machine translation, to explore", "When the output sequence is short"],
       answer: 1,
       why: "Beam search finds high-probability sequences, and for open-ended tasks the mode of the distribution is generic, safe and often looping — human text is not the most probable text. Use beam search where there is a roughly correct answer (translation, summarisation, ASR) and top-k or nucleus sampling where variety matters." }
   ] },

@@ -158,19 +158,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why is PyTorch's RNN parameter count higher than `H(H+D+1)`?",
-      options: ["It includes the output layer", "PyTorch stores a second, mathematically redundant bias vector", "It counts gradients too", "The formula is wrong"],
+      options: ["It includes the output layer", "It stores a redundant second bias", "It counts gradients as well", "The formula itself is wrong"],
       answer: 1,
       why: "`bias_ih` and `bias_hh` are stored separately for CuDNN compatibility though only their sum matters — measured 24,832 against the formula's 24,704 at H=128, D=64. Any hand implementation must add both to match, and the same offset scales by gate count in LSTM and GRU." },
     { stem: "Which problem does gradient clipping NOT solve?",
-      options: ["Exploding gradients", "Vanishing gradients", "NaN losses", "Loss spikes"],
+      options: ["Exploding gradients", "Vanishing gradients", "NaN losses from spikes", "Sudden loss spikes"],
       answer: 1,
       why: "Clipping preserves direction while capping magnitude, which works because an exploding gradient still points somewhere useful — it took a measured norm of 753 to 1.0 cleanly. A vanished gradient was measured at exactly 0.000e+00 at 100 steps, and there is no direction in zero to rescale." },
     { stem: "Why can't RNN training be parallelised across time?",
-      options: ["PyTorch does not support it", "Each step's hidden state depends on the previous one", "The gradients are too large", "Memory limits"],
+      options: ["PyTorch does not support it", "Each state needs the previous one", "The gradients are too large", "Memory limits prevent it"],
       answer: 1,
       why: "`h_t` requires `h_{t−1}`, so the T steps form a strict chain no hardware can overlap. Compute is `O(T·H²)` with an unavoidable sequential structure, which is why RNN training time scales with sequence length and why transformers, which compute all positions at once, scaled where RNNs did not." },
     { stem: "`clip_grad_norm_(params, 1.0)` returns values of 5–7 every step. What does that mean?",
-      options: ["Training is diverging", "Every step is being divided by 5–7 — clipping is acting as a permanent LR reduction", "The clipping is working correctly", "Gradients are too small"],
+      options: ["Training is diverging and should stop", "Every step shrinks 5–7×: a hidden LR cut", "The clipping is working as intended", "The gradients are too small to train"],
       answer: 1,
       why: "The return value is the norm before clipping, so a norm of 6 against a threshold of 1 divides that step's gradient by 6. Clipping should catch rare spikes; when it fires every step it is silently scaling down the learning rate. Log the norms and set the threshold above the typical value." }
   ] },

@@ -159,19 +159,19 @@ for batch in loader:
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why prefer bf16 over fp16 where the hardware supports it?",
-      options: ["It is faster", "It has float32's range, so it needs no loss scaling", "It has better precision", "It uses less memory"],
+      options: ["It runs much faster", "fp32 range, no scaling", "It has better precision", "It uses less memory"],
       answer: 1,
       why: "Both are 16 bits; bf16 spends more of them on the exponent, giving a maximum of 3.39e+38 against fp16's 65,504, at worse precision. For training, range is the binding constraint because gradients span many orders of magnitude while precision requirements are modest — so bf16 avoids the overflow and underflow that make loss scaling necessary." },
     { stem: "Why must `scaler.unscale_()` come before `clip_grad_norm_`?",
-      options: ["To free memory", "Gradients are still multiplied by the loss scale, so the clip threshold would be effectively divided by it", "To synchronise the GPU", "Order does not matter"],
+      options: ["To free memory", "Grads are still scaled", "To synchronise the GPU", "Order does not matter"],
       answer: 1,
       why: "With a scale of 65,536, clipping scaled gradients at a threshold of 1.0 effectively clips at 1/65,536 of the intended value — crushing nearly every step. Worse, the scale changes during training, so the effective threshold moves too. Nothing reports a problem; the model just trains at a tiny effective learning rate." },
     { stem: "Your multi-GPU job hangs with no error. What is the most likely cause?",
-      options: ["Out of memory", "Ranks disagree on which collectives to execute — one waits for a partner that never arrives", "The learning rate is too high", "A corrupt data file"],
+      options: ["The job ran out of GPU memory", "Ranks disagree on the collectives", "The learning rate is too high", "A corrupt shard in the data"],
       answer: 1,
       why: "Collectives like all-reduce block until every rank participates, so if one rank skips one — typically a `if rank == 0:` branch containing a barrier, or uneven batch counts causing one rank to exit its epoch early — the others wait forever. Set a collective timeout so it fails loudly, and use `NCCL_DEBUG=INFO` to see what each rank was waiting on." },
     { stem: "GPU utilisation is 40 % on a job you believe is GPU-bound. What should you check first?",
-      options: ["The model architecture", "The dataloader — more workers, pin_memory, prefetch", "The learning rate", "Gradient clipping"],
+      options: ["The model's architecture", "The dataloader's throughput", "The learning-rate schedule", "The gradient clipping value"],
       answer: 1,
       why: "Low utilisation on a supposedly GPU-bound job means the GPU is waiting, and the usual reason is that the CPU cannot prepare batches fast enough. More workers, `pin_memory=True`, a larger `prefetch_factor` and `persistent_workers` are the first moves; after that, GPU-side augmentation or a sharded format that avoids per-file overhead." }
   ] },

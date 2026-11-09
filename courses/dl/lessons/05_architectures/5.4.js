@@ -160,19 +160,19 @@ with torch.no_grad():
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why initialise the LSTM forget-gate bias to 1?",
-      options: ["To make the model forget faster", "PyTorch's default puts f near 0.5, halving the cell gradient every step before training begins", "To reduce parameters", "To match the input gate"],
+      options: ["To make the model forget faster at the start", "The default f≈0.5 halves the cell gradient", "To reduce the number of trainable parameters", "To match the bias of the input gate exactly"],
       answer: 1,
       why: "At the default the gate starts at 0.4991, giving 9.2e-07 of the gradient over twenty steps. Setting the bias to 1 starts it at 0.7311, giving 1.9e-03. Measured effect on a 20-step task: 48.2 % against 100 %. The model cannot learn to open its gates using the gradient those closed gates suppress." },
     { stem: "When setting the forget-gate bias in PyTorch, why must you touch both bias vectors?",
-      options: ["For CUDA compatibility", "`bias_ih` and `bias_hh` are summed, so leaving one random gives an uncontrolled effective bias", "They control different gates", "Only one is used in training"],
+      options: ["For CUDA kernel compatibility", "The two biases are summed together", "They control two different gates", "Only one of them is used in training"],
       answer: 1,
       why: "The computation uses their sum, so setting `bias_ih` to 1 while `bias_hh` keeps its uniform random init gives an effective bias of 1 plus noise. It mostly works, which is why the mistake survives — the symptom is run-to-run variance rather than outright failure." },
     { stem: "How many parameters does an LSTM have relative to a GRU at the same sizes?",
-      options: ["The same", "4/3× — four gates against three", "2×", "3×"],
+      options: ["The same number", "4/3 as many", "Twice as many", "Three times as many"],
       answer: 1,
       why: "`4H(H+D+1)` against `3H(H+D+1)`, so the GRU is exactly 75 % of the LSTM — a ratio that holds at every size. Against a vanilla RNN the LSTM is exactly 4×." },
     { stem: "Does an LSTM still need gradient clipping?",
-      options: ["No — the cell state solves gradient problems", "Yes — the gate paths still involve ordinary multiplicative transformations that can explode", "Only for very short sequences", "Only with bidirectional layers"],
+      options: ["No, the cell state solves gradient problems", "Yes: gate paths can still explode", "Only for very short sequences", "Only with bidirectional layers"],
       answer: 1,
       why: "The additive cell path is gradient-safe, but the input, forget and output gates are computed through ordinary weight matrices and can still explode on long sequences. The cell state solves *vanishing*; clipping is still the defence against exploding." }
   ] },

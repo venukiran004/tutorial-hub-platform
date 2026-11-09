@@ -146,19 +146,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why is each frame multiplied by a window function before the FFT?",
-      options: ["To reduce computation", "The frame's abrupt edges otherwise smear energy across all frequencies", "To normalise loudness", "To remove DC offset"],
+      options: ["To reduce computation", "Abrupt edges smear energy", "To normalise loudness", "To remove DC offset"],
       answer: 1,
       why: "An un-windowed frame is effectively multiplied by a rectangular pulse, whose transform has large side lobes — measured at 1.231 % of energy landing more than ten bins from a pure tone's peak. Hann windowing removed it to effectively zero, at the cost of a slightly wider main lobe." },
     { stem: "You double the analysis window from 25 ms to 50 ms. What happens?",
-      options: ["Both resolutions improve", "Frequency resolution improves to 20 Hz, time resolution worsens to 50 ms", "Nothing changes", "Frequency resolution worsens"],
+      options: ["Both resolutions improve", "Finer frequency, coarser time", "Nothing changes at all", "Frequency resolution worsens"],
       answer: 1,
       why: "The two trade off exactly: 400 samples gives 40 Hz resolution, 800 samples gives 20 Hz, and the time resolution degrades correspondingly. This is the uncertainty principle, and 25 ms is the compromise the field settled on for speech." },
     { stem: "It is commonly said one octave at 100–200 Hz 'sounds bigger' than one at 4000–8000 Hz. Is that right in mel terms?",
-      options: ["Yes — 132.74 against 693.96 mel", "No — the high octave spans more mel; the real property is resolution per Hz", "Yes, by a factor of 5", "The mel scale does not apply to octaves"],
+      options: ["Yes: 132.74 against 693.96 mel", "No: the high octave spans more mel", "Yes, by about a factor of 5", "Mel does not apply to octaves"],
       answer: 1,
       why: "Its own table gives 132.74 mel for the low octave and 693.96 for the high one, so the high octave is larger in mel. The mel scale is near-linear below 1 kHz rather than a pure log, so octaves are not equal steps. The correct statement is 1.3274 mel per Hz at the bottom against 0.1735 at the top — a factor of 7.7." },
     { stem: "Why take the log of the mel spectrogram?",
-      options: ["To compress the file", "Loudness perception is logarithmic, and it turns multiplicative channel effects into additive offsets", "To make values positive", "To speed up training"],
+      options: ["To compress the file's size", "Perception is log; channels add", "To make all values positive", "To speed up model training"],
       answer: 1,
       why: "Measured: a 4× waveform gain becomes an exact shift of `ln(16) = 2.7726` with standard deviation 1.5e-07 across every band and frame. Because gain and channel colouration are multiplicative on the signal, they become additive after the log, so subtracting the per-utterance mean removes them exactly." }
   ] },

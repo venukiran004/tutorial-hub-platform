@@ -183,11 +183,11 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "In BPTT, why is the gradient at each hidden state `dH[t] + dh_next`?",
-      options: ["To stabilise the computation", "Each `h_t` affects the loss directly via its output and indirectly via `h_{t+1}`", "To account for the bias term", "To normalise across timesteps"],
+      options: ["To stabilise the computation", "h_t feeds the loss and h_t+1", "To account for the bias term", "To normalise across timesteps"],
       answer: 1,
       why: "Two paths lead from `h_t` to the loss, so their gradients add. `dh_next` is the one carried backwards from later steps, and it is the quantity that decays exponentially — each hop multiplies by `W_hh^T` and a tanh derivative below 1. This single line is the product of Jacobians as executable code." },
     { stem: "Why do weight gradients use `+=` while input gradients use `=`?",
-      options: ["Weight gradients are larger", "The weights are shared across all timesteps; each input is used at exactly one step", "To avoid numerical error", "It is a NumPy requirement"],
+      options: ["Weight gradients are larger", "Weights are shared across steps", "To avoid numerical error", "It is a NumPy requirement"],
       answer: 1,
       why: "Parameter sharing in the forward pass becomes gradient summation in the backward pass — the same pattern as a convolution's shared kernel. Getting it backwards gives gradients wrong by roughly a factor of T, with correct shapes and no error, which is exactly why you verify against autograd." },
     { stem: "Which line in an LSTM backward pass is the gradient highway?",
@@ -195,7 +195,7 @@ EC.receiveLesson({
       answer: 1,
       why: "That is `∂C_t/∂C_{t−1} = f_t` — an elementwise multiply by the forget gate, with no weight matrix and no activation derivative in the path. Compare with the RNN's `dh_next = Whh.T @ dz`, which involves both and is why its gradient decays." },
     { stem: "Why perform gradient checks in float64 rather than float32?",
-      options: ["float32 is not supported", "In float64 round-off sits around 1e-15, so a real bug at 1e-6 is unmistakable", "float64 is faster", "Autograd requires float64"],
+      options: ["float32 is not supported here", "Round-off ~1e-15 makes bugs obvious", "float64 runs faster on CPUs", "Autograd requires float64"],
       answer: 1,
       why: "In float32 numerical noise is already around 1e-6, which is the same magnitude as many genuine implementation errors — so a wrong gradient is indistinguishable from round-off. In float64 correct code agrees to about 1e-15, and anything larger is a real bug." }
   ] },

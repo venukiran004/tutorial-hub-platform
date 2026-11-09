@@ -132,19 +132,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What does RNN-T's prediction network do?",
-      options: ["Predicts the next audio frame", "Acts as a language model over previously emitted labels", "Aligns frames to labels", "Reduces the frame rate"],
+      options: ["Predicts the next audio frame", "An LM over emitted labels", "Aligns frames to labels", "Reduces the frame rate"],
       answer: 1,
       why: "It conditions on what has been emitted so far, giving the model an internal language model that CTC lacks — so it knows `u` is likely after `q`. The joint network combines that with the encoder's acoustic evidence, and the emit-or-advance loop keeps the whole thing streamable." },
     { stem: "Why is RNN-T's lattice two-dimensional?",
-      options: ["It processes stereo audio", "At each step it can emit a symbol without advancing a frame, so paths span frames × labels", "It uses bidirectional encoding", "It has two decoders"],
+      options: ["It processes stereo audio channels", "It can emit without advancing a frame", "It uses a bidirectional encoder", "It has two separate decoders inside"],
       answer: 1,
       why: "CTC emits at most one symbol per frame, giving a 1-D monotonic path. RNN-T can emit several symbols from one frame before advancing, so the lattice covers every (frame, label) position. That is what lets it condition on labels, and it is also why training is heavier and needs pruning." },
     { stem: "What is the two-pass design?",
-      options: ["Running the model twice for ensembling", "Stream with RNN-T for instant text, then rescore the whole utterance with an attention decoder", "Two encoder layers", "Decoding forwards then backwards"],
+      options: ["Running the model twice and ensembling", "Stream with RNN-T, rescore with attention", "Two stacked encoder layers in sequence", "Decoding forwards, then backwards again"],
       answer: 1,
       why: "It refuses to choose between latency and accuracy: the user gets immediate text from the streaming model, which is then quietly improved once the utterance ends and a full-context model can see everything. It is why a word on a phone keyboard sometimes changes a moment after you speak the next one." },
     { stem: "Why does a 2-second clip cost Whisper the same as a 30-second one?",
-      options: ["Fixed batch size", "Every clip is padded to exactly 30 s before the encoder runs", "The decoder always generates 30 s of tokens", "Disk I/O dominates"],
+      options: ["A fixed batch size of 30", "Every clip is padded to 30 s", "It always decodes 30 s of text", "Disk I/O dominates the cost"],
       answer: 1,
       why: "Whisper's encoder expects exactly 3000 mel frames, so short clips are padded and the full encoder cost is paid regardless. For batch transcription that is irrelevant; for a voice agent handling short commands it is a fifteen-fold waste on every request, and it is structural rather than an optimisation problem." }
   ] },

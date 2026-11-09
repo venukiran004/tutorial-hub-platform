@@ -126,19 +126,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why is SpecAugment described as free?",
-      options: ["It requires no code", "It masks rectangles directly in the log-mel array — a couple of assignments, after feature extraction", "It runs on the GPU", "It only applies to validation data"],
+      options: ["It requires no code at all", "A few array masks after features", "It runs entirely on the GPU", "It only applies to validation"],
       answer: 1,
       why: "Noise mixing and reverberation need audio files and a convolution per example, costing real time in the data pipeline. SpecAugment operates on the already-computed features with simple array assignments, so it adds essentially nothing to the training loop while being the most effective single ASR augmentation." },
     { stem: "Why is echo cancellation a prerequisite for barge-in?",
-      options: ["It improves audio quality", "Without it the device hears its own TTS and interrupts itself", "It reduces latency", "It is required by the wake-word model"],
+      options: ["It improves audio quality", "Otherwise it hears its own TTS", "It reduces latency", "The wake-word model needs it"],
       answer: 1,
       why: "A smart speaker's loudspeaker is centimetres from its microphones, so its own speech is loud in the captured signal. Without acoustic echo cancellation the wake-word detector fires on the device's own voice and it interrupts its own sentence — the interaction model does not work at all, regardless of recogniser quality." },
     { stem: "Your streaming ASR runs at RTF 1.0. Is that acceptable?",
-      options: ["Yes — it keeps up exactly", "No — the buffer grows without bound on any hiccup, and there is no headroom for the rest of the pipeline", "Yes, if latency is low", "Only for short utterances"],
+      options: ["Yes, it keeps up exactly", "No: no headroom; buffer grows", "Yes, as long as latency is low", "Only for short utterances"],
       answer: 1,
       why: "RTF 1.0 processes one second of audio per second, leaving zero margin. Any momentary slowdown, any contention for the core, and the backlog never clears. Target around 0.3, which leaves room for feature extraction, the wake word, endpointing and everything else sharing the CPU." },
     { stem: "Your model reports 5 % WER on a read-speech benchmark. What should you expect on real conversation?",
-      options: ["About the same", "Roughly double, because spontaneous speech has disfluencies, restarts and overlap", "Better, since conversation is more natural", "It depends only on the noise level"],
+      options: ["About the same, 5%", "Roughly double", "Better, being natural", "Only noise matters"],
       answer: 1,
       why: "Read speech has no false starts, fillers, self-corrections or overlapping speakers, and clean turn boundaries — none of which is true of conversation. The gap is roughly two-fold and lives entirely in the evaluation set. Treat benchmark WER as an upper bound and evaluate on the kind of speech you will actually receive." }
   ] },

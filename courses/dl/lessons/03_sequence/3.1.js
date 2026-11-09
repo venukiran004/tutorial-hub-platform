@@ -143,19 +143,19 @@ for t in range(T):
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why does an RNN's parameter count not depend on sequence length?",
-      options: ["Parameters are added dynamically", "The same weight matrices are reused at every time step", "The hidden state stores the parameters", "Sequences are padded to a fixed length"],
+      options: ["Parameters are added dynamically per step", "The same matrices are reused at every step", "The hidden state stores the parameters", "Sequences are padded to one fixed length"],
       answer: 1,
       why: "Measured: 72 parameters handle T=5, T=50 and T=500 identically. Weight sharing across time is what makes the model applicable to arbitrary lengths and lets a pattern learned at one position transfer to another — and it is also why the gradient becomes a product of T copies of the same matrix, which causes the vanishing gradient problem." },
     { stem: "What is the fundamental limitation of the hidden state?",
-      options: ["It is too slow to compute", "It compresses unbounded history into a fixed-size vector", "It can only hold positive values", "It resets at every step"],
+      options: ["It is too slow to compute", "Unbounded history in a fixed vector", "It can only hold positive values", "It resets at every time step"],
       answer: 1,
       why: "At T=1000 with 6 hidden units, 4,000 input values are squeezed into 6 numbers — 667:1. The network must continually decide what to keep and overwrite with no explicit mechanism for doing so. LSTM and GRU add that mechanism; attention removes the fixed-size summary altogether." },
     { stem: "Which configuration suits named entity recognition?",
-      options: ["Many-to-one", "One-to-many", "Many-to-many with matched lengths", "Seq2seq"],
+      options: ["Many-to-one, one label", "One-to-many, generated", "Many-to-many, matched", "Seq2seq, unmatched"],
       answer: 2,
       why: "Every token gets its own label, so there is one output per input and the lengths match by construction. Seq2seq is for tasks where input and output lengths differ independently, like translation; many-to-one emits a single label for the whole sequence, which would lose the per-token structure NER requires." },
     { stem: "A sentiment classifier on long reviews seems to ignore the opening sentences. What is the most likely cause?",
-      options: ["Insufficient hidden units", "The gradient reaching early steps has vanished, so they receive almost no training signal", "The learning rate is too low", "The embeddings are untrained"],
+      options: ["Too few hidden units", "Vanished gradient to early steps", "The learning rate is too low", "The embeddings are untrained"],
       answer: 1,
       why: "In a many-to-one model the loss touches only `h_T`, so early steps learn solely through the backward chain. Over a long sequence that gradient decays exponentially — measured at a ratio of 3.5e+15 across 50 steps — so the early positions get essentially no signal. Adding capacity does not help; the architecture has to change." }
   ] },

@@ -182,19 +182,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why are attention scores divided by √d_k?",
-      options: ["To normalise the output magnitude", "Dot products grow as √d_k, and large scores saturate the softmax to near-zero gradient", "To make the weights sum to 1", "To reduce computation"],
+      options: ["To normalise the output magnitude", "Large dot products saturate the softmax", "To make the weights sum to one", "To reduce the amount of computation"],
       answer: 1,
       why: "Measured at d_k = 512, unscaled scores gave a maximum softmax weight of 1.0000 and entropy 0.0004 — completely saturated before training, so the attention weights cannot be learned. Scaling brings this to 0.379 and 1.60. The softmax already handles normalisation; this is specifically about gradient flow." },
     { stem: "What happens if you shuffle the input to a self-attention layer with no positional encoding?",
-      options: ["The output is unchanged", "The output is shuffled identically — the operation cannot see order", "An error is raised", "The output becomes noise"],
+      options: ["The output is unchanged", "Shuffled the same way", "An error is raised", "The output becomes noise"],
       answer: 1,
       why: "Verified to 4.8e-07: attention(x)[perm] equals attention(x[perm]). Self-attention is permutation-equivariant, treating the sequence as a bag of tokens, so 'dog bites man' and 'man bites dog' give the same representations. Position must be injected separately." },
     { stem: "How does attention solve the seq2seq bottleneck?",
-      options: ["It compresses the context vector more efficiently", "It keeps all encoder states and lets the decoder select a weighted combination at each step", "It uses a larger hidden size", "It processes the source in reverse"],
+      options: ["It compresses the context vector better", "The decoder weights all encoder states", "It uses a much larger hidden size", "It processes the source in reverse"],
       answer: 1,
       why: "Nothing is compressed. The decoder computes a fresh context at every output step as a weighted sum over all encoder states, choosing what is relevant right now. That also gives a path of length 1 between any decoder step and any source position, which is what makes long sequences tractable." },
     { stem: "What does multi-head attention give you that single-head does not?",
-      options: ["Lower computational cost", "The ability to express several different relationships per position simultaneously", "Better numerical stability", "Longer sequence support"],
+      options: ["Lower computational cost overall", "Several relations per position", "Better numerical stability", "Support for longer sequences"],
       answer: 1,
       why: "One attention operation produces one weighted average, so one relationship per position. Multiple heads on separate projections can attend to different things at once — syntax, coreference, adjacency. With `d_k = d_model/h` the cost is unchanged, since the representation is partitioned rather than enlarged." }
   ] },

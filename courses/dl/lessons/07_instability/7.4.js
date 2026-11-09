@@ -148,19 +148,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why log the gradient norm rather than relying on the loss?",
-      options: ["The loss is expensive to compute", "The gradient norm is a leading indicator — it climbs before the loss spikes, while you can still intervene", "The loss is inaccurate", "It replaces the need for clipping"],
+      options: ["The loss is expensive to compute", "It climbs before the loss spikes", "The loss value is inaccurate", "It replaces the need for clipping"],
       answer: 1,
       why: "A gradient norm rising from 1e2 to 1e4 over a hundred steps is a run that will spike, and it is readable well before the loss moves. By the time the loss spikes, the weights are already somewhere bad. It also catches the fp16 case where gradients underflow to exactly zero, which passes every `isfinite` check." },
     { stem: "Your loss is NaN from step 1. What are the likely causes?",
-      options: ["Exploding gradients accumulated over time", "Learning rate far too high, or bad data — log(0), division by zero, unnormalised inputs", "A straggler GPU", "Dead ReLUs"],
+      options: ["Gradients exploding over time", "Too high an LR, or bad data", "A straggler GPU in the job", "Dead ReLUs in early layers"],
       answer: 1,
       why: "A failure present before any learning has happened points at the inputs or the very first update, not at accumulation. It is also cheap to diagnose, because you can reproduce it immediately on one batch. A NaN appearing after thousands of healthy steps has an almost disjoint cause set — exploding gradients, a pathological batch, numerical drift." },
     { stem: "What is the right test for a checkpoint?",
-      options: ["That it saves without error", "That it loads in a fresh process and produces identical outputs on a fixed batch", "That the file size looks right", "That the path exists"],
+      options: ["It saves without raising an error", "Fresh-process load, identical outputs", "The file size looks about right", "The checkpoint path exists on disk"],
       answer: 1,
       why: "Saving without error and having a plausible file size are both true of a checkpoint that holds one shard of a sharded model, or a partial write, or one missing optimiser state. None of those is discoverable until you need it — which is always after something has already gone wrong. Comparing outputs is the only test that actually verifies recoverability." },
     { stem: "You are training in fp16 without a GradScaler. What symptom should you expect?",
-      options: ["Immediate NaN", "Gradients silently underflowing to zero, so training is slow and no finite check fires", "GPU memory errors", "Slower training"],
+      options: ["An immediate NaN loss at step 1", "Gradients silently underflow to zero", "GPU out-of-memory errors", "Slightly slower training overall"],
       answer: 1,
       why: "fp16's smallest normal value is about 6.1e-05, so a gradient of 1e-08 becomes exactly zero. Zero is finite, so every `isfinite` assertion passes while affected parameters simply receive no update. The symptom is disappointing convergence with nothing to point at — which is why the gradient norm belongs in your logs." }
   ] },

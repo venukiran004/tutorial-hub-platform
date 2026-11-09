@@ -147,7 +147,7 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why were MFCCs designed to decorrelate the mel bands?",
-      options: ["To reduce storage", "Gaussian mixtures with diagonal covariance assume independent features, which correlated bands violate", "To improve frequency resolution", "To remove noise"],
+      options: ["To reduce the storage needed per frame", "Diagonal GMMs need independent features", "To improve the frequency resolution", "To remove background noise from bands"],
       answer: 1,
       why: "A diagonal covariance matrix assumes features are conditionally independent, and adjacent log-mel bands correlating at 0.9524 breaks that outright. The DCT rotated into a basis where the assumption was approximately true. Neural networks have no such assumption, which is why the step became unnecessary." },
     { stem: "How much energy do the first 13 cepstral coefficients retain?",
@@ -155,11 +155,11 @@ EC.receiveLesson({
       answer: 1,
       why: "Measured on real speech: 98.22 % across 13 of 40 coefficients, reconstructing log-mel to within 2.76 % of its range. The first coefficient alone holds 71 %, which is essentially overall loudness and is often discarded for speaker-independent work." },
     { stem: "What information sits in the high cepstral coefficients that truncation discards?",
-      options: ["Background noise", "Pitch — the harmonic structure from the glottal pulse train", "Loudness", "Frequency resolution"],
+      options: ["Background noise", "Pitch structure", "Overall loudness", "Frequency resolution"],
       answer: 1,
       why: "The cepstrum is a spectrum of a log spectrum, so high coefficients capture rapid variation across frequency, which is the harmonic comb of the voice's pitch. Low coefficients capture the slow variation that is the vocal tract's envelope, and therefore the phoneme. Truncating keeps what was said and discards who said it." },
     { stem: "Should you use MFCCs for a new neural ASR system?",
-      options: ["Yes — they are the standard", "No — use 80-band log-mel or raw waveform; the DCT only discards information", "Yes, with deltas", "Only for streaming"],
+      options: ["Yes, they are the standard input", "No: log-mel; the DCT only loses", "Yes, provided deltas are added", "Only for streaming ASR systems"],
       answer: 1,
       why: "The DCT existed to satisfy a diagonal-covariance assumption that neural models do not make. Whisper uses 80-band log-mel, Conformer uses 80, and wav2vec 2.0 learns from the raw waveform. MFCCs remain reasonable only where 13 numbers per frame is a hard budget, such as a microcontroller keyword spotter." }
   ] },

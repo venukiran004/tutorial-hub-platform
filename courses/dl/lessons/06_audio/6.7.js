@@ -132,19 +132,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why does CTC need prefix beam search rather than plain beam search?",
-      options: ["It is faster", "Many frame paths collapse to the same text, so a plain beam fills with duplicates", "CTC outputs are not probabilities", "Plain beam search cannot handle blanks"],
+      options: ["It is faster", "Many paths collapse to one text", "CTC outputs are not probabilities", "Plain beams cannot handle blanks"],
       answer: 1,
       why: "Lesson 6.5 showed five of 27 three-frame paths collapsing to `ab`. Plain beam search treats those as distinct hypotheses, so the beam holds different spellings of one output while genuinely different candidates are pruned. Prefix beam search merges them and sums their probabilities, using the full width on real alternatives." },
     { stem: "What is contextual biasing and why does it matter?",
-      options: ["Fine-tuning on user data", "Boosting a per-session word list during decoding — contacts, playlists, part numbers", "Adjusting the acoustic model's priors", "Weighting the training set"],
+      options: ["Fine-tuning on user data", "Boosting a per-session word list", "Adjusting acoustic priors", "Reweighting training data"],
       answer: 1,
       why: "Rare proper nouns are where a general model is weakest and where users care most. Injecting the user's contact list at session start and boosting those prefixes in the beam turns `Call Aoife` from a failure into a success, and it is information available for free at request time that no general model improvement substitutes for." },
     { stem: "Why choose FastSpeech 2 over Tacotron 2 for a real-time voice agent?",
-      options: ["It sounds more natural", "It predicts durations explicitly, so it generates in parallel and cannot lose alignment", "It uses less memory", "It supports more languages"],
+      options: ["It sounds more natural to most listeners", "Explicit durations: parallel, never misaligned", "It uses much less memory at inference time", "It supports many more languages out of the box"],
       answer: 1,
       why: "Tacotron 2's attention can slip, producing babbling, early stopping or repeated words — a failure that is unacceptable at any quality level. FastSpeech 2's explicit duration predictor removes the attention entirely, making it roughly ten times faster and structurally incapable of that failure." },
     { stem: "Where should streaming TTS chunk its input?",
-      options: ["Every 20 tokens", "On punctuation and clause boundaries", "Every 500 ms of predicted audio", "At sentence ends only"],
+      options: ["Every 20 tokens", "At clause boundaries", "Every 500 ms of audio", "At sentence ends only"],
       answer: 1,
       why: "Prosody is computed per chunk, so a chunk that cuts mid-phrase produces an audible discontinuity inside a noun phrase. Clause boundaries are where prosody naturally resets. Fixed token counts will eventually split anywhere, and sentence ends are too coarse to get audio started in 200 ms." }
   ] },

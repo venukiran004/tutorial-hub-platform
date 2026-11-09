@@ -168,19 +168,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What does coupling the update gate cost a GRU relative to an LSTM?",
-      options: ["Nothing — they are equivalent", "It cannot keep all of its old state while also writing new content, since the two are tied", "It cannot handle long sequences", "It has no gradient highway"],
+      options: ["Nothing; the two are equivalent", "Keeping and writing are tied", "It cannot handle long sequences", "It has no gradient highway at all"],
       answer: 1,
       why: "The update is a convex combination: keeping fraction z of the old state means taking 1−z of the candidate. An LSTM's forget and input gates are independent, so it can set both to 1. The GRU's memory budget is zero-sum at every step — a genuine loss of expressiveness, though in practice rarely a decisive one." },
     { stem: "How many parameters does a GRU have compared with an LSTM?",
-      options: ["The same", "Exactly 75 % — three gates instead of four", "50 %", "Twice as many"],
+      options: ["The same count", "Exactly 75%", "About 50%", "Twice as many"],
       answer: 1,
       why: "`3h(h+d)` against `4h(h+d)`. Measured at three different sizes the ratio was exactly 0.750 every time. That reduction is the GRU's main practical attraction, particularly on small datasets where fewer parameters means less overfitting." },
     { stem: "A benchmark shows the GRU running slower than the LSTM despite having fewer parameters. What is the explanation?",
-      options: ["The benchmark is wrong", "Kernel optimisation differs by architecture — parameter count does not determine wall-clock speed", "GRUs need more epochs", "The hidden size was mismatched"],
+      options: ["The benchmark is simply wrong", "Kernels differ; size is not speed", "GRUs need more training epochs", "The hidden sizes were mismatched"],
       answer: 1,
       why: "Measured across three shapes on CPU with torch 2.10, the GRU was 1.6–3.1× slower. PyTorch's LSTM has a well-optimised fused kernel and the GRU does not get equivalent treatment. This is the same lesson as depthwise convolutions in 2.4: FLOPs predict latency poorly, so benchmark on your actual hardware." },
     { stem: "What did Chung et al. (2014) conclude about LSTM versus GRU?",
-      options: ["LSTM is consistently better", "GRU is consistently better", "Neither consistently wins, but both vastly outperform a vanilla RNN", "They are mathematically identical"],
+      options: ["LSTM is consistently better", "GRU is consistently better", "Neither wins; both beat RNNs", "They are mathematically identical"],
       answer: 2,
       why: "The comparison found task-dependent results with no consistent winner — GRU converging faster and being easier to tune, LSTM sometimes capturing longer dependencies. The clause that matters is the last one: the gap between either gated cell and a vanilla RNN dwarfs the gap between them." }
   ] },

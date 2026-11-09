@@ -162,19 +162,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why can't you use a bidirectional RNN for language modelling?",
-      options: ["It is too slow", "Each position's representation depends on future tokens, so predicting the next token leaks the answer", "It uses too much memory", "It cannot be trained with backpropagation"],
+      options: ["It is too slow for long text", "Each position sees future tokens", "It uses too much memory", "It cannot be trained by backprop"],
       answer: 1,
       why: "Measured: perturbing the final input changes the bidirectional output at position 0 by 9.4e-02, while the unidirectional change is exactly zero. The model would predict each token using a representation that has already read it, giving implausibly good training perplexity and nonsense at generation time." },
     { stem: "For a many-to-one bidirectional model, which gives the correct sequence summary?",
-      options: ["`output[:, -1, :]`", "`torch.cat([h_n[-2], h_n[-1]], dim=1)`", "`output.mean(dim=1)`", "`h_n[0]`"],
+      options: ["The last output step, `output[:, -1, :]`", "`torch.cat([h_n[-2], h_n[-1]], dim=1)`", "The mean over time, `output.mean(dim=1)`", "The first layer's state, `h_n[0]`"],
       answer: 1,
       why: "The backward pass's final state is at position 0, not position T−1. `output[:, -1, :]` pairs the forward pass's genuine summary with a backward state that has seen exactly one token, so half the representation is nearly empty. The model still trains, just worse — which is why this bug survives." },
     { stem: "What does `nn.LSTM(..., num_layers=1, dropout=0.5)` do?",
-      options: ["Applies dropout to the recurrent connections", "Nothing — PyTorch warns and ignores it, since there is no between-layer position", "Applies dropout to the output", "Applies dropout to the input"],
+      options: ["Dropout on the recurrent connections", "Nothing: it warns and ignores it", "Dropout on the output sequence", "Dropout on the input sequence"],
       answer: 1,
       why: "The argument controls dropout between stacked layers, so with one layer there is nowhere to apply it. PyTorch emits a warning that is easy to miss in a busy log, leaving you believing the model is regularised when it is not. Use an explicit `nn.Dropout` on the embeddings or outputs instead." },
     { stem: "In a 3-layer LSTM, what does `output` contain?",
-      options: ["The concatenation of all three layers", "The top layer's hidden states at every timestep", "The average across layers", "The first layer's states"],
+      options: ["All three layers, concatenated", "The top layer's state at each step", "The average across the layers", "The first layer's states only"],
       answer: 1,
       why: "`output` is always the top layer's sequence of hidden states, regardless of depth — the shape stays `(B, T, H)` whether you have one layer or four. Per-layer final states live in `h_n`, which gains one row per layer (and per direction, if bidirectional)." }
   ] },

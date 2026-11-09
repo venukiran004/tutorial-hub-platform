@@ -118,7 +118,7 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What is the key difference between wav2vec 2.0 and HuBERT?",
-      options: ["One uses raw waveform, the other log-mel", "wav2vec 2.0 is contrastive over quantised latents; HuBERT does masked prediction of k-means cluster IDs", "HuBERT is supervised", "wav2vec 2.0 is larger"],
+      options: ["Raw waveform input versus log-mel input", "Contrastive latents vs cluster prediction", "HuBERT is the supervised one of the two", "wav2vec 2.0 is simply the larger model"],
       answer: 1,
       why: "The pretext task differs. Contrastive learning needs negative sampling, a temperature and a diversity loss; HuBERT's masked prediction over offline cluster IDs is ordinary cross-entropy, which sidesteps that machinery and trains more stably at the cost of an iterative re-clustering loop." },
     { stem: "Which ASR architecture is the on-device standard for dictation?",
@@ -126,11 +126,11 @@ EC.receiveLesson({
       answer: 1,
       why: "RNN-T streams while conditioning on previously emitted labels, so it has an internal language model and can still emit text before the utterance ends. CTC streams but has no language modelling; attention models have language modelling but cannot stream. RNN-T is the combination on-device dictation requires." },
     { stem: "Why does a CTC model need an external language model?",
-      options: ["It is too small", "Its frame predictions are conditionally independent, so it cannot model which word sequences are likely", "It cannot handle long audio", "Its vocabulary is limited"],
+      options: ["It is too small to learn the language", "Independent frames cannot model word order", "It cannot handle long audio recordings", "Its output vocabulary is too limited"],
       answer: 1,
       why: "CTC assumes each frame's prediction is independent of the others given the input, so nothing in the model knows that `the` commonly follows `of`. An external language model supplies that at decode time, and the gain is typically several points of word error rate — much larger than it would be for an attention model, which already is a language model." },
     { stem: "Whisper produces fluent text for a recording of pure silence. Why?",
-      options: ["A bug in the decoder", "Its attention decoder is a language model that can generate text unconstrained by the audio", "The audio was not actually silent", "The sample rate was wrong"],
+      options: ["A bug in the decoding loop", "Its decoder is an unconstrained LM", "The audio was not truly silent", "The sample rate was set wrongly"],
       answer: 1,
       why: "An attention decoder generates autoregressively with a built-in language model, and nothing structurally requires its output to be grounded in the input. That language modelling is what makes it fluent and accurate, and also what lets it hallucinate. Production systems use voice activity detection and the model's no-speech probability as guards." }
   ] },

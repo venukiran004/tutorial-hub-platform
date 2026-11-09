@@ -165,19 +165,19 @@ with torch.no_grad():
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "An LSTM performs at chance on a 20-step dependency task while a vanilla RNN solves it. What should you check first?",
-      options: ["Increase the hidden size", "The forget-gate bias initialisation", "Switch to a GRU", "Lower the learning rate"],
+      options: ["Increase the hidden size", "The forget-gate bias init", "Switch to a GRU instead", "Lower the learning rate"],
       answer: 1,
       why: "PyTorch initialises the forget-gate bias near zero, giving f ≈ 0.4991 — the gradient is halved at every step before learning begins, a factor of a million over twenty steps. Setting that bias to 1.0 took the measured accuracy from 48.2 % to 100 % with nothing else changed." },
     { stem: "Why does the forget-gate bias matter so much at initialisation specifically?",
-      options: ["It prevents overfitting", "A model that cannot receive gradient at the start cannot learn to open its gates", "It speeds up the forward pass", "It reduces the parameter count"],
+      options: ["It prevents overfitting early", "No early gradient, no learning to open", "It speeds up the forward pass", "It reduces the parameter count"],
       answer: 1,
       why: "It is a bootstrap problem. The network could in principle learn to set its forget gates near 1, but it would have to do so using the very gradient signal the closed gates are suppressing. The initialisation sidesteps the circularity; once training is underway the gate is data-driven and the bias no longer matters." },
     { stem: "Which of these does gradient clipping solve?",
-      options: ["Vanishing gradients", "Exploding gradients only", "Both", "Neither"],
+      options: ["Vanishing gradients", "Exploding only", "Both of them", "Neither of them"],
       answer: 1,
       why: "Clipping rescales an oversized gradient while preserving its direction, so the information is kept. A vanished gradient has no direction left to preserve — at 80 steps the measured value was 8.3e-25, and scaling that up amplifies round-off, not signal. Vanishing needs an architectural fix." },
     { stem: "What single property unifies LSTM, skip connections and self-attention as solutions?",
-      options: ["They all add parameters", "They all shorten or cheapen the gradient's path between distant positions", "They all use gating", "They all require more memory"],
+      options: ["They all add more parameters", "They shorten the gradient path", "They all rely on learned gates", "They all require more memory"],
       answer: 1,
       why: "An RNN's gradient passes through T multiplications to reach the start. An LSTM keeps the path length but makes each hop a multiply by a learned gate near 1; skip connections shorten the path directly; attention reduces it to one hop between any pair. Asking about path length is a reliable way to understand a new sequence architecture." }
   ] },

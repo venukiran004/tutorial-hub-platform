@@ -158,19 +158,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "How many parameters does a GRU have relative to an LSTM?",
-      options: ["The same", "Exactly 75 % — three gates against four", "50 %", "125 %"],
+      options: ["The same", "Exactly 75%", "About 50%", "About 125%"],
       answer: 1,
       why: "`3H(H+D+1)` against `4H(H+D+1)`, measured at exactly 0.750 across three different sizes. That reduction is the GRU's main practical attraction, particularly on small datasets where fewer parameters means less overfitting." },
     { stem: "A benchmark shows the GRU slower than the LSTM. What does that tell you?",
-      options: ["The benchmark is wrong", "Kernel optimisation differs by architecture — parameter count does not determine speed", "The GRU needs more epochs", "The hidden sizes were mismatched"],
+      options: ["The benchmark must be wrong", "Kernels differ; size is not speed", "The GRU needs more epochs", "The hidden sizes were mismatched"],
       answer: 1,
       why: "Measured at 1.6–3.1× slower across three shapes on torch 2.10 CPU, because PyTorch's LSTM has a better-optimised fused path. The same lesson as depthwise convolutions: if speed is your reason for an architectural choice, benchmark it on your hardware and framework version." },
     { stem: "What does coupling the update gate cost the GRU?",
-      options: ["Nothing", "It cannot keep all its existing memory while also writing new content", "It cannot handle long sequences", "It loses the gradient highway"],
+      options: ["Nothing at all", "Keeping and writing are tied", "It cannot handle long sequences", "It loses the gradient highway"],
       answer: 1,
       why: "The update is a convex combination: keeping fraction z means taking 1−z of the candidate, so the memory budget is zero-sum each step. An LSTM's forget and input gates are independent and can both be 1. The gradient highway is unaffected — `∂h/∂h = z` works exactly as the LSTM's forget gate does." },
     { stem: "You read that PyTorch's GRU update gate `z` near 1 means 'take the new candidate'. Is that right?",
-      options: ["Yes", "No — PyTorch computes `(1−z)·h̃ + z·h_{t−1}`, so z near 1 means keep the old state", "It depends on the version", "Only for bidirectional GRUs"],
+      options: ["Yes, that is right as stated", "No: z near 1 keeps the old state", "It depends on the PyTorch version", "Only for bidirectional GRU layers"],
       answer: 1,
       why: "PyTorch's convention is the reverse of the. Both train identically since the network learns whichever sign it needs, but if you inspect gate statistics from a trained model expecting one convention, every number reads backwards." }
   ] },

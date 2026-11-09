@@ -155,19 +155,19 @@ def train_step(model, batch, optimizer, clip=1.0):
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why does a single NaN destroy an entire model?",
-      options: ["It causes an exception", "It survives every operation including multiplication by zero, so it spreads through gradients into weights", "It corrupts GPU memory", "It only affects the loss value"],
+      options: ["It raises an exception straight away", "It survives every operation and spreads", "It corrupts the GPU's memory directly", "It only ever affects the loss value"],
       answer: 1,
       why: "`nan * 0` is `nan`, so no masking or averaging cleans it out. It reaches the loss, then a weight's gradient, then after `optimizer.step()` that weight itself — and from the next forward pass every output that weight touches is NaN. Within a few steps the whole model is poisoned." },
     { stem: "Your loss becomes NaN. Where should the check go?",
-      options: ["On the loss value only", "At the source — on the logits before the loss, and on the gradient norm before the step", "After the optimiser step", "In the data loader"],
+      options: ["On the loss value alone", "At the source: logits, grad norm", "After the optimiser step runs", "Inside the data-loading code"],
       answer: 1,
       why: "By the time the NaN is visible in the loss, the information about its origin is gone. Checking logits before the loss and the gradient norm before the step localises it. Check `isfinite` rather than `isnan`, because `log(0)` and `exp(100)` produce infinities that only become NaN one operation later." },
     { stem: "A 30-layer network initialised at gain 2.5 produces output activations with norm 5.6e+07. What is the fix?",
-      options: ["Lower the learning rate", "Use He initialisation — gain √2 for ReLU — which gave a norm of 1.9", "Add dropout", "Reduce the batch size"],
+      options: ["Lower the learning rate", "He init, gain √2", "Add dropout layers", "Reduce the batch size"],
       answer: 1,
       why: "The problem is present at initialisation, before any gradient step, so no optimiser setting addresses it. The per-layer multiplier compounds across depth, and He initialisation is derived precisely to keep that multiplier near 1 for ReLU networks — measured output norm 1.935 against 5.6e+07." },
     { stem: "What does `clip_grad_norm_` return?",
-      options: ["The clipped norm", "The norm before clipping", "The number of clipped parameters", "Nothing"],
+      options: ["The norm after clipping", "The norm before clipping", "How many were clipped", "Nothing; it returns None"],
       answer: 1,
       why: "It returns the pre-clip global norm — measured at 6.589e+09 in a case that was then clipped to exactly 1.0000. That makes it a free diagnostic: if you are already clipping, capturing the return value gives you the gradient norm to log every step at no cost." }
   ] },
