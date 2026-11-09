@@ -170,14 +170,89 @@ model = FSDP(
       caption: "**`auto_wrap_policy` is the difference between FSDP working and FSDP being slower than it has to be.** Wrapping the model as a single unit gathers every parameter at once, which is the memory problem you started with; wrapping per transformer block keeps one block resident and lets the gather for the next block overlap the compute for the current one." },
     { t: "p", text: "**The strategies are a memory-against-communication dial, and the right setting depends on your interconnect.** `FULL_SHARD` holds the least and communicates the most, so it is right on NVLink and often wrong across a slow network, where `SHARD_GRAD_OP` keeps parameters resident and halves the traffic. `CPUOffload` is the option that makes an impossible model merely slow, with the PCIe link as the new bottleneck." },
 
-    { t: "exercise", title: "Size a long-context deployment",
+    { t: "exercise", kind: "Challenge", title: "Size a long-context deployment", difficulty: "core", minutes: 40,
       requirements: [
         "Compute your model's KV cache at your target context, and note whether the figure assumes MHA or GQA.",
         "Work out how many devices ring attention would need to fit that cache, and whether your interconnect supports the ring.",
         "For a sliding-window model, compute layers × window and compare it against the advertised context.",
         "Run needle-in-a-haystack at several positions and lengths, and find where your model's effective context ends.",
         "For a training run, compute the four memory terms and identify which ZeRO stage you actually need."
-      ] }
+      ],
+      hint: "Put the needle at a fixed fraction of the filler and read the probability of the code's first token after a cue that repeats the needle's wording. Rank 1 means the model retrieved it.",
+      solution: {
+        lang: "python", title: "long_context.py",
+        code: `import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+from transformers import GPT2LMHeadModel, GPT2TokenizerFast
+
+# 1. KV cache at the target context, MHA against GQA (7B-class: 32 layers, 32 heads x 128, fp16).
+def kv_gb(ctx, kv_heads, layers=32, d_head=128, b=2): return 2 * layers * kv_heads * d_head * ctx * b / 1e9
+for ctx in (32_768, 131_072, 1_048_576):
+    print(f"{ctx:>9,} tokens: MHA {kv_gb(ctx, 32):7.1f} GB   GQA-8 {kv_gb(ctx, 8):6.1f} GB")
+
+# 2. Ring attention: devices needed to hold a 1M-token MHA cache in 60 GB each.
+need = kv_gb(1_048_576, 32); P = 1
+while need / P > 60: P *= 2
+print(f"ring attention: {need:.0f} GB over {P} devices = {need / P:.1f} GB each; every step passes a KV block to the next device")
+
+# 3. Sliding window: what the receptive field really is.
+layers, window = 32, 4096
+print(f"sliding window {window} x {layers} layers = theoretical reach {layers * window:,} tokens; direct attention still only {window:,}")
+
+# 4. Needle in a haystack on GPT-2 (1,024-token limit): does the model recall the code at each depth?
+tok = GPT2TokenizerFast.from_pretrained("gpt2"); lm = GPT2LMHeadModel.from_pretrained("gpt2").eval()
+filler = "The weather was mild and the market opened on time. "
+needle = "The secret code is 7342. "
+question = "Reminder: the secret code is"
+target = tok.encode(" 7342")[0]
+print("\\ncontext  depth  P(first token of the code)  rank")
+for total in (200, 500, 900):
+    for depth in (0.1, 0.5, 0.9):
+        n_fill = total // len(tok.encode(filler))
+        parts = [filler] * n_fill; parts.insert(int(depth * n_fill), needle)
+        ids = tok("".join(parts) + question, return_tensors="pt")["input_ids"][:, -1000:]
+        with torch.no_grad(): p = lm(ids).logits[0, -1].softmax(-1)
+        print(f"{ids.shape[1]:7}  {depth:5}  {p[target]:26.4f}  {int((p > p[target]).sum()) + 1}")
+
+# 5. Training memory terms for 7B with Adam in mixed precision, and the ZeRO stage that fits 8 x 80 GB.
+N, gpus = 7e9, 8
+terms = {"weights fp16": 2 * N, "grads fp16": 2 * N, "optimiser fp32 (master + m + v)": 12 * N}
+for k, v in terms.items(): print(f"{k:32} {v / 1e9:5.0f} GB")
+per = {"no sharding": sum(terms.values()), "ZeRO-1 (shard optimiser)": 4 * N + 12 * N / gpus,
+       "ZeRO-2 (+ grads)": 2 * N + 14 * N / gpus, "ZeRO-3 (+ weights)": 16 * N / gpus}
+for k, v in per.items(): print(f"{k:26} {v / 1e9:6.1f} GB per GPU {'fits' if v / 1e9 < 60 else 'too big'} (leaving ~20 GB for activations)")
+`,
+        out: `   32,768 tokens: MHA    17.2 GB   GQA-8    4.3 GB
+  131,072 tokens: MHA    68.7 GB   GQA-8   17.2 GB
+1,048,576 tokens: MHA   549.8 GB   GQA-8  137.4 GB
+ring attention: 550 GB over 16 devices = 34.4 GB each; every step passes a KV block to the next device
+sliding window 4096 x 32 layers = theoretical reach 131,072 tokens; direct attention still only 4,096
+
+context  depth  P(first token of the code)  rank
+    190    0.1                      0.5909  1
+    190    0.5                      0.6486  1
+    190    0.9                      0.6804  1
+    465    0.1                      0.5586  1
+    465    0.5                      0.6657  1
+    465    0.9                      0.6070  1
+    839    0.1                      0.5685  1
+    839    0.5                      0.6371  1
+    839    0.9                      0.6522  1
+weights fp16                        14 GB
+grads fp16                          14 GB
+optimiser fp32 (master + m + v)     84 GB
+no sharding                 112.0 GB per GPU too big (leaving ~20 GB for activations)
+ZeRO-1 (shard optimiser)     38.5 GB per GPU fits (leaving ~20 GB for activations)
+ZeRO-2 (+ grads)             26.2 GB per GPU fits (leaving ~20 GB for activations)
+ZeRO-3 (+ weights)           14.0 GB per GPU fits (leaving ~20 GB for activations)`,
+        notes: [
+          { t: "p", text: "At one million tokens a 7B-class model needs 550 GB of KV cache under full multi-head attention and 137 GB under GQA-8. Always check which one a published figure assumes. Holding the MHA figure at 60 GB per device takes 16 devices in a ring, and every attention step moves a KV block to the next device, so the interconnect sets the speed." },
+          { t: "p", text: "A 4,096-token sliding window over 32 layers reaches 131,072 tokens in theory, but each layer attends directly to only 4,096. Information from further back arrives only by being relayed layer to layer. Treat the advertised context as an upper bound, not a guarantee of recall." },
+          { t: "p", text: "GPT-2 retrieved the code at rank 1 at every depth and length up to its 1,024-token limit, with probability 0.56–0.68. Repeated filler plus a cue that copies the needle's wording is an easy test: the induction pattern 'secret code is → 7342' does all the work. Real effective-context tests use varied filler and a question phrased differently from the needle, and that is where models degrade." },
+          { t: "p", text: "Mixed-precision Adam on 7B needs 112 GB before activations, which does not fit an 80 GB GPU. Sharding only the optimiser state (ZeRO-1) across 8 GPUs brings it to 38.5 GB each, which fits with room for activations. ZeRO-2 and ZeRO-3 save more but add communication; use the lowest stage that fits." }
+        ]
+      } }
   ],
 
   takeaways: [

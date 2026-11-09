@@ -121,14 +121,74 @@ EC.receiveLesson({
     { t: "callout", kind: "note", title: "Module 7 goes much deeper",
       body: [{ t: "p", text: "This lesson covers the architectural patterns as they appear in the transformer reference. Module 7 — *Multimodal AI* — takes the full treatment: CLIP training in detail, vision-language models, diffusion, audio and speech, video understanding, multimodal RAG and document AI. What matters here is the structural point: making a transformer multimodal is a **tokenisation** problem, not an architecture problem, which is the same conclusion lesson 5.7 reached about ViT." }] },
 
-    { t: "exercise", title: "Measure the multimodal budget",
+    { t: "exercise", kind: "Challenge", title: "Measure the multimodal budget", difficulty: "core", minutes: 30,
       requirements: [
         "Load CLIP and verify that the text and vision towers share no parameters and never cross-attend.",
         "Embed a set of captions and check the similarity ordering matches your semantic expectation.",
         "Compute visual token counts for the resolutions your application needs, as a fraction of your context window.",
         "For a multi-image conversation, compute the KV cache required and compare it against a text-only one.",
         "Compare a tiling approach against simple downscaling on a task requiring fine detail, and measure both accuracy and token cost."
-      ] }
+      ],
+      hint: "Compare the parameter ids of the two towers to check for sharing, and search module names for cross-attention. CLIP connects the towers only through the contrastive loss and a shared embedding space.",
+      solution: {
+        lang: "python", title: "multimodal_budget.py",
+        code: `import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+from transformers import CLIPModel, CLIPTokenizerFast
+clip = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").eval()
+tok = CLIPTokenizerFast.from_pretrained("openai/clip-vit-base-patch32")
+
+# 1. Separate towers: no shared parameters, no cross-attention modules.
+n = lambda m: sum(p.numel() for p in m.parameters())
+vis, txt = clip.vision_model, clip.text_model
+shared = {id(p) for p in vis.parameters()} & {id(p) for p in txt.parameters()}
+cross = [name for name, _ in clip.named_modules() if "cross" in name.lower()]
+print(f"vision {n(vis):,}  text {n(txt):,}  shared tensors {len(shared)}  cross-attention modules {len(cross)}")
+
+# 2. Caption similarity ordering.
+caps = ["a photo of a dog", "a photo of a puppy", "a photo of a cat", "a photo of a car", "a dog that is not on a photo"]
+with torch.no_grad():
+    e = clip.get_text_features(**tok(caps, padding=True, return_tensors="pt"))
+    e = getattr(e, "pooler_output", e)
+e = e / e.norm(dim=-1, keepdim=True)
+print("\\nsimilarity to 'a photo of a dog':")
+for c, s in sorted(zip(caps[1:], (e[1:] @ e[0]).tolist()), key=lambda r: -r[1]): print(f"  {s:.4f}  {c}")
+
+# 3. Visual tokens as a share of the context window (LLaVA-style: 14px patches, no pooling).
+ctx = 8192
+for res in (224, 336, 672):
+    v = (res // 14) ** 2
+    print(f"{res}px image: {v:5} visual tokens = {v / ctx:5.1%} of an {ctx}-token window")
+
+# 4. KV cache for a 5-image conversation against text only (7B-class: 32 layers, 32 heads x 128, fp16).
+kv_per_token = 2 * 32 * 32 * 128 * 2
+text_tokens, img_tokens = 1500, 5 * 576
+print(f"\\nKV cache: text only {text_tokens * kv_per_token / 2 ** 20:.0f} MB; with five 336px images {(text_tokens + img_tokens) * kv_per_token / 2 ** 20:.0f} MB")
+
+# 5. Token cost of tiling against downscaling a 1344x1344 document.
+tiles = (1344 // 336) ** 2
+print(f"1344px document: downscale to 336px = 576 tokens; 4x4 tiles of 336px plus a thumbnail = {(tiles + 1) * 576:,} tokens ({tiles + 1}x)")
+`,
+        out: `vision 87,456,000  text 63,165,952  shared tensors 0  cross-attention modules 0
+
+similarity to 'a photo of a dog':
+  0.9594  a photo of a puppy
+  0.9548  a dog that is not on a photo
+  0.9310  a photo of a cat
+  0.8780  a photo of a car
+224px image:   256 visual tokens =  3.1% of an 8192-token window
+336px image:   576 visual tokens =  7.0% of an 8192-token window
+672px image:  2304 visual tokens = 28.1% of an 8192-token window
+
+KV cache: text only 750 MB; with five 336px images 2190 MB
+1344px document: downscale to 336px = 576 tokens; 4x4 tiles of 336px plus a thumbnail = 9,792 tokens (17x)`,
+        notes: [
+          { t: "p", text: "CLIP's vision tower (87.5M) and text tower (63.2M) share no tensors and contain no cross-attention module. That independence is what makes CLIP usable for retrieval: images can be embedded once, offline, and matched against any text later with a dot product." },
+          { t: "p", text: "The ordering is mostly right: 'puppy' is closest to 'dog', then 'cat', then 'car'. 'A dog that is not on a photo' scored 0.955, above 'cat' and nearly equal to 'puppy'. CLIP's text tower largely ignores negation, the same weakness as the generation metrics in lesson 3.4." },
+          { t: "p", text: "Visual tokens add up quickly. A 336 px image costs 576 tokens, 7% of an 8K window, and at 672 px one image takes 28%. Five 336 px images nearly triple a 1,500-token conversation's KV cache, from 750 MB to 2,190 MB. Tiling a 1,344 px document into 16 tiles plus a thumbnail costs 17 times as many tokens as downscaling it. Use tiling only when the task needs the detail, and compare accuracy on your own documents before paying for it." }
+        ]
+      } }
   ],
 
   takeaways: [

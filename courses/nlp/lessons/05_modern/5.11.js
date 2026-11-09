@@ -137,14 +137,67 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Which is why hybrids won",
       body: [{ t: "p", text: "The field has not replaced attention with SSMs; it has **mixed** them. Architectures like Jamba interleave a few attention layers among many Mamba layers, so the model gets constant-state efficiency for most of its depth and exact retrieval where it needs it. A small number of attention layers is enough to support the recall the SSM layers cannot do, while the cache cost is a fraction of a full transformer's. That is the usual resolution of a structural trade-off — not one side winning, but a ratio being found." }] },
 
-    { t: "exercise", title: "Implement the duality",
+    { t: "exercise", kind: "Challenge", title: "Implement the duality", difficulty: "stretch", minutes: 40,
       requirements: [
         "Implement both modes of an SSM and confirm they agree to floating-point precision.",
         "Plot the kernel K_j for several values of A and relate its decay to the half-life.",
         "Measure how long a value persists in the state for A = 0.9 against A = 0.999.",
         "Implement a selective scan and check that varying delta changes the effective decay rate as exp(delta · A) predicts.",
         "Compare a small SSM and a small transformer on a copying task where a token must be reproduced exactly N positions later, sweeping N."
-      ] }
+      ],
+      hint: "With a diagonal A, the kernel is K_j = Σ_n C_n A_n^j B_n. The convolutional output at time t is Σ_{j=0..t} K_j x_{t−j}; compute it directly in float64 and compare it with the recurrence.",
+      solution: {
+        lang: "python", title: "ssm_duality.py",
+        code: `import math
+import torch
+torch.manual_seed(0)
+
+# 1. A diagonal linear SSM in recurrent and convolutional form.
+N, L = 4, 64
+A = torch.tensor([0.9, 0.7, 0.99, 0.5], dtype=torch.float64); B = torch.randn(N, dtype=torch.float64); C = torch.randn(N, dtype=torch.float64)
+x = torch.randn(L, dtype=torch.float64)
+h, rec = torch.zeros(N, dtype=torch.float64), []
+for t in range(L): h = A * h + B * x[t]; rec.append((C * h).sum())
+rec = torch.stack(rec)
+K = torch.stack([(C * A ** j * B).sum() for j in range(L)])         # kernel K_j = C A^j B
+conv = torch.stack([(K[:t + 1].flip(0) * x[:t + 1]).sum() for t in range(L)])
+print(f"recurrent vs convolutional max difference: {(rec - conv).abs().max():.2e}")
+
+# 2-3. Kernel decay and half-life for single-mode systems.
+print("\\n   A      half-life   K_j at j=1, 10, 100       steps until a value falls below 1%")
+for a in (0.5, 0.9, 0.99, 0.999):
+    hl = math.log(0.5) / math.log(a); below = math.ceil(math.log(0.01) / math.log(a))
+    print(f"{a:6}  {hl:9.1f}   {a ** 1:.3f}  {a ** 10:.3f}  {a ** 100:.3e}   {below}")
+
+# 4. Selective scan: delta sets the effective decay as exp(delta * A_cont).
+A_cont = -1.0
+print("\\ndelta   discretised A = exp(delta*A)   measured one-step decay")
+for delta in (0.01, 0.1, 1.0, 3.0):
+    a_bar = math.exp(delta * A_cont)
+    h = 1.0; h = a_bar * h                                             # one step with zero input
+    print(f"{delta:5}   {a_bar:28.4f}   {h:.4f}")
+print("small delta keeps the state (remember); large delta resets it (focus on the new input)")
+`,
+        out: `recurrent vs convolutional max difference: 3.11e-15
+
+   A      half-life   K_j at j=1, 10, 100       steps until a value falls below 1%
+   0.5        1.0   0.500  0.001  7.889e-31   7
+   0.9        6.6   0.900  0.349  2.656e-05   44
+  0.99       69.0   0.990  0.904  3.660e-01   459
+ 0.999      692.8   0.999  0.990  9.048e-01   4603
+
+delta   discretised A = exp(delta*A)   measured one-step decay
+ 0.01                         0.9900   0.9900
+  0.1                         0.9048   0.9048
+  1.0                         0.3679   0.3679
+  3.0                         0.0498   0.0498
+small delta keeps the state (remember); large delta resets it (focus on the new input)`,
+        notes: [
+          { t: "p", text: "The recurrent and convolutional forms agree to 3e-15 in float64. They are one model computed two ways, which is why an SSM can train in parallel like a convolution and run inference one token at a time like an RNN." },
+          { t: "p", text: "The half-life is ln(0.5) / ln(A): 6.6 steps at A = 0.9 and 693 at 0.999. A value stored at A = 0.9 falls below 1% after 44 steps; at 0.999 it lasts 4,603. Memory length is set entirely by how close A is to 1, which is why long-range SSMs parameterise A close to 1 and learn small deviations from it." },
+          { t: "p", text: "In the selective version, the step size Δ sets the discrete decay to exp(Δ·A), and the measured one-step decay matches exactly. A small Δ (0.01) keeps 99% of the state, so the model remembers through the input. A large Δ (3.0) keeps 5%, so it resets and attends to the new input. Making Δ depend on the input is what lets a selective SSM decide what to remember. The copying-task comparison against a transformer needs two training runs and is not executed here." }
+        ]
+      } }
   ],
 
   takeaways: [

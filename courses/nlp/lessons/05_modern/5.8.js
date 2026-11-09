@@ -157,14 +157,86 @@ EC.receiveLesson({
       code: 'from transformers import AutoTokenizer, AutoModelForCausalLM\n\ntok = AutoTokenizer.from_pretrained("gpt2")\nmodel = AutoModelForCausalLM.from_pretrained("gpt2", attn_implementation="eager")\n\nout = model(**tok("The capital of France is", return_tensors="pt"),\n            output_hidden_states=True, output_attentions=True)\n\nout.logits.shape          # (1, 5, 50257)\nlen(out.hidden_states)    # 13 - the embedding output plus 12 layers\nlen(out.attentions)       # 12, each (1, 12, 5, 5)',
       caption: "`AutoModelForCausalLM` adds the LM head; `AutoModel` would return only `last_hidden_state`." },
     { t: "p", text: "The two `output_*` flags are what made §03 possible, and they are off by default for a reason: **`output_hidden_states=True` returns 13 tensors and `output_attentions=True` returns 12 more, so a long sequence materialises every attention matrix at once** — which is exactly the `O(n²)` memory FlashAttention exists to avoid. Useful for inspection, and not something to leave on in a serving path." },
-    { t: "exercise", title: "Trace your own prompt",
+    { t: "exercise", kind: "Challenge", title: "Trace your own prompt", difficulty: "core", minutes: 35,
       requirements: [
         "Push a prompt through a model with `output_hidden_states=True` and plot residual-stream RMS against layer depth.",
         "Find the layer where RMS grows fastest, and check what the final LayerNorm reduces it to.",
         "Print the top-10 next tokens for a factual prompt and check whether the model actually prefers the right answer.",
         "For the same distribution, compute how many tokens top-k 50 and top-p 0.9 each keep. Repeat on a prompt the model is confident about.",
         "Generate with greedy, beam and nucleus sampling and count repeated n-grams in each."
-      ] }
+      ],
+      hint: "With `output_hidden_states=True`, GPT-2 returns 13 tensors: the embedding output, then each block's output, and the last one already has `ln_f` applied. Run the final block yourself on `hidden_states[-2]` to see the stream before normalisation.",
+      solution: {
+        lang: "python", title: "trace_prompt.py",
+        code: `import os, collections
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+from transformers import GPT2LMHeadModel, GPT2TokenizerFast
+tok = GPT2TokenizerFast.from_pretrained("gpt2"); lm = GPT2LMHeadModel.from_pretrained("gpt2").eval()
+
+def trace(prompt):
+    ids = tok(prompt, return_tensors="pt")["input_ids"]
+    with torch.no_grad(): out = lm(ids, output_hidden_states=True)
+    return ids, out
+
+# 1-2. Residual-stream RMS by layer at the last position, and what ln_f does to it.
+ids, out = trace("The capital of France is")
+rms = [h[0, -1].pow(2).mean().sqrt().item() for h in out.hidden_states]
+print("layer RMS: " + "  ".join(f"{i}:{r:.1f}" for i, r in enumerate(rms)))
+jumps = [rms[i + 1] / rms[i] for i in range(len(rms) - 1)]
+i = max(range(len(jumps)), key=jumps.__getitem__)
+print(f"fastest growth: layer {i} -> {i + 1} ({jumps[i]:.1f}x)")
+# hidden_states[-1] already has ln_f applied in HF's GPT-2; recompute the pre-norm stream for comparison.
+with torch.no_grad():
+    res = lm.transformer.h[-1](out.hidden_states[-2])
+    last = (res[0] if isinstance(res, tuple) else res)[0, -1]
+    normed = lm.transformer.ln_f(last)
+print(f"last block output RMS {last.pow(2).mean().sqrt():.2f} -> after ln_f {normed.pow(2).mean().sqrt():.2f}")
+
+# 3. Does it prefer the right answer?
+p = out.logits[0, -1].softmax(-1); top = p.topk(10)
+print("\\ntop-10:", [(tok.decode(i), round(v.item(), 3)) for v, i in zip(top.values, top.indices)])
+print(f"P(' Paris') = {p[tok.encode(' Paris')[0]]:.4f}, rank {int((p > p[tok.encode(' Paris')[0]]).sum()) + 1}")
+
+# 4. How many tokens top-k 50 and top-p 0.9 keep, on an uncertain and a confident prompt.
+for prompt in ("The capital of France is", "The United States of"):
+    _, o = trace(prompt); q = o.logits[0, -1].softmax(-1).sort(descending=True).values
+    keep_p = int((q.cumsum(0) < 0.9).sum()) + 1
+    print(f"{prompt!r:28} top-k keeps 50, top-p 0.9 keeps {keep_p}; top-1 prob {q[0]:.3f}")
+
+# 5. Repeated 4-grams under greedy, beam and nucleus decoding.
+def repeats(t):
+    w = t.split(); grams = collections.Counter(tuple(w[i:i + 4]) for i in range(len(w) - 3))
+    return sum(c - 1 for c in grams.values() if c > 1)
+start = tok("The city council met on Tuesday to discuss", return_tensors="pt")["input_ids"]
+torch.manual_seed(0)
+for name, kw in (("greedy", dict(do_sample=False)), ("beam 5", dict(num_beams=5, do_sample=False)),
+                 ("nucleus p=0.9", dict(do_sample=True, top_p=0.9, top_k=0))):
+    with torch.no_grad(): g = lm.generate(start, max_new_tokens=120, pad_token_id=50256, **kw)
+    text = tok.decode(g[0, start.shape[1]:])
+    print(f"\\n{name:14} repeated 4-grams: {repeats(text):3}   {text[:90]!r}")
+`,
+        out: `layer RMS: 0:0.2  1:2.0  2:2.0  3:2.1  4:2.3  5:2.6  6:2.7  7:3.1  8:3.6  9:4.6  10:6.0  11:10.5  12:9.2
+fastest growth: layer 0 -> 1 (11.4x)
+last block output RMS 15.50 -> after ln_f 9.21
+
+top-10: [(' the', 0.085), (' now', 0.048), (' a', 0.046), (' France', 0.032), (' Paris', 0.032), (' in', 0.027), (' also', 0.026), (' not', 0.024), (' home', 0.023), (' still', 0.016)]
+P(' Paris') = 0.0322, rank 5
+'The capital of France is'   top-k keeps 50, top-p 0.9 keeps 1503; top-1 prob 0.085
+'The United States of'       top-k keeps 50, top-p 0.9 keeps 1; top-1 prob 0.966
+
+greedy         repeated 4-grams:  42   ' the issue.\\n\\nThe council voted to approve a $1.5 million bond for the project, which will '
+
+beam 5         repeated 4-grams:  69   ' the issue.\\n\\n"I think it\\'s important for us to have a conversation about this issue," said'
+
+nucleus p=0.9  repeated 4-grams:   0   ' a new pilot project that would use park land at Fort Wayne State University to replace a '`,
+        notes: [
+          { t: "p", text: "At the last position the residual stream grew from RMS 0.2 after embedding to 15.5 after the final block. The biggest jump was through block 1 (11×), and growth sped up again in the last three blocks. `ln_f` brought it back to 9.2, a scale the tied output head can use." },
+          { t: "p", text: "GPT-2 small does not prefer the right answer. ' Paris' ranked fifth at 0.032, behind ' the', ' now', ' a' and ' France'. The prompt is ambiguous as a continuation: 'is the most…' and 'is now…' are both natural English. Asking 'does it know the capital' and 'what does it predict next' are different questions." },
+          { t: "p", text: "How many candidates the two truncation methods keep depends heavily on the prompt. On the uncertain prompt, top-p 0.9 kept 1,503 tokens, far more than top-k's fixed 50. On 'The United States of' it kept 1, while top-k still kept 50. Top-p adapts to the model's confidence and top-k does not." },
+          { t: "p", text: "Over 120 tokens, greedy decoding repeated 42 four-grams and beam search 69, because beam search picks the most probable continuation, and repetition is highly probable. Nucleus sampling repeated none. Beam search suits short, constrained outputs such as translation, not open-ended text." }
+        ]
+      } }
   ],
 
   takeaways: [

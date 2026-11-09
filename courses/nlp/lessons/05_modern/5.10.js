@@ -131,14 +131,90 @@ EC.receiveLesson({
     { t: "callout", kind: "crit", title: "You pay memory for the total and FLOPs for the subset",
       body: [{ t: "p", text: "Every expert must be in memory, because *any* token might route to it — you cannot know in advance. So the memory footprint is the **full** 60.1 GB while the compute is only the active 15.0 GB worth. That is exactly backwards from what a serving budget wants, and it is why MoE models are cheaper to train and to run per-FLOP but not cheaper to *host*. Two further problems compound it: routing is data-dependent, so different tokens in the same batch need different experts, which fragments the batched matrix multiplies that make GPUs fast; and in a distributed deployment, experts live on different devices, so routing becomes a **network** operation with all-to-all communication every layer. MoE is a training-efficiency and quality-per-FLOP win, not a deployment simplification." }] },
 
-    { t: "exercise", title: "Build and break a router",
+    { t: "exercise", kind: "Challenge", title: "Build and break a router", difficulty: "stretch", minutes: 55,
       requirements: [
         "Implement the router and MoE layer and confirm the top-k weights sum to 1 for every token.",
         "Train without a load-balancing loss and plot per-expert token fraction against step.",
         "Add the auxiliary loss, sweep alpha from 0.001 to 0.5, and find where it starts hurting task loss.",
         "Switch from top-2 to top-1 routing and see whether collapse becomes easier to induce.",
         "Compute total and active parameters for an MoE configuration you might use, and the memory each implies."
-      ] }
+      ],
+      hint: "The Switch-style auxiliary loss is E · Σ_e f_e · P_e, where f_e is the fraction of tokens whose top choice is expert e and P_e is the mean router probability for e. Only P_e carries gradient, and that is enough.",
+      solution: {
+        lang: "python", title: "moe_router.py",
+        code: `import torch, torch.nn as nn, torch.nn.functional as F
+d, E = 32, 8
+
+class MoE(nn.Module):
+    def __init__(s, k):
+        super().__init__(); s.k = k; s.router = nn.Linear(d, E, bias=False)
+        s.experts = nn.ModuleList(nn.Sequential(nn.Linear(d, 64), nn.GELU(), nn.Linear(64, d)) for _ in range(E))
+    def forward(s, x):
+        probs = s.router(x).softmax(-1)
+        w, idx = probs.topk(s.k, -1); w = w / w.sum(-1, keepdim=True)
+        out = torch.zeros_like(x)
+        for j in range(s.k):
+            for e in range(E):
+                sel = idx[:, j] == e
+                if sel.any(): out[sel] += w[sel, j:j + 1] * s.experts[e](x[sel])
+        frac = F.one_hot(idx[:, 0], E).float().mean(0)            # fraction routed (top-1 choice) per expert
+        aux = E * (frac * probs.mean(0)).sum()                   # Switch-style load-balancing loss
+        s.w, s.frac = w, frac
+        return out, aux
+
+# A regression task with a skewed input distribution, so some experts look more useful early on.
+torch.manual_seed(0); W_true = torch.randn(d, d)
+def data(n=512):
+    x = torch.randn(n, d) + torch.where(torch.rand(n, 1) < 0.8, 0.5, -0.5)
+    return x, torch.tanh(x @ W_true / d ** 0.5)
+
+def train(k, alpha, steps=400, seed=0):
+    torch.manual_seed(seed); m = MoE(k)
+    with torch.no_grad(): m.router.weight[0] += 0.5                 # nudge one expert ahead, as random init often does
+    opt = torch.optim.Adam(m.parameters(), 3e-3); hist = []
+    for t in range(steps):
+        x, y = data(); out, aux = m(x); task = F.mse_loss(out, y)
+        (task + alpha * aux).backward(); opt.step(); opt.zero_grad()
+        if t in (0, 100, 399): hist.append(m.frac.max().item())
+    x, y = data(2048)
+    with torch.no_grad(): out, _ = m(x)
+    return m, hist, F.mse_loss(out, y).item()
+
+m, _, _ = train(2, 0.0, steps=1)
+x, _ = data(64); m(x)
+print(f"top-2 weights sum to 1 for every token: {torch.allclose(m.w.sum(-1), torch.ones(64))}")
+
+print("\\nk  alpha   busiest expert share at step 0 / 100 / 400   held-out task MSE")
+for k in (2, 1):
+    for alpha in ((0.0, 0.01, 0.1, 0.5) if k == 2 else (0.0, 0.1)):
+        _, hist, mse = train(k, alpha)
+        print(f"{k}  {alpha:5}   " + " / ".join(f"{h:.2f}" for h in hist) + f"   {mse:.4f}")
+
+# 5. Total against active parameters for a Mixtral-8x7B-style configuration.
+dm, dff, L, experts, k, vocab = 4096, 14336, 32, 8, 2, 32000
+expert = 3 * dm * dff; attn = 4 * dm * dm // 4 * 2.5            # GQA attention, roughly 2.5·d² per layer
+total = L * (experts * expert + attn) + 2 * vocab * dm; active = L * (k * expert + attn) + 2 * vocab * dm
+print(f"\\n8x7B-style: total {total / 1e9:.1f}B, active per token {active / 1e9:.1f}B; "
+      f"fp16 memory for all experts {2 * total / 1e9:.0f} GB even though each token uses {active / total:.0%}")
+`,
+        out: `top-2 weights sum to 1 for every token: True
+
+k  alpha   busiest expert share at step 0 / 100 / 400   held-out task MSE
+2    0.0   0.80 / 0.79 / 0.80   0.0238
+2   0.01   0.80 / 0.30 / 0.18   0.0218
+2    0.1   0.80 / 0.15 / 0.15   0.0258
+2    0.5   0.80 / 0.15 / 0.15   0.0272
+1    0.0   0.80 / 0.79 / 0.80   0.0308
+1    0.1   0.80 / 0.15 / 0.15   0.0343
+
+8x7B-style: total 46.7B, active per token 12.9B; fp16 memory for all experts 93 GB even though each token uses 28%`,
+        notes: [
+          { t: "p", text: "Renormalising the top-k weights makes them sum to 1 for every token. With one expert nudged ahead at initialisation and no auxiliary loss, routing collapsed and stayed collapsed: 80% of tokens went to one expert at step 400, the same as at step 0. Nothing in the task loss pushes the router to spread work." },
+          { t: "p", text: "A small auxiliary loss fixed it. At α = 0.01 the busiest expert fell to 18%, and the task MSE was the best of the sweep, 0.0218 against 0.0238 without balancing, because more experts were trained. At α = 0.1 and above, load became nearly uniform (15%) but task loss rose to 0.0258–0.0272: the router was forced to balance at the expense of matching inputs to the right expert." },
+          { t: "p", text: "Top-1 routing behaved the same way but scored worse throughout (0.0308 unbalanced, 0.0343 balanced), because each token gets one expert's opinion instead of a blend of two. An earlier version of this experiment used clusters so far apart that a linear router could not split them. Every α then gave an identical 80% share. If balancing appears to do nothing, check whether the inputs leave the router any choice." },
+          { t: "p", text: "The 8×7B-style configuration has 46.7B parameters in total and 12.9B active per token. All 93 GB of fp16 weights must still be in memory, because any token may route to any expert. MoE saves compute per token, not memory." }
+        ]
+      } }
   ],
 
   takeaways: [

@@ -155,14 +155,67 @@ EC.receiveLesson({
     { t: "callout", kind: "note", title: "The positional encoding is a small scandal",
       body: [{ t: "p", text: "ViT flattens a 14×14 grid into a 196-length sequence and applies **1-D** learned positional embeddings — the model is told patch 13 comes before patch 14, but nothing tells it that patch 14 sits directly below patch 0. It has to infer two-dimensional structure from the data. That it works at all is evidence for how much a transformer can learn from scale, and it is exactly the kind of thing later architectures fixed: 2-D positional encodings and relative position biases, which Swin uses, do measurably better." }] },
 
-    { t: "exercise", title: "Take a ViT apart",
+    { t: "exercise", kind: "Challenge", title: "Take a ViT apart", difficulty: "core", minutes: 40,
       requirements: [
         "Load a ViT and confirm the patch embedding is a Conv2d with kernel equal to stride.",
         "Compute the token count and attention entries for three resolutions you might deploy at.",
         "Extract attention maps from layer 1 and layer 12 and check whether early layers learned locality.",
         "Compare a ViT and a ResNet of similar parameter count fine-tuned on a few thousand images, and note which wins.",
         "Interpolate a ViT's positional embeddings to a larger resolution and measure what it costs in accuracy."
-      ] }
+      ],
+      hint: "Measure locality as the attention-weighted distance between patches: build a 196 × 196 matrix of grid distances once, multiply it by each head's attention map, and average over query patches.",
+      solution: {
+        lang: "python", title: "vit_apart.py",
+        code: `import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import numpy as np, torch
+from transformers import ViTForImageClassification
+vit = ViTForImageClassification.from_pretrained("google/vit-base-patch16-224", attn_implementation="eager").eval()
+
+# 1. The patch embedding is a convolution with kernel == stride.
+conv = vit.vit.embeddings.patch_embeddings.projection
+print(f"patch embedding: {conv.__class__.__name__} kernel {conv.kernel_size} stride {conv.stride} -> {conv.out_channels} channels")
+
+# 2. Tokens and attention entries per head at deployment resolutions.
+for res in (224, 384, 512):
+    n = (res // 16) ** 2 + 1
+    print(f"{res}px: {n:5} tokens, {n * n:>10,} attention entries per head per layer")
+
+# 3. A synthetic image: smooth gradients plus a bright square. Normalise as ViT expects (mean 0.5, std 0.5).
+y, x = np.mgrid[0:224, 0:224] / 223.0
+img = np.stack([x, y, 0.5 * (x + y)]); img[:, 80:144, 80:144] = 1.0
+pix = torch.tensor((img - 0.5) / 0.5, dtype=torch.float32)[None]
+with torch.no_grad(): out = vit(pixel_values=pix, output_attentions=True)
+grid = np.array([(i // 14, i % 14) for i in range(196)])
+dist = np.abs(grid[:, None] - grid[None]).sum(-1)                         # Manhattan distance between patches
+for layer in (0, 11):
+    A = out.attentions[layer][0, :, 1:, 1:].numpy()                        # drop [CLS]
+    mean_d = (A * dist).sum(-1).mean(-1)                                    # attention-weighted distance per head
+    print(f"layer {layer + 1:2}: mean attended distance per head (patches) min {mean_d.min():.2f} median {np.median(mean_d):.2f} max {mean_d.max():.2f}")
+
+# 5. Interpolated position embeddings at 384px: does the prediction survive?
+big = torch.nn.functional.interpolate(pix, size=384, mode="bilinear", align_corners=False)
+with torch.no_grad():
+    p224 = out.logits.softmax(-1)[0]; p384 = vit(pixel_values=big, interpolate_pos_encoding=True).logits.softmax(-1)[0]
+lab = vit.config.id2label
+print(f"\\n224px top-1: {lab[int(p224.argmax())]!r} ({p224.max():.3f}); 384px with interpolated positions: {lab[int(p384.argmax())]!r} ({p384.max():.3f})")
+print(f"top-5 overlap between the two: {len(set(p224.topk(5).indices.tolist()) & set(p384.topk(5).indices.tolist()))} of 5")
+`,
+        out: `patch embedding: Conv2d kernel (16, 16) stride (16, 16) -> 768 channels
+224px:   197 tokens,     38,809 attention entries per head per layer
+384px:   577 tokens,    332,929 attention entries per head per layer
+512px:  1025 tokens,  1,050,625 attention entries per head per layer
+layer  1: mean attended distance per head (patches) min 0.30 median 3.46 max 6.77
+layer 12: mean attended distance per head (patches) min 8.16 median 8.89 max 9.61
+
+224px top-1: 'lighter, light, igniter, ignitor' (0.033); 384px with interpolated positions: 'beaker' (0.031)
+top-5 overlap between the two: 0 of 5`,
+        notes: [
+          { t: "p", text: "The patch embedding is a `Conv2d` with a 16×16 kernel and stride 16, so non-overlapping patches are flattened and projected in one operation. Token count grows with the square of resolution (197 at 224 px, 1,025 at 512 px), and attention entries with its fourth power: 38,809 against 1,050,625 per head per layer." },
+          { t: "p", text: "Layer 1 learned locality without any convolutional prior. Its most local head attends on average 0.3 patches away, and the median head 3.5. By layer 12 every head attends 8–10 patches away, close to the image-wide average. Early layers behave like small convolutions; late layers mix globally." },
+          { t: "p", text: "Running the 384 px version with interpolated position embeddings changed the top prediction and kept none of the top-5 classes. The input here is a synthetic gradient with no real class, so the confidences are low (about 0.03). That is exactly the regime where the shift is most visible. Measure accuracy on labelled images at both resolutions before deploying at a size the model was not trained on. A ViT-against-ResNet fine-tuning comparison needs a labelled image set and training runs, and is not executed here." }
+        ]
+      } }
   ],
 
   takeaways: [
