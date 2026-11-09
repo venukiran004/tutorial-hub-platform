@@ -466,42 +466,22 @@ for lo, hi in BUCKETS:
     title: "Check yourself",
     questions: [
       { stem: "Measured with a 500-character recursive splitter, functions of 0\u2013250 chars were split 2% of the time and functions of 500\u20131000 chars 98% of the time. What is the right conclusion?",
-        options: [
-          "The splitter has a bug that triggers on larger inputs",
-          "A function longer than the chunk size cannot fit in one chunk, so the chunk size is the threshold \u2014 and the aggregate split rate is just your function-size distribution",
-          "Recursive splitting works well for code as long as functions stay under 1000 characters",
-          "The 500\u20131000 band was undersampled, making 98% unreliable"
-        ],
+        options: ["The splitter has a bug on larger inputs", "Chunk size is the threshold for splitting", "It works fine under 1000 characters", "The 500–1000 band was undersampled"],
         answer: 1,
         why: "The mechanism is pure arithmetic: anything larger than the chunk size must be divided, so splitting is near-certain above the threshold and merely coincidental below it. This makes aggregate percentages uninterpretable \u2014 the same method and chunk size gave 17% on a 40-file sample and 37% on a 139-file one, differing only in how big the functions were. The number to design against is the p90 function size, which was 1,452 characters, so a 500-character setting breaks the top decile by construction." },
 
       { stem: "A code graph built by matching ast.Call with an ast.Name function resolved only 31% of its edges to nodes in the graph. What are the two problems?",
-        options: [
-          "The parser failed on some files, and the graph was built before all files were indexed",
-          "ast.Name cannot distinguish a local helper from a builtin like len, and self.method() is ast.Attribute so most calls in object-oriented code are skipped entirely",
-          "Call edges should point to classes rather than functions, and inheritance was double-counted",
-          "The graph needs embeddings to resolve names to definitions"
-        ],
+        options: ["Some files failed to parse, and indexing was early", "ast.Name misses builtins and all self.method() calls", "Edges should target classes; inheritance doubled", "The graph needs embeddings to resolve names"],
         answer: 1,
         why: "The pattern captures the name being called with no information about what it refers to, so builtins, imported symbols and local helpers are indistinguishable and 69% of edges point at names with no node. Separately, attribute-style calls are a different AST node type and are silently missed, which in class-heavy code is the majority of real calls. The fix is scope resolution \u2014 tracking imports, resolving receivers whose type is known, discarding builtins \u2014 which is what tree-sitter plus an index or a language server provides." },
 
       { stem: "Why does the code retrieval pipeline re-rank after dependency expansion rather than before?",
-        options: [
-          "Because re-ranking is cheaper on a larger candidate set due to batching",
-          "Expansion is a recall move that deliberately destroys precision \u2014 median 2 callees, max 12 \u2014 so the re-ranker is what restores it",
-          "Because the expanded candidates have no embeddings and must be scored by the cross-encoder",
-          "To ensure deduplication happens on the reranked list"
-        ],
+        options: ["Re-ranking is cheaper on larger batched sets", "Expansion trades precision for recall; re-ranking restores it", "Expanded candidates lack embeddings, so need scoring", "So deduplication happens on the re-ranked list"],
         answer: 1,
         why: "Pulling in callees and type dependencies multiplies the candidate set \u2014 roughly tripling it at the median and by thirteen at the tail \u2014 which raises the chance the needed context is present and lowers the proportion of candidates that are relevant. Re-ranking after expansion is what converts that recall back into precision, and re-ranking is measurably most valuable exactly when the first stage is weak, which an expanded set reliably is. It also explains the context-budget rule: five relevant functions beat twenty loosely related ones." },
 
       { stem: "A function is renamed in a commit. The code index deletes chunks by content hash before re-inserting. What happens?",
-        options: [
-          "The rename is handled correctly, since the file's hash changed and triggers a full re-index",
-          "The old function's chunk is never deleted \u2014 nothing in the new file hashes to it \u2014 so the index keeps a plausible, retrievable API that no longer exists",
-          "The upsert fails because the new chunk's hash collides with the old one",
-          "Both the old and new names are retrievable, and the re-ranker will prefer the newer one"
-        ],
+        options: ["Handled: the file hash changed and re-indexes all", "The old chunk is never deleted and stays retrievable", "The upsert fails on a colliding hash", "Both names stay; the re-ranker prefers the new"],
         answer: 1,
         why: "A rename is a delete plus an insert with no hash relating them, so hash-keyed deletion has nothing to match and the stale chunk survives indefinitely. Keying deletion on the file path instead removes all of a file's chunks before re-inserting, which resolves renames within a file; a move between files needs both paths re-indexed, which a commit diff supplies. This is the highest-value thing to get right in a code index because the failure is silent and the wrong answer looks exactly as authoritative as a correct one." }
     ]

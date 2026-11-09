@@ -333,42 +333,22 @@ for case in [
     title: "Check yourself",
     questions: [
       { stem: "A team has 400 commissioned preference pairs and 180,000 thumbs-up/thumbs-down labels from production. Which method fits, and why?",
-        options: [
-          "DPO on the 400 pairs, since paired data is higher quality per example",
-          "KTO, because it removes the pairing requirement and can consume the 180,000 unpaired labels directly",
-          "ORPO, because it removes the reference model and so needs less data",
-          "IPO, because production labels are noisier than commissioned ones"
-        ],
+        options: ["DPO on the 400 pairs, as pairs are higher quality", "KTO, which uses the 180,000 unpaired labels", "ORPO, which drops the reference and needs less", "IPO, as production labels are noisier"],
         answer: 1,
         why: "Production feedback is structurally not pair-shaped \u2014 nobody saw an alternative response, so no pair exists or can be constructed. KTO is the only member of the family that consumes individual good/bad labels, via a prospect-theory value function. Paired data is more informative per example because it controls for prompt difficulty, but 400 examples against 180,000 is not a close contest, and most teams leave the larger set unused purely because the tooling expects pairs." },
 
       { stem: "SimPO replaces DPO's summed log-ratio with a length-normalised average. What does this fix and what does it cost?",
-        options: [
-          "It fixes reward hacking, and costs additional compute per step",
-          "It fixes the length bias \u2014 DPO's implicit reward is \u03b2\u00b7d\u00b7n, linear in token count \u2014 and costs the derivation from the KL-constrained objective",
-          "It fixes the reference model mismatch bug, and costs the ability to use LoRA",
-          "It fixes label noise sensitivity, and costs the saturation property of the loss"
-        ],
+        options: ["Fixes reward hacking; costs compute per step", "Fixes length bias; costs the KL derivation", "Fixes the reference bug; costs LoRA support", "Fixes label noise; costs loss saturation"],
         answer: 1,
         why: "Because the implicit reward sums over response tokens, a per-token gain of d nats earns \u03b2\u00b7d\u00b7n \u2014 so a 100-token response at d = 0.02 matches a 20-token one at d = 0.10, and length substitutes for quality. Dividing by n removes that term, and the target margin \u03b3 then takes over the baseline role, which is why the reference model can also be dropped. The cost is grounding: DPO's loss is a consequence of the KL-constrained objective while SimPO's is a motivated modification, so there is less to reason from when behaviour surprises you." },
 
       { stem: "Why does IPO use a squared loss toward a fixed target margin instead of log-sigmoid?",
-        options: [
-          "Because squared loss is cheaper to compute and numerically more stable",
-          "Because log-sigmoid never stops rewarding a larger margin, so DPO keeps pushing on mislabelled pairs \u2014 a squared loss has a minimum at the target and cannot",
-          "Because it makes the loss convex, guaranteeing a unique optimum",
-          "Because it allows unpaired data to be used alongside pairs"
-        ],
+        options: ["Squared loss is cheaper and more stable", "Log-sigmoid keeps pushing on mislabelled pairs", "It makes the loss convex with one optimum", "It allows unpaired data alongside pairs"],
         answer: 1,
         why: "Bradley-Terry labels are stochastic \u2014 measured on synthetic data, the Bayes-optimal accuracy was 78.6%, so over a fifth of labels contradicted the true ordering. DPO's log-sigmoid keeps pushing those in the wrong direction indefinitely, slowly, and it accumulates. A squared loss is minimised at the target margin, so pushing past it is penalised and no single mislabelled pair can dominate. The cost is that genuinely unambiguous preferences also stop being learned decisively, since the gradient reverses beyond the target." },
 
       { stem: "ORPO and SimPO remove the reference model. What is the reference model's actual role in DPO?",
-        options: [
-          "It provides the baseline for advantage estimation, as a critic does in PPO",
-          "It is what makes the implicit reward correspond to the KL-constrained optimum \u2014 so removing it trades derivation for empirical behaviour",
-          "It supplies the frozen logits used to compute the KL penalty term added to the loss",
-          "It prevents the policy's log-probabilities from collapsing to zero"
-        ],
+        options: ["It provides the advantage baseline, like a critic", "It ties the reward to the KL-constrained optimum", "It supplies frozen logits for a KL penalty term", "It stops log-probabilities collapsing to zero"],
         answer: 1,
         why: "The three-line derivation inverts the KL-constrained optimum, and the reference policy appears in that optimum \u2014 so the log-ratio against it is what equals the reward. Delete it and the loss is no longer a consequence of that objective. DPO has no separate KL term and no critic; the 13 GB at 7B contributes nothing at inference, and with two checkpoints it can silently be the wrong model, which is why removing it is attractive despite the loss of grounding." }
     ]

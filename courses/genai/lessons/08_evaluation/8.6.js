@@ -273,42 +273,22 @@ print("judge reaches %.0f%% of the human ceiling" % (100 * m["kappa"] / hh["kapp
     title: "Check yourself",
     questions: [
       { stem: "A judge that outputs \u201cgood\u201d for every case achieved 95.1% raw agreement with humans and Cohen's \u03ba of exactly 0.000. What does this demonstrate?",
-        options: [
-          "That \u03ba is unreliable when one label dominates and raw agreement should be preferred",
-          "That raw agreement is inflated by chance on skewed distributions \u2014 all of this judge's agreement is what chance predicts, so it has zero measurable skill",
-          "That the human labels were themselves unreliable on that sample",
-          "That the judge needs a lower decision threshold to produce some negatives"
-        ],
+        options: ["κ is unreliable with a dominant label", "Raw agreement is inflated by chance", "The human labels were unreliable", "The judge needs a lower threshold"],
         answer: 1,
         why: "When humans say \"good\" 95% of the time, a constant \"good\" predictor matches them 95% of the time without doing anything \u2014 so p_observed equals p_chance and \u03ba is zero by construction. This is exactly the behaviour \u03ba exists to expose, and the trap is realistic: a judge asked whether answers are faithful on a corpus where most are will reach high raw agreement by leaning toward yes. It also means a \u03ba figure needs its class balance reported alongside." },
 
       { stem: "Why is pairwise judging more reliable than pointwise rubric scoring?",
-        options: [
-          "Because it requires fewer tokens per judgement, reducing cost and noise",
-          "Because ranking two answers is better defined than scoring one \u2014 absolute scales drift across prompts while relative comparisons are stable",
-          "Because it eliminates position bias by construction",
-          "Because it produces an absolute quality level that can be tracked over time"
-        ],
+        options: ["It uses fewer tokens, cutting cost and noise", "Relative comparison is stable; absolute scales drift", "It eliminates position bias by construction", "It yields an absolute level to track over time"],
         answer: 1,
         why: "\"Is this a 3 or a 4?\" has no stable answer across prompts, which is the same asymmetry that makes preference data cheaper and better defined than written demonstrations \u2014 and the same reason a Bradley-Terry fit recovers differences precisely while the absolute level is unidentifiable. Pairwise actually *introduces* position bias, which is why both orders are run; and it gives an ordering rather than a level, so it needs a fixed baseline to compare against." },
 
       { stem: "You run every judged pair in both presentation orders. What is the flip rate good for?",
-        options: [
-          "Doubling the effective sample size of the evaluation",
-          "It is the position bias measured on your own judge, and it tells you whether the win rate is interpretable at all",
-          "Detecting verbosity bias, since order correlates with length",
-          "Establishing the human-human agreement ceiling"
-        ],
+        options: ["Doubling the effective sample size", "Measuring position bias on your judge", "Detecting verbosity bias via order", "Setting the human agreement ceiling"],
         answer: 1,
         why: "Randomising order removes the systematic component of position bias but leaves the inconsistency, so the fraction of pairs where the judge reverses itself quantifies how noisy it is. Below roughly 0.2 you can exclude the flipped pairs and compute a win rate on the decisive ones; much above that, the judge is too inconsistent for the comparison regardless of how you randomise. It says nothing about verbosity or about the human ceiling, which needs double human labelling." },
 
       { stem: "Your judge scores \u03ba = 0.628. What else do you need before deciding whether to rely on it?",
-        options: [
-          "The judge model's parameter count and context length",
-          "Human-human \u03ba on a doubly-labelled subset, as the ceiling, plus the class balance of the sample",
-          "The judge's average confidence on each decision",
-          "Agreement with a second judge from a different model family"
-        ],
+        options: ["The judge's parameter count and context", "Human-human κ and the class balance", "The judge's average confidence per call", "Agreement with a second judge family"],
         answer: 1,
         why: "Preference labels are stochastic, so human-human agreement is well below 1 and is the real ceiling \u2014 \u03ba of 0.628 is close to the limit against a 0.710 ceiling and poor against a 0.9 one. The class balance is needed because \u03ba is not comparable across different marginal distributions. A second judge is a useful consistency check and not a ceiling, since two models can agree with each other while both diverging from humans." }
     ]

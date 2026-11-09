@@ -293,42 +293,22 @@ for per_day in (1e6, 1e9, 1e12):
     title: "Check yourself",
     questions: [
       { stem: "Training an 8B model on 15T tokens costs 7.2 \u00d7 10\u00b2\u00b3 FLOPs, while training a 70B Chinchilla-optimally costs 5.88 \u00d7 10\u00b2\u00b3. What does this tell you about over-training?",
-        options: [
-          "The figures must be wrong, since a smaller model cannot cost more to train",
-          "It is a volume bet rather than a saving \u2014 the training premium exceeds the cost of the larger model and is only repaid through inference, after about 1.06 \u00d7 10\u00b9\u00b2 generated tokens",
-          "The 8B model will also be cheaper to train than the 70B once the data pipeline is amortised",
-          "Over-training reduces inference cost per token, which is where the saving comes from"
-        ],
+        options: ["The figures must be wrong; small cannot cost more", "A volume bet repaid only through inference", "The 8B gets cheaper once data is amortised", "Over-training cuts per-token inference cost"],
         answer: 1,
         why: "Training FLOPs are 6ND, so 94\u00d7 the compute-optimal token count is 94\u00d7 the training cost, which here overtakes the larger model's entire training run. The payoff is purely in inference, at 2N per token, giving a computable break-even of about a trillion generated tokens \u2014 roughly 2.9 years at a billion tokens a day and a day at a trillion. Over-training itself does not change inference cost at all, since inference is independent of D." },
 
       { stem: "Why does over-training not reduce inference cost directly?",
-        options: [
-          "Because inference uses only the forward pass, which is unaffected by training length",
-          "Because inference FLOPs are approximately 2N per generated token \u2014 a function of model size alone \u2014 so the saving comes entirely from being able to choose a smaller N",
-          "Because KV caching eliminates the dependence on training data volume",
-          "Because quantisation at serving time overwrites any benefit from longer training"
-        ],
+        options: ["Inference is a forward pass unaffected by training", "Inference cost is ~2N: only a smaller N saves", "KV caching removes dependence on training data", "Serving-time quantisation erases the benefit"],
         answer: 1,
         why: "Inference cost depends on N and not on D, so training a fixed-size model for longer adds training expense and changes serving cost by nothing. The strategy works only because longer training is supposed to let a smaller model reach a target quality, and the entire saving is attributable to that reduction in N. This is why the load-bearing premise \u2014 that an over-trained small model matches a larger optimally-trained one \u2014 is a quality claim rather than something the scaling relations establish." },
 
       { stem: "A team serving a few million tokens per day asks whether they should favour an aggressively over-trained model. What is the right framing?",
-        options: [
-          "No \u2014 the training premium would take millennia to repay at that volume",
-          "Yes \u2014 they inherit someone else's already-repaid training bet and pay only inference, which is cheaper at the smaller N",
-          "It makes no difference, since the models are of equal quality by assumption",
-          "They should train their own model at the Chinchilla-optimal ratio instead"
-        ],
+        options: ["No; repaying the premium would take millennia", "Yes; they inherit a training bet already repaid", "No difference, as quality is assumed equal", "They should train a Chinchilla-optimal model"],
         answer: 1,
         why: "The break-even calculation applies to whoever pays for training. A team choosing an existing open model pays no training cost at all, so they simply benefit from the smaller N's cheaper inference \u2014 the lab that over-trained it absorbed the premium. The break-even figure of roughly a trillion tokens is the right lens for the trainer and the wrong lens for the adopter, which is the useful distinction here." },
 
       { stem: "What is the main limitation of using 6ND and 2N for a model comparison?",
-        options: [
-          "They apply only to decoder-only architectures",
-          "They ignore attention's quadratic term, embeddings and normalisation, so they are accurate to a few percent at typical shapes and unsuitable for separating models within about 10% of each other",
-          "They assume a single training epoch and break down if data is repeated",
-          "They measure throughput rather than compute, so they cannot be converted to cost"
-        ],
+        options: ["They apply only to decoder-only models", "They miss terms and blur gaps under ~10%", "They assume one epoch, failing on repeats", "They measure throughput, not compute"],
         answer: 1,
         why: "Both are rules of thumb that drop terms which matter more at long context, where attention's quadratic cost grows. That precision is ample for decisions spanning orders of magnitude \u2014 such as a break-even that moves between one day and three thousand years depending on traffic \u2014 and inadequate for a close comparison. Repeated data is handled correctly, incidentally: D counts tokens processed, so a second epoch over the same text counts twice." }
     ]

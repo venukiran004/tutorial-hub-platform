@@ -356,42 +356,22 @@ for name, idx in SLICES.items():
     title: "Check yourself",
     questions: [
       { stem: "Two tasks both show 60% single-sample accuracy. Voting over 8 samples gives 71.9% on one and 98.6% on the other. What differs?",
-        options: [
-          "The second task has a smaller answer space, making correct answers more likely",
-          "Error structure \u2014 on the first, wrong answers all agree with each other; on the second they scatter across many distinct wrong answers",
-          "The second task's samples were drawn at a higher temperature",
-          "The first task's gold answers were ambiguous, causing scoring errors"
-        ],
+        options: ["A smaller answer space on the second task", "Error structure: agreeing versus scattered errors", "A higher sampling temperature on the second", "Ambiguous gold answers on the first task"],
         answer: 1,
         why: "Self-consistency works by finding the plurality answer, so what matters is whether the 40% of failures concentrate on one wrong answer or spread out. Concentrated errors make the vote effectively 60-40 and voting adds little; scattered errors mean each wrong answer gets few votes while the correct one accumulates all of its own. This is why an accuracy figure alone cannot predict what voting will buy, and why distinct wrong answers per question is the measurement to take." },
 
       { stem: "The binomial probability of more than half of 4 samples being correct, for a 60% model, is 47.5% \u2014 below the single-sample 60%. Why is this not evidence that sampling hurts?",
-        options: [
-          "Because the binomial assumes independence, which does not hold for samples from one model",
-          "Because self-consistency takes the plurality rather than the majority \u2014 an answer can win with 2 votes of 8 \u2014 so the majority calculation asks the wrong question",
-          "Because 4 is an even number and ties are excluded from the calculation",
-          "Because the binomial does not account for the temperature used during sampling"
-        ],
+        options: ["Samples from one model are not independent", "Voting takes the plurality, not the majority", "Four is even, so ties are excluded", "The binomial ignores temperature"],
         answer: 1,
         why: "A strict majority of 4 requires 3 or more, a harder bar than 1 of 1, which is why the majority model is non-monotone and predicts that adding samples hurts. Self-consistency picks whichever answer appears most often, which is a far weaker requirement \u2014 the simulated figure at n = 4 with five error modes is 80.5%, not 47.5%. The majority calculation is likely the origin of conservative published estimates, since it understates the technique by over 30 points." },
 
       { stem: "A model scores 20% on a hard slice and its errors are concentrated on one wrong answer. What does voting over 8 samples do?",
-        options: [
-          "Raises accuracy to about 35%, since sampling reduces variance",
-          "Lowers accuracy to about 3% \u2014 the wrong answer is the modal answer, and voting finds the mode more reliably",
-          "Leaves accuracy unchanged, since voting cannot add information",
-          "Raises accuracy only if N exceeds the number of distinct answers"
-        ],
+        options: ["Raises it to about 35% by reducing variance", "Lowers it to ~3%: the wrong answer is the mode", "Leaves it unchanged, as voting adds nothing", "Raises it only if N exceeds distinct answers"],
         answer: 1,
         why: "Voting's job is to identify the most likely answer, so when the most likely answer is wrong, more samples identify it more confidently \u2014 accuracy falls from 20% to 3.0%. The crossover is at 50%, where voting is neutral, so the precondition is that the correct answer is already the modal single outcome. This matters practically because a model above 50% overall can be below it on a specific slice, and voting will then degrade that slice while improving the aggregate." },
 
       { stem: "Why is \u201caccuracy per unit cost\u201d a poor metric for choosing a test-time compute setting?",
-        options: [
-          "Because cost varies by provider, making the ratio incomparable",
-          "Because accuracy is bounded at 1.0 while cost is not, so the ratio always favours doing less \u2014 a single sample wins it trivially",
-          "Because it ignores latency, which is the real constraint",
-          "Because accuracy is measured on a held-out set and cost in production"
-        ],
+        options: ["Cost varies by provider, so ratios do not compare", "Bounded accuracy means doing less always wins", "It ignores latency, the real constraint", "Accuracy is offline while cost is in production"],
         answer: 1,
         why: "Measured, a single sample scores 0.60 on that ratio against 0.12 for voting@8, which would argue for never spending anything \u2014 a conclusion the metric forces rather than discovers. The useful question is whether the marginal accuracy is worth the marginal cost at the accuracy level you actually require: if you need 90%, the single sample is not an option at any price. That requirement varies by request, which is why routing beats any global setting." }
     ]

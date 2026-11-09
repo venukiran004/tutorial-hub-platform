@@ -340,42 +340,22 @@ for pr in (0.02, 0.1, 0.3, 0.5, 0.8, 0.95, 0.99):
     title: "Check yourself",
     questions: [
       { stem: "Why does RLVR allow much longer RL training than RLHF with a learned reward model?",
-        options: [
-          "Because programmatic rewards are computed faster, allowing more steps per hour",
-          "Because a verifier has no regions of confidently-wrong high scores \u2014 Bradley-Terry's vanishing gradient leaves RM magnitudes unconstrained, and a verifier's output cannot be influenced by length or confidence",
-          "Because RLVR uses GRPO, which is more stable than PPO",
-          "Because verifiable rewards are dense per token rather than sparse at the end"
-        ],
+        options: ["Programmatic rewards compute faster, so more steps", "A verifier has no exploitable high-score regions", "RLVR uses GRPO, more stable than PPO", "Verifiable rewards are dense per token"],
         answer: 1,
         why: "The RM is exploitable because its gradient vanishes once a reward gap is large, so nothing constrains how big a correct gap becomes \u2014 leaving regions where it assigns huge scores for no good reason, which the KL leash exists to keep the policy away from. A verifier's answer is a function of correctness alone. Note that verifiable rewards are typically outcome-only and therefore sparse, which is a separate weakness that process reward models address." },
 
       { stem: "A GRPO+RLVR run uses problems with a 95% pass rate for the current policy. What fraction of groups of 6 contribute gradient, and what should change?",
-        options: [
-          "About 95%, since most samples pass \u2014 the problem set is well matched",
-          "About 27% \u2014 most groups are all-pass and give exactly zero advantage \u2014 so the problem set should be re-curated toward a 20\u201380% pass rate",
-          "About 50%, since the advantage normalisation is symmetric around the mean",
-          "All of them, because the eps guard ensures non-zero advantages"
-        ],
+        options: ["About 95%, as most pass; the set is well matched", "About 27%; re-curate toward 20–80% pass rates", "About 50%, by symmetric normalisation", "All of them, thanks to the eps guard"],
         answer: 1,
         why: "With independent samples at a 95% pass rate, 1 \u2212 0.95\u2076 \u2212 0.05\u2076 is about 0.265, so roughly three quarters of groups are all-pass and produce exactly zero advantage \u2014 while still costing full generation time, which dominates the wall clock. Signal peaks near a 50% pass rate where about 96.9% of groups teach something. Real samples are correlated rather than independent, which makes all-pass even likelier, so this figure is an upper bound." },
 
       { stem: "Response length grew during RLVR training with only a correct/incorrect reward. How does this differ from the length bias that afflicts RLHF?",
-        options: [
-          "It does not differ \u2014 both are instances of the model exploiting the reward",
-          "Under a verifier, length is a genuine discovery because longer reasoning raises the hit rate and the verifier ignores length; under an RM, length is a hack because annotators mistake length for effort",
-          "RLVR length growth is bounded by the context window while RLHF length growth is not",
-          "RLVR length growth happens only during the cold-start SFT stage"
-        ],
+        options: ["No difference; both exploit the reward", "Verifier length is earned; RM length is a hack", "RLVR growth is bounded by the context window", "It only happens in the cold-start SFT stage"],
         answer: 1,
         why: "The verifier scores only correctness, so any length gain must have been selected for because it improved correctness \u2014 backtracking, re-checking and case enumeration genuinely increase the chance of a right answer. Under a learned reward model, length correlates with higher scores because human annotators conflate length with effort, so the model gains reward without gaining quality. Identical symptom, opposite meaning, distinguished entirely by what the reward measures." },
 
       { stem: "Why are process reward models used mainly at inference rather than as the training signal?",
-        options: [
-          "Because they are too slow to evaluate during training",
-          "Because annotating step-level correctness is expensive human work that must be redone as reasoning style changes, while checking a final answer is free and automatic",
-          "Because they produce dense rewards, which destabilise GRPO's group normalisation",
-          "Because they cannot be applied to code or mathematics, only to natural language"
-        ],
+        options: ["They are too slow to evaluate in training", "Step labels are costly; final answers are free", "Dense rewards destabilise group normalisation", "They work only on natural language"],
         answer: 1,
         why: "An outcome check is a program and costs nothing per example; grading each step of a long derivation requires annotation that does not transfer well as the model's reasoning style evolves. PRMs give strictly better credit assignment \u2014 identifying which step was wrong rather than only that the answer was \u2014 and their natural use is guiding search, such as beam search over reasoning steps, where a step-level score is required and an outcome score cannot substitute." }
     ]

@@ -300,42 +300,22 @@ for n in (1_187, 100_000, 1_000_000, 10_000_000):
     title: "Check yourself",
     questions: [
       { stem: "Exact search over a million 384-dimension vectors takes about 75 ms and occupies 1.5 GB. Which constraint forces a move to a dedicated vector store first?",
-        options: [
-          "Search latency, since 75 ms is too slow for a request path",
-          "Memory \u2014 1.5 GB resident constrains the process long before 75 ms constrains a request that already spends hundreds of milliseconds generating",
-          "Index build time, which grows faster than linearly",
-          "The number of concurrent queries the index can serve"
-        ],
+        options: ["Latency, as 75 ms is too slow for a request", "Memory: 1.5 GB resident binds long before latency", "Index build time, which grows superlinearly", "The number of concurrent queries it can serve"],
         answer: 1,
         why: "Against a generation taking hundreds of milliseconds, 75 ms of search is noticeable but small. 1.5 GB of resident vectors is a real constraint on an application process, and it is what usually forces the move. Latency becomes binding roughly an order of magnitude later, around ten million vectors where brute force reaches 855 ms. In practice operational needs \u2014 persistence, backups, incremental updates \u2014 move most teams even earlier." },
 
       { stem: "A RAG request spends 11 ms on vector search and 2,405 ms on cross-encoder re-ranking. What follows for latency work?",
-        options: [
-          "Tune the ANN index parameters, since search is the retrieval bottleneck",
-          "The re-ranker decision and its shortlist depth dominate; index tuning is optimising about 1% of the request",
-          "Reduce k, since fewer retrieved chunks means less to re-rank",
-          "Move to a faster embedding model"
-        ],
+        options: ["Tune the ANN index, the retrieval bottleneck", "The re-ranker dominates; the index is about 1%", "Reduce k, so there is less to re-rank", "Move to a faster embedding model"],
         answer: 1,
         why: "The re-ranker is 219\u00d7 the search cost here and roughly three quarters of the request. Its shortlist depth is a direct linear dial \u2014 524 ms at depth 5 against 3,961 ms at depth 50 \u2014 and recall was flat from 20 to 50, so a large cut is often free. Reducing k helps only indirectly and the embedding model is part of the 11 ms. The general lesson is to time stages separately before optimising, because the stage people reach for is usually the smallest one." },
 
       { stem: "Why is changing the embedding model a migration rather than an incremental update?",
-        options: [
-          "Because the new model produces vectors of a different dimension, which raises an error",
-          "Because a half-migrated index has some vectors comparable to the query and some that are noise, and recall collapses with no error raised when dimensions match",
-          "Because the vector store cannot store two models' vectors simultaneously",
-          "Because the chunk boundaries have to be recomputed as well"
-        ],
+        options: ["A new dimension raises an error on insert", "Mixed vectors silently wreck recall", "Stores cannot hold two models' vectors", "Chunk boundaries must be recomputed"],
         answer: 1,
         why: "Measured, query and index embeddings from different models dropped recall from 95% to 50% while nothing errored, because the dimensionality happened to match. A dimension change does raise an error and is therefore the safer case; the dangerous upgrade is the one that keeps dimensionality. There is no incremental path, so the model should be pinned as a versioned dependency and a bump treated as a full re-embed with a blue-green cutover." },
 
       { stem: "What makes content hashing the right default for deciding what to re-embed?",
-        options: [
-          "It compresses the document, reducing embedding cost",
-          "The check costs microseconds against seconds of embedding, and it is exact rather than heuristic \u2014 a changed byte changes the hash",
-          "It allows embeddings to be reused across different models",
-          "It detects semantic changes while ignoring formatting changes"
-        ],
+        options: ["It compresses the document, cutting embedding cost", "Microseconds to check, and exact rather than heuristic", "Embeddings can then be reused across models", "It spots semantic changes and ignores formatting"],
         answer: 1,
         why: "A SHA-256 over a document is microseconds while embedding its chunks is seconds, so the decision costs a tiny fraction of the work it avoids, and unlike a timestamp or a heuristic it cannot miss a change. Using the hash as the record id additionally makes re-ingestion idempotent, which removes a class of duplication. It is deliberately not semantic \u2014 a formatting-only change will trigger a re-embed, which is the safe direction to err in." }
     ]

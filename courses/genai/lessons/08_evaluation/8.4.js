@@ -246,42 +246,22 @@ print("our eval set ranking     :", our_ranking(CANDIDATES, EVAL))`,
     title: "Check yourself",
     questions: [
       { stem: "Why are HumanEval and SWE-bench considered more trustworthy than MMLU?",
-        options: [
-          "They are newer and therefore less likely to be contaminated",
-          "They are scored by executing the output against tests, which is exact and cannot be bluffed \u2014 unlike picking a letter, which can be pattern-matched",
-          "They use larger evaluation sets with tighter confidence intervals",
-          "They are judged by humans rather than automatically"
-        ],
+        options: ["They are newer and less likely contaminated", "Execution against tests cannot be bluffed", "They have larger sets with tighter intervals", "They are judged by humans, not automatically"],
         answer: 1,
         why: "Execution puts them on the exact rung of the evaluation ladder: a patch makes the tests pass or it does not, so there is no room for a confident wrong answer to score well. Multiple-choice scoring can be satisfied by pattern-matching without the underlying capability, and a leaked question carries its answer letter. Note that execution resists contamination of the answer key but not contamination of the solution \u2014 a memorised patch still passes." },
 
       { stem: "Two papers report different MMLU scores for the same model weights. What is the most likely explanation?",
-        options: [
-          "One of them made an arithmetic error in computing accuracy",
-          "Different harness settings \u2014 formatting, few-shot count, and especially answer-parsing, since extracting a letter from free text is ambiguous",
-          "Benchmark contamination affected one evaluation and not the other",
-          "The model is non-deterministic at temperature zero"
-        ],
+        options: ["One made an arithmetic error computing accuracy", "Harness settings, especially answer parsing", "Contamination affected only one of them", "The model is non-deterministic at temperature 0"],
         answer: 1,
         why: "Scores are a property of the harness as well as the model. Models answer with \"B\", \"(B)\", \"The answer is B\" or prose that never commits, so a strict parser marks confident-but-unparsed answers wrong while a lenient one may credit a hedge across two options. This is the same structural problem as a verifier that checks whether the gold answer appears anywhere in the output, and it is why the harness and its settings belong in any reported score." },
 
       { stem: "A model is two points better on MMLU than your current one. What does that tell you about your RAG application?",
-        options: [
-          "That it will likely perform about two points better on your task as well",
-          "Very little \u2014 MMLU's unit is a fixed multiple-choice question and yours is an answer over retrieved documents, so a model better at one can be worse at the other",
-          "Nothing, because MMLU is contaminated and therefore meaningless",
-          "That retrieval quality will improve, since better models write better queries"
-        ],
+        options: ["It will likely gain about two points on yours", "Very little: different units, different skills", "Nothing, since MMLU is contaminated", "Retrieval will improve with better queries"],
         answer: 1,
         why: "The units differ, which is the model-versus-application distinction. A benchmark contains no retriever, no documents of yours and no users, so it cannot speak to the system a user experiences \u2014 and in one measured case the model was not the variable at all, with BM25 plus rank fusion taking recall@5 from 95% to 100% with unchanged weights. Contamination is a separate real concern that does not make benchmarks meaningless; they remain a useful screen." },
 
       { stem: "What is the main limitation of a 50-prompt private eval set?",
-        options: [
-          "It cannot be scored automatically and therefore needs humans",
-          "Wide confidence intervals \u2014 it can show a model is clearly worse but cannot separate two close candidates",
-          "It will be contaminated once the prompts are sent to a hosted model",
-          "It cannot be stratified across query types at that size"
-        ],
+        options: ["It cannot be scored without humans", "Wide intervals: it cannot split close models", "Hosting it will contaminate the prompts", "It cannot be stratified at that size"],
         answer: 1,
         why: "Fifty cases give a coarse estimate, so a small difference between models is not resolvable and treating it as decisive is the main way small eval sets mislead \u2014 the Elo arithmetic in the next lesson makes the required sample sizes concrete. It remains highly valuable as a filter and for catching known failures, and it should still be stratified by query type, since an unstratified sample is dominated by the common case." }
     ]

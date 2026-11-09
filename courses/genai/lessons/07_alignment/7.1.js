@@ -308,42 +308,22 @@ for s in ("The capital of France is Paris.",
     title: "Check yourself",
     questions: [
       { stem: "Asked \u201cWhat is the capital of France?\u201d, gpt2 gives \u2018 Paris\u2019 0.54% of the next-token mass and a newline 33.84%. What does the top token indicate?",
-        options: [
-          "The model does not know the answer and is avoiding the question",
-          "The model is formatting rather than refusing \u2014 it has no notion that a turn ended and a response should begin, which is what a chat template supplies",
-          "The tokeniser splits \u2018Paris\u2019 across multiple tokens, suppressing its probability",
-          "Greedy decoding would produce an empty response"
-        ],
+        options: ["It does not know and is avoiding the question", "It is formatting; it has no notion of turns", "The tokeniser splits Paris, lowering its mass", "Greedy decoding would give an empty response"],
         answer: 1,
         why: "On the internet a question mark is usually followed by whitespace, so a newline is the most likely continuation and the model takes it. It is not refusing: scored as statements, the same weights rank \"The capital of France is Paris\" above the Berlin, Madrid and London variants, and greedy decoding did eventually produce the correct sentence after the line break. The missing ingredient is turn structure, which pretraining never provided and a chat template installs." },
 
       { stem: "A base model under greedy decoding emits \u201cThe capital of France is Paris.\u201d four times in a row. How should this be diagnosed?",
-        options: [
-          "As an alignment failure that SFT on instruction data will fix",
-          "As a decoding artefact \u2014 argmax cannot escape a high-probability cycle \u2014 which is a different problem from failing to follow an instruction",
-          "As evidence the model has memorised the sentence verbatim from training data",
-          "As a tokeniser bug producing duplicate sequences"
-        ],
+        options: ["An alignment failure that SFT will fix", "A decoding artefact: argmax stuck in a loop", "Evidence of verbatim memorisation", "A tokeniser bug duplicating sequences"],
         answer: 1,
         why: "Greedy decoding always takes the most likely token, so once the model enters a loop nothing breaks it; temperature and top-p exist partly to avoid this. The instruction-following failures look different \u2014 \"Explain photosynthesis in one sentence\" becoming a comment about sentences, or \"List three prime numbers\" becoming \"The third prime number\" \u2014 and those are what SFT addresses. Conflating the two leads to fixing a sampling setting with training data, or vice versa." },
 
       { stem: "Why does alignment use preference data rather than simply more SFT demonstrations?",
-        options: [
-          "Because preference data is more informative per example than a demonstration",
-          "Because ranking two answers is both cheaper and better defined than authoring one \u2014 you cannot pay people to write a million ideal responses, and two experts asked to write one produce two different texts",
-          "Because SFT cannot be applied after a model has already been fine-tuned once",
-          "Because preference data avoids the catastrophic forgetting that SFT causes"
-        ],
+        options: ["A preference carries more information per example", "Ranking two answers is cheaper and better defined", "SFT cannot be applied after a first fine-tune", "Preference data avoids catastrophic forgetting"],
         answer: 1,
         why: "The constraint is on what humans can produce, not on what the model can learn. Comparisons scale in a way authored ideals do not, and they are also better defined: experts often agree on which of two given answers is better while disagreeing on what the best answer would be. SFT trains on exactly one target per prompt and treats every other phrasing as incorrect, so it teaches one annotator's style alongside the content \u2014 which is why the DPO loss is a statement about a difference rather than an absolute target." },
 
       { stem: "The same gpt2 weights rank \u201cThe capital of France is Paris\u201d above the London variant by 0.046 nats per token. How should that be described?",
-        options: [
-          "The model confidently knows the capital of France",
-          "The model ranks the correct statement first, and the margin is thin \u2014 so \u201cranks first\u201d is the supportable claim rather than \u201cknows\u201d",
-          "The margin is within noise, so the model shows no preference",
-          "Log-probability is the wrong metric for factual knowledge and the comparison is meaningless"
-        ],
+        options: ["The model confidently knows the capital", "It ranks the truth first, by a thin margin", "The margin is noise; no preference shown", "Log-probability is the wrong metric here"],
         answer: 1,
         why: "The ordering is correct and consistent across all three distractors, so there is a real preference \u2014 but 0.046 nats per token on a 124M-parameter model is a small margin and does not support a word like \"confidently\". Stating it precisely matters because the lesson's actual claim is about the separation between knowledge and behaviour, which only needs the ordering: the model ranks the true statement highest while not producing it when asked." }
     ]

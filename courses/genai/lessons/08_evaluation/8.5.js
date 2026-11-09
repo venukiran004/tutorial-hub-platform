@@ -258,42 +258,22 @@ for gap in (5, 10, 20, 50, 100):
     title: "Check yourself",
     questions: [
       { stem: "Two models are 20 Elo apart. How many pairwise comparisons are needed before that gap is statistically resolvable?",
-        options: [
-          "A few dozen, since Elo converges quickly with a well-chosen K",
-          "Roughly a thousand or more \u2014 the true win rate is 52.88%, so the 95% interval is \u00b168 Elo at 100 comparisons and about \u00b122 at a thousand",
-          "Around 200, which is the standard arena sample per pair",
-          "It cannot be resolved at any sample size, since preference is subjective"
-        ],
+        options: ["A few dozen, as Elo converges quickly", "About a thousand or more", "Around 200, the standard arena sample", "None; preference is subjective"],
         answer: 1,
         why: "A 20-Elo gap corresponds to winning just under 53% of matchups, which is close to a coin flip, and the binomial standard error falls only as the square root of the sample size. That gives \u00b168.2 Elo at 100 comparisons \u2014 more than three times the gap \u2014 and about \u00b121.6 at 1,000. The requirement also scales quadratically as the gap narrows, so 5 Elo needs on the order of a hundred thousand comparisons." },
 
       { stem: "What does an Elo rating of 1,247 tell you on its own?",
-        options: [
-          "That the model is above average, since 1,200 is the conventional starting rating",
-          "Nothing \u2014 Elo is Bradley-Terry with a rescaled axis, so only differences are identified and the absolute level is an arbitrary anchor",
-          "That it wins about 62% of its comparisons against the field",
-          "That it is calibrated against a fixed reference model by construction"
-        ],
+        options: ["Above average, as 1,200 is the starting rating", "Nothing: only differences are identified", "It wins about 62% of comparisons", "It is calibrated to a fixed reference model"],
         answer: 1,
         why: "The expected-score formula depends only on the difference between two ratings, so adding a constant to every rating leaves every predicted outcome unchanged \u2014 the same unidentifiability demonstrated for reward models, where fits from initialisations 100 apart gave identical pairwise differences to six decimal places. Leaderboards fix the level by convention, which is why ratings are not comparable across leaderboards with different anchors." },
 
       { stem: "A 400-point Elo favourite wins and gains only 2.91 rating points. Why is this the intended behaviour?",
-        options: [
-          "Because K should be reduced for highly-rated players to limit volatility",
-          "Because the update is proportional to the surprise \u2014 a 400-point gap predicts a 90.9% win rate, so winning is nearly expected and carries little information",
-          "Because rating inflation must be controlled at the top of the distribution",
-          "Because ties are weighted at 0.5 and dominate the long-run average"
-        ],
+        options: ["K should shrink for highly rated players", "Updates track surprise; this win was expected", "Rating inflation must be capped at the top", "Ties at 0.5 dominate the long-run average"],
         answer: 1,
         why: "The update is K times the difference between the actual and expected score, so it vanishes when the rating already predicts the outcome \u2014 and the same win-loss asymmetry means an upset moves the underdog by 29.09 points. That makes ratings stable where correct and fast-moving where wrong, which is the same self-balancing property as the Bradley-Terry gradient concentrating on badly-ranked pairs." },
 
       { stem: "What is the main thing an arena rating measures poorly?",
-        options: [
-          "Multi-turn conversational ability, since votes are usually on single turns",
-          "Correctness \u2014 voters favour confident, well-formatted, longer answers, which are the same directions that get exploited when optimising against a learned preference model",
-          "Latency and cost, which users implicitly trade against quality",
-          "Performance on non-English prompts, which are underrepresented"
-        ],
+        options: ["Multi-turn ability, as votes are single-turn", "Correctness: voters reward confident style", "Latency and cost traded against quality", "Non-English prompts, which are scarce"],
         answer: 1,
         why: "An arena is effectively a reward model made of people, so it shares the exploitable directions catalogued as reward hacks: length, formatting and confident assertion. It measures how much people enjoy interacting with a model rather than whether the model is right, so correctness is better established with execution-scored benchmarks or a programmatic verifier. Its distinctive strength is contamination resistance, since there is no fixed answer key to leak." }
     ]

@@ -262,42 +262,22 @@ for m in UNVALIDATED:
     title: "Check yourself",
     questions: [
       { stem: "A team reports that a new model scores two points higher on MMLU and asks whether to switch. What is the issue with that evidence?",
-        options: [
-          "MMLU is contaminated, so the scores are unreliable",
-          "It answers a model question when the decision is an application one \u2014 the benchmark cannot see their task, so the test is their own eval set",
-          "Two points is within the noise of any benchmark",
-          "MMLU is multiple-choice and their application generates free text"
-        ],
+        options: ["MMLU is contaminated, so it is unreliable", "It is a model test; their task needs their own eval", "Two points is within any benchmark's noise", "MMLU is multiple-choice; theirs is free text"],
         answer: 1,
         why: "The unit is the giveaway: MMLU's unit is an answer to a fixed multiple-choice question, while the decision concerns answers their system produces over their own documents with retrieved context. A model two points higher on broad knowledge can be worse at that specific job. Contamination and noise are real concerns and secondary \u2014 even a perfectly clean, high-powered benchmark would not answer the question being asked." },
 
       { stem: "Why is \u201ccheapest method that still correlates\u201d the decision rule rather than \u201cmost accurate method\u201d?",
-        options: [
-          "Because accurate methods are usually unavailable in practice",
-          "Because frequency is what catches regressions \u2014 a deterministic check on every commit is worth more than a human evaluation run quarterly",
-          "Because human judgement is too noisy to serve as a target",
-          "Because cheap metrics are more reproducible than expensive ones"
-        ],
+        options: ["Accurate methods are rarely available in practice", "Frequency catches regressions; cheap runs often", "Human judgement is too noisy to target", "Cheap metrics are more reproducible"],
         answer: 1,
         why: "A regression caught at commit time is a failed build; the same regression caught a quarter later is a user complaint and an archaeology exercise. That favours methods cheap enough to run constantly, which is exactly why deterministic retrieval metrics can gate every ingest. The word *correlates* is the constraint on this \u2014 a cheap metric that does not track user outcomes is worse than none, because it manufactures confidence." },
 
       { stem: "What makes reference-free evaluation central to application testing?",
-        options: [
-          "It is more accurate than reference-based evaluation on open-ended output",
-          "It needs no gold answer per case \u2014 it scores the output against its own inputs, such as faithfulness to retrieved context \u2014 so the eval set is not bounded by annotation effort",
-          "It avoids the need for a judge model",
-          "It can be computed deterministically, unlike reference-based metrics"
-        ],
+        options: ["It is more accurate on open-ended output", "It needs no gold answer for each case", "It avoids needing any judge model", "It is deterministic, unlike reference metrics"],
         answer: 1,
         why: "A reference-based metric requires someone to have written the correct answer for every test case, which caps how large the eval set can get. Reference-free asks a question about the output given its context, which the system already produced. The trade is that it usually requires a model to grade it, so the judge's noise and biases come with it \u2014 which is why agreement has to be measured rather than assumed." },
 
       { stem: "A change passes every offline evaluation gate. What does that establish?",
-        options: [
-          "That it is safe to deploy, assuming the gates cover the relevant risks",
-          "That it did not regress anything the offline suite measures \u2014 which is a filter, not proof, since live traffic is the only ground truth",
-          "That the offline suite is well calibrated to user outcomes",
-          "That any remaining risk is confined to latency and cost"
-        ],
+        options: ["It is safe to deploy if the gates cover the risks", "No regression on what the suite measures", "The offline suite is calibrated to users", "Remaining risk is only latency and cost"],
         answer: 1,
         why: "Offline evaluation is regression testing against a fixed dataset, so it can only speak to the behaviours someone thought to encode in it. Real traffic contains distributions and failure modes the eval set does not, which is why online evaluation is treated as the only ground truth and offline gates as a cheap filter in front of it. Passing the gates is necessary and not sufficient." }
     ]

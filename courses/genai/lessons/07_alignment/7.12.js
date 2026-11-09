@@ -205,42 +205,22 @@ for k, v in m.items():
     title: "Check yourself",
     questions: [
       { stem: "Human preference labels cost $3 and AI labels $0.001, a 3,000\u00d7 ratio that is identical at 1,000 pairs and at 1,000,000. What is the practical significance?",
-        options: [
-          "None \u2014 a constant ratio means the choice can be made on quality alone",
-          "The ratio is flat but the absolute cost crosses a feasibility threshold: $3,000 is affordable and $3,000,000 means the dataset is never built, so RLAIF is the alternative to nothing rather than to human labels",
-          "AI labelling becomes relatively more attractive as datasets grow, since fixed costs amortise",
-          "The ratio understates the saving because human labelling also takes weeks"
-        ],
+        options: ["None; a flat ratio means choose on quality", "At scale, human labels are simply unaffordable", "AI labels amortise fixed costs as data grows", "It understates the saving in calendar time"],
         answer: 1,
         why: "Both costs are linear, so there is no scale at which AI labelling is relatively better \u2014 the advantage is constant. What changes is whether a human-labelled dataset of that size can be authorised at all. That reframes the quality comparison: at small scale you should probably pay for human labels since the cost is noise, and at large scale the comparison is against not having the data, which is why a quality cost is usually acceptable." },
 
       { stem: "An AI judge shows 0.761 agreement with humans. Humans agree with each other 0.804 of the time. How should the 0.761 be read?",
-        options: [
-          "Poorly \u2014 it is 24% away from perfect agreement and needs improvement",
-          "Well \u2014 it is within 4 points of the ceiling set by human-human agreement, which is as close to correct as the labels can be",
-          "It cannot be interpreted without knowing the model's parameter count",
-          "It indicates the humans were poorly trained, since 0.804 is low"
-        ],
+        options: ["Poorly: 24% short of perfect agreement", "Well: within 4 points of the human ceiling", "Uninterpretable without the parameter count", "It shows the humans were poorly trained"],
         answer: 1,
         why: "Preference labels are stochastic, so human-human agreement is the ceiling and perfection is not available \u2014 the same point 7.4 established when a reward model matched a Bayes-optimal 78.6% rather than 100%. Reading 0.761 against 1.0 would suggest a large deficit; reading it against 0.804 shows the judge is near the limit of what the labels contain. This is why the human slice must include a doubly-labelled subset." },
 
       { stem: "Why is an AI judge's length preference a particularly serious problem?",
-        options: [
-          "Because longer responses cost more to generate during training",
-          "Because the implicit reward is linear in response length with nothing bounding it, so even a small learned length weight becomes an unbounded exploit \u2014 at 100 tokens a 0.01 weight equals the entire quality signal",
-          "Because it makes the preference pairs harder for the reward model to fit",
-          "Because length correlates with the judge's own training distribution"
-        ],
+        options: ["Longer responses cost more during training", "Unbounded length turns a small weight into an exploit", "It makes the pairs harder for the RM to fit", "Length tracks the judge's own training data"],
         answer: 1,
         why: "The DPO implicit reward sums over response tokens, so a per-token preference accumulates without limit \u2014 which is why length is the canonical reward hack. A judge with a mild length preference writes that weight into the dataset, and no loss function can afterwards separate length from quality when the labels have confounded them. The check is to compare mean chosen against mean rejected token counts in the generated pairs." },
 
       { stem: "What does Constitutional AI add beyond replacing human labellers with a model?",
-        options: [
-          "A deterministic guarantee that the model will refuse harmful requests",
-          "An explicit written criterion \u2014 so the alignment target becomes a document that can be read, versioned, reviewed and argued about clause by clause",
-          "A reduction in labelling cost beyond what RLAIF achieves",
-          "The ability to train without any SFT stage"
-        ],
+        options: ["A guarantee the model refuses harmful requests", "A written criterion that can be reviewed", "Lower labelling cost than RLAIF alone", "Training without any SFT stage"],
         answer: 1,
         why: "RLAIF changes who labels; Constitutional AI changes what the criterion is, making it auditable. That is a governance property: a constitution can be put in front of a lawyer or a regulator and a behaviour change traced to a clause change, which the implicit aggregate taste of a labelling vendor cannot be. It is explicitly not a guarantee \u2014 alignment shapes tendencies while guardrails are the deterministic runtime filter, and both are needed." }
     ]

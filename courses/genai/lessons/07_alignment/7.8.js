@@ -367,42 +367,22 @@ for k, v in audit(rewards).items():
     title: "Check yourself",
     questions: [
       { stem: "For rewards [1,0,1,0,0,1], one source gives advantages of \u00b11 and another \u00b10.9129. What explains the difference?",
-        options: [
-          "A numerical precision difference in how the mean is computed",
-          "The standard deviation denominator \u2014 population (n) gives 0.5 and \u00b11, while torch's default unbiased (n\u22121) gives 0.5477, and the ratio is \u221a(5/6) = 0.9129",
-          "One source applied the eps guard to the numerator as well as the denominator",
-          "The second source normalised across the batch rather than within the group"
-        ],
+        options: ["Numeric precision in computing the mean", "Population versus unbiased standard deviation", "The eps guard was applied to the numerator", "One normalised across the batch, not the group"],
         answer: 1,
         why: "`torch.std` defaults to the unbiased n\u22121 denominator, while a hand calculation of \u221a(mean((r\u22120.5)\u00b2)) gives the population value. The ratio is \u221a((G\u22121)/G), so the gap is 8.7% at G = 6 and 22% at G = 2, falling below 1% by G = 64. It is absorbed by the learning rate in practice, since a uniform rescaling of all advantages is equivalent to changing the step size \u2014 but it matters when reconciling an implementation against a published number." },
 
       { stem: "A GRPO batch has 40 prompts where all 6 samples are correct and 3 where all 6 are wrong. What is the consequence?",
-        options: [
-          "Those prompts produce very large advantages and dominate the update",
-          "Those prompts produce exactly zero advantage for every sample, so they contribute no gradient despite costing full generation time",
-          "The eps guard produces small non-zero advantages that add noise to the update",
-          "Training will diverge because the standard deviation is zero"
-        ],
+        options: ["Huge advantages that dominate the update", "Zero advantage: no gradient, full cost", "Small eps-driven advantages that add noise", "Divergence, as the deviation is zero"],
         answer: 1,
         why: "Every reward equals the group mean, so the numerator is zero \u2014 the eps guard only prevents a division-by-zero NaN, it does not manufacture signal. These prompts carry no contrast and therefore no information about which behaviour to reinforce. Because generation dominates GRPO's wall clock, a batch dominated by degenerate groups spends most of its cost producing no learning, with nothing erroring and a normal-looking loss, which is why the zero-variance fraction is worth logging." },
 
       { stem: "Mean |advantage| over G = 6 was measured at 0.000 (0 correct), 0.6802 (1), 0.8605 (2) and 0.9127 (3). What does this imply for prompt selection?",
-        options: [
-          "Signal is roughly constant across all mixed cases, so only the degenerate ends need filtering",
-          "Signal peaks at half correct and falls 34% toward the mixed extremes, so prompts near a 50% pass rate carry the most gradient \u2014 and the curriculum must track the improving policy",
-          "Prompts with one correct answer are best, since the lone success receives the largest individual advantage",
-          "Group size should be increased until the distribution flattens"
-        ],
+        options: ["Signal is flat across mixed cases; filter the ends", "Signal peaks at half correct; track the policy", "One correct is best, as it gets the largest share", "Raise group size until the curve flattens"],
         answer: 1,
         why: "Dividing by the standard deviation does not cancel the dependence on the mix, because numerator and denominator grow at different rates \u2014 at one-correct the lone success gets +2.041 but five samples get only \u22120.408, dragging the mean down. Prompts near 50% success therefore give the most gradient per sample and spread it most evenly. Since improvement pushes prompts toward all-correct, where signal vanishes, the prompt set has to be re-curated as training proceeds." },
 
       { stem: "Why is deleting the critic a larger memory saving than deleting the reward model?",
-        options: [
-          "Critics are typically larger than reward models in standard RLHF setups",
-          "The critic is trained, so it costs ~16 bytes per parameter including gradients, fp32 master weights and Adam moments \u2014 104.3 GB at 7B against the frozen reward model's 13.0 GB",
-          "The reward model can be sharded across devices while the critic cannot",
-          "The critic must be held in fp32 throughout, unlike the reward model"
-        ],
+        options: ["Critics are usually larger than reward models", "The critic is trained: 104.3 GB versus 13.0 GB", "The reward model shards; the critic cannot", "The critic must be held in fp32 throughout"],
         answer: 1,
         why: "Both are typically the same size in parameters, but a trained model carries gradients, an fp32 master copy and Adam's two moments on top of its bf16 weights, reaching about eight times a frozen model's footprint. So removing the critic saves eight times what removing the reward model saves, taking PPO's 234.7 GB to 130.4 GB \u2014 44% less. Under RLVR, where the reward model is also replaced by a program, the total reaches DPO's 117.3 GB while remaining an online method." }
     ]

@@ -415,42 +415,22 @@ print("orphaned chunks in sample     : %d" % len(orphans))`,
     title: "Check yourself",
     questions: [
       { stem: "Measured on four trivial edits, a raw SHA-256 content hash treated a trailing space, collapsed internal spaces and a case change as three new records. What does this imply for dedup?",
-        options: [
-          "Hashing is unsuitable for deduplication and a cosine threshold should be used instead",
-          "Normalisation before hashing is load-bearing \u2014 it collapses exactly the differences that carry no meaning, while a real content change still hashes differently",
-          "A longer hash such as SHA-512 would resolve the collisions",
-          "The chunks should be hashed after embedding rather than before"
-        ],
+        options: ["Hashing cannot dedupe; use a cosine threshold", "Normalising before hashing is load-bearing", "A longer hash like SHA-512 would fix it", "Chunks should be hashed after embedding"],
         answer: 1,
         why: "The edits that occur in practice are whitespace and case \u2014 produced by re-parsing with a different library version or a CMS re-serialising an untouched document \u2014 so a raw hash misses most real duplicates. Normalising first collapses all three into one record, and the control case confirms it is not making the test blind: changing one word still hashes differently. How far to normalise is a judgement, since folding case is right for prose and wrong for code identifiers." },
 
       { stem: "Two documents share 90% of their tokens. Their measured Jaccard similarity over 5-token shingles is 0.817, not 0.9. Why, and what follows?",
-        options: [
-          "MinHash underestimates similarity, so the threshold should be lowered to compensate",
-          "Changing one token destroys five shingles, so shingle Jaccard is strongly sublinear in token overlap \u2014 a 0.8 threshold therefore means \u201cnearly identical\u201d",
-          "The shingles were computed after normalisation, which removed distinguishing tokens",
-          "Jaccard is only an approximation of similarity and 0.817 is within error of 0.9"
-        ],
+        options: ["MinHash underestimates, so lower the threshold", "One changed token breaks five shingles", "Normalisation removed distinguishing tokens", "0.817 is within the error of 0.9"],
         answer: 1,
         why: "A changed token breaks the shingle starting at it and the four spanning it, so overlap falls much faster than token overlap \u2014 50% shared tokens measured 0.329. This is a property of true Jaccard, not of the estimator: MinHash tracked the true value closely at every level. The practical consequence is that someone reading 0.8 as \u201cbroadly similar\u201d will set the threshold far too low and merge distinct documents, and that shingle length and threshold are one decision to tune together." },
 
       { stem: "A document is re-indexed using content hashes as record ids. It previously produced twelve chunks and now produces nine. What happens?",
-        options: [
-          "The three removed chunks are deleted automatically, since the hash set shrank",
-          "The nine are upserted and the other three remain in the index as orphans \u2014 retrievable, stale and attributed to a document that no longer contains them",
-          "The upsert fails because three record ids are missing from the batch",
-          "All twelve are replaced because the document's own hash changed"
-        ],
+        options: ["The three missing chunks are deleted automatically", "The other three stay behind as stale orphans", "The upsert fails as three ids are missing", "All twelve are replaced as the document hash changed"],
         answer: 1,
         why: "Hash-keyed upserts make re-ingestion idempotent, which solves duplicate inserts and not stale chunks \u2014 nothing in the write path knows the other three are gone. The fix is to tag every chunk with its doc_id and delete by that filter before inserting the fresh set. Orphans are worse than duplicates because no retrieval metric flags them: the chunk really is indexed and really does answer the question, so it is confidently cited as current content." },
 
       { stem: "A team enables MMR with search_kwargs={\"k\": 4, \"fetch_k\": 4} and sees no change in the results. Why?",
-        options: [
-          "lambda_mult defaults to 1.0, which disables the diversity term",
-          "MMR reorders only the fetch_k shortlist, so with fetch_k equal to k there are no alternative candidates to choose between",
-          "MMR requires normalised embeddings and the store was using dot product",
-          "The index contains no duplicates, so MMR has nothing to penalise"
-        ],
+        options: ["lambda_mult defaults to 1.0, disabling diversity", "With fetch_k = k there is nothing to choose between", "MMR needs normalised embeddings, not dot product", "The index has no duplicates to penalise"],
         answer: 1,
         why: "MMR selects k items out of a fetch_k shortlist by trading query similarity against similarity to what is already selected; if fetch_k equals k the shortlist is the answer and there is nothing to select. A fetch_k well above k \u2014 20 for a k of 4 is typical \u2014 gives it room to work. Separately, diversity is not always the right objective: if a fact is stated in three places the best top-3 may be those three, and 6.1's nDCG and MAP over the full relevant set are how to tell which case you are in." }
     ]

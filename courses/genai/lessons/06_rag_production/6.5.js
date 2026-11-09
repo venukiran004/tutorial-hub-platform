@@ -361,42 +361,22 @@ print("overlap    : %s" % ("yes" if TV.max() > np.nanmin(TT) else "NONE"))`,
     title: "Check yourself",
     questions: [
       { stem: "Measured with one CLIP model, text-text cosine ranged 0.709\u20130.869 and text-image 0.169\u20130.368. What does this mean for a unified text-and-image vector store?",
-        options: [
-          "Image retrieval will be somewhat worse than text retrieval and should be compensated with a boost factor",
-          "Ranking one list by cosine sorts by modality before relevance, so no image reaches the top k while the index holds more than k text chunks",
-          "The images were embedded without normalisation, so their cosines are compressed",
-          "CLIP is the wrong model and a stronger vision encoder would close the gap"
-        ],
+        options: ["Images rank a little worse; add a boost factor", "Cosine sorts by modality first, so images vanish", "Images were unnormalised, compressing cosines", "CLIP is wrong; a stronger encoder closes the gap"],
         answer: 1,
         why: "The ranges do not overlap: the worst text-text pair beats the best text-image pair by 0.34, so modality dominates the ordering entirely and the failure is categorical rather than gradual. This is the modality gap \u2014 CLIP's contrastive loss only requires matched pairs to beat mismatched ones, never requiring cross-modal scores to reach same-modal ones, so the two clouds occupy separate cones. A boost factor or rescaling produces a number that looks like a similarity and means nothing; the fix is to fuse by rank, as RRF does." },
 
       { stem: "Why does the summarise-then-embed architecture solve the problem rather than merely working around it?",
-        options: [
-          "Vision model summaries are more accurate than CLIP embeddings",
-          "Every stored vector then comes from one text model, so every comparison is text-to-text and a single ranked list is meaningful again",
-          "Text embeddings are smaller, which reduces the index memory",
-          "It allows the original image to be discarded after ingestion"
-        ],
+        options: ["Vision summaries are more accurate than CLIP", "Every vector then comes from one text model", "Text embeddings are smaller in memory", "The original image can then be discarded"],
         answer: 1,
         why: "The failure in Option A is comparability, not quality \u2014 two embedding spaces ranked by one number. Replacing images with text descriptions embedded by the same model as the chunks collapses everything into one space, which is a structural fix rather than a tuning one. The original must be kept, not discarded: the summary exists to be matched and the original to be reasoned over, since a chart summary cannot answer \"what was Q3?\" and a table summary loses every number." },
 
       { stem: "A multimodal RAG system reports Hit@5 of 0.76 overall. Per modality it is 0.95 for text, 0.73 for tables and 0.00 for images. What is the lesson about evaluation?",
-        options: [
-          "0.76 is acceptable and the image queries are too few to matter",
-          "An aggregate hides a modality that is never retrieved at all, so each modality needs its own measurement \u2014 and a zero row is exactly what the modality gap produces",
-          "The image golden set must be mislabelled, since 0.00 is implausible",
-          "Hit@5 is the wrong metric and nDCG would reveal the problem"
-        ],
+        options: ["0.76 is fine; image queries are too few to matter", "An aggregate can hide a modality never retrieved", "The image golden set must be mislabelled", "Hit@5 is wrong; nDCG would reveal it"],
         answer: 1,
         why: "A respectable aggregate is compatible with one modality being completely unreachable, because most queries are text queries and those work. 0.00 is exactly the signature of the modality gap \u2014 not degraded image retrieval but absent image retrieval, since no image can outrank enough text to enter the top 5. nDCG would also read 0.00 and reveal nothing extra; what reveals it is splitting by modality, which is deterministic arithmetic and therefore a CI gate." },
 
       { stem: "What does ColPali trade for removing OCR, chunking and parsing from the pipeline?",
-        options: [
-          "Accuracy on text-heavy pages, since it cannot read small print",
-          "Granularity and index size \u2014 retrieval is page-level, and multi-vector embeddings per page multiply storage",
-          "The ability to cite sources, since pages have no chunk ids",
-          "Query latency only, as indexing is unchanged"
-        ],
+        options: ["Accuracy on small print in text-heavy pages", "Granularity and index size", "The ability to cite any sources", "Query latency, with indexing unchanged"],
         answer: 1,
         why: "Embedding whole pages means a page holding one relevant paragraph is retrieved whole, inflating context and leaving no small unit for a small-to-big pattern. Multi-vector embeddings store one vector per patch rather than one per chunk, which collides with memory being the first constraint that binds as a corpus grows. Late interaction also costs more per query than a dot product. The trade suits page-shaped corpora in the thousands \u2014 filings, manuals \u2014 rather than large text corpora with occasional figures." }
     ]

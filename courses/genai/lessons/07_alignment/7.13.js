@@ -303,42 +303,22 @@ print("sign agreement across %d task vectors: %.3f" % (len(tv), sign_agreement(t
     title: "Check yourself",
     questions: [
       { stem: "A 7B model fine-tuned on a reasoning model's chain-of-thought traces outperforms the same 7B trained with RL directly. Why?",
-        options: [
-          "Because SFT uses more data than RL for the same compute budget",
-          "Because discovery is the expensive part \u2014 the teacher already found that backtracking and re-checking raise the hit rate, and the student imitates that behaviour instead of rediscovering it at smaller capacity",
-          "Because RL cannot be applied to models below a certain size",
-          "Because chain-of-thought traces are longer, giving more tokens of supervision"
-        ],
+        options: ["SFT uses more data than RL per unit compute", "Imitating found behaviour skips costly discovery", "RL cannot be applied below a certain size", "Longer traces give more supervised tokens"],
         answer: 1,
         why: "Reasoning RL has to discover the behaviour by trial, which requires carefully curated prompts near a 50% pass rate and wastes most of its sampling on groups where all samples pass or all fail. Once a teacher has done that, the traces encode the result, and imitation is a dense low-variance target where RL's signal is noisy and advantage-weighted. It is the same mechanism as the rejection-sampling stage in a reasoning pipeline, pointed at a smaller model." },
 
       { stem: "Raw KL between softened distributions falls from 0.130 at \u03c4 = 1 to 0.0023 at \u03c4 = 8. What does multiplying by \u03c4\u00b2 accomplish?",
-        options: [
-          "It makes the KL symmetric, which is required for a valid distillation objective",
-          "It restores gradient magnitude \u2014 scaled values stay within 1.00\u20131.28\u00d7 \u2014 so \u03c4 controls what the student learns while \u03b1 independently controls how much the term weighs",
-          "It compensates for the student's lower capacity relative to the teacher",
-          "It converts the KL into a cross-entropy, matching the hard-label term"
-        ],
+        options: ["It makes the KL symmetric, as required", "It restores gradient scale, decoupling τ from α", "It offsets the student's lower capacity", "It turns the KL into a cross-entropy"],
         answer: 1,
         why: "Softening both distributions makes them more similar, so their divergence shrinks by a factor of 57 across that range \u2014 without compensation, raising \u03c4 would silently turn the distillation term off. The \u03c4\u00b2 factor keeps the scaled term in a narrow band, which decouples the two hyperparameters. Otherwise changing \u03c4 would also change the effective \u03b1, leaving you tuning two things with one dial." },
 
       { stem: "Measured sign agreement across task vectors was 49.9%, 24.9% and 6.2% for two, three and five models. What follows for merging?",
-        options: [
-          "Merging is unreliable in general and should be avoided for more than one fine-tune",
-          "Interference grows fast \u2014 75% of parameters conflict at three models and 93.8% at five \u2014 so plain averaging is adequate for two and methods like TIES become worth it past three",
-          "The task vectors should be orthogonalised before merging",
-          "The deltas are not independent, so the measured values are unreliable"
-        ],
+        options: ["Merging is unreliable beyond one fine-tune", "Conflicts grow fast; use TIES past three models", "Orthogonalise task vectors before merging", "The deltas are dependent, so values mislead"],
         answer: 1,
         why: "The values match 2^(1\u2212n) to within a tenth of a point, which is what independent deltas predict. Where signs conflict, a plain average partially cancels the deltas and weakens both behaviours \u2014 so the method you need depends on how many models you are combining. This also explains why merging a fine-tune back with its base model to fix forgetting works well: with only two models, agreement is at its most forgiving 50%." },
 
       { stem: "A domain fine-tune has raised generic perplexity from 5.282 to 10.777. What is the cheapest first remedy?",
-        options: [
-          "Retrain with a lower learning rate and more regularisation",
-          "Merge the fine-tune back with the base model at roughly 0.3\u20130.5 weight \u2014 zero training compute, and the degradation curve is convex so the first part of the domain gain is cheap",
-          "Reduce the LoRA rank and fine-tune again",
-          "Add generic data to the fine-tuning mix and repeat the run"
-        ],
+        options: ["Retrain with a lower rate and more regularisation", "Merge back with the base at ~0.3–0.5 weight", "Reduce the LoRA rank and fine-tune again", "Add generic data to the mix and repeat"],
         answer: 1,
         why: "Merging costs no training compute, so it is worth trying before any retraining. In task-arithmetic terms, forgetting means the task vector moved the model further in the domain direction than was useful, and scaling it by \u03bb partially undoes the damage while keeping what helped. The curve is typically convex \u2014 generic capability degrades slowly at first then accelerates \u2014 so a mid-range \u03bb captures most of the domain gain for a fraction of the cost." }
     ]

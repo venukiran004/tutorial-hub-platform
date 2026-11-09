@@ -420,32 +420,17 @@ for i in np.argsort(-SU)[:5]:      # WHY did these score high?
     title: "Check yourself",
     questions: [
       { stem: "Tested against 20 answerable and 10 unanswerable queries, a 0.35 relevance threshold admitted 4 of the 10 unanswerable ones, and the populations overlapped from 0.3589 to 0.5174. What is the right response?",
-        options: [
-          "Raise the threshold to 0.55, which blocked all ten unanswerable queries",
-          "Keep the gate low to strip the clearly-irrelevant tail, and make the post-generation faithfulness check the real boundary",
-          "Replace cosine similarity with a cross-encoder score, which separates the populations",
-          "Increase top_k so more chunks are available to clear the threshold"
-        ],
+        options: ["Raise the threshold to 0.55 to block all ten", "Keep the gate low; rely on a faithfulness check", "Switch to cross-encoder scores, which separate them", "Increase top_k so more chunks clear the threshold"],
         answer: 1,
         why: "No threshold separates the populations \u2014 the overlap band holds 7 answerable and 4 unanswerable queries, so every setting inside it misclassifies both. Raising to 0.55 does block all ten but refuses 8 of 20 genuine queries, which is not a usable operating point. The gate is a cheap filter; the tractable question is asked after generation, namely whether every claim is supported by retrieved text." },
 
       { stem: "An unanswerable query, \"What is the refund policy for enterprise contracts?\", scored 0.5174 \u2014 higher than 7 genuinely answerable queries \u2014 by matching a chunk headed \"Scenario 1: The Invented Policy\". What does this show?",
-        options: [
-          "The embedding model is poorly calibrated for policy-related language",
-          "Relevance and answerability are different properties, and cosine measures only the first \u2014 the chunk genuinely discusses refund policies without stating one",
-          "The chunk should have been excluded from the index as a meta-document",
-          "The query needed rewriting before retrieval to disambiguate it"
-        ],
+        options: ["The embedder is miscalibrated on policy text", "Relevance is not answerability", "Meta-documents should be excluded", "The query needed rewriting first"],
         answer: 1,
         why: "The retrieval was correct: the text really is about refund policies. What a similarity score cannot encode is the difference between discussing a kind of thing and stating this organisation's instance of it. That is why the case is unfixable by threshold tuning and why a post-generation groundedness check is needed \u2014 no retrieved chunk states a policy, so an answer asserting one is unsupported and detectable. It is also precisely the failure the matched document was written about." },
 
       { stem: "Why is \"skip reranking under load\" a cheap form of load shedding rather than a serious degradation?",
-        options: [
-          "Because the cross-encoder results are cached, so skipping it rarely changes the output",
-          "On a strong first stage the re-ranker's measured gain is modest and ambiguous \u2014 nDCG +0.11 but MRR only +0.03, and Hit@5 actually fell 0.10 on an RRF first stage \u2014 while costing about 75% of the request",
-          "Because recall is unaffected by reranking, which only reorders results",
-          "Because under load the queries are simpler and need less precise ranking"
-        ],
+        options: ["Cached cross-encoder results rarely change output", "Its gain is modest and mixed, at ~75% of the cost", "Re-ranking only reorders, so recall is unaffected", "Queries under load are simpler and need less"],
         answer: 1,
         why: "Re-ranking was measured at 2,405 ms for 20 candidates on CPU against 11 ms for the search, so it dominates the request, while its benefit on an already-strong first stage was small and mixed in sign. Dropping it degrades to a slightly differently ordered result set rather than a broken one. Shortlist depth is the continuous version of the same dial \u2014 524 ms at depth 5 against 3,961 ms at depth 50, with recall flat from 20 to 50 \u2014 so a large cut is usually available before the binary choice." },
 

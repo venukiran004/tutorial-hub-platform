@@ -304,42 +304,22 @@ for p, r in EXAMPLES:
     title: "Check yourself",
     questions: [
       { stem: "Measured on gpt2, prompt tokens were 55% of the sequence but 54\u201389% of the unmasked loss. Why does the loss share exceed the token share?",
-        options: [
-          "Prompt tokens are longer on average, so they carry more probability mass",
-          "A base model has never seen the chat template, so \u2018User:\u2019, newlines and \u2018Assistant:\u2019 are hard to predict and carry high loss",
-          "Cross-entropy weights earlier positions more heavily than later ones",
-          "The response tokens were masked out of the full-loss computation as well"
-        ],
+        options: ["Prompt tokens are longer, so carry more mass", "Unseen template tokens are hard to predict", "Cross-entropy weights early positions more", "Responses were masked in the full loss too"],
         answer: 1,
         why: "The intuition that templates are formulaic and therefore cheap applies to an already-instruction-tuned model, not to the base model SFT starts from \u2014 which has no familiarity with turn scaffolding at all. That makes an unmasked run worse than simple dilution would suggest: the prompt becomes the largest term in the objective, so most of the update teaches the model to emit user turns. Cross-entropy weights all positions equally, and the full loss supervises every position by definition." },
 
       { stem: "On the example whose response loss was lowest (0.9287, \u201cThe capital of France is Paris\u201d), the prompt's share of unmasked loss was highest at 89.2%. What general pattern does this show?",
-        options: [
-          "Short responses always produce high prompt loss shares",
-          "The better the model already is at the response, the larger the fraction of an unmasked gradient that is actively harmful \u2014 so the bug worsens as the base model improves",
-          "Cliché responses should be removed from SFT datasets",
-          "The example was mislabelled and its loss should have been higher"
-        ],
+        options: ["Short responses always give high prompt shares", "The better the base model, the worse the bug", "Cliché responses should be removed from SFT", "The example was mislabelled; loss should be higher"],
         answer: 1,
         why: "The prompt's share is a ratio, so when the response term shrinks the prompt term dominates. Here the response is near-cliché for gpt2 \u2014 7.1 measured it ranking \"Paris\" above the alternatives \u2014 so nine tenths of an unmasked update would go to producing \"User:\" and a question. This inverts the usual expectation that bugs matter less on stronger models, and it is a reason to verify masking rather than infer it from training curves." },
 
       { stem: "A masked SFT run reports a higher loss than an unmasked one. What should you conclude?",
-        options: [
-          "The mask is implemented incorrectly and is discarding response tokens",
-          "Nothing \u2014 the two are means over different token sets, so they are not comparable, and the masked run is the correct one",
-          "The learning rate needs lowering to compensate for the reduced token count",
-          "The unmasked run is converging faster and should be preferred"
-        ],
+        options: ["The mask discards response tokens by mistake", "Nothing: different token sets, not comparable", "Lower the learning rate to compensate", "Prefer the unmasked run; it converges faster"],
         answer: 1,
         why: "`ignore_index` removes masked positions from the denominator as well as the numerator, so a masked loss is the mean over response tokens only while an unmasked loss averages over everything. Measured, the masked loss was 2.8448 and the unmasked 4.1217 \u2014 and the masked run is strictly better despite reporting a higher number, because the unmasked objective includes a large term you do not want optimised. Reading the comparison as a regression is a direct route to removing the mask." },
 
       { stem: "Why should chat formatting come from apply_chat_template rather than being written by hand?",
-        options: [
-          "Hand-formatting is slower and harder to maintain across datasets",
-          "Each model family has its own special-token layout, and the wrong one degrades quality with nothing erroring \u2014 the model never sees the turn boundaries it was trained on",
-          "apply_chat_template also applies the loss mask automatically",
-          "Hand-written templates cannot represent multi-turn conversations"
-        ],
+        options: ["Hand-formatting is slower to maintain", "A wrong layout silently degrades quality", "It applies the loss mask automatically", "Hand templates cannot do multi-turn"],
         answer: 1,
         why: "Hand-written formatting that looks right produces something nearly right, which is the dangerous case: valid tokens, a successful forward pass, fluent output, and silently worse performance because the turn structure differs from training. This is the same failure shape as querying an index with a different embedding model \u2014 no error, just degradation. The template is read from the tokeniser configuration, so it is correct by construction; masking remains your responsibility, as does setting add_generation_prompt only at inference." }
     ]

@@ -400,42 +400,22 @@ print("Bayes-optimal accuracy  : %.1f%%" % (100 * acc(true_r)))`,
     title: "Check yourself",
     questions: [
       { stem: "Fitting the same 4,000 comparisons from an initialisation of 0 and from 100 gave fitted scores about 100 apart, with every pairwise difference identical to 0.000000. What does this establish?",
-        options: [
-          "The optimiser failed to converge from the second initialisation",
-          "The absolute reward scale is unidentifiable \u2014 the loss is a function of differences only, so the mean is a free parameter the data cannot constrain",
-          "The learning rate was too small to correct the offset within 4,000 iterations",
-          "Bradley-Terry requires rewards to be initialised near zero to be well-posed"
-        ],
+        options: ["The optimiser failed from the second start", "Only differences are identified, not the level", "The learning rate was too small to fix it", "Bradley-Terry needs initialisation near zero"],
         answer: 1,
         why: "Adding any constant to every reward leaves r_w \u2212 r_l unchanged, so the likelihood is exactly invariant to a shift and no amount of data pins the mean down. Both fits converged correctly \u2014 the identical differences prove it. The practical consequence is that a raw RM score is meaningless alone and not comparable across models or runs, which is why scores are centred before being used in RL, where \u03b2 trades off against reward magnitude." },
 
       { stem: "A reward model reaches 78.6% preference accuracy, exactly matching the accuracy obtained by scoring with the true latent rewards. What does the remaining 21.4% consist of?",
-        options: [
-          "Model capacity limitations that a larger reward model would reduce",
-          "Label noise \u2014 the comparisons are stochastic, so some disagree with the true ordering and no scorer can predict them",
-          "Overfitting to the training pairs, which held-out evaluation would reveal",
-          "Optimisation error from insufficient training iterations"
-        ],
+        options: ["Capacity limits a larger model would reduce", "Label noise no scorer can predict", "Overfitting that held-out data would show", "Optimisation error from too few iterations"],
         answer: 1,
         why: "The labels were generated from the Bradley-Terry sigmoid, so a pair with a gap of 0.6 is won by the better answer only 64.6% of the time \u2014 meaning some labels contradict the true ordering by construction. Matching the Bayes-optimal accuracy proves the fit extracted everything available, so the gap is irreducible given these labels. This reframes the usual 65% guidance: it is a floor measured against an annotator-agreement ceiling, not against perfection." },
 
       { stem: "Why does the Bradley-Terry gradient of 1 \u2212 \u03c3(gap) matter practically?",
-        options: [
-          "It makes the loss convex, guaranteeing a unique global optimum",
-          "It concentrates capacity where the model is wrong \u2014 98.2% of maximum gradient at gap \u22124 against 1.8% at gap +4 \u2014 with no curriculum or hard-example mining needed",
-          "It bounds the reward scale, preventing the scores from drifting",
-          "It ensures the reward model's outputs are calibrated probabilities"
-        ],
+        options: ["It makes the loss convex, with one optimum", "It focuses learning where the model is wrong", "It bounds the reward scale against drift", "It calibrates the outputs as probabilities"],
         answer: 1,
         why: "The sigmoid saturates, so the optimiser automatically stops spending on pairs it already ranks confidently and keeps pushing on pairs it has backwards. This is the property you would hand-design, and it falls out of the likelihood rather than being added. Note it does not bound the scale \u2014 quite the opposite: because gradient vanishes once a gap is large, nothing in training constrains how big a correct gap becomes, and nothing makes the scores calibrated." },
 
       { stem: "Which normalisation is appropriate for reward model scores before use in RL?",
-        options: [
-          "Standardise to zero mean and unit variance, so the scale is fully determined",
-          "Centre them, and be cautious about rescaling \u2014 the additive constant is meaningless but the spread is identified and carries real signal about preference strength",
-          "Map them to [0, 1] with a sigmoid, since they are logits",
-          "No normalisation is needed, since only differences enter the objective"
-        ],
+        options: ["Standardise to zero mean and unit variance", "Centre them; be careful about rescaling", "Squash them to [0, 1] with a sigmoid", "None, since only differences matter"],
         answer: 1,
         why: "The shift is the unidentified part and centring removes it. The spread is not unidentified \u2014 measured, a true spread of 3.200 was recovered as 3.121 \u2014 so dividing by the standard deviation discards information about how decisively the comparisons separated the answers. Normalisation is needed despite only differences entering the RM loss, because downstream the rewards meet a fixed KL coefficient, and \u03b2 trades off against reward magnitude." }
     ]

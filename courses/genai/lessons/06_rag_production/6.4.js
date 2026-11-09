@@ -430,42 +430,22 @@ print("\\nstructural: %d of %d" % (structural, len(FAILING)))`,
     title: "Check yourself",
     questions: [
       { stem: "Over a corpus chunked one clean sentence per chunk, 0 of 6 chunks contained both endpoints of a multi-hop question. What does this establish?",
-        options: [
-          "The chunk size was too small; larger chunks would contain both endpoints",
-          "The failure is structural \u2014 no top-k of chunks contains the answer at any k, because the answer is a composition across four chunks rather than a statement in one",
-          "The retriever's recall@5 was too low and hybrid search would fix it",
-          "The embedding model was too weak to represent the relationship"
-        ],
+        options: ["Chunks were too small; larger ones would hold both", "It is structural: the answer spans four chunks", "Recall@5 was too low; hybrid search would fix it", "The embedding model could not represent the link"],
         answer: 1,
         why: "Recall metrics ask where a relevant chunk ranked, which presupposes one exists; here none does. A perfect retriever returns all six chunks and the model must still compose them itself, which is the model doing multi-hop reasoning over a context window rather than retrieval solving it \u2014 and that degrades as the corpus grows and the relevant sentences stop fitting any top-k. Larger chunks only help if the facts happen to be adjacent in one document, which across three documents they are not." },
 
       { stem: "A BFS from Instagram to \"something Zuckerberg worked on\" found the answer in 3 hops via the FOUNDED relation, though the question asked about the CEO of the acquirer. Why does this matter?",
-        options: [
-          "It does not \u2014 the answer returned was correct",
-          "Shortest-path traversal optimises path length rather than the question's semantics, so it was right only because the founder and CEO coincide; with a non-founder CEO it returns a confident wrong answer backed by real edges",
-          "BFS should have been depth-first search, which follows relation types in order",
-          "The graph was missing the RENAMED_TO edge, so the path had to route around it"
-        ],
+        options: ["It does not; the returned answer was correct", "Shortest paths ignore the question's semantics", "Depth-first search would follow relation types", "A missing RENAMED_TO edge forced a detour"],
         answer: 1,
         why: "The path skipped CEO_OF entirely and substituted FOUNDED. It happened to be right because Zuckerberg is both, but the reasoning does not match the question, so the same traversal on a company whose CEO was not its founder gives a wrong answer with a citable chain of genuine edges behind it. This is the correctness argument for generating typed Cypher, which names the relations it wants and so cannot substitute one for another." },
 
       { stem: "Label propagation over a two-company graph converged in two passes to three communities, one of which separated Mark Zuckerberg from Facebook and Meta. What is the general lesson?",
-        options: [
-          "The implementation had a bug in its tie-breaking rule",
-          "Label propagation has no objective function \u2014 it reaches some fixed point with no guarantee of quality or internal connectivity, which is precisely what Leiden's modularity optimisation and refinement phase address",
-          "The graph needed more edges before community detection becomes meaningful",
-          "Communities should be assigned by the extraction model rather than detected"
-        ],
+        options: ["The tie-breaking rule had an implementation bug", "Label propagation has no objective; Leiden adds one", "The graph needed more edges to be meaningful", "Communities should come from the extraction model"],
         answer: 1,
         why: "Label propagation is a local update rule that halts when nothing changes, so the result depends on iteration order and can sever a hub from its cluster \u2014 which is what happened to the most connected node on the Facebook side. Leiden optimises modularity globally and its refinement phase explicitly guarantees each community is internally connected. It also returns a hierarchy, which global search needs because routing must pick a resolution level." },
 
       { stem: "You are deciding whether to add GraphRAG to a working vector pipeline. What is the most informative cheap test?",
-        options: [
-          "Measure recall@k on the failing queries to see how far off the retriever is",
-          "For each failing query, check whether any single chunk contains every entity an answer requires \u2014 separating structural failures from ranking failures",
-          "Build the graph for a sample of documents and compare answer quality",
-          "Count how many queries mention more than one named entity"
-        ],
+        options: ["Measure recall@k on the failing queries", "Check if any one chunk holds every needed entity", "Build a sample graph and compare answers", "Count queries naming more than one entity"],
         answer: 1,
         why: "Only structural failures \u2014 where no chunk suffices \u2014 are evidence for a graph; ranking failures are fixed far more cheaply, and M5 measured hybrid search taking recall@5 from 95% to 100% for nine lines. The test is a substring check rather than a model call, and because substring matching is a lower bound on what a model could extract from a chunk, it over-reports structural failures, erring toward recommending a graph you then scrutinise rather than missing a real need." }
     ]

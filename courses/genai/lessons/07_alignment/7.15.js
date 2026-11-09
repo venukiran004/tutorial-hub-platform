@@ -259,42 +259,22 @@ print("by length bin:", by_length_bin(RESULTS))`,
     title: "Check yourself",
     questions: [
       { stem: "A DPO run reports reward accuracy 0.82 and a doubled reward model score. What do these establish?",
-        options: [
-          "That the alignment succeeded, since both metrics moved in the right direction",
-          "Only that optimisation happened \u2014 both were optimised directly, and a simulated run showed the training reward rising monotonically while true quality collapsed",
-          "That the reward model was well fitted, though the policy may not have improved",
-          "That the learning rate was appropriate for the dataset size"
-        ],
+        options: ["That alignment succeeded, as both rose", "Only that optimisation happened", "That the reward model fitted well", "That the learning rate was suitable"],
         answer: 1,
         why: "Any metric that appeared in the loss is a restatement of the loss. The simulation makes the risk concrete: with a reward model 59% aligned with true preference, the proxy score rose without bound to +6.0 while true quality peaked at a KL of 1.0 and fell to \u22129.04 \u2014 so the training reward was improving at every checkpoint including those where the model was getting worse. Evidence requires held-out data, a judge, or a deterministic check." },
 
       { stem: "Why should each win-rate pair be evaluated in both presentation orders?",
-        options: [
-          "To double the sample size and reduce variance in the estimate",
-          "Because the fraction of pairs where the judge contradicts itself *is* the position bias, measured on your own judge \u2014 and a high flip rate makes the win rate uninterpretable",
-          "Because judges apply different criteria to the first and second response",
-          "To ensure both models receive equal exposure to the judge's context window"
-        ],
+        options: ["To double the sample size and cut variance", "The flip rate is the judge's position bias", "Judges apply different criteria by position", "So both models get equal context exposure"],
         answer: 1,
         why: "Judges systematically favour position A, and randomisation alone removes the systematic component while leaving the noise. Evaluating both ways lets you count only consistent judgements as wins and reports the inconsistency rate as a diagnostic \u2014 which validates everything downstream. If the flip rate is high the judge is simply too noisy for the comparison, and no randomisation scheme repairs that." },
 
       { stem: "A win rate of 0.61 comes with a mean length ratio of 1.41 against the previous model. Within length bins the win rates are 0.50, 0.51, 0.49 and 0.50. What happened?",
-        options: [
-          "The model improved consistently across all response lengths",
-          "The aggregate win is entirely attributable to longer answers \u2014 within every length band the model is no better than its predecessor",
-          "The length bins were too coarse to detect the improvement",
-          "The judge's position bias inflated the aggregate figure"
-        ],
+        options: ["It improved consistently across all lengths", "The win is entirely from longer answers", "The bins were too coarse to see the gain", "Position bias inflated the aggregate"],
         answer: 1,
         why: "Flat within-bin win rates at 0.50 mean that for any given response length the two models are indistinguishable, so the only thing producing the aggregate 0.61 is the shift toward longer responses combined with a judge that prefers them. This is why binning matters more than reporting mean length alongside: a 41% length creep is suggestive, but the flat bins are what make it conclusive. Length is the canonical reward hack because the implicit reward is linear in token count." },
 
       { stem: "Why must safety be measured in both directions rather than only with a red-team suite?",
-        options: [
-          "Because red-team suites cannot cover every category of harm",
-          "Because a model that refuses everything scores perfectly on red-team and is useless \u2014 a refusal is never wrong the way an error is, so one-directional evaluation rewards refusing",
-          "Because over-refusal correlates with jailbreak vulnerability",
-          "Because regulators require both metrics to be reported"
-        ],
+        options: ["Red-team suites cannot cover every harm", "Refusing everything aces red-team and is useless", "Over-refusal correlates with jailbreaks", "Regulators require both to be reported"],
         answer: 1,
         why: "Optimising only the direction that penalises harmful outputs has a trivially optimal solution: refuse. That is the safety-flavoured version of hedging, where a vague non-answer avoids the penalty a confident error attracts, so the model is responding correctly to the incentive it was given. An over-refusal set makes the other direction visible, and the goal is a model that discriminates rather than one that is cautious. Coverage gaps are a separate, real problem." }
     ]

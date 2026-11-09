@@ -438,42 +438,22 @@ for n_dup in (1, 3, 5):
     title: "Check yourself",
     questions: [
       { stem: "Adding 20,000 off-topic chunks to a 1,187-chunk index left recall@5 at 95% and recall@1 at 75%, while adding 5\u00d7 near-duplicates dropped recall@5 to 55%. What follows for diagnosing an ingest regression?",
-        options: [
-          "Index size is the problem above roughly 20,000 chunks, so the new corpus should be sharded",
-          "Volume is ruled out as a mechanism \u2014 a chunk displaces a good one only by scoring higher \u2014 so check duplication first",
-          "The off-topic chunks were too dissimilar to be a realistic test of noise",
-          "Recall@1 is the only metric sensitive enough to detect ingest problems"
-        ],
+        options: ["Size is the problem past 20,000; shard it", "Volume is ruled out; check duplication first", "Off-topic chunks were an unrealistic test", "Only recall@1 can detect ingest problems"],
         answer: 1,
         why: "Unrelated vocabulary never enters a top-5 for an unrelated query, so those 20,000 chunks are present without competing \u2014 they cost memory and latency, which 6.2 measured, but not recall. A copy of a relevant chunk always competes, which is why duplication crowds out canonical chunks at a third the index size. The practical consequence is an ordering: count chunks by normalised hash before touching index parameters or chunk sizes." },
 
       { stem: "Query and index embeddings came from two different models that both output 384 dimensions. Recall@5 fell from 95% to 50% and mean top-1 similarity from 0.5698 to 0.2356. Why is this considered more dangerous than a dimension mismatch?",
-        options: [
-          "Because the recall drop is larger than a dimension mismatch would cause",
-          "Because matching dimensionality means every operation succeeds \u2014 nothing errors, results look plausible, and the system can run wrong indefinitely",
-          "Because 384-dimension models are more widely used and so more often confused",
-          "Because the similarity scores remain above the relevance gate threshold"
-        ],
+        options: ["The recall drop exceeds a dimension mismatch's", "Nothing errors, so it can run wrong indefinitely", "384-dimension models are easily confused", "Scores stay above the relevance gate"],
         answer: 1,
         why: "A dimension change raises an error on the first request \u2014 measured, `matmul: Input operand 1 has a mismatch in its core dimension` \u2014 which stops the deploy. Equal dimensionality means the matrix multiply succeeds and five ordinary-looking chunks come back while recall has halved. The monitor that catches it is the score distribution rather than any individual score: the mean moved from 0.5698 to 0.2356, which is below even the 0.3388 baseline measured for unanswerable queries." },
 
       { stem: "Pre-filtering and post-filtering by tenant both achieved 95% recall@5, and post-filtering placed 19 other-tenant chunks in the top 5 before discarding them. What is the correct conclusion?",
-        options: [
-          "Either is acceptable since the recall is identical and the foreign rows are discarded",
-          "There is no trade-off to weigh \u2014 the only thing post-filtering produces is 19 rows of foreign content read, scored and probably logged, so the filter belongs inside the search call",
-          "Post-filtering is preferable because it allows a single unpartitioned index",
-          "The leak count shows the tenant split was implemented incorrectly"
-        ],
+        options: ["Either works; recall matches and rows are dropped", "No trade-off: filter inside the search call", "Post-filtering allows one unpartitioned index", "The leak shows the tenant split is broken"],
         answer: 1,
         why: "Equal recall removes any performance argument, so the comparison is purely about exposure. Those rows were read from the index, ranked into the top 5, and 5.13's recommendation to log retrieved ids and scores means they were likely written to a log as well. Passing the user into the search call makes the constraint part of the query rather than a cleanup applied to its results \u2014 and unlike the other five incidents this one cannot be monitored into safety, because detection comes after disclosure." },
 
       { stem: "A RAG system hallucinates on a query whose answer demonstrably exists in the corpus. What is the first diagnostic step?",
-        options: [
-          "Strengthen the prompt instruction to answer only from provided context",
-          "Check whether the gold chunk appears in the top-k at all \u2014 absent means a retrieval failure, present but ignored means a generation failure",
-          "Lower the relevance threshold so more chunks reach the context",
-          "Add a faithfulness check to block the ungrounded answer"
-        ],
+        options: ["Strengthen the prompt to answer only from context", "Check whether the gold chunk was retrieved at all", "Lower the relevance threshold for more chunks", "Add a faithfulness check to block the answer"],
         answer: 1,
         why: "The two branches share no fixes, so guessing is expensive. Retrieval failures want hybrid search, query rewriting, better chunking or a re-ranker \u2014 M5's hardest query sat at rank 15 through every chunking strategy, moved to rank 10 under BM25 and rank 1 under HyDE. Generation failures want chunk reordering and a groundedness gate. Strengthening the prompt is the common first response and cannot help when the context does not contain the answer." }
     ]

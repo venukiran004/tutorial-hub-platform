@@ -365,42 +365,22 @@ print("reward accuracy (margin > 0): %.3f" % np.mean(np.array(margins) > 0))`,
     title: "Check yourself",
     questions: [
       { stem: "Why does the partition function Z(x) cancel in the DPO derivation?",
-        options: [
-          "Because it is approximately constant across prompts and can be absorbed into \u03b2",
-          "Because Bradley-Terry depends only on the difference of two rewards for the same prompt, and Z(x) depends only on x, so it appears identically in both terms",
-          "Because the reference policy is normalised, making Z(x) equal to 1",
-          "Because it is estimated by sampling and the estimates cancel in expectation"
-        ],
+        options: ["It is roughly constant and absorbed into β", "It depends only on x, so it cancels in the difference", "The reference policy is normalised, so Z = 1", "Sampled estimates cancel in expectation"],
         answer: 1,
         why: "Z(x) is a sum over every possible completion and is completely intractable \u2014 it is not near 1, not constant across prompts, and not estimated. The cancellation is exact and structural: both the chosen and rejected rewards carry the same +\u03b2 log Z(x) term, so the difference is free of it. This is the same property that makes a reward model's absolute scale unidentifiable, which means the uncomputable term is precisely the one that was never needed." },
 
       { stem: "In the worked example, the policy assigns the rejected response a higher log-probability than the reference model does (ratio +0.5). Is this a problem?",
-        options: [
-          "Yes \u2014 the rejected response's probability must decrease for DPO to be working",
-          "No \u2014 DPO requires only that the chosen response's log-ratio rise more than the rejected one's; both can rise, and in practice both often fall",
-          "Yes \u2014 it indicates the reference model was initialised from the wrong checkpoint",
-          "No \u2014 the sign is irrelevant because \u03b2 rescales both terms equally"
-        ],
+        options: ["Yes; the rejected probability must fall", "No; only the relative rise matters", "Yes; the reference checkpoint is wrong", "No; β rescales both terms equally"],
         answer: 1,
         why: "The loss depends only on the margin between the two implicit rewards, so their individual signs and directions are unconstrained. A well-documented DPO behaviour is the chosen response's log-probability falling over training while the margin still grows, because the rejected one falls faster. This is why chosen and rejected rewards should be logged separately: a margin that improves while both collapse is a model becoming less confident about everything, and the margin alone cannot show it." },
 
       { stem: "DPO's implicit reward is \u03b2(\u2211log \u03c0_\u03b8 \u2212 \u2211log \u03c0_ref) over response tokens. Where does the length bias come from?",
-        options: [
-          "From longer responses having more negative summed log-probability, which DPO penalises",
-          "From the per-token gain accumulating: if the policy gains d nats per token, the reward is \u03b2\u00b7d\u00b7n, linear in response length",
-          "From the tokeniser producing more tokens for verbose phrasing, inflating the vocabulary distribution",
-          "From the KL penalty scaling with sequence length"
-        ],
+        options: ["Longer responses have more negative log-prob", "A per-token gain accumulates linearly in length", "Verbose phrasing inflates the token count", "The KL penalty scales with sequence length"],
         answer: 1,
         why: "The large negative summed log-probabilities largely cancel, because both terms sum over the same tokens \u2014 so the first option has the mechanism backwards. What survives is that the difference accumulates per token, making the reward proportional to length. A 100-token response at d = 0.02 earns the same as a 20-token one at d = 0.10, so length substitutes for quality. SimPO removes this by using a length-normalised average log-probability instead of a sum." },
 
       { stem: "What is DPO's fundamental limitation relative to PPO?",
-        options: [
-          "Its memory footprint grows faster with model size",
-          "It is offline and bounded by its preference pairs \u2014 with no sampling step, it cannot discover a behaviour absent from the data, only re-rank behaviours already latent",
-          "It cannot be combined with LoRA, so it requires a full fine-tune",
-          "Its loss is non-convex, so convergence is not guaranteed"
-        ],
+        options: ["Its memory grows faster with model size", "Offline: it cannot find what the pairs lack", "It cannot be combined with LoRA", "Its loss is non-convex, so may not converge"],
         answer: 1,
         why: "PPO generates fresh completions and scores them, so the policy can find answers better than anything in the dataset; DPO's training data is fixed, so nothing new can appear. This is a capability difference rather than an efficiency one, and it is why iterative or online DPO exists \u2014 generate from the current policy, label with a reward model or judge, run DPO, repeat. DPO combines particularly well with LoRA, where the adapter-disabled base weights serve as the reference." }
     ]

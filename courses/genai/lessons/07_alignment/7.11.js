@@ -323,42 +323,22 @@ print("stop:", should_stop(history) or ["no trigger"])`,
     title: "Check yourself",
     questions: [
       { stem: "In a simulation with a reward model 59.3% aligned with true preference, the proxy score rose monotonically while true quality peaked at KL 1.0. What produces this shape?",
-        options: [
-          "Instability in the PPO update, which compounds as KL grows",
-          "The proxy is linear in distance moved so it rises without bound, while true quality is the aligned component minus a cost that grows faster \u2014 so it must turn",
-          "The reward model saturates, causing its gradient to vanish and training to stall",
-          "The KL penalty eventually dominates the reward term and reverses the objective"
-        ],
+        options: ["PPO instability that compounds as KL grows", "The proxy rises without bound; true quality turns", "The reward model saturates and stalls", "The KL penalty eventually dominates"],
         answer: 1,
         why: "Two unavoidable ingredients force the curve: the RM points slightly wrong because it was fitted from finite noisy comparisons, and moving far from the reference costs real fluency and coherence. Given those, no parameter setting avoids the peak \u2014 there is only a point at which to stop. The KL penalty does not prevent overoptimisation; it makes the stopping point harder to overshoot, which is a different thing." },
 
       { stem: "The peak of true quality occurs at a KL proportional to the reward model's cosine alignment. What practical consequence follows?",
-        options: [
-          "A better reward model is unnecessary, since you can simply stop earlier with a worse one",
-          "RM quality and optimisation budget are coupled \u2014 a weakly-fitted RM has a nearer peak, so you extract less improvement even before accuracy enters",
-          "The KL coefficient \u03b2 should be set proportional to the cosine alignment",
-          "Peak KL is a universal constant that can be set once per model family"
-        ],
+        options: ["A worse RM is fine if you stop earlier", "RM quality and optimisation budget are coupled", "Set β in proportion to the alignment", "Peak KL is a constant per model family"],
         answer: 1,
         why: "A poorly fitted reward model is doubly bad: less accurate, and it forces you to stop sooner, so there is less total improvement available. This is a second reason to train the RM about one epoch and watch held-out preference accuracy, beyond the accuracy itself. It also explains why RLVR changes things so much \u2014 a verifier has cosine 1.0 with the target by construction, so the peak moves out indefinitely and reasoning RL can run far longer." },
 
       { stem: "Why does a held-out \u201cgold\u201d reward model track true quality better than the training reward model, given both were fitted on the same amount of data?",
-        options: [
-          "Because it is fitted on cleaner, more carefully annotated pairs",
-          "Because only the training RM is being optimised, and optimisation is what finds a proxy's errors \u2014 the gold RM's errors are never sought out",
-          "Because it is evaluated at a lower temperature, reducing variance",
-          "Because it is larger, giving it a better inductive bias"
-        ],
+        options: ["It was fitted on cleaner annotated pairs", "Only the training RM's errors are sought out", "It is evaluated at a lower temperature", "It is larger, with a better inductive bias"],
         answer: 1,
         why: "Both models are equally wrong about true preference; the asymmetry is entirely in which one the policy is pushing against. Measured, the gold RM read \u22120.388 at KL 2 against the truth's \u22120.214 while the training RM read +2.000. This makes the gap between the two scores the signal rather than either alone, and it is observable without human evaluation \u2014 though the gold RM is a reliable direction indicator and only an approximate magnitude." },
 
       { stem: "A reward model has learned a length weight of 0.01 per token alongside a unit-scale quality signal. Why is this not negligible?",
-        options: [
-          "Because 0.01 compounds multiplicatively over tokens rather than adding",
-          "Because the reward is linear in response length with nothing bounding n \u2014 at 100 tokens the length term equals the entire quality signal, and at 400 it is four times larger",
-          "Because the policy cannot distinguish the length weight from the quality weight during optimisation",
-          "Because length interacts with the KL penalty, amplifying both terms"
-        ],
+        options: ["It compounds multiplicatively over tokens", "Length is unbounded; at 100 tokens it equals quality", "The policy cannot separate the two weights at all", "Length amplifies the KL penalty term as well"],
         answer: 1,
         why: "The implicit reward accumulates per token, so a per-token weight has no ceiling in the policy's hands \u2014 the crossover with a unit quality signal is at 100 tokens and everything beyond pays more for length than for being right. A weight that looks negligible when inspecting the RM is therefore unbounded in effect, which is why fixes are structural: normalise at the loss as SimPO does, or penalise length explicitly, rather than hoping the RM avoided the preference." }
     ]

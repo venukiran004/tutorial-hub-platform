@@ -310,42 +310,22 @@ for N in (1.5e9, 7e9, 70e9):
     title: "Check yourself",
     questions: [
       { stem: "At \u03c1 = 1.5 with advantage A = +1, PPO's surrogate gives 1.2 (clipped). At \u03c1 = 1.5 with A = \u22121, it gives \u22121.5 (unclipped). What does this show?",
-        options: [
-          "An implementation error \u2014 the clip should apply symmetrically",
-          "The `min` makes the objective a pessimistic lower bound, so it caps credit for over-shooting in the favourable direction while preserving full pressure to undo a harmful move",
-          "Negative advantages are excluded from the clipping by design, since they use a separate loss term",
-          "The clip only applies when \u03c1 exceeds 1 + \u03b5 and A is positive, which is a known PPO limitation"
-        ],
+        options: ["A bug: the clip should apply symmetrically", "The min caps gains but keeps the push to undo harm", "Negative advantages use a separate loss term", "The clip applies only above 1 + ε with A > 0"],
         answer: 1,
         why: "`min` always selects the lower term, which makes the surrogate a lower bound on the unclipped objective. When you have moved beyond the trust region in the direction the advantage favours, the clipped term is lower and flattens the gradient; when you have moved the wrong way, the raw term is lower and the full gradient pushes you back. At \u03c1 = 2.0 with A = \u22121 the value is \u22122.0, entirely unclipped \u2014 so \"PPO bounds every update\" is not accurate." },
 
       { stem: "A 7B PPO run is estimated at about 56 GB on the basis of \u201cfour 7B models at bf16\u201d. What is wrong?",
-        options: [
-          "The reward model is usually larger than the policy, so the estimate is too low",
-          "The policy and critic are trained, so each costs ~16 bytes per parameter (weights, gradients, fp32 master, Adam m and v) rather than 2 \u2014 the real total is 234.7 GB",
-          "bf16 is not used for RLHF; fp32 throughout gives 112 GB",
-          "The estimate omits the fourth model, giving 42 GB instead of 56 GB"
-        ],
+        options: ["The reward model is larger, so it is too low", "Trained models cost ~16 bytes per parameter", "RLHF runs fp32 throughout, giving 112 GB", "It omits the fourth model, so it is 42 GB"],
         answer: 1,
         why: "Counting parameters treats all four models alike, but only the frozen reference and reward model cost bf16 weights alone at 13.0 GB each. Each trained model carries gradients, an fp32 master copy and Adam's two moments on top, reaching 104.3 GB \u2014 eight times its own weight footprint. The total of 234.7 GB is 18\u00d7 a single frozen 7B, and it still excludes activations and the KV cache that step 1's generation requires." },
 
       { stem: "Why is the KL penalty described as non-negotiable rather than a regularisation choice?",
-        options: [
-          "Because without it the gradient estimate becomes biased and PPO fails to converge",
-          "Because the reward model is a learned proxy with unbounded correct gaps, so an unleashed policy converges onto degenerate text that scores highly and is useless to humans",
-          "Because the reference model provides the baseline needed for advantage estimation",
-          "Because the KL term is what makes the objective differentiable with respect to sampled tokens"
-        ],
+        options: ["Without it the gradient is biased and PPO fails", "An unchecked policy exploits the proxy reward", "The reference supplies the advantage baseline", "It makes sampled tokens differentiable"],
         answer: 1,
         why: "Bradley-Terry training makes the gradient vanish once a reward gap is large, so nothing constrains how big a correct gap becomes \u2014 leaving regions of output space where the RM confidently assigns huge scores for no good reason. Optimising hard against the proxy finds them, producing repeated flattery, enormous lists or formatting tics with excellent reward scores. The KL does not fix the reward model; it bounds the search radius, which is a blunt defence against a failure invisible from inside the loop." },
 
       { stem: "Which step of the PPO loop dominates wall-clock time, and why does that matter for the comparison with DPO?",
-        options: [
-          "The policy update, because the clipped surrogate requires several inner epochs",
-          "Generation, because it is sequential and memory-bandwidth-bound \u2014 and DPO removes it from the loop entirely by training on fixed preference pairs",
-          "Reward model scoring, since it requires a full forward pass per completion",
-          "Advantage estimation via GAE, which is quadratic in sequence length"
-        ],
+        options: ["The policy update, with several inner epochs", "Generation, which DPO removes entirely", "Reward scoring, a full pass per completion", "GAE, which is quadratic in length"],
         answer: 1,
         why: "Every other step is a batched forward or backward pass, while generation produces one token at a time and is bandwidth-bound rather than compute-bound. That forces substantial infrastructure \u2014 an inference-optimised copy of the policy, continuous batching, KV cache management \u2014 which is a large part of why RLHF is operationally harder than DPO. DPO's data is a fixed set of pairs, so nothing is generated during training, which together with the 2\u00d7 memory saving is why it displaced PPO for most teams." }
     ]

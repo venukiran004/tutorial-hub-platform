@@ -343,12 +343,7 @@ for i, (q, _) in enumerate(QUERIES):
         why: "A production schema can have two hundred tables and thousands of columns, which does not fit in a prompt and buries the relevant few in noise. Column descriptions are few, heterogeneous and written in prose, and each question concerns a handful of them \u2014 the inverse of the row case and exactly what similarity search is for. Query reuse and caching are real techniques but address repetition rather than the schema-size problem." },
 
       { stem: "Why does the retrieve-schema-then-execute-SQL architecture have better failure modes?",
-        options: [
-          "Because SQL generation is more accurate than retrieval",
-          "Because a bad query usually fails loudly \u2014 syntax error, missing column, empty result \u2014 where a bad aggregate is a confident number indistinguishable from a correct one",
-          "Because the database validates the semantics of the question",
-          "Because execution is faster than embedding the rows"
-        ],
+        options: ["SQL generation is more accurate than retrieval", "Bad queries fail loudly; bad aggregates look right", "The database validates the question's semantics", "Execution is faster than embedding the rows"],
         answer: 1,
         why: "The model produces a query rather than an answer, and most wrong queries raise an error or return nothing \u2014 both catchable and retryable. The retrieval version produces a plausible number derived from a fraction of the data with nothing to distinguish it from a correct answer. The residual risk is a query that is valid and wrong, such as the right syntax against the wrong column, which is why returning the SQL alongside the answer matters: it is the only part a user can check." }
     ]

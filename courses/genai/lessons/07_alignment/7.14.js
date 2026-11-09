@@ -279,42 +279,22 @@ for c in CASES:
     title: "Check yourself",
     questions: [
       { stem: "A team wants to fine-tune so the model knows their internal product documentation. What is the right response and the evidence for it?",
-        options: [
-          "Fine-tune with SFT on documentation-derived question-answer pairs",
-          "Use retrieval \u2014 fine-tuning changes which continuations are likely rather than what is true, as shown by gpt2 ranking \u201cParis\u201d highest as a statement while giving it 0.54% as a next token",
-          "Fine-tune with DPO on preference pairs where the chosen answer cites the documentation",
-          "Continue pretraining on the documentation corpus instead of fine-tuning"
-        ],
+        options: ["SFT on question-answer pairs from the docs", "Retrieval: tuning shifts likelihood, not truth", "DPO on pairs where the chosen answer cites docs", "Continued pretraining on the documentation"],
         answer: 1,
         why: "The measurement separates knowledge from behaviour cleanly: the same weights that rank the true statement above false ones give the correct answer almost no probability as an immediate continuation. Fine-tuning moves the second quantity, so if a fact is absent it produces confident fluency about something unknown rather than knowledge. Retrieval also gets freshness for free, since a changed document is a re-embed rather than a retraining run." },
 
       { stem: "Under what circumstance is alignment genuinely the right next step after SFT?",
-        options: [
-          "When SFT has plateaued and the loss has stopped improving",
-          "When the output is factually correct but not what humans prefer \u2014 too verbose, wrong register, unsafe edge cases",
-          "When you have accumulated enough preference pairs to justify the effort",
-          "When the model needs to handle inputs outside its SFT distribution"
-        ],
+        options: ["When SFT loss has plateaued", "When output is correct but not preferred", "When enough preference pairs exist", "When inputs fall outside the SFT set"],
         answer: 1,
         why: "Alignment converts comparisons into weights, so it can only shift which of several acceptable outputs is preferred. If the output is wrong, preference optimisation will teach the model to be wrong more appealingly \u2014 the fix there is better SFT data or retrieval. Having the data is a prerequisite rather than a reason, and SFT loss plateauing says nothing about whether the remaining gap is a preference gap." },
 
       { stem: "Why does the decision tree check for a programmatic verifier before checking the shape of your preference data?",
-        options: [
-          "Because verifiers are cheaper to build than preference datasets are to collect",
-          "Because a verifier cannot be flattered, so the overoptimisation ceiling lifts \u2014 and GRPO+RLVR sits at DPO's 117.3 GB footprint while remaining online",
-          "Because GRPO is more sample-efficient than DPO on the same data",
-          "Because verifiable rewards are dense rather than sparse, improving credit assignment"
-        ],
+        options: ["Verifiers are cheaper to build than datasets", "A verifier cannot be flattered, lifting the ceiling", "GRPO is more sample-efficient than DPO", "Verifiable rewards are denser per token"],
         answer: 1,
         why: "A verifier is a better signal than any learned reward: length, confidence and formatting cannot change whether a unit test passes, so optimisation can run far longer before the reward stops correlating with the goal. And the cost objection does not hold \u2014 removing the critic takes PPO's 234.7 GB to 130.4 GB, and replacing the reward model with a program reaches 117.3 GB, the same as DPO, while keeping the ability to explore beyond existing data." },
 
       { stem: "In a realistic product pipeline, why is LoRA used for the DPO stage specifically?",
-        options: [
-          "Because DPO requires fewer trainable parameters than SFT to converge",
-          "Because the adapter-disabled base weights serve as the frozen reference, removing a second model copy and a class of wrong-reference bug",
-          "Because LoRA prevents the length bias that DPO otherwise exhibits",
-          "Because DPO's learning rate is too low for full fine-tuning to be stable"
-        ],
+        options: ["DPO needs fewer trainable parameters than SFT", "The disabled-adapter base is the reference", "LoRA prevents DPO's length bias", "DPO's learning rate is unstable in full tuning"],
         answer: 1,
         why: "DPO needs a frozen reference policy, and with LoRA you get it for free by disabling the adapter \u2014 saving 13.0 GB at 7B and making it impossible to load the wrong checkpoint as the reference, which otherwise fails silently. That is a large part of why DPO plus LoRA fits on a single GPU where PPO does not come close. LoRA does nothing about the length bias, which comes from the implicit reward being a sum over tokens." }
     ]

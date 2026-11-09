@@ -305,42 +305,22 @@ for name in ("gpt2", "bert-base-uncased", "t5-small"):
     title: "Check yourself",
     questions: [
       { stem: "Holding one model, one text and a measured total of 245.05 nats fixed, perplexity reads 86.10 under T5's tokenisation and 183.80 under BERT's. What causes this?",
-        options: [
-          "T5 models the text better, producing lower surprise per token",
-          "Perplexity divides a fixed total surprise by a token count that varies with the tokeniser \u2014 fewer tokens means the same surprise spread over fewer items, so higher perplexity",
-          "The tokenisers produce different text after decoding, changing what is measured",
-          "BERT is bidirectional, so its perplexity is not comparable in principle"
-        ],
+        options: ["T5 models the text better, with less surprise", "The same surprise is divided by different counts", "The tokenisers decode to different text", "BERT is bidirectional, so incomparable"],
         answer: 1,
         why: "Total information content is a property of the model and the string, not of how it is chopped up \u2014 and the five real tokenisers varied by 17% in token count on identical text. T5's 55 tokens spread 245.05 nats more thinly than BERT's 47, so T5's split reports a lower average. No model difference is involved: this is one model's measured total, renormalised five ways, which is why the metric cannot transfer across tokenisers." },
 
       { stem: "Why is bits-per-byte comparable across models with different vocabularies?",
-        options: [
-          "Because it uses base-2 logarithms, which are tokeniser-independent",
-          "Because its denominator is bytes of text \u2014 a property of the string that no tokeniser choice can change",
-          "Because it averages over a larger number of units, reducing variance",
-          "Because it normalises by model size as well as text length"
-        ],
+        options: ["Base-2 logarithms are tokeniser-independent", "Bytes of text do not depend on the tokeniser", "More units averaged means lower variance", "It normalises by model size as well"],
         answer: 1,
         why: "The numerator is total negative log-probability, a property of the model and the text, and the denominator is the byte length of the text, which is fixed. Neither depends on tokenisation, so the ratio is stable where perplexity is not. The log base only changes units \u2014 converting nats to bits \u2014 and reconciling BPB back to perplexity is worth doing as a check, since a stray factor of ln 2 is the usual bug." },
 
       { stem: "An instruction-tuned chat model has higher perplexity on generic text than the base model it was tuned from. What does this indicate?",
-        options: [
-          "A regression \u2014 the fine-tuning damaged the model's language modelling",
-          "The expected outcome \u2014 instruction tuning concentrates probability on assistant-style continuations rather than on whatever the corpus does next",
-          "A tokeniser mismatch introduced during fine-tuning",
-          "Overfitting to the instruction dataset"
-        ],
+        options: ["A regression: tuning damaged its modelling", "Expected: mass shifts to assistant-style text", "A tokeniser mismatch from fine-tuning", "Overfitting to the instruction dataset"],
         answer: 1,
         why: "Perplexity measures fit to the evaluation corpus, and an aligned model is deliberately no longer trying to continue arbitrary text the way the internet would. A base model placing 33.84% of its mass on a newline after a question has excellent perplexity and useless behaviour, which is the same fact from the other direction. Consequently, choosing between instruction-tuned models on perplexity systematically prefers the least aligned one." },
 
       { stem: "A model scores perplexity 165 on a passage about retrieval-augmented generation. What should you conclude?",
-        options: [
-          "The model is poor, since competent models score in single digits",
-          "Little without knowing the corpus \u2014 perplexity is a model-and-corpus property, and 165 reflects genuinely unfamiliar vocabulary for a 2019-era model",
-          "The tokeniser is splitting technical terms inefficiently",
-          "The text is too short for a reliable estimate"
-        ],
+        options: ["The model is poor; good ones score single digits", "Little: it depends on the corpus as well", "The tokeniser splits technical terms badly", "The passage is too short to estimate"],
         answer: 1,
         why: "Single-digit perplexities are quoted on standard corpora that models were trained to fit; a 2019-era model on 2025 technical vocabulary is legitimately surprised, and the metric is reporting that correctly. This is the second confound alongside tokenisation, and it is why the valid use holds both fixed \u2014 comparing checkpoints or models on the same tokeniser *and* the same held-out set. A perplexity quoted without its corpus is half a number." }
     ]

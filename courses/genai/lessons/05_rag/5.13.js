@@ -259,42 +259,22 @@ for th in (0.95, 0.90, 0.85, 0.80):
     title: "Check yourself",
     questions: [
       { stem: "The same semantic cache test on two question sets gave 100% precision and 80% precision at the same 0.85 threshold. What explains the difference?",
-        options: [
-          "The embedding model was updated between the two measurements",
-          "The negative sets differed \u2014 one used pairs about different subjects, the other used adjacent operations on the same object",
-          "The second set used a different similarity metric",
-          "The first set had too few positive examples to be reliable"
-        ],
+        options: ["The embedding model changed between the runs", "The negatives differed: other topics versus near ops", "The second set used another similarity metric", "The first set had too few positive examples"],
         answer: 1,
         why: "Same model, same metric, opposite verdicts. Different-subject pairs like \u201cspeculative decoding\u201d against \u201ccontinuous batching\u201d score 0.07\u20130.42; adjacent operations like \u201cchange my password\u201d against \u201creset my password\u201d reach 0.8741, above every genuine paraphrase in that set. Since evaluation sets are built to cover ground rather than probe boundaries, a negative set assembled from one will be the easy kind \u2014 and will report that the cache is safe regardless." },
 
       { stem: "How should the negative set for a semantic cache test be constructed?",
-        options: [
-          "By sampling randomly from production query logs",
-          "By enumerating the operations the product supports on each object and pairing them \u2014 cancel against renew, change against reset",
-          "By using the questions from the existing retrieval evaluation set",
-          "By generating paraphrases and inverting their labels"
-        ],
+        options: ["Randomly sample them from production query logs", "Pair the supported operations on each object", "Reuse the existing retrieval evaluation questions", "Generate paraphrases and invert their labels"],
         answer: 1,
         why: "The failure mode a cache test exists to detect is a near-miss being served as a hit, and near-misses are structurally adjacent operations on the same object \u2014 which is also what users confuse and write in about. Random sampling and reuse of a retrieval evaluation set both produce different-topic pairs that were never going to be confused, so the test passes without evidence. If no adversarial negative comes to mind, that is information about the test rather than the system." },
 
       { stem: "What does verifying that a citation \u201cresolves\u201d establish?",
-        options: [
-          "That the cited passage supports the claim it follows",
-          "Only that the source number refers to a chunk that was actually supplied in the context",
-          "That the retrieval score for that chunk was above threshold",
-          "That the chunk came from an authoritative document"
-        ],
+        options: ["That the cited passage supports the claim", "Only that the number names a supplied chunk", "That the chunk's score passed the threshold", "That the chunk came from an authoritative doc"],
         answer: 1,
         why: "Resolution is a structural check against the source mapping, and it catches a model emitting [7] when five sources were provided \u2014 which a renderer that silently drops unresolvable brackets converts into an uncited claim that looks cited. Whether the passage supports the sentence is faithfulness, and nothing in generation enforces it, since the model is conditioned on all the passages at once. Rendering the chunk text rather than a filename is what makes the difference checkable by a reader." },
 
       { stem: "Why log retrieval scores alongside chunk ids?",
-        options: [
-          "To allow the index to be rebuilt from the logs",
-          "Because a chunk retrieved at 0.58 and one at 0.21 are different situations that produce identical-looking answers, and the score distribution warns when retrieval degrades",
-          "Because scores are required to reconstruct the ranking order",
-          "To detect duplicate chunks in the index"
-        ],
+        options: ["So the index can be rebuilt from the logs", "Scores separate weak support and reveal drift", "Scores are needed to reconstruct the ranking", "To detect duplicate chunks in the index"],
         answer: 1,
         why: "A confident match and the best of a bad set are indistinguishable from the generated text, so without the score a post-hoc investigation cannot tell which happened. Aggregated, the distribution of top-1 scores is the closest thing to a retrieval health metric available without labels \u2014 a downward shift after a corpus update signals degradation before any complaint arrives. The ids alone preserve the ranking order, so that is not the reason." }
     ]

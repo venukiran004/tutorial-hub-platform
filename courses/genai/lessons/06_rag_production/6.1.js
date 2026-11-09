@@ -357,42 +357,22 @@ for label, BASE in (("dense", DENSE), ("RRF fusion", FUSED)):
     title: "Check yourself",
     questions: [
       { stem: "Dense retrieval scores Hit@5 0.95 and MRR 0.84; BM25 scores Hit@5 0.90 and MRR 0.85. Which is better?",
-        options: [
-          "Dense, since Hit@5 is the more fundamental metric",
-          "It depends on the product \u2014 Hit@K asks whether anything relevant made the cut, MRR asks how high the first one was",
-          "BM25, since MRR is rank-aware and therefore more informative",
-          "Neither \u2014 the difference is within noise so the metrics are unusable"
-        ],
+        options: ["Dense, as Hit@5 is the more fundamental metric", "It depends: any hit in the cut, or how high the first", "BM25, as rank-aware MRR is more informative", "Neither; the gap is noise, so both are unusable"],
         answer: 1,
         why: "The two metrics answer different questions and genuinely disagree here. A system that feeds five chunks to a model needs at least one to be relevant, which is Hit@5; a system presenting a top answer to a person cares where the first relevant result lands, which is MRR. BM25 finds the answer less often and places it higher when it does, because an exact term match is an unambiguous signal. At twenty queries these specific gaps are one question and noise respectively, but the structural disagreement is the point." },
 
       { stem: "A cross-encoder re-ranker improves nDCG by 0.11 and MRR by only 0.03. Why the difference?",
-        options: [
-          "nDCG is computed at k=5 and MRR over the full ranking",
-          "MRR only considers the first relevant result, which the first stage was already ranking near the top \u2014 re-ranking lifted the other relevant chunks instead",
-          "The re-ranker was trained on a graded relevance objective",
-          "MRR saturates at 1.0 more quickly than nDCG"
-        ],
+        options: ["nDCG is at k=5 while MRR covers the full list", "MRR sees only the first hit, already near the top", "The re-ranker was trained on graded relevance", "MRR saturates at 1.0 sooner than nDCG does"],
         answer: 1,
         why: "An MRR of 0.84 means the first relevant result averages about rank 1.2, so there is almost no headroom. What the re-ranker changed was the position of the *remaining* relevant chunks, which nDCG, precision@5 and recall@5 all reward \u2014 those moved +0.11, +0.10 and +0.11 respectively. This qualifies the common pairing of MRR and nDCG as the metrics re-ranking moves: they measure different things and moved by very different amounts." },
 
       { stem: "The same re-ranker raises MAP from 0.54 to 0.60 and drops Hit@5 from 1.00 to 0.90. What happened?",
-        options: [
-          "A bug \u2014 the two metrics cannot move in opposite directions",
-          "It promoted several relevant chunks on queries it understood, and pushed the only relevant chunk out of the top five on others",
-          "MAP is computed over the full ranking and Hit@5 only over the top five",
-          "The first stage was already optimal so any change is a regression"
-        ],
+        options: ["A bug: the two cannot move in opposite directions", "It lifted several hits on some, lost the only hit on others", "MAP covers the full ranking; Hit@5 only the top", "The first stage was optimal, so any change regresses"],
         answer: 1,
         why: "Both effects are real and come from one reordering. Lifting multiple relevant chunks raises MAP, which rewards getting all of them high; losing the sole relevant chunk from the top five costs Hit@5 entirely and is invisible to MAP's averaging. Which outcome matters depends on the product \u2014 and a single headline metric would report this change as a clear win or clear loss depending on which was chosen, both truthfully." },
 
       { stem: "Why is precision@k a poor headline metric?",
-        options: [
-          "Because it is expensive to compute at large k",
-          "Because its denominator is k while its numerator is bounded by the relevant set, so it falls as k rises regardless of ranking quality",
-          "Because it ignores the order of results within the top k",
-          "Because it requires graded rather than binary relevance labels"
-        ],
+        options: ["It is expensive to compute at large k", "It falls as k rises, whatever the ranking", "It ignores order within the top k", "It needs graded relevance labels"],
         answer: 1,
         why: "Measured, precision fell from 0.75 at k=1 to 0.26 at k=20 on an unchanged retriever, while recall rose from 0.14 to 0.63. With a median of six relevant chunks, P@20 cannot exceed 0.30 however perfect the ranking \u2014 so the figure is measuring the cut-off as much as the system, and is only comparable at a fixed k. nDCG is better behaved because it normalises by the best achievable ranking at that k. Precision does ignore within-k order, which is a separate limitation." }
     ]

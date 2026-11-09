@@ -292,42 +292,22 @@ for k, v in inversions_win.items():
     title: "Check yourself",
     questions: [
       { stem: "A sentence with its two numeric claims swapped \u2014 stating the opposite of the reference \u2014 scored ROUGE-1 = 1.0000 and ROUGE-2 = 1.0000. Why?",
-        options: [
-          "The rouge_score implementation ignores numerals by default",
-          "Swapping two numbers preserves the unigram multiset and nearly all bigrams, and n-gram overlap does not encode which number attaches to which clause",
-          "Stemming collapsed the two numeric expressions to the same token",
-          "The F-measure saturates when precision and recall are both high"
-        ],
+        options: ["rouge_score ignores numerals by default", "Swapping numbers keeps the n-grams intact", "Stemming collapsed the two numbers", "The F-measure saturates when both are high"],
         answer: 1,
         why: "The metric compares bags of n-grams, so a rearrangement that keeps the same n-grams is indistinguishable from the original \u2014 which is a structural property rather than an implementation detail. Meaning in a quantitative claim lives in attachment, which n-grams discard. ROUGE-L, being based on longest common subsequence, is order-sensitive and did notice at 0.7222 \u2014 but still ranked the inverted sentence above a correct paraphrase scoring 0.2581." },
 
       { stem: "A harness reports pass@10 computed from n = 10 samples per problem, and every problem the model ever solves scores 1.0. What is happening?",
-        options: [
-          "The model is highly reliable, so ten samples nearly always contain a correct one",
-          "At n = k the estimator returns 1.0 by boundary condition \u2014 drawing all your samples guarantees including any correct one \u2014 so n must substantially exceed k",
-          "The unbiased estimator requires c > 1 and is undefined otherwise",
-          "Temperature is too low, so all ten samples are identical"
-        ],
+        options: ["The model is reliable, so ten nearly always hit", "At n = k it is 1.0 by construction", "The estimator needs c > 1, else undefined", "Low temperature makes all ten samples identical"],
         answer: 1,
         why: "The formula's n \u2212 c < k branch returns 1.0 whenever the number of incorrect samples is smaller than k, which at n = k holds for any c \u2265 1. No estimation occurs. This is why standard harnesses sample 100 or 200 to report pass@10 \u2014 the informative case measured here was n = 100 with c = 5, giving pass@10 = 0.4162, a genuine estimate that ten attempts succeed about 42% of the time." },
 
       { stem: "When is ROUGE a defensible choice despite the failure above?",
-        options: [
-          "Never \u2014 it should be replaced by BERTScore in all cases",
-          "As a relative signal on a frozen task with fixed references, where a drop between versions indicates something broke even though the absolute value means little",
-          "Whenever the reference summaries were written by domain experts",
-          "For any task where recall matters more than precision"
-        ],
+        options: ["Never; always replace it with BERTScore", "As a relative signal on a frozen task", "When experts wrote the reference summaries", "Whenever recall matters more than precision"],
         answer: 1,
         why: "The measured failure concerns open-ended output where many phrasings are correct and surface overlap can reward a wrong answer. On a frozen comparison \u2014 same inputs, same references, version N against N+1 \u2014 it is cheap, deterministic and sensitive to regressions, which satisfies the rule of using the cheapest method that still correlates. The distinction is relative signal versus absolute quality measure, and only the latter is refuted." },
 
       { stem: "Why does pass@k need its sampling temperature reported alongside k and n?",
-        options: [
-          "Because temperature affects the executable tests' pass rate directly",
-          "Because higher temperature raises sample diversity, which typically raises pass@k at large k while lowering pass@1 \u2014 so a single number hides three settings",
-          "Because the unbiased estimator assumes samples are drawn greedily",
-          "Because temperature changes the token count and therefore the cost"
-        ],
+        options: ["Temperature changes the tests' pass rate directly", "It trades pass@1 against pass@k at large k", "The estimator assumes greedy sampling", "Temperature changes token count and cost"],
         answer: 1,
         why: "pass@k is a property of a model and a sampling budget, and diversity is part of that budget: more varied samples make it likelier that at least one of k is correct, while making any single sample less likely to be the model's best guess. Comparisons across papers therefore need matching k, n and temperature. This is the same trade as test-time compute, where self-consistency's benefit depends heavily on how much the samples differ." }
     ]
