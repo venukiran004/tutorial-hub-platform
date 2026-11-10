@@ -21,7 +21,7 @@
 
     blurb: "Data structures and algorithms in Python, taught by pattern: the linear structures and the problems that collapse onto them, tree and graph traversal as two templates, sorting and binary search including search on the answer, recursion through memoisation to tabulation, and how to tell which paradigm a problem wants. The interview bank is part of the course.",
 
-    published: ["1.1", "1.2", "1.3", "2.1", "2.2", "3.1", "3.2", "i1.1"],
+    published: ["1.1", "1.2", "1.3", "1.4", "2.1", "2.2", "3.1", "3.2", "i1.1"],
 
     modules: [
 
