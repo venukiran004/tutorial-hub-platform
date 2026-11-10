@@ -93,7 +93,7 @@ EC.receiveLesson({
 //         Italic nests inside bold. An asterisk meant literally -- *args,
 //         COUNT(*), 2 ** 3 -- goes in backticks, or it is read as markup.
 { t: "ul", items: ["...", "..."] }          // also "ol"
-{ t: "dl", items: [["term", "definition"], ...] }
+{ t: "dl", items: [["term", "definition"], ...] }   // {term, def} and {k, v} items also render
 { t: "table", head: ["A","B"], rows: [["1","2"]], caption: "..." }
 
 { t: "code", lang: "python", title: "filename.py", code: `...`,

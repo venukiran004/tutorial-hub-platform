@@ -10,6 +10,9 @@
       Same ratchet.
    3. NumPy APIs removed in 2.x. Any use fails outright.
    4. An exercise with no solution, no hint or no difficulty fails outright.
+   5. A definition-list item with no readable term and definition fails outright.
+      The renderer accepts [term, def], {term, def} and {k, v}; anything else
+      rendered as a blank row in 151 lessons until November 2026.
 
    Baselines live in .build/quality-baseline.json. When a count falls, run
    `node .build/check-quality.js --update` to lock in the improvement.
@@ -77,6 +80,13 @@ for (const course of fs.readdirSync(path.join(root, "courses")).sort()) {
         const miss = [!(o.solution && (o.solution.code || o.solution.notes)) && "solution",
                       !(o.hint || (o.hints && o.hints.length)) && "hint", !o.difficulty && "difficulty"].filter(Boolean);
         if (miss.length) hard.push(`${path.relative(root, f)}: exercise "${o.title}" has no ${miss.join(", ")}`);
+      }
+      if (o.t === "dl" && Array.isArray(o.items)) {   // a definition the renderer cannot read shows as a blank row
+        const blank = o.items.filter(it => {
+          const pair = Array.isArray(it) ? it : it && [it.term !== undefined ? it.term : it.k, it.def !== undefined ? it.def : it.v];
+          return !pair || !pair[0] || !pair[1];
+        }).length;
+        if (blank) hard.push(`${path.relative(root, f)}: definition list has ${blank} item(s) with no readable term and definition`);
       }
       Object.values(o).forEach(walk);
     })(L.blocks);

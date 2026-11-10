@@ -407,7 +407,8 @@
     p:  function (b) { return "<p>" + inline(b.text) + "</p>"; },
     ul: function (b) { return '<ul class="' + (b.tight ? "tight" : "") + '">' + b.items.map(function (i) { return "<li>" + inline(i) + "</li>"; }).join("") + "</ul>"; },
     ol: function (b) { return '<ol class="' + (b.tight ? "tight" : "") + '">' + b.items.map(function (i) { return "<li>" + inline(i) + "</li>"; }).join("") + "</ol>"; },
-    dl: function (b) { return '<dl class="deflist">' + b.items.map(function (p) { return "<dt>" + inline(p[0]) + "</dt><dd>" + inline(p[1]) + "</dd>"; }).join("") + "</dl>"; },
+    // items are [term, definition] pairs; {term, def} and {k, v} objects are accepted too, since many lessons use them
+    dl: function (b) { return '<dl class="deflist">' + b.items.map(function (p) { var t = Array.isArray(p) ? p : [p.term !== undefined ? p.term : p.k, p.def !== undefined ? p.def : p.v]; return "<dt>" + inline(t[0]) + "</dt><dd>" + inline(t[1]) + "</dd>"; }).join("") + "</dl>"; },
     quote: function (b) { return "<blockquote>" + inline(b.text) + (b.by ? '<br><span style="font-size:13px;color:var(--ink-3)">— ' + inline(b.by) + "</span>" : "") + "</blockquote>"; },
     pills: function (b) { return '<div class="pill-row">' + b.items.map(function (p) { return '<span class="pill">' + inline(p) + "</span>"; }).join("") + "</div>"; },
     /* Display maths. The TeX is emitted between \[ \] as text — note the
