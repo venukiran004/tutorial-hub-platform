@@ -61,8 +61,8 @@ for name, median, sigma in (("engineering task, estimated 6 days", 6, 0.3), ("re
     print(f"  {name:<36} fits {np.mean(d <= 10):5.0%}; 90th percentile {np.percentile(d, 90):5.1f} days")
 
 print("\\n== 2. requirements change while you build: a fixed plan against short iterations ==")
-# 24 weeks of work on 12 features. Each week, every not-yet-built feature has a 4% chance its requirement changes;
-# a feature built to an old requirement must be rebuilt (or is waste).
+# 24 weeks of work on 12 features. Each week, every feature's requirement has a 4% chance of changing, built or not;
+# a feature that no longer matches its requirement at the end must be rebuilt (or is waste).
 def project(iteration_weeks, weeks=24, features=12, p_change=0.04, trials=4_000):
     wasted = []
     for _ in range(trials):
@@ -71,7 +71,7 @@ def project(iteration_weeks, weeks=24, features=12, p_change=0.04, trials=4_000)
         for start in range(0, weeks, iteration_weeks):
             for _ in range(iteration_weeks):
                 spec_version += rng.random(features) < p_change
-            # features finished this iteration were specified at the iteration's start (in a fixed plan, at week 0)
+            # features finished this iteration match the requirement as it stood at the end of it (a fixed plan: week 0)
             done = slice(int(start / iteration_weeks * per_iter), int((start / iteration_weeks + 1) * per_iter))
             built_to[done] = spec_version[done] if iteration_weeks < weeks else 0
         wasted.append(np.mean(built_to != spec_version))
