@@ -54,7 +54,7 @@ EC.receiveLesson({
   --artifact_service_uri="gs://my-agent-artifacts" \\
   --trace_to_cloud \\
   --allow_origins="https://app.example.com" \\
-  --env GEMINI_MODEL=gemini-2.5-pro \\
+  --env GEMINI_MODEL=gemini-4-carbon \\
   my_agent`,
       caption: "`my_agent` is the agent directory — the same layout `adk web` takes. Everything else is the environment around it." },
 

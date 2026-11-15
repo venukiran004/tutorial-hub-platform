@@ -160,9 +160,9 @@ Base the sentiment only on the document, not on the subject matter.
       hl: [19, 20],
       caption: "Two clauses survive the migration and they are the ones doing the work. 2.7's exercise measured that a schema replaces about 57% of a format prompt's clauses — the semantics are the other 43%." },
 
-    { t: "callout", kind: "trap", title: "Every template in the reference is missing the absence clause",
+    { t: "callout", kind: "trap", title: "Most published templates are missing the absence clause",
       body: [
-        { t: "p", text: "Not one of them says what to do when the requested information is not in the document. That is not a criticism of this particular reference — it is almost universally absent from published templates, because templates are written against documents that contain the answer." },
+        { t: "p", text: "Not one of them says what to do when the requested information is not in the document. That is not a criticism of any one source — it is almost universally absent from published templates, because templates are written against documents that contain the answer." },
         { t: "p", text: "The consequence is the one measured in 2.7's incident: a required field with no instruction about absence gets a plausible value, which validates, and nobody notices for weeks. Invoices got due dates thirty days after their issue date that appeared nowhere in the source." },
         { t: "p", text: "Adding one clause — *use null, or say \"not stated\", and do not infer* — is the single highest-value edit you can make to any template in this lesson." }
       ] },

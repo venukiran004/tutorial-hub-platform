@@ -61,7 +61,7 @@ EC.receiveLesson({
   batch=64 T=30 d=100 h=200
     RNN : median    13.2 ms   GRU : median    43.3 ms   LSTM: median    26.4 ms` },
 
-    { t: "callout", kind: "warn", title: "It is commonly said the GRU trains faster. Measured, it is slower.",
+    { t: "callout", kind: "warn", title: "The GRU is commonly said to train faster. Measured, it is slower.",
       body: [{ t: "p", text: "Across three different shapes on CPU with torch 2.10, the GRU took **2.0×, 3.1× and 1.6×** the LSTM's time for a forward and backward pass, despite 25 % fewer parameters. This is not an arithmetic result — it is a kernel-optimisation one: PyTorch's LSTM has a well-tuned fused CPU path and the GRU does not get equivalent treatment. The picture may differ on CUDA, where cuDNN fuses both. The transferable lesson is the one from depthwise convolutions in lesson 2.4: FLOP and parameter counts predict latency poorly, and if speed is your reason for choosing an architecture you must benchmark it on your own hardware and framework version." }] },
 
     { t: "h2", n: "04", text: "What the coupled gate costs", id: "coupling" },

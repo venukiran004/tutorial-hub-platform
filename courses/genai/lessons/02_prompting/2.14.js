@@ -1,11 +1,11 @@
 EC.receiveLesson({
   id: "2.14",
 
-  lede: "1.15 covered what each provider's API accepts. This lesson covers what each provider's *models* were trained to expect, which is a different and less documented thing: Anthropic's models respond to XML tags, OpenAI's reasoning models reject a system prompt entirely, Gemini exposes safety filters that can silently block output. Measured across a realistic prompt, moving to a reasoning model at the same provider changes more than moving to a different provider — **3 of 8 elements survive unchanged against 6**.",
+  lede: "1.15 covered what each provider's API accepts. This lesson covers what each provider's *models* were trained to expect, which is a different and less documented thing: Anthropic's models respond to XML tags and take the system prompt as a parameter, the frontier models at all three providers now reason before they answer and have stopped taking a temperature, and Gemini exposes safety filters that can silently block output. Classified across a realistic prompt written for a 2024 chat model, **only 2 or 3 of its 8 elements survive unchanged** on any of the three hosted frontier APIs — the generation you are moving to matters more than the provider.",
 
   objectives: [
     "Name the prompt-level conventions each major provider's models expect",
-    "Explain why reasoning models reject a system prompt and a temperature",
+    "Explain what a reasoning model no longer accepts from a prompt written for a chat model",
     "Decide what to keep provider-agnostic and what to specialise",
     "Plan a prompt migration between providers",
     "Recognise a convention mismatch from its symptoms"
@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "conventions", text: "Conventions, not capabilities",
       sub: "Three providers, three sets of habits" },
 
-    {"kind": "matrix", "title": "Conventions, not capabilities", "caption": "Every modern model can follow an instruction, use a delimiter and return structured output. What differs is **which form of each it saw most during training**, and models are measurably better at the form they saw most. Two rows here are more than convention: Google's million-token context is a different design point rather than a preference, and its per-category safety thresholds introduce a failure mode the others do not have.", "cols": ["OpenAI", "Anthropic", "Google"], "rows": ["Delimiter", "System prompt", "Structured output", "Reasoning", "Long context", "Safety"], "cells": [["backticks, ###", {"text": "XML tags", "tone": "violet"}, "markdown"], ["a system role", {"text": "a parameter", "tone": "accent"}, "systemInstruction"], ["response_format", {"text": "forced tool use", "tone": "accent"}, "responseSchema"], ["o1/o3, hidden", "thinking, toggled", "a thinking budget"], ["128K", "200K", {"text": "1M+", "tone": "good"}], ["fixed filters", "fixed", {"text": "per category", "tone": "warn"}]], "t": "diagram", "id": "dg-2_14-01-0"},
+    {"kind": "matrix", "title": "Conventions, not capabilities", "caption": "Every modern model can follow an instruction, use a delimiter and return structured output. What differs is **which form of each it saw most during training**, and models are measurably better at the form they saw most. One row here is more than convention: Google's per-category safety thresholds introduce a failure mode the others do not have. And one row has stopped being a difference at all — in 2024 the context windows were 128K, 200K and a million tokens, and by late 2026 all three sit at about a million.", "cols": ["OpenAI", "Anthropic", "Google"], "rows": ["Delimiter", "System prompt", "Structured output", "Reasoning", "Long context", "Safety"], "cells": [["backticks, ###", {"text": "XML tags", "tone": "violet"}, "markdown"], ["instructions", {"text": "a parameter", "tone": "accent"}, "system_instruction"], ["text.format", "output_config", "response_schema"], ["reasoning.effort", "effort", "thinking_level"], ["about 1M", "1M", "about 1M"], ["fixed filters", "fixed", {"text": "per category", "tone": "warn"}]], "t": "diagram", "id": "dg-2_14-01-0"},
 
 
 
@@ -49,27 +49,25 @@ EC.receiveLesson({
       head: ["", "OpenAI", "Anthropic", "Google"],
       rows: [
         ["Preferred delimiter", "Triple backticks, `###`, markdown headings", "**XML-style tags** — `<document>`, `<instructions>`", "Markdown; also handles XML"],
-        ["System prompt", "A `system` role message", "**A separate top-level parameter**, not a message role", "A `systemInstruction` field"],
-        ["Structured output", "`response_format` with a schema (1.8)", "`output_config.format`, or forced tool use", "`responseSchema` in the generation config"],
-        ["Reasoning", "o1/o3 as separate models with hidden tokens (1.10)", "Extended thinking, toggled on a normal model", "A thinking budget on the model"],
-        ["Long context", "128K typical", "200K typical", "**1M+** — a different design point"],
+        ["System prompt", "`instructions` on the Responses API, or a `developer` message", "**A separate top-level `system` parameter**, not a message role", "A `system_instruction` field"],
+        ["Structured output", "`text.format` with a schema (1.8)", "`output_config.format`", "`response_schema` in the generation config"],
+        ["Reasoning", "`reasoning.effort` on the model (1.10)", "Adaptive thinking, steered by `output_config.effort`", "`thinking_level` on the model"],
+        ["Long context", "About 1M tokens", "1M tokens", "About 1M tokens"],
         ["Safety controls", "Fixed filters, `content_filter` finish reason", "Fixed", "**Configurable per category**"]
       ],
-      caption: "The bolded cells are the ones that change how you write the prompt rather than how you call the API." },
+      caption: "As of November 2026. The bolded cells are the ones that change how you write the prompt rather than how you call the API." },
 
     { t: "callout", kind: "insight", title: "Anthropic's system prompt is not a message",
       body: [
-        { t: "p", text: "On OpenAI you put the system prompt in the `messages` array with a `system` role. On Anthropic it is a `system` parameter on the request, outside the conversation entirely. A naive port that sends a system-role message to Anthropic gets an error — or, depending on the client library, gets it silently converted into a user turn, which is worse because it runs." },
+        { t: "p", text: "On Chat Completions you put the system prompt in the `messages` array with a `system` role. On Anthropic it is a `system` parameter on the request, outside the conversation entirely. A naive port that sends a system-role message to Anthropic gets an error — or, depending on the client library, gets it silently converted into a user turn, which is worse because it runs." },
         { t: "p", text: "The consequence when it silently converts: your instructions become an ordinary user message, so they carry no more weight than anything else in the conversation and are far easier to override (2.16). The model still mostly behaves, which is why this ships." },
         { t: "p", text: "This is the same class of problem as 1.15's silently-dropped parameters, and the same defence applies: an abstraction must fail loudly on a shape it cannot honour." }
       ] },
 
-    { t: "h2", n: "02", id: "reasoning-models", text: "Reasoning models reject half your prompt",
-      sub: "No system message, no temperature, and a different role name" },
+    { t: "h2", n: "02", id: "reasoning-models", text: "Reasoning models reject half your old prompt",
+      sub: "No temperature, no prefill, a different output cap — at every provider now" },
 
-    {"kind": "flow", "title": "A reasoning model rejects the prompt you spent 2.3 learning to write", "caption": "o1 and o3 are the sharpest break from the usual conventions: **no system prompt, no temperature**, and a `developer` role where `system` used to go. The prompting consequence runs deeper than the API shape — these models are trained to do their own decomposition, so walking them through steps is at best redundant and at worst **constrains a search they would have done better unaided**. The structured chain-of-thought of 2.3 is a technique to drop here, not to port.", "cols": 3, "nodes": [{"id": "s", "label": "No system prompt", "sub": "a developer role instead", "tone": "warn"}, {"id": "t", "label": "No temperature", "sub": "the parameter is rejected", "tone": "warn"}, {"id": "d", "label": "It decomposes on its own", "sub": "that is what it was trained for", "tone": "violet"}, {"id": "c", "label": "So your step-by-step prompt", "sub": "2.3's structured CoT", "tone": "accent"}, {"id": "r", "label": "Is redundant at best", "sub": "and constraining at worst", "tone": "crit"}, {"id": "g", "label": "Give it the goal, not the method", "sub": "the whole adaptation", "tone": "good"}], "edges": [["s", "d"], ["t", "d"], ["d", "c"], ["c", "r"], ["r", "g"]], "t": "diagram", "id": "dg-2_14-02-1"},
-
-
+    {"kind": "flow", "title": "A reasoning model rejects the prompt you spent 2.3 learning to write", "caption": "What began as a quirk of one model family now describes the frontier models at all three providers: **instructions move out of the `system` message, and the temperature goes** — rejected by Claude, ignored by Gemini. The prompting consequence runs deeper than the API shape — these models are trained to do their own decomposition, so walking them through steps is at best redundant and at worst **constrains a search they would have done better unaided**. The structured chain-of-thought of 2.3 is a technique to drop here, not to port.", "cols": 3, "nodes": [{"id": "s", "label": "Instructions move", "sub": "a parameter, or a developer role", "tone": "warn"}, {"id": "t", "label": "No temperature", "sub": "rejected, or ignored", "tone": "warn"}, {"id": "d", "label": "It decomposes on its own", "sub": "that is what it was trained for", "tone": "violet"}, {"id": "c", "label": "So your step-by-step prompt", "sub": "2.3's structured CoT", "tone": "accent"}, {"id": "r", "label": "Is redundant at best", "sub": "and constraining at worst", "tone": "crit"}, {"id": "g", "label": "Give it the goal, not the method", "sub": "the whole adaptation", "tone": "good"}], "edges": [["s", "d"], ["t", "d"], ["d", "c"], ["c", "r"], ["r", "g"]], "t": "diagram", "id": "dg-2_14-02-1"},
 
 
 
@@ -92,35 +90,37 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "OpenAI's o1 and o3 are the sharpest break from the usual conventions, and the differences are concrete: no system prompt, no temperature, and a `developer` role in place of `system` for instructions." },
 
-    { t: "code", lang: "python", title: "reasoning.py — what does and does not port", code: `# A normal chat request
-normal = dict(
-    model="gpt-4o",
+
+    { t: "p", text: "This started as a quirk of one model family — OpenAI's o1 took no system message and no temperature — and by late 2026 it describes the frontier models at all three providers. The differences are concrete. Instructions go in a parameter or a `developer` message rather than a `system` one. The sampling parameters are rejected on Claude and ignored on Gemini (1.15). A prefilled assistant turn, once the standard trick for steering an answer's first words, is refused. And the output cap has to cover the reasoning as well as the answer (1.10)." },
+
+    { t: "code", lang: "python", title: "reasoning.py — what does and does not port", code: `# A request written for a 2024 chat model, on Chat Completions
+legacy = dict(
+    model="gpt-4o",                       # switched off in January 2027
     messages=[{"role": "system", "content": INSTRUCTIONS},
               {"role": "user", "content": question}],
     temperature=0.2,
     max_tokens=800,
 )
 
-# The same intent on a reasoning model
-reasoning = dict(
-    model="o4-mini",
-    messages=[{"role": "developer", "content": INSTRUCTIONS},   # not "system"
-              {"role": "user", "content": question}],
-    # temperature: rejected -- the model controls its own sampling
-    max_completion_tokens=16_000,        # covers reasoning AND answer (1.10)
-    reasoning_effort="medium",
+# The same intent on a current reasoning model, on the Responses API
+current = dict(
+    model="gpt-6.1-sol",
+    instructions=INSTRUCTIONS,            # a parameter, not a message
+    input=question,
+    # temperature: do not carry it over -- depth is the control now (1.15)
+    reasoning={"effort": "medium"},
+    max_output_tokens=16_000,             # covers reasoning AND answer (1.10)
 )`,
-      hl: [12, 14, 15],
-      caption: "Three changes, and the third is the one that produces empty responses if carried over unexamined — 1.10's incident was exactly this migration done by renaming one parameter." },
+      hl: [13, 16, 17],
+      caption: "Three changes, and the third is the one that produces empty responses if carried over unexamined — 1.10's incident was exactly this migration done by renaming one parameter. On Claude the same three are the `system` parameter, `output_config.effort` and a `max_tokens` large enough to cover the thinking; on Gemini, `system_instruction`, `thinking_level` and `max_output_tokens`." },
 
     { t: "p", text: "There is a prompting consequence too, beyond the API shape. Reasoning models are trained to do their own decomposition, so a prompt that walks them through steps — structured chain-of-thought from 2.3 — is at best redundant and at worst constrains a search they would have done better unaided." },
 
     { t: "callout", kind: "trap", title: "Chain-of-thought prompting on a reasoning model is usually counterproductive",
       body: [
         { t: "p", text: "\"Let's think step by step\" and a five-step structured procedure both tell a reasoning model how to reason, when reasoning is the thing it was trained to do on its own. You pay for the tokens and you narrow its search." },
-        { t: "p", text: "The heuristic: on a normal model, tell it *how*. On a reasoning model, tell it *what* and how you will judge the answer. 1.10's decision table is the fuller version, and its first row is the one to remember — for extraction and classification, do not use a reasoning model at all." }
+        { t: "p", text: "The heuristic: on a normal model, tell it *how*. On a reasoning model, tell it *what* and how you will judge the answer. 1.10's decision table is the fuller version, and its first row is the one to remember — for extraction and classification, use a small model at the lowest effort it offers, because there is nothing to search for." }
       ] },
 
     { t: "h2", n: "03", id: "xml", text: "XML tags on Anthropic models",
@@ -197,20 +197,26 @@ Three bullets, each naming one decision and who made it.
 
     { t: "p", text: "Gemini exposes safety settings per harm category, each with a blocking threshold. That is genuinely useful — a medical or security application can loosen categories that would otherwise block legitimate content — and it introduces a failure that does not exist elsewhere: a response blocked by a threshold you configured, returning a finish reason rather than content." },
 
-    { t: "code", lang: "python", title: "safety.py", code: `resp = model.generate_content(prompt, safety_settings=SETTINGS)
+    { t: "code", lang: "python", title: "safety.py", code: `from google import genai
+from google.genai import types
+
+client = genai.Client()
+resp = client.models.generate_content(
+    model="gemini-3.8-flash", contents=prompt,
+    config=types.GenerateContentConfig(safety_settings=SETTINGS))
 
 if not resp.candidates:
     # blocked at the prompt level -- nothing was generated
     raise PromptBlocked(resp.prompt_feedback.block_reason)
 
 cand = resp.candidates[0]
-if cand.finish_reason.name == "SAFETY":
+if cand.finish_reason == types.FinishReason.SAFETY:
     # generated, then blocked -- you may have partial text
     raise ResponseBlocked([r for r in cand.safety_ratings if r.blocked])
 
-text = cand.content.parts[0].text`,
-      hl: [3, 4, 8, 9],
-      caption: "Two distinct blocks — prompt-level and response-level — with different shapes in the response object. Code that reads `resp.text` directly raises an unhelpful exception on both." },
+text = resp.text`,
+      hl: [9, 10, 11, 14, 15, 16],
+      caption: "Two distinct blocks — prompt-level and response-level — with different shapes in the response object. Code that reads `resp.text` without these checks gets `None` on both, not an exception, so the failure surfaces a few lines later as an `AttributeError` or as an empty answer shown to a user." },
 
     { t: "callout", kind: "warn", title: "Loosening a safety category is a decision with an owner",
       body: [
@@ -221,7 +227,7 @@ text = cand.content.parts[0].text`,
     { t: "h2", n: "05", id: "portability", text: "What to keep portable",
       sub: "Specification travels; mechanism does not" },
 
-    {"kind": "matrix", "title": "What to keep portable, and what to specialise", "caption": "The split is clean: **the task specification is portable and the mechanism is not**. Instruction, context, output requirements and field semantics say nothing about a provider and are most of the prompt. The three specialise rows are API shapes that belong in the client layer rather than in prompt text. And the operational version of all this is 1.15's warning — a prompt that appears to port cleanly may be silently losing a parameter, a system-prompt privilege or a safety configuration, and only an evaluation surfaces it.", "cols": ["Verdict", "Because"], "rows": ["The task specification", "XML delimiters", "System-prompt mechanism", "Structured output", "Reasoning instructions"], "cells": [[{"text": "portable", "tone": "good"}, "it says nothing about a provider"], [{"text": "portable", "tone": "good"}, "helps most on one, hurts nowhere"], [{"text": "specialise", "tone": "warn"}, "a role, a parameter, or developer"], [{"text": "specialise", "tone": "warn"}, "same intent, three implementations"], [{"text": "specialise", "tone": "warn"}, "present on one model, harmful on another"]], "t": "diagram", "id": "dg-2_14-05-4"},
+    {"kind": "matrix", "title": "What to keep portable, and what to specialise", "caption": "The split is clean: **the task specification is portable and the mechanism is not**. Instruction, context, output requirements and field semantics say nothing about a provider and are most of the prompt. The three specialise rows are API shapes that belong in the client layer rather than in prompt text. And the operational version of all this is 1.15's warning — a prompt that appears to port cleanly may be silently losing a parameter, a system-prompt privilege or a safety configuration, and only an evaluation surfaces it.", "cols": ["Verdict", "Because"], "rows": ["The task specification", "XML delimiters", "System-prompt mechanism", "Structured output", "Reasoning instructions"], "cells": [[{"text": "portable", "tone": "good"}, "it says nothing about a provider"], [{"text": "portable", "tone": "good"}, "helps most on one, hurts nowhere"], [{"text": "specialise", "tone": "warn"}, "a role, a parameter, or developer"], [{"text": "specialise", "tone": "warn"}, "same intent, three implementations"], [{"text": "specialise", "tone": "warn"}, "helps a chat model, hurts a reasoning one"]], "t": "diagram", "id": "dg-2_14-05-4"},
 
 
 
@@ -250,8 +256,8 @@ text = cand.content.parts[0].text`,
       ["Portable: the task specification", "Instruction, context, output requirements, the semantics of every field. This is most of the prompt and it says nothing about a provider."],
       ["Portable: XML delimiters", "They help most on Anthropic and hurt nowhere, so there is no reason to vary them."],
       ["Specialise: the system-prompt mechanism", "A message role, a parameter, or a `developer` role. This is an API shape rather than prompt content, and it belongs in the client layer."],
-      ["Specialise: structured output", "`response_format` against `output_config.format` against `responseSchema`. Same intent, three implementations (1.8)."],
-      ["Specialise: reasoning instructions", "Explicit chain-of-thought on a normal model, and its absence on a reasoning one."]
+      ["Specialise: structured output", "`text.format` against `output_config.format` against `response_schema`. Same intent, three implementations (1.8)."],
+      ["Specialise: reasoning instructions", "Explicit chain-of-thought on a chat model — which today mostly means an open-weight one — and its absence on a reasoning model."]
     ] },
 
     { t: "p", text: "The advice — test the same prompt across providers before committing — is the operational version of this, and 1.15's warning is the reason it matters: a prompt that appears to port cleanly may be silently losing a parameter, a system-prompt privilege or a safety configuration, and the only thing that surfaces it is an evaluation run on the target." },
@@ -265,11 +271,11 @@ text = cand.content.parts[0].text`,
       requirements: [
         "Write a realistic prompt with a system message, XML delimiters, a schema request and a chain-of-thought instruction",
         "For each element, record whether it ports unchanged, needs a mechanism change, or must be removed per target",
-        "Report the count of each category for OpenAI chat, OpenAI reasoning, Anthropic and Gemini",
-        "Identify which target requires the most changes and which element is hardest to port",
+        "Report the count of each category for an open-weight server, OpenAI's Responses API, Anthropic and Gemini",
+        "Identify which targets require the most changes and which elements need attention on every hosted one",
         "State one element you would remove entirely rather than port"
       ],
-      hint: "Three categories: unchanged, mechanism change, remove. A chain-of-thought instruction is the interesting one — it ports to three of the four targets and should be removed on the fourth.",
+      hint: "Three categories: unchanged, mechanism change, remove. A chain-of-thought instruction is the interesting one — nothing rejects it, and it should still come out on every target whose model reasons on its own.",
       solution: { lang: "python", title: "g214_ex.py",
         code: `ELEMENTS = [
     "system prompt (role/instructions)",
@@ -282,13 +288,14 @@ text = cand.content.parts[0].text`,
     "stop sequence",
 ]
 
+# The prompt was written for a 2024 chat model on Chat Completions.
 # "same" = ports unchanged, "mech" = same intent, different mechanism,
-# "drop" = must be removed on this target
+# "drop" = take it out: rejected, ignored or counterproductive on this target
 MATRIX = {
-    "openai-chat": ["same", "same", "same", "same", "mech", "same", "same", "same"],
-    "openai-o":    ["mech", "same", "same", "drop", "mech", "drop", "mech", "same"],
-    "anthropic":   ["mech", "same", "same", "same", "mech", "same", "same", "same"],
-    "gemini":      ["mech", "same", "same", "same", "mech", "same", "mech", "same"],
+    "open-weight":  ["same", "same", "same", "same", "same", "same", "same", "same"],
+    "openai":       ["mech", "same", "same", "drop", "mech", "same", "mech", "drop"],
+    "anthropic":    ["mech", "same", "same", "drop", "mech", "drop", "mech", "mech"],
+    "gemini":       ["mech", "same", "same", "drop", "mech", "drop", "mech", "mech"],
 }
 
 print("%-38s %s" % ("element", "  ".join("%-12s" % t for t in MATRIX)))
@@ -301,29 +308,37 @@ for target, row in MATRIX.items():
           % (target, row.count("same"), row.count("mech"), row.count("drop")))
 
 print()
-hardest = max(range(len(ELEMENTS)),
-              key=lambda i: sum(MATRIX[t][i] != "same" for t in MATRIX))
-print("least portable element: %r" % ELEMENTS[hardest])`,
-        out: `element                                openai-chat   openai-o      anthropic     gemini
+touched = [el for i, el in enumerate(ELEMENTS)
+           if all(MATRIX[t][i] != "same" for t in MATRIX if t != "open-weight")]
+print("%d of %d elements need attention on every hosted target:" % (len(touched), len(ELEMENTS)))
+for el in touched:
+    print("  " + el)`,
+        out: `element                                open-weight   openai        anthropic     gemini
 system prompt (role/instructions)      same          mech          mech          mech
 XML delimiters around the document     same          same          same          same
 few-shot examples                      same          same          same          same
-explicit chain-of-thought instruction  same          drop          same          same
-JSON schema for the output             mech          mech          mech          mech
-temperature=0.2                        same          drop          same          same
-max_tokens=800                         same          mech          same          mech
-stop sequence                          same          same          same          same
+explicit chain-of-thought instruction  same          drop          drop          drop
+JSON schema for the output             same          mech          mech          mech
+temperature=0.2                        same          same          drop          drop
+max_tokens=800                         same          mech          mech          mech
+stop sequence                          same          drop          mech          mech
 
-openai-chat   unchanged 7, mechanism 1, removed 0
-openai-o      unchanged 3, mechanism 3, removed 2
-anthropic     unchanged 6, mechanism 2, removed 0
-gemini        unchanged 5, mechanism 3, removed 0
+open-weight   unchanged 8, mechanism 0, removed 0
+openai        unchanged 3, mechanism 3, removed 2
+anthropic     unchanged 2, mechanism 4, removed 2
+gemini        unchanged 2, mechanism 4, removed 2
 
-least portable element: 'JSON schema for the output'`,
+5 of 8 elements need attention on every hosted target:
+  system prompt (role/instructions)
+  explicit chain-of-thought instruction
+  JSON schema for the output
+  max_tokens=800
+  stop sequence`,
         notes: [
-          { t: "p", text: "The reasoning model is by far the hardest target — **3 unchanged of 8**, against 6 for Anthropic and 5 for Gemini. That is worth knowing before anyone proposes it as \"just a model swap\": moving between model *classes* at the same provider is a bigger change than moving between providers at the same tier, which is exactly the surprise in 1.10's incident." },
-          { t: "p", text: "The least portable element is the schema, which needs a mechanism change on **all four** targets. That is not a portability problem in the usual sense, because the intent survives perfectly and only the call shape differs; it is an argument for putting structured output behind an interface in the client layer and never in the prompt text." },
-          { t: "p", text: "The element I would remove rather than port is the **explicit chain-of-thought instruction**. It is marked `drop` only on the reasoning model, but on the other three it is a quality question rather than a compatibility one: 2.3 showed it costs up to 90× on output and does nothing for extraction or classification. A migration is a good moment to ask whether an instruction is earning its place rather than mechanically carrying it across." }
+          { t: "p", text: "Every hosted target keeps **2 or 3 of 8** unchanged, and the open-weight server keeps all eight because it still speaks the dialect the prompt was written in. That is worth knowing before anyone proposes a move to a current model as \"just a model swap\": the three hosted columns resemble each other far more than any of them resembles the first, so the generation you are moving to matters more than the provider — which is exactly the surprise in 1.10's incident." },
+          { t: "p", text: "The rows are the November 2026 position, and three of them deserve a note. `temperature` is `same` on OpenAI only because the Responses API still lists the parameter; whether a given model honours it is on its model page. The stop sequence is `drop` there because that API has no stop parameter at all (1.6). And `max_tokens` is `mech` everywhere hosted for the same reason: the cap now has to cover the reasoning, so carrying 800 across produces truncated or empty answers." },
+          { t: "p", text: "Five elements need attention on every hosted target, and the schema is the cleanest case: the intent survives perfectly and only the call shape differs. That is not a portability problem in the usual sense; it is an argument for putting structured output behind an interface in the client layer and never in the prompt text." },
+          { t: "p", text: "The element I would remove rather than port is the **explicit chain-of-thought instruction**. No API rejects it — it is `drop` on the hosted targets because their models reason on their own, and on the open-weight one it is a quality question rather than a compatibility one: 2.3 showed it costs up to 90× on output and does nothing for extraction or classification. A migration is a good moment to ask whether an instruction is earning its place rather than mechanically carrying it across." }
         ] } },
 
     { t: "callout", kind: "scenario", title: "Incident: the system prompt that became a user message",
@@ -338,15 +353,15 @@ least portable element: 'JSON schema for the output'`,
   takeaways: [
     "Provider differences at the prompt level are **conventions, not capabilities** — every modern model can follow an instruction and use a delimiter. Models are better at the form they saw most.",
     "**Anthropic's system prompt is a top-level parameter, not a message role.** A shim that silently converts it to a user turn produces a deployment with no instruction hierarchy at all.",
-    "**Reasoning models reject a system role and a temperature**, use `developer` for instructions, and cap reasoning plus answer together with `max_completion_tokens` (1.10).",
+    "**The frontier models at all three providers are reasoning models now**: no temperature on Claude or Gemini, no prefilled assistant turn, instructions in a parameter or a `developer` message, and an output cap that covers reasoning plus answer (1.10).",
     "**Chain-of-thought prompting on a reasoning model is usually counterproductive** — it tells the model how to do the thing it was trained to do unaided, costing tokens and narrowing its search.",
-    "The heuristic: on a normal model tell it *how*; on a reasoning model tell it *what*, and how you will judge the answer.",
+    "The heuristic: on a chat model tell it *how*; on a reasoning model tell it *what*, and how you will judge the answer.",
     "**XML tags help most on Anthropic and hurt nowhere**, which makes them a rare convention that is safe to standardise on.",
     "**Gemini's configurable safety filters** are a real capability and a distinct failure mode: two kinds of block, prompt-level and response-level, with different shapes in the response object.",
     "Leaving thresholds strict in a domain where legitimate content trips them produces intermittent blocks that look like flakiness and get debugged as prompt problems.",
     "Keep the **task specification** and delimiters portable; specialise the **system-prompt mechanism**, **structured output** and **reasoning instructions**.",
-    "Measured across four targets, the **reasoning model is much the hardest: 3 of 8 elements unchanged**, against 6 for Anthropic and 5 for Gemini. **Moving model class is a bigger change than moving provider.**",
-    "The least portable element is the **schema**, needing a mechanism change on all four targets — an argument for putting structured output behind a client-layer interface and never in prompt text."
+    "Classified across four targets, a 2024 chat prompt keeps **2 or 3 of its 8 elements** on each hosted frontier API and all 8 on an open-weight server. **The generation you move to matters more than the provider.**",
+    "Five of the eight elements need attention on every hosted target. The **schema** is the cleanest case — same intent, three call shapes — which is the argument for putting structured output behind a client-layer interface and never in prompt text."
   ],
 
   quiz: {
@@ -357,32 +372,32 @@ least portable element: 'JSON schema for the output'`,
         answer: 1,
         why: "Anthropic takes the system prompt as a top-level parameter, so a message-role entry converted to a user turn arrives with no more authority than anything else in the conversation — the instruction hierarchy that makes injection harder is simply absent. It is especially dangerous because it works: quality looks comparable and nothing in the logs distinguishes the two, so it only surfaces under adversarial input. The request succeeds, which is the problem, and token cost is unchanged." },
 
-      { stem: "You move a prompt from GPT-4o to o4-mini. Which elements must be removed rather than adapted?",
+      { stem: "You move a prompt written for a 2024 chat model to a current Claude model. Which elements must be removed rather than adapted?",
         options: ["The XML delimiters around input", "The CoT instruction and temperature", "The few-shot examples and labels", "The stop sequence at the end"],
         answer: 1,
-        why: "Reasoning models control their own sampling, so temperature is rejected outright, and step-by-step instructions tell the model how to do the thing it was trained to do unaided — costing tokens and narrowing its search. Delimiters, examples and stop sequences all port unchanged. Measured across the elements, the reasoning model kept only 3 of 8 unchanged, which is why this is a bigger migration than changing provider." },
+        why: "Current Claude models reject a temperature with a 400, and step-by-step instructions tell a reasoning model how to do the thing it was trained to do unaided — costing tokens and narrowing its search. Delimiters and examples port unchanged, and the stop sequence is adapted rather than removed: the parameter is called `stop_sequences` there. Classified across the eight elements, this target kept only 2 unchanged, which is why moving generation is a bigger migration than changing provider." },
 
       { stem: "Which prompt element needs a mechanism change on every provider?",
         options: ["The system prompt text", "The few-shot examples", "The JSON output schema", "The XML delimiters"],
         answer: 2,
-        why: "Structured output is `response_format` on OpenAI, `output_config.format` or forced tool use on Anthropic and `responseSchema` on Gemini — same intent, three call shapes, and a mechanism change on all four targets measured. That is an argument for putting it behind a client-layer interface rather than expressing it in the prompt. The system prompt ports unchanged on OpenAI chat; examples and XML delimiters port everywhere." },
+        why: "Structured output is `text.format` on OpenAI's Responses API, `output_config.format` on Anthropic and `response_schema` on Gemini — same intent, three call shapes, and a mechanism change on every hosted target classified. That is an argument for putting it behind a client-layer interface rather than expressing it in the prompt. The system prompt's text ports everywhere even though the field it travels in changes; examples and XML delimiters port unchanged." },
 
       { stem: "A Gemini deployment intermittently returns no content for clinical text. What is the likely cause?",
         options: ["Context window overflow", "A safety threshold misfiring", "The model is overloaded", "Temperature is too high"],
         answer: 1,
-        why: "Gemini's safety filters are configurable per category with a blocking threshold, and domains like clinical text, security research and legal discovery routinely trip defaults — producing a response with no candidates or a `SAFETY` finish reason rather than text. The intermittent pattern and the domain specificity are both characteristic. Code that reads `resp.text` directly raises an unhelpful exception on both block shapes, which is why this gets debugged as flakiness. Overflow produces truncation, not absence, and temperature does not cause blocks." }
+        why: "Gemini's safety filters are configurable per category with a blocking threshold, and domains like clinical text, security research and legal discovery routinely trip defaults — producing a response with no candidates or a `SAFETY` finish reason rather than text. The intermittent pattern and the domain specificity are both characteristic. Code that reads `resp.text` directly gets `None` on both block shapes rather than an error, which is why this gets debugged as flakiness. Overflow produces truncation, not absence, and temperature does not cause blocks." }
     ]
   },
 
   interview: {
     title: "In an interview",
-    sub: "The Q8. A strong answer separates API shape from prompt content, because they migrate differently.",
+    sub: "A strong answer separates API shape from prompt content, because they migrate differently.",
     questions: [
       { level: "core",
         q: "What differs when prompting OpenAI, Anthropic and Google models?",
         strong: "A strong answer names specific conventions and distinguishes them from capabilities.",
         answer: [
-          { t: "p", text: "Mostly conventions rather than capabilities — they can all follow instructions and use delimiters, but each is better at the form it saw most in training. Anthropic's models respond well to XML tags and take the system prompt as a top-level parameter rather than a message role. OpenAI uses a system message and `response_format` for schemas. Gemini has a much larger context window and configurable safety filters per category." },
+          { t: "p", text: "Mostly conventions rather than capabilities — they can all follow instructions and use delimiters, but each is better at the form it saw most in training. Anthropic's models respond well to XML tags and take the system prompt as a top-level parameter rather than a message role. OpenAI takes instructions as a parameter on the Responses API and schemas through `text.format`. Gemini has safety filters that are configurable per category. Context length used to be on this list and no longer is — all three are at about a million tokens." },
           { t: "p", text: "The one I would flag as a trap is Anthropic's system prompt, because a compatibility shim that converts a system message to a user turn does not error — it works, quality looks fine, and you have silently shipped a deployment with no instruction hierarchy. That only surfaces under adversarial input." },
           { t: "p", text: "XML tags are the happy case: they help most on Anthropic and hurt nowhere, so they are safe to standardise on across providers." }
         ] },
@@ -391,9 +406,9 @@ least portable element: 'JSON schema for the output'`,
         q: "How different is prompting a reasoning model?",
         strong: "A strong answer covers both the API shape and the prompting consequence, and knows it is a bigger change than a provider switch.",
         answer: [
-          { t: "p", text: "Different enough that it is a bigger change than switching provider. No system role — instructions go in a `developer` message. No temperature, because the model controls its own sampling. And `max_completion_tokens` covers reasoning and answer together, which is the one that produces empty responses if you carry the old value across." },
-          { t: "p", text: "I classified a realistic prompt across four targets once: a reasoning model kept 3 of 8 elements unchanged, where Anthropic kept 6 and Gemini 5. So the intuition that a model swap is smaller than a provider swap is backwards here." },
-          { t: "p", text: "The prompting consequence matters as much as the API shape: explicit chain-of-thought is usually counterproductive, because you are telling it how to do the thing it was trained to do unaided. State the goal and the constraints and stop. And for extraction or classification, do not use a reasoning model at all — there is no search to perform and it costs 10 to 100× in hidden tokens." }
+          { t: "p", text: "Different enough that it is a bigger change than switching provider — and since the frontier models at all three providers are reasoning models now, it is the change most migrations actually are. Instructions go in a parameter or a `developer` message. Temperature goes: Claude rejects it and Gemini ignores it. A prefilled assistant turn is refused. And the output cap covers reasoning and answer together, which is the one that produces empty responses if you carry the old value across." },
+          { t: "p", text: "I classified a realistic 2024-era prompt across four targets once: each hosted frontier API kept 2 or 3 of 8 elements unchanged, where an open-weight server kept all 8. So the intuition that a model swap is smaller than a provider swap is backwards here." },
+          { t: "p", text: "The prompting consequence matters as much as the API shape: explicit chain-of-thought is usually counterproductive, because you are telling it how to do the thing it was trained to do unaided. State the goal and the constraints and stop. And for extraction or classification, use a small model at its lowest effort — there is no search to perform, and reasoning tokens are billed as output." }
         ] },
 
       { level: "core",

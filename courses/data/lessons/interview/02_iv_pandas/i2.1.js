@@ -268,7 +268,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "df[\"col\"].apply(lambda x: x * 2)          # Apply to each element of Series\ndf.apply(lambda row: row[\"a\"] + row[\"b\"], axis=1)  # Apply to each row\ndf.applymap(lambda x: x.strip())          # Element-wise on whole DataFrame (Pandas < 2.1)\ndf.map(lambda x: x.strip())               # Element-wise (Pandas 2.1+)"
+     "code": "df[\"col\"].apply(lambda x: x * 2)          # Apply to each element of Series\ndf.apply(lambda row: row[\"a\"] + row[\"b\"], axis=1)  # Apply to each row\ndf.map(lambda x: x.strip())               # Element-wise on whole DataFrame (Pandas < 2.1)\ndf.map(lambda x: x.strip())               # Element-wise (Pandas 2.1+)"
     }
    ],
    "kind": ""

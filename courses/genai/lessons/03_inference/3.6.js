@@ -251,7 +251,7 @@ def speculative(K):
       hl: [4],
       caption: "The best case is 1.13×. At K=8 the method costs more than it saves. Both facts follow from one number: the draft is only 2.85× smaller." },
 
-    { t: "callout", kind: "warn", title: "It is commonly said \"up to 2–3×\" and does not say what that assumes",
+    { t: "callout", kind: "warn", title: "The usual claim is \"up to 2–3×\", and it does not say what that assumes",
       body: [
         { t: "p", text: "The section on this carries the line *\"Speedup: Up to 2-3x (depends on acceptance rate)\"*. That is achievable, and it is not reachable with the pair I used — I got 1.13×. The missing premise is the draft's *size*, not the acceptance rate." },
         { t: "p", text: "Production pairs are 10–20× apart: Llama-2 7B drafting for 70B, or a 1B drafting for a 13B. At a 20× ratio `c = 0.05`, and my measured acceptance of 0.417 would give `(1 + 0.417×4) / (4×0.05 + 1) = 2.23×` — in the advertised range, from the same acceptance rate that produced 1.13× with my draft." },

@@ -21,7 +21,7 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "A path is not a string", id: "paths-are-objects" },
 
-    {"kind": "trace", "title": "One path object, nine answers, and no string slicing", "caption": "**Treat a path as a string and you take responsibility for its structure — separators, duplicates, trailing slashes, platform differences — and the wrongness usually only appears on the other operating system.** `Path` models the structure instead: **`/` joins with the correct separator, and the parts you would otherwise parse out are attributes.** The two rows worth noticing are `suffix` and `suffixes`: **`.gz` alone, or `['.tar', '.gz']` for the pair** — which is the distinction a `rsplit(\".\")` gets wrong on `orders.tar.gz`.", "left": "what you read", "codeW": 150, "vars": ["value"], "steps": [{"code": "base / '2024-06' / 'orders.tar.gz'", "state": ["/srv/app/data/2024-06/orders.tar.gz"], "tone": "good"}, {"code": "p.name / p.stem", "state": ["orders.tar.gz / orders.tar"], "changed": [0], "tone": "good"}, {"code": "p.suffix / p.suffixes", "state": [".gz / ['.tar', '.gz']"], "changed": [0], "tone": "violet"}, {"code": "p.parent / p.parts", "state": ["the directory / a tuple of components"], "changed": [0], "tone": "good"}, {"code": "p.with_suffix('.json')", "state": ["...2024-06/orders.json"], "changed": [0], "tone": "good"}, {"code": "p.with_name('audit.csv')", "state": ["...2024-06/audit.csv"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-7_1-01-0"},
+    {"kind": "trace", "title": "One path object, nine answers, and no string slicing", "caption": "**Treat a path as a string and you take responsibility for its structure — separators, duplicates, trailing slashes, platform differences — and the wrongness usually only appears on the other operating system.** `Path` models the structure instead: **`/` joins with the correct separator, and the parts you would otherwise parse out are attributes.** The two rows worth noticing are `suffix` and `suffixes`: **`.gz` alone, or `['.tar', '.gz']` for the pair** — which is the distinction a `rsplit(\".\")` gets wrong on `orders.tar.gz`.", "left": "what you read", "codeW": 150, "vars": ["value"], "steps": [{"code": "base / '2024-06' / 'orders.tar.gz'", "state": ["/srv/app/data/2024-06/orders.tar.gz"], "tone": "good"}, {"code": "p.name / p.stem", "state": ["orders.tar.gz / orders.tar"], "changed": [0], "tone": "good"}, {"code": "p.suffix / p.suffixes", "state": [".gz / ['.tar', '.gz']"], "changed": [0], "tone": "violet"}, {"code": "p.parent / p.parts", "state": ["the directory / a tuple of components"], "changed": [0], "tone": "good"}, {"code": "p.with_suffix('.json')", "state": ["...06/orders.tar.json"], "changed": [0], "tone": "good"}, {"code": "p.with_name('audit.csv')", "state": ["...2024-06/audit.csv"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-7_1-01-0"},
 
 
 
@@ -79,9 +79,9 @@ orders.tar
 ['.tar', '.gz']
 /srv/app/data/2024-06
 ('/', 'srv', 'app', 'data', '2024-06', 'orders.tar.gz')
-/srv/app/data/2024-06/orders.json
+/srv/app/data/2024-06/orders.tar.json
 /srv/app/data/2024-06/audit.csv`,
-      caption: "Note `suffix` versus `suffixes`. `with_suffix` replaces only the last one, which is why `orders.tar.gz` becomes `orders.json` and not `orders.tar.json`."
+      caption: "Note `suffix` versus `suffixes`. `with_suffix` replaces only the last one, which is why `orders.tar.gz` becomes `orders.tar.json` and not `orders.json` — to swap a compound suffix, strip both with `with_name` or apply `with_suffix(\"\")` first."
     },
 
     { t: "table",

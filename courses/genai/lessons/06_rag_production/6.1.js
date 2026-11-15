@@ -159,7 +159,7 @@ def ndcg_at_k(ranked, rel, k):
 
 
 
-    { t: "p", text: "The reference is specific: optimise recall first, then *\u201cMRR / nDCG next \u2014 once it\u2019s in the set, are you ranking it to the top? This is exactly what **reranking** moves.\u201d* That is a falsifiable claim about which metrics a cross-encoder improves." },
+    { t: "p", text: "The standard advice is specific: optimise recall first, then *\u201cMRR / nDCG next \u2014 once it\u2019s in the set, are you ranking it to the top? This is exactly what **reranking** moves.\u201d* That is a falsifiable claim about which metrics a cross-encoder improves." },
 
     { t: "code", lang: "python", title: "g61.py \u2014 the same re-ranker on two first stages", code: `ce = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", max_length=512)
 

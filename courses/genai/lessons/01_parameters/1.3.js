@@ -205,7 +205,7 @@ top_p=0.9 keeps A, B, C -- cumulative 0.90 exactly at C.`,
 
     { t: "callout", kind: "tradeoff", title: "Which one to reach for",
       body: [
-        { t: "p", text: "**Top-p, almost always.** The adaptiveness is the point: on the confident prompt above it narrowed to 435 candidates and on the vague one it opened to 1,503, and no fixed k can do that. It is also the parameter every major provider exposes, while several of them do not expose top-k at all (1.15)." },
+        { t: "p", text: "**Top-p, almost always.** The adaptiveness is the point: on the confident prompt above it narrowed to 435 candidates and on the vague one it opened to 1,503, and no fixed k can do that. It is also the truncation control a hosted API offers when it offers one at all — none of them ever made top-k universal, and the newest hosted models have withdrawn both (1.15)." },
         { t: "p", text: "**Top-k when you need a bound.** If you are writing a sampler yourself, top-k gives you a fixed amount of work per step — sort, take 50, done — where top-p's cost depends on the distribution. It is also the only truncation available on some local inference stacks." },
         { t: "p", text: "**Both, occasionally, in that order.** `top_k=50` then `top_p=0.9` is a common default in local serving: top-k puts a hard ceiling on how wide things can get, and top-p tightens it further on confident steps. That is what the pipeline in 1.1 measured — 50,257 to 50 to 21." },
         { t: "p", text: "What is never a good idea is tuning top-p and temperature together against the same eval. The measurement in §03 is the reason: top-p's effect is a function of temperature, so the pair you find does not transfer to a different prompt distribution." }
@@ -267,7 +267,7 @@ top_p=0.9 keeps A, B, C -- cumulative 0.90 exactly at C.`,
 
     { t: "callout", kind: "insight", title: "The parameter a provider does not expose is a decision they made for you",
       body: [
-        { t: "p", text: "OpenAI's chat completions do not accept `top_k`. Anthropic and Google do. HuggingFace's `generate()` accepts both and defaults `top_k` to **50**, which surprises people who assume an unset parameter means no filtering — it means 50 unless you pass `top_k=0`." },
+        { t: "p", text: "OpenAI has never accepted `top_k`. Anthropic and Google did until 2026 — current Claude models now reject it and Gemini 3.6 and later ignore it (1.15). HuggingFace's `generate()` accepts both and defaults `top_k` to **50**, which surprises people who assume an unset parameter means no filtering — it means 50 unless you pass `top_k=0`." },
         { t: "p", text: "That default is why the temperature ladder in 1.2 had to pass `top_k=0, top_p=1.0` explicitly. Without them, the tau = 1.4 row would have been measuring temperature *and* a 50-token truncation, and the point of the ladder would have been lost." },
         { t: "p", text: "Whenever you compare behaviour across providers or across libraries, the first thing to check is what each one does with the parameters you did not set. 1.15 has the full table." }
       ] },
@@ -346,7 +346,7 @@ at the mean p=0.6252, candidates actually kept:
         notes: [
           { t: "p", text: "The p that matches k = 50 ranges from 0.4920 to 0.7392 across six prompts — a spread of nearly 0.25 on a parameter whose entire useful range is about 0.5 wide. There is no single p that is equivalent to k = 50; the question the migrating team asked does not have an answer." },
           { t: "p", text: "The second table is the more useful half. At the mean p, the candidate count runs from 20 to 121 — a factor of six. And the direction is the one you want: the prompts where the model is most constrained (`'2 + 2 ='`, `'Dear Sir or Madam,'`) get 21 and 20 candidates, while the vague ones get 102 and 121. Top-k would have given all six of them 50, which is too many for the arithmetic and too few for the open-ended continuation." },
-          { t: "p", text: "So the honest advice for the migration is not to find an equivalent p. It is to say that top-p is a better rule, pick a value in the 0.9–0.95 range that the providers default to, and re-run the eval — because the behaviour will change, and it will change for the better on exactly the inputs where top-k was worst." }
+          { t: "p", text: "So the honest advice for the migration is not to find an equivalent p. It is to say that top-p is a better rule, pick a value in the 0.9–0.95 range, and re-run the eval — because the behaviour will change, and it will change for the better on exactly the inputs where top-k was worst." }
         ] } },
 
     /* ============================================================ scenario */
@@ -406,7 +406,7 @@ at the mean p=0.6252, candidates actually kept:
         answer: [
           { t: "p", text: "They act at different stages on different things. Temperature divides every logit before the softmax, which changes how much probability separates the candidates but removes none of them. Top-p truncates: it keeps the smallest set of tokens whose cumulative mass reaches p, and everything else becomes impossible rather than unlikely." },
           { t: "p", text: "So the division of labour is: temperature for overall randomness, top-p for the tail. And the reason the providers say to adjust one and not both is that they are not independent — temperature moves mass, and mass is what top-p reads. On one prompt I measured, `top_p=0.9` kept 2 candidates at tau = 0.2 and 8,841 at tau = 1.5. Tuning them jointly is fitting a surface with a ridge in it." },
-          { t: "p", text: "For the concrete recommendation: temperature 0 for anything with a right answer, where top-p is inert anyway because the sampler is skipped. For open-ended work, move temperature and leave top-p at the provider's default of 0.9 or 0.95." }
+          { t: "p", text: "For the concrete recommendation: temperature 0 for anything with a right answer, where top-p is inert anyway because the sampler is skipped. For open-ended work, move temperature and leave top-p at its default." }
         ] },
 
       { level: "core",

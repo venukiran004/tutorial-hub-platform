@@ -1,11 +1,11 @@
 EC.receiveLesson({
   id: "1.6",
 
-  lede: "Two parameters operate on tokens rather than on the shape of the distribution. A **stop sequence** is a string that ends the response when it appears. **`logit_bias`** moves a specific token's score by an amount you choose, keyed by its id. Both are blunt, both are useful, and both have a behaviour that is not in the documentation: a stop sequence does not stop the model, and a bias of −100 is not a ban. This lesson implements each one and measures what it actually does.",
+  lede: "Two parameters operate on tokens rather than on the shape of the distribution. A **stop sequence** is a string that ends the response when it appears. **`logit_bias`** moves a specific token's score by an amount you choose, keyed by its id. Both are blunt, both are useful, and both behave differently from the picture most people carry: a stop sequence is enforced by the server rather than understood by the model, and a bias of −100 is a ban only by arithmetic. This lesson implements each one and measures what it actually does.",
 
   objectives: [
     "Implement a stop sequence and say where in the pipeline it acts",
-    "Explain why you are billed for tokens generated after a stop string matched",
+    "Say which tokens a stop sequence bills you for, and when it saves nothing",
     "Convert a logit_bias value into the probability change it produces",
     "Say why a bias is keyed by token id, and what that costs you in practice",
     "Choose between a stop sequence, a bias, and a schema for a given constraint"
@@ -16,12 +16,10 @@ EC.receiveLesson({
   blocks: [
 
     /* ============================================================ 01 */
-    { t: "h2", n: "01", id: "stop", text: "A stop sequence does not stop the model",
-      sub: "It stops the response, which is a different thing" },
+    { t: "h2", n: "01", id: "stop", text: "A stop sequence is the server's decision, not the model's",
+      sub: "The model never learns the parameter exists" },
 
-    {"kind": "trace", "title": "A stop sequence truncates the response; it does not stop the generation", "caption": "The model produced 30 tokens in every row below. The stop string decides how many of them you are *shown* — and you are **billed for all 30 regardless**. With `stop=\",\"` one token survives out of thirty. The third row is the other half of the trap: a stop string the model never emits does nothing at all, and generation simply runs to `max_tokens`.", "left": "stop string", "codeW": 150, "vars": ["you see", "kept", "billed for"], "steps": [{"code": "','", "state": ["' blue'", "1 of 30", "30"], "changed": [2], "tone": "crit", "note": "29 tokens paid for"}, {"code": "' purple'", "state": ["' blue, yellow,'", "4 of 30", "30"], "tone": "warn"}, {"code": "'\\n' - never emitted", "state": ["everything", "30 of 30", "30"], "tone": "warn", "note": "ran to the cap"}, {"code": "so the saving is", "state": ["display only", "never cost", ""], "tone": "violet"}], "t": "diagram", "id": "dg-1_6-01-0"},
-
-
+    {"kind": "trace", "title": "The stop string is paid for and never shown", "caption": "The server checks the decoded text after every token and halts when a stop string is complete. So the token that **completed** the match was generated, is billed, and is cut from what you receive: one visible token, two billed. A two-token stop string costs two unseen tokens. The last row is the other half: a stop string the model never emits does nothing at all, and generation runs to `max_tokens`. Make the same cut in client code, on a finished response, and every row bills all 30.", "left": "stop string", "codeW": 150, "vars": ["you receive", "visible", "billed"], "steps": [{"code": "','", "state": ["' blue'", "1", "2"], "changed": [2], "tone": "good", "note": "the comma is billed"}, {"code": "' purple'", "state": ["' blue, yellow,'", "4", "5"], "tone": "accent"}, {"code": "', purple'", "state": ["' blue, yellow'", "3", "5"], "changed": [2], "tone": "warn", "note": "two unseen tokens"}, {"code": "'\\n' - never emitted", "state": ["everything", "30", "30"], "tone": "crit", "note": "ran to the cap"}], "t": "diagram", "id": "dg-1_6-01-0"},
 
 
 
@@ -45,36 +43,52 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "The mental model most people carry is that a stop sequence interrupts generation the moment the model produces it. What actually happens is that the server generates tokens, decodes them, checks the accumulated text against each stop string, and cuts the response at the first match. The model is not consulted and does not know the parameter exists." },
 
-    { t: "code", lang: "python", title: "g13b.py — a stop sequence, implemented", code: `ids = tok("Three colours: red, green,", return_tensors="pt").input_ids
-gen = model.generate(ids, max_new_tokens=30, do_sample=False,
-                     pad_token_id=tok.eos_token_id)
-new  = gen[0][ids.shape[1]:]
-full = tok.decode(new)
 
-for stop in (",", " purple", "\\n"):
-    if stop in full:
-        cut  = full.split(stop)[0]
-        kept = len(tok(cut).input_ids) if cut else 0
-        print("stop=%-9r -> %-34r  kept %2d of %d generated tokens; billed for all %d"
-              % (stop, cut, kept, len(new), len(new)))
-    else:
-        print("stop=%-9r -> never produced; generation ran to max_new_tokens" % stop)`,
-      out: `generated (30 tokens): ' blue, yellow, purple, purple, red, green, blue, yellow, purple, red, green, blue, yellow, purple, red,'
+    { t: "p", text: "A stop sequence is not an instruction to the model. The serving loop generates a token, decodes the text so far, and checks it against each stop string; at the first match it halts and returns the text before the match. The model is not consulted and does not know the parameter exists — which is why a stop string works on any model, and why it cannot make a model *want* to stop." },
 
-  stop=','       -> ' blue'                             kept  1 of 30 generated tokens; billed for all 30
-  stop=' purple' -> ' blue, yellow,'                    kept  4 of 30 generated tokens; billed for all 30
-  stop='\\n'      -> never produced; generation ran to max_new_tokens`,
-      hl: [7, 8],
-      caption: "A stop at the first comma keeps 1 of 30 generated tokens. The other 29 were still computed — a forward pass each — and on a provider they would still appear in `usage.completion_tokens`." },
+    { t: "code", lang: "python", title: "g16.py — a stop sequence, implemented", code: `ids = tok("Three colours: red, green,", return_tensors="pt").input_ids
 
-    { t: "callout", kind: "trap", title: "You pay for what the stop sequence threw away",
+def serve(stop, cap=30):
+    """What a server does: decode after every token, halt when a stop string is complete."""
+    cur, text = ids, ""
+    for made in range(1, cap + 1):
+        with torch.no_grad():
+            nxt = model(cur).logits[0, -1].argmax()            # greedy, one token
+        cur  = torch.cat([cur, nxt.view(1, 1)], dim=1)
+        text = tok.decode(cur[0, ids.shape[1]:])
+        if stop in text:
+            return text.split(stop)[0], made, "stop"           # the stop string is cut off
+    return text, cap, "length"
+
+full, n, _ = serve("\\x00")                                     # a string that never appears
+print("unstopped (%d tokens): %r" % (n, full))
+print()
+print("%-10s %-18s %7s %7s %9s  %s"
+      % ("stop", "you receive", "visible", "billed", "finish", "client-side cut bills"))
+for stop in (",", " purple", ", purple", "\\n"):
+    text, made, why = serve(stop)
+    seen = len(tok(text).input_ids) if text else 0
+    print("%-10r %-18r %7d %7d %9s  %d"
+          % (stop, text if why == "stop" else "(all of it)", seen, made, why, n))`,
+      out: `unstopped (30 tokens): ' blue, yellow, purple, purple, red, green, blue, yellow, purple, red, green, blue, yellow, purple, red,'
+
+stop       you receive        visible  billed    finish  client-side cut bills
+','        ' blue'                  1       2      stop  30
+' purple'  ' blue, yellow,'         4       5      stop  30
+', purple' ' blue, yellow'          3       5      stop  30
+'\\n'       '(all of it)'           30      30    length  30`,
+      hl: [11, 12],
+      caption: "The server halts one token after the text you wanted. `','` returns one token and bills two, because the comma had to be generated before it could be matched; `', purple'` is two tokens, so two are billed and never shown. The last column is the same stop applied by client code to a finished response — which is what a wrapper does when it offers a stop parameter for a model that has none." },
+
+    { t: "callout", kind: "trap", title: "A stop that never fires is not a stop",
       body: [
-        { t: "p", text: "In the measurement above, one useful token was returned and thirty were generated. A real server does better than this — it checks after each token and halts as soon as a stop string is complete — but it cannot halt *before* producing the token that completes the match, and with multi-token stop strings it may run several tokens past the point you wanted." },
-        { t: "p", text: "The practical consequence is that a stop sequence is a **formatting** tool, not a cost-control tool. If you want to spend less, shorten the output you ask for (11.8) or lower `max_tokens` (1.5). A stop sequence buys you a clean end to a response, not a cheaper one." },
-        { t: "p", text: "It also means a stop sequence cannot rescue you from a runaway generation, because the runaway is what you are billed for. `max_tokens` is the only hard stop." }
+        { t: "p", text: "In the measurement the server halted as soon as the match was complete, so the saving is real: two tokens generated instead of thirty. But it is a saving only for as long as the model actually emits the string. The last row is the failure — the newline never appeared, nothing halted, and generation ran to the cap." },
+        { t: "p", text: "So treat a stop sequence as a **formatting** tool that happens to save tokens when it fires, and never as the thing that bounds a bill. `max_tokens` is the only hard stop (1.5), and asking for a shorter output is the only reliable saving (11.8)." },
+        { t: "p", text: "Two things move the count without changing what you see. The token that completed the match is generated before it can be matched, so the usage figure can sit a token or more above the visible text. And a stop applied client-side — by your own code, or by a framework on your behalf — saves nothing at all, because the response was complete before anything was cut." }
       ] },
+
+    { t: "p", text: "Where the parameter exists is dated information, and 1.15 has the matrix. In November 2026, Chat Completions takes `stop` with up to four strings, Claude and Gemini take `stop_sequences`, and open-weight servers take `stop`; OpenAI's Responses API has no stop parameter at all. Claude also tells you which string fired, in the response's `stop_sequence` field, where Chat Completions reports `finish_reason` `stop` for a stop string and a natural ending alike. Where the parameter is missing, the stop is yours to apply to the stream — and closing the stream when the string appears does halt generation (1.12), which a cut on a finished response does not." },
 
     { t: "p", text: "There is a second consequence of matching on decoded text rather than on token ids, and it is the one that produces surprising behaviour: **a stop string need not line up with token boundaries.**" },
 
@@ -125,7 +139,7 @@ for stop in (",", " purple", "\\n"):
 
 
 
-    { t: "p", text: "`logit_bias` takes a map from token id to a number in the range −100 to +100, and adds that number to the corresponding logit. It happens before temperature, before truncation, before the penalties — it is a modification of the model's raw output, so everything downstream sees the biased vector as if the model had produced it." },
+    { t: "p", text: "Where it exists — Chat Completions and open-weight servers, and not the Responses API, Claude or Gemini (1.15) — `logit_bias` takes a map from token id to a number in the range −100 to +100, and adds that number to the corresponding logit. It happens before temperature, before truncation, before the penalties — it is a modification of the model's raw output, so everything downstream sees the biased vector as if the model had produced it." },
 
     { t: "code", lang: "python", title: "g13.py — logit_bias, implemented", code: `ids = tok("My favourite colour is", return_tensors="pt").input_ids
 with torch.no_grad():
@@ -176,7 +190,7 @@ for bias in (-100.0, -5.0, 0.0, 5.0, 10.0, 100.0):
     { t: "h2", n: "03", id: "token-ids", text: "The catch: bias is keyed by token id",
       sub: "You are not banning a word, you are banning a token" },
 
-    {"kind": "trace", "title": "The id is not the word, and that is the whole disappointment", "caption": "`logit_bias` maps **ids to numbers**, and biasing `' blue'` leaves every other spelling of blue untouched. Seven forms of one word, six distinct ids, and one — `' bluish'` — that is not a single token at all, so no bias can reach it: you would have to bias `' blu'`, which also suppresses every other word starting that way. The one place the parameter is unbeatable is a single-token classifier: bias everything but your labels to −100, set `max_tokens=1`, and the answer is guaranteed to be a label, with its logprob as a free confidence score.", "left": "spelling", "codeW": 130, "vars": ["token ids", "pieces"], "steps": [{"code": "'blue'", "state": ["[18789]", "1"], "tone": "accent"}, {"code": "' blue'", "state": ["[9861]", "1"], "changed": [0], "tone": "good", "note": "the one you biased"}, {"code": "'Blue'", "state": ["[15957]", "1"], "tone": "warn"}, {"code": "' Blue'", "state": ["[11942]", "1"], "tone": "warn"}, {"code": "' BLUE'", "state": ["[110151]", "1"], "tone": "warn"}, {"code": "' blues'", "state": ["[51764]", "1"], "tone": "warn"}, {"code": "' bluish'", "state": ["[55577, 1109]", "2"], "changed": [1], "tone": "crit", "note": "unreachable by bias"}], "t": "diagram", "id": "dg-1_6-03-2"},
+    {"kind": "trace", "title": "The id is not the word, and that is the whole disappointment", "caption": "`logit_bias` maps **ids to numbers**, and biasing `' blue'` leaves every other spelling of blue untouched. Seven forms of one word, six distinct ids, and one — `' bluish'` — that is not a single token at all, so no bias can reach it: you would have to bias `' blu'`, which also suppresses every other word starting that way. The one place the parameter is unbeatable is a single-token classifier: lift each of your labels by +100, set `max_tokens=1`, and the answer is guaranteed to be a label, with its logprob as a free confidence score.", "left": "spelling", "codeW": 130, "vars": ["token ids", "pieces"], "steps": [{"code": "'blue'", "state": ["[18789]", "1"], "tone": "accent"}, {"code": "' blue'", "state": ["[9861]", "1"], "changed": [0], "tone": "good", "note": "the one you biased"}, {"code": "'Blue'", "state": ["[15957]", "1"], "tone": "warn"}, {"code": "' Blue'", "state": ["[11942]", "1"], "tone": "warn"}, {"code": "' BLUE'", "state": ["[110151]", "1"], "tone": "warn"}, {"code": "' blues'", "state": ["[51764]", "1"], "tone": "warn"}, {"code": "' bluish'", "state": ["[55577, 1109]", "2"], "changed": [1], "tone": "crit", "note": "unreachable by bias"}], "t": "diagram", "id": "dg-1_6-03-2"},
 
 
 
@@ -227,31 +241,38 @@ for word in ("blue", " blue", "Blue", " Blue", " BLUE", " blues", " bluish"):
 
     { t: "callout", kind: "tradeoff", title: "Bias, stop, or something else",
       body: [
-        { t: "p", text: "**Use `logit_bias` when the target is a small, closed set of exact tokens.** Forcing a classification into `yes`/`no` by biasing everything else down; steering a model toward one of five known category labels; suppressing a single token that is corrupting a format. These work because you can enumerate the ids." },
+        { t: "p", text: "**Use `logit_bias` when the target is a small, closed set of exact tokens.** Forcing a classification into `yes`/`no` by lifting those two tokens out of reach of everything else; steering a model toward one of five known category labels; suppressing a single token that is corrupting a format. These work because you can enumerate the ids." },
         { t: "p", text: "**Use a stop sequence when you want the response to end somewhere.** Not when you want it to avoid something." },
         { t: "p", text: "**Use a schema or a grammar when you want the output to be valid.** 1.8 for structured output, 3.13 for grammar-constrained decoding. Both make the invalid case unrepresentable, which is a stronger guarantee than making it unlikely — and neither requires you to enumerate token ids." },
         { t: "p", text: "**Use the prompt when the target is a concept.** \"Do not mention competitors\" cannot be expressed in token ids, and trying is how people end up with a 400-entry bias map that still does not work." }
       ] },
 
-    { t: "p", text: "The one place `logit_bias` is genuinely unbeatable is forcing a single-token answer for cheap classification. Bias every token except your labels to −100, set `max_tokens=1`, and the response is guaranteed to be one of your labels — no parsing, no retries, and the logprob of the chosen token is a usable score." },
+    { t: "p", text: "The one place `logit_bias` is genuinely unbeatable is forcing a single-token answer for cheap classification. Lift each label token by +100 — in odds, the same thing as pushing every other token down by 100, in three entries rather than a vocabulary's worth — set `max_tokens=1`, and the response is one of your labels: no parsing, no retries, and the logprob of the chosen token is a usable score." },
 
-    { t: "code", lang: "python", title: "classify.py — the one pattern worth memorising", code: `import tiktoken
-enc = tiktoken.get_encoding("o200k_base")
+    { t: "code", lang: "python", title: "classify.py — the one pattern worth memorising", code: `from openai import OpenAI
+from transformers import AutoTokenizer
 
-LABELS = [" positive", " negative", " neutral"]
-allowed = {enc.encode(l)[0]: 100 for l in LABELS}     # +100 on each label
+MODEL  = "meta-llama/Llama-3.1-8B-Instruct"
+client = OpenAI(base_url="http://localhost:8000/v1", api_key="unused")   # a vLLM server
+tok    = AutoTokenizer.from_pretrained(MODEL)       # the SERVED model's tokeniser, no other
+
+LABELS = ["positive", "negative", "neutral"]        # no leading space: a chat reply starts clean
+ids    = [tok.encode(label, add_special_tokens=False) for label in LABELS]
+assert all(len(i) == 1 for i in ids), "every label must be a single token"
+allowed = {str(i[0]): 100 for i in ids}             # +100 on each label
 
 # Every other token keeps its own score; the labels are lifted so far above
 # them that nothing else can win. max_tokens=1 means exactly one is emitted.
 response = client.chat.completions.create(
-    model="gpt-4o-mini",
+    model=MODEL,
     messages=[{"role": "user", "content": f"Sentiment of: {text}"}],
     logit_bias=allowed,
     max_tokens=1,
     logprobs=True,                  # the score comes free
 )
 label = response.choices[0].message.content`,
-      caption: "Each label must be a single token for this to work — check with the tokeniser first, and pick label words that are, which is why `\" positive\"` beats `\" positive sentiment\"`. 8.6 uses the returned logprob as a confidence, with the caveats from 1.1." },
+      hl: [6, 10],
+      caption: "Each label must be a single token in the tokeniser of the model being served — the `assert` is the check, and it is why `\"positive\"` beats `\"positive sentiment\"`. Ids taken from any other tokeniser bias three unrelated tokens and raise no error. The listing targets an open-weight server because that is where the parameter reliably lives: OpenAI offers `logit_bias` on Chat Completions only, model by model, and the Responses API, Claude and Gemini have none. There the same closed set is a schema with an `enum` (1.8), which costs a few more output tokens and needs no token ids. 8.7 measures what the logprob is worth as a confidence, and 1.1 covers which distribution it is reported from." },
 
     /* ============================================================ exercise */
     { t: "exercise", kind: "Challenge", title: "Find the bias that flips the argmax",
@@ -309,7 +330,7 @@ token           logit        gap  p(baseline) p(at threshold)   flips?
         notes: [
           { t: "p", text: "The prediction holds for every token, and it needed no search: the bias that ties a token with the leader is exactly the logit gap, because a bias is an addition to the logit and nothing else in the vector moves. `' blue'` needed 0.7191 and `' purple'` needed 1.6943 — and the difference between those, 0.9752, is exactly `ln(0.051379 / 0.019377)`, which is the ratio identity from 1.2 read backwards." },
           { t: "p", text: "The column that surprises people is `p(at threshold)`: every token arrives at about **0.098 to 0.100**, not 0.5. At the tie the biased token and the old leader have equal logits and therefore equal probability — but they are two tokens out of 50,257, and the rest of the distribution still holds about 80% of the mass. A tie for first place is not a two-horse race; it is two horses in front of a very large field. (The small spread across rows is because lifting a token also adds its own mass to the denominator, by slightly different amounts.)" },
-          { t: "p", text: "The practical reading: if you want a token *chosen*, the threshold bias is not enough, because a tie means the sampler picks it about half the time and argmax picks it on an implementation detail. Add several units beyond the gap — the measurement in §02 showed +5 taking `' blue'` to 0.889 and +10 to 0.999. If you want it *guaranteed*, bias everything else instead, which is the classification pattern." }
+          { t: "p", text: "The practical reading: if you want a token *chosen*, the threshold bias is not enough, because a tie means the sampler picks it about half the time and argmax picks it on an implementation detail. Add several units beyond the gap — the measurement in §02 showed +5 taking `' blue'` to 0.889 and +10 to 0.999. If you want it *guaranteed*, lift it by far more than any gap in the vector, which is the classification pattern's +100." }
         ] } },
 
     /* ============================================================ scenario */
@@ -323,24 +344,24 @@ token           logit        gap  p(baseline) p(at threshold)   flips?
   ],
 
   takeaways: [
-    "A **stop sequence does not stop the model.** The server generates, decodes, matches the accumulated text and cuts the response — so you are billed for tokens produced after the match.",
-    "Measured: a stop at the first comma kept **1 of 30** generated tokens, and all 30 were computed. Stop sequences are a formatting tool, not a cost control; `max_tokens` is the only hard stop.",
-    "Stop strings are matched on decoded text, not token ids — `\".\\n\\n\"` is two tokens — so a stop can fire on characters that arrived mid-token.",
+    "A **stop sequence is enforced by the server, not understood by the model.** The serving loop decodes after each token, halts when a stop string is complete, and returns the text before it.",
+    "Measured: a stop at the first comma returned 1 token and billed **2**, because the token that completes the match is generated before it can be matched. The same cut made client-side, on a finished response, bills all 30.",
+    "A stop string the model never emits does nothing, so `max_tokens` is the only hard stop. Stop strings are matched on decoded text, not token ids — `\".\\n\\n\"` is two tokens — so a stop can fire on characters that arrived mid-token.",
     "**`logit_bias` adds a number to one logit**, before everything else. From the ratio identity, a bias of `b` multiplies that token's odds against every other token by `exp(b)`.",
     "Measured: a bias of **+5** took a token from 5.1% of the mass to **88.9%** and from rank 2 to rank 1; +10 took it to 99.9%. Anything past about +12 is indistinguishable from certainty.",
     "**−100 is a ban by arithmetic, not by special case.** `exp(-100)` ≈ 4×10⁻⁴⁴ drives the probability below float32's smallest positive value, so it rounds to zero — measured at rank 50,257.",
     "Bias is keyed by **token id, not word**. `\"blue\"` and `\" blue\"` are different ids, case and morphology are separate ids again, and some forms like `\" bluish\"` are not a single token at all.",
     "The bias that ties a token with the current leader is exactly the logit gap — no search needed. At that tie the token sits near 0.10, not 0.5, because the other 50,255 tokens still hold about 80% of the mass.",
-    "The one unbeatable use of `logit_bias`: bias a small set of single-token labels to +100, set `max_tokens=1`, and get a guaranteed label with a usable logprob."
+    "The one unbeatable use of `logit_bias`: bias a small set of single-token labels to +100, set `max_tokens=1`, and get a guaranteed label with a usable logprob. Where the parameter does not exist, an `enum` in a schema is the same closed set."
   ],
 
   quiz: {
     title: "Check yourself",
     questions: [
-      { stem: "Your request sets `stop=[\".\"]` and the model generates 200 tokens, the first sentence ending after 12. What appears in `usage.completion_tokens`?",
-        options: ["12, because generation stopped right there", "More than 12: whatever ran before the halt", "0, because the response was truncated early", "200, every single time, whatever the stop"],
+      { stem: "A framework applies your stop string client-side, to a finished, non-streamed response. The model wrote 200 tokens and the string first appears after 12. What are you billed for?",
+        options: ["12 tokens, where the stop string matched", "All 200; the cut came after generation", "13 tokens, with the matched one included", "Nothing, since the reply was truncated"],
         answer: 1,
-        why: "The stop check runs on decoded text after tokens are produced, so the server cannot halt before generating the token that completes the match, and it bills for everything it computed. The measured case kept 1 of 30 generated tokens and all 30 were computed. The first option is the mental model the lesson is against — the model is never told the parameter exists. The fourth assumes no early halt at all, which real servers do perform; the point is that it happens after the token, not before. Zero is never right: work was done." },
+        why: "A stop saves tokens only when the serving loop enforces it, because that is the only place generation can be halted — measured, a server-side stop at the first comma billed 2 tokens where the same cut made afterwards billed all 30. Thirteen is what a server-side stop would bill here: the twelve visible tokens plus the one that completed the match, which is generated before it can be matched and never shown. Twelve assumes the matching token is free, and it is not. Nothing is never right: the work was done. It is why a stop parameter that a wrapper emulates is a formatting feature only." },
 
       { stem: "You add `logit_bias={12345: 5}` for a token currently at 5% of the probability mass. Roughly where does it end up?",
         options: ["About 10%, since 5 is a modest number", "About 89%: odds multiply by exp(5)", "About 50%, as it ties for first place", "Unchanged, as 5 is far below ±100"],
@@ -365,10 +386,10 @@ token           logit        gap  p(baseline) p(at threshold)   flips?
     questions: [
       { level: "core",
         q: "How does a stop sequence work, and what does it cost?",
-        strong: "A strong answer knows the match happens on decoded text after generation, and draws the right conclusion about billing.",
+        strong: "A strong answer knows the match happens on decoded text in the serving loop, and separates what is billed from what is shown.",
         answer: [
-          { t: "p", text: "The server generates tokens and checks the accumulated decoded text against each stop string, cutting the response at the first match. The model is never told the parameter exists — it is a server-side truncation, not an instruction." },
-          { t: "p", text: "Which means you pay for what it throws away. The server cannot halt before producing the token that completes the match, and with a multi-token stop string it may run past the point you wanted. I measured a case where a stop at the first comma kept 1 token of 30 generated, and all 30 were computed. So a stop sequence is a formatting tool, not a cost control — for cost you want a shorter requested output or a lower `max_tokens`." },
+          { t: "p", text: "The serving loop generates a token, decodes the text so far, and checks it against each stop string; at the first match it halts and returns the text before the match. The model is never told the parameter exists — it is the server's decision, not an instruction." },
+          { t: "p", text: "On cost: you pay for everything generated up to the halt, including the token that completed the match, which you never see. I measured a stop at the first comma returning one token and billing two. So it does save the tokens that were never generated — but only when the model actually emits the string. If it never does, generation runs to the cap, which is why `max_tokens` is the only hard stop. And a stop applied client-side to a finished response saves nothing at all." },
           { t: "p", text: "The other detail worth naming is that matching on decoded text means the stop string need not align to token boundaries. `\".\\n\\n\"` is two tokens; a stop can also fire on characters that arrived in the middle of one." }
         ] },
 
@@ -397,7 +418,7 @@ token           logit        gap  p(baseline) p(at threshold)   flips?
         answer: [
           { t: "p", text: "Forcing a classification into a small closed label set. Bias each label token to +100, set `max_tokens=1`, and the response is guaranteed to be one of your labels — not \"usually\", but structurally, because everything else has been lifted out of reach and only one token is emitted." },
           { t: "p", text: "That is a stronger guarantee than asking in the prompt, which gets you a label most of the time and occasionally a sentence explaining the label. It removes the parsing step, the retry path and the \"model added a preamble\" class of bug entirely." },
-          { t: "p", text: "The constraint that makes it work is that each label has to be a single token, so you check with the tokenizer and choose label words that are — `\" positive\"` rather than `\" positive sentiment\"`. And you get the logprob of the chosen token for free, which is a usable ranking signal as long as you remember from 1.1 that it is conditional on the sampling settings and is not a calibrated confidence." }
+          { t: "p", text: "The constraint that makes it work is that each label has to be a single token, so you check with the tokenizer and choose label words that are — `\" positive\"` rather than `\" positive sentiment\"`. And you get the logprob of the chosen token for free, which is a usable ranking signal as long as you remember from 1.1 to check which distribution your stack reports it from, and that it is not a calibrated confidence either way." }
         ] }
     ]
   }

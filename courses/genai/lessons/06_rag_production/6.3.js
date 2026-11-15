@@ -219,7 +219,7 @@ for label, text in VARIANTS:
       hl: [3, 4, 5],
       caption: "Three of the four trivial edits defeat a raw hash entirely. All three are things real pipelines produce." },
 
-    { t: "callout", kind: "good", title: "This is why the reference normalises first",
+    { t: "callout", kind: "good", title: "This is why you normalise first",
       body: [
         { t: "p", text: "A raw content hash sounds exact and is nearly useless on its own, because the edits that occur in practice are whitespace and case \u2014 produced by re-parsing the same PDF with a different library version, or by a CMS re-serialising a document nobody touched." },
         { t: "p", text: "Normalising first turns all three into the same record. And the last row is the important control: a real content change still hashes differently, so normalisation is not making the test blind. It is removing exactly the differences that carry no meaning." },
@@ -237,7 +237,7 @@ for label, text in VARIANTS:
     return kept`,
       caption: "Quadratic in the batch, not in the corpus. At scale you query the index for each candidate's nearest neighbour instead and skip the insert above the threshold." },
 
-    { t: "p", text: "Above some corpus size even that is too slow, and the reference reaches for MinHash: estimate the Jaccard similarity of token shingles from a short signature, and pair it with LSH so only likely duplicates get compared. The question that decides whether it works is how accurate the estimate is for a given signature length." },
+    { t: "p", text: "Above some corpus size even that is too slow, and the standard tool is MinHash: estimate the Jaccard similarity of token shingles from a short signature, and pair it with LSH so only likely duplicates get compared. The question that decides whether it works is how accurate the estimate is for a given signature length." },
 
     { t: "code", lang: "python", title: "g63.py \u00a7B \u2014 estimator error against signature length", code: `def shingles(text, k=5):
     tok = text.lower().split()

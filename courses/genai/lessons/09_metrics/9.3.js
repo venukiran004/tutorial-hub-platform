@@ -89,7 +89,7 @@ bleu = bp * geo`,
     { t: "callout", kind: "trap", title: "Verify at full precision, or you will \u201cfind\u201d an error that is not there",
       body: [
         { t: "p", text: "Multiplying the *displayed* intermediates \u2014 0.8187 \u00d7 0.7071 \u2014 gives **0.5787**, which looks like a two-in-the-fourth-decimal discrepancy against the stated 0.5789. It is not: at full precision 0.818731 \u00d7 0.707107 = **0.578930**." },
-        { t: "p", text: "I made exactly that mistake while checking this reference and briefly concluded it had an arithmetic slip. The rounded intermediates were mine; the reference was right." },
+        { t: "p", text: "I made exactly that mistake while checking a published worked example and briefly concluded it had an arithmetic slip. The rounded intermediates were mine; the published figure was right." },
         { t: "p", text: "The general lesson for hand-verification: a disagreement in the fourth decimal after a chain of multiplications is almost always rounding propagation in *your* check. Recompute at full precision before concluding, which is cheap and is the only version that settles anything." }
       ] },
 
@@ -231,7 +231,7 @@ print("paraphrase with smoothing: %.6f"
     { t: "callout", kind: "mental", title: "The model to keep",
       body: [
         { t: "p", text: "Four clipped precisions, a brevity penalty that punishes short output only, a geometric mean, one multiplication. Clipping is the term that stops repetition scoring perfectly, and the geometric mean is what makes a single zero fatal." },
-        { t: "p", text: "That single-zero property is why BLEU is a corpus metric \u2014 pool the counts before dividing, or use smoothing and say so. And when hand-verifying, recompute at full precision: rounded intermediates made 0.578930 look like 0.5787 and had me briefly convinced the reference was wrong." }
+        { t: "p", text: "That single-zero property is why BLEU is a corpus metric \u2014 pool the counts before dividing, or use smoothing and say so. And when hand-verifying, recompute at full precision: rounded intermediates made 0.578930 look like 0.5787 and had me briefly convinced a published figure was wrong." }
       ] },
 
     { t: "callout", kind: "scenario", title: "Interview scenario",

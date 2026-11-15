@@ -86,7 +86,7 @@ EC.receiveLesson({
     {
      "t": "out",
      "label": "Output when run",
-     "text": "R² per target: ['0.9106', '0.9395', '0.9265']\nPredictions shape: (40, 3)"
+     "text": "R² per target: ['0.9106', '0.9399', '0.9265']\nPredictions shape: (40, 3)"
     }
    ],
    "kind": "program"
@@ -230,7 +230,7 @@ EC.receiveLesson({
     {
      "t": "out",
      "label": "Output when run",
-     "text": "petal_l: MI = 0.9926\n  petal_w: MI = 0.9856\n  sepal_l: MI = 0.5114\n  sepal_w: MI = 0.2994"
+     "text": "  petal_l: MI = 0.9926\n  petal_w: MI = 0.9856\n  sepal_l: MI = 0.5114\n  sepal_w: MI = 0.2994"
     }
    ],
    "kind": "program"

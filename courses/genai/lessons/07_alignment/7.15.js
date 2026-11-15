@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.15",
 
-  lede: "The trap is stated plainly in the reference and it is the right place to start: your DPO reward accuracy is 0.82 and the RM score doubled, and that **proves nothing** \u2014 you optimised those numbers directly. 7.11 showed exactly how far that can go, with a proxy score climbing monotonically to +6.0 while true quality peaked at a KL of 1.0 and fell to \u22129.04. The headline number is a win rate against the pre-alignment model, and it has to be randomised for position and controlled for length or it will measure the wrong thing.",
+  lede: "The trap is easy to state and it is the right place to start: your DPO reward accuracy is 0.82 and the RM score doubled, and that **proves nothing** \u2014 you optimised those numbers directly. 7.11 showed exactly how far that can go, with a proxy score climbing monotonically to +6.0 while true quality peaked at a KL of 1.0 and fell to \u22129.04. The headline number is a win rate against the pre-alignment model, and it has to be randomised for position and controlled for length or it will measure the wrong thing.",
 
   objectives: [
     "Explain why the training metrics cannot evaluate the training",

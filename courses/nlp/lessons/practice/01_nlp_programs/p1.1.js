@@ -98,7 +98,7 @@ EC.receiveLesson({
     {
      "t": "out",
      "label": "Output when run",
-     "text": "('the',) → {'cat': 0.4, 'mat': 0.2, 'food': 0.2, 'dog': 0.2}\n('cat',) → {'sat': 0.5, 'ate': 0.5}\n('sat',) → {'on': 1.0}\n('on',) → {'the': 1.0}\n('mat',) → {'the': 1.0}"
+     "text": "('the',) → {'cat': 0.3333333333333333, 'mat': 0.16666666666666666, 'food': 0.16666666666666666, 'dog': 0.16666666666666666, 'log': 0.16666666666666666}\n('cat',) → {'sat': 0.5, 'ate': 0.5}\n('sat',) → {'on': 1.0}\n('on',) → {'the': 1.0}\n('mat',) → {'the': 1.0}"
     }
    ],
    "kind": "program"
@@ -327,12 +327,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import random\n\ndef synonym_replace(text, synonyms, n=1):\n    words = text.split()\n    for _ in range(n):\n        idx = random.randint(0, len(words)-1)\n        if words[idx].lower() in synonyms:\n            words[idx] = random.choice(synonyms[words[idx].lower()])\n    return ' '.join(words)\n\ndef random_insertion(text, word_pool, n=1):\n    words = text.split()\n    for _ in range(n):\n        words.insert(random.randint(0, len(words)), random.choice(word_pool))\n    return ' '.join(words)\n\ndef random_deletion(text, p=0.1):\n    words = text.split()\n    return ' '.join(w for w in words if random.random() > p) or words[0]\n\nsynonyms = {\"good\": [\"great\", \"excellent\", \"nice\"], \"fast\": [\"quick\", \"rapid\", \"swift\"]}\ntext = \"this is a good and fast model\"\nprint(f\"Original:  {text}\")\nprint(f\"Synonym:   {synonym_replace(text, synonyms)}\")\nprint(f\"Inserted:  {random_insertion(text, ['very', 'really'], n=2)}\")\nprint(f\"Deleted:   {random_deletion(text, p=0.3)}\")"
+     "code": "import random\nrandom.seed(0)\n\ndef synonym_replace(text, synonyms, n=1):\n    words = text.split()\n    for _ in range(n):\n        idx = random.randint(0, len(words)-1)\n        if words[idx].lower() in synonyms:\n            words[idx] = random.choice(synonyms[words[idx].lower()])\n    return ' '.join(words)\n\ndef random_insertion(text, word_pool, n=1):\n    words = text.split()\n    for _ in range(n):\n        words.insert(random.randint(0, len(words)), random.choice(word_pool))\n    return ' '.join(words)\n\ndef random_deletion(text, p=0.1):\n    words = text.split()\n    return ' '.join(w for w in words if random.random() > p) or words[0]\n\nsynonyms = {\"good\": [\"great\", \"excellent\", \"nice\"], \"fast\": [\"quick\", \"rapid\", \"swift\"]}\ntext = \"this is a good and fast model\"\nprint(f\"Original:  {text}\")\nprint(f\"Synonym:   {synonym_replace(text, synonyms)}\")\nprint(f\"Inserted:  {random_insertion(text, ['very', 'really'], n=2)}\")\nprint(f\"Deleted:   {random_deletion(text, p=0.3)}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Original:  this is a good and fast model\nSynonym:   this is a good and fast model\nInserted:  this is really really a good and fast model\nDeleted:   this is a good and fast model"
+     "text": "Original:  this is a good and fast model\nSynonym:   this is a good and fast model\nInserted:  really this is a good and fast really model\nDeleted:   this is a good and fast model"
     }
    ],
    "kind": "program"
@@ -345,12 +345,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\ndef sentence_embedding(text, embed_layer, vocab):\n    tokens = text.lower().split()\n    ids = [vocab.get(w, 0) for w in tokens]\n    embeddings = embed_layer(torch.tensor(ids))\n    return embeddings.mean(dim=0)\n\nvocab = {w: i+1 for i, w in enumerate(\"machine learning deep neural network nlp text\".split())}\nvocab['<unk>'] = 0\nembed = nn.Embedding(len(vocab)+1, 32)\n\ns1 = sentence_embedding(\"machine learning\", embed, vocab)\ns2 = sentence_embedding(\"deep learning\", embed, vocab)\ns3 = sentence_embedding(\"neural network\", embed, vocab)\n\ncos_sim = F.cosine_similarity\nprint(f\"'machine learning' vs 'deep learning': {cos_sim(s1.unsqueeze(0), s2.unsqueeze(0)).item():.4f}\")\nprint(f\"'machine learning' vs 'neural network': {cos_sim(s1.unsqueeze(0), s3.unsqueeze(0)).item():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\nimport torch.nn.functional as F\ntorch.manual_seed(0)\n\ndef sentence_embedding(text, embed_layer, vocab):\n    tokens = text.lower().split()\n    ids = [vocab.get(w, 0) for w in tokens]\n    embeddings = embed_layer(torch.tensor(ids))\n    return embeddings.mean(dim=0)\n\nvocab = {w: i+1 for i, w in enumerate(\"machine learning deep neural network nlp text\".split())}\nvocab['<unk>'] = 0\nembed = nn.Embedding(len(vocab)+1, 32)\n\ns1 = sentence_embedding(\"machine learning\", embed, vocab)\ns2 = sentence_embedding(\"deep learning\", embed, vocab)\ns3 = sentence_embedding(\"neural network\", embed, vocab)\n\ncos_sim = F.cosine_similarity\nprint(f\"'machine learning' vs 'deep learning': {cos_sim(s1.unsqueeze(0), s2.unsqueeze(0)).item():.4f}\")\nprint(f\"'machine learning' vs 'neural network': {cos_sim(s1.unsqueeze(0), s3.unsqueeze(0)).item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "'machine learning' vs 'deep learning': 0.7043\n'machine learning' vs 'neural network': -0.1788"
+     "text": "'machine learning' vs 'deep learning': 0.3205\n'machine learning' vs 'neural network': -0.1735"
     }
    ],
    "kind": "program"
@@ -363,12 +363,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn.functional as F\n\ndef beam_search(logits_fn, start_token, max_len=10, beam_width=3, vocab_size=50):\n    beams = [(0.0, [start_token])]  # (score, sequence)\n    \n    for _ in range(max_len):\n        all_candidates = []\n        for score, seq in beams:\n            logits = logits_fn(seq)\n            log_probs = F.log_softmax(logits, dim=-1)\n            top_k = torch.topk(log_probs, beam_width)\n            for i in range(beam_width):\n                new_score = score + top_k.values[i].item()\n                new_seq = seq + [top_k.indices[i].item()]\n                all_candidates.append((new_score, new_seq))\n        beams = sorted(all_candidates, key=lambda x: -x[0])[:beam_width]\n    \n    return beams[0]  # Best beam\n\n# Simple logits function\ndef mock_logits(seq):\n    return torch.randn(50)\n\nbest_score, best_seq = beam_search(mock_logits, start_token=1, max_len=5, beam_width=3)\nprint(f\"Best score: {best_score:.4f}\")\nprint(f\"Best sequence: {best_seq}\")"
+     "code": "import torch\nimport torch.nn.functional as F\ntorch.manual_seed(0)\n\ndef beam_search(logits_fn, start_token, max_len=10, beam_width=3, vocab_size=50):\n    beams = [(0.0, [start_token])]  # (score, sequence)\n    \n    for _ in range(max_len):\n        all_candidates = []\n        for score, seq in beams:\n            logits = logits_fn(seq)\n            log_probs = F.log_softmax(logits, dim=-1)\n            top_k = torch.topk(log_probs, beam_width)\n            for i in range(beam_width):\n                new_score = score + top_k.values[i].item()\n                new_seq = seq + [top_k.indices[i].item()]\n                all_candidates.append((new_score, new_seq))\n        beams = sorted(all_candidates, key=lambda x: -x[0])[:beam_width]\n    \n    return beams[0]  # Best beam\n\n# Simple logits function\ndef mock_logits(seq):\n    return torch.randn(50)\n\nbest_score, best_seq = beam_search(mock_logits, start_token=1, max_len=5, beam_width=3)\nprint(f\"Best score: {best_score:.4f}\")\nprint(f\"Best sequence: {best_seq}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Best score: -9.0654\nBest sequence: [1, 16, 42, 21, 18, 2]"
+     "text": "Best score: -8.4771\nBest sequence: [1, 43, 7, 7, 10, 2]"
     }
    ],
    "kind": "program"
@@ -381,12 +381,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn.functional as F\n\ndef sample_with_temperature(logits, temperature=1.0, top_k=0, top_p=0.0):\n    logits = logits / temperature\n    \n    # Top-k filtering\n    if top_k > 0:\n        top_values, _ = torch.topk(logits, top_k)\n        logits[logits < top_values[-1]] = float('-inf')\n    \n    # Top-p (nucleus) filtering\n    if top_p > 0:\n        sorted_logits, sorted_indices = torch.sort(logits, descending=True)\n        cumulative_probs = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)\n        mask = cumulative_probs > top_p\n        mask[..., 1:] = mask[..., :-1].clone()\n        mask[..., 0] = 0\n        logits[sorted_indices[mask]] = float('-inf')\n    \n    probs = F.softmax(logits, dim=-1)\n    return torch.multinomial(probs, 1).item()\n\nlogits = torch.randn(100)\nprint(\"Temperature sampling:\")\nfor temp in [0.1, 0.5, 1.0, 2.0]:\n    tokens = [sample_with_temperature(logits.clone(), temperature=temp) for _ in range(5)]\n    print(f\"  T={temp}: {tokens}\")"
+     "code": "import torch\nimport torch.nn.functional as F\ntorch.manual_seed(0)\n\ndef sample_with_temperature(logits, temperature=1.0, top_k=0, top_p=0.0):\n    logits = logits / temperature\n    \n    # Top-k filtering\n    if top_k > 0:\n        top_values, _ = torch.topk(logits, top_k)\n        logits[logits < top_values[-1]] = float('-inf')\n    \n    # Top-p (nucleus) filtering\n    if top_p > 0:\n        sorted_logits, sorted_indices = torch.sort(logits, descending=True)\n        cumulative_probs = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)\n        mask = cumulative_probs > top_p\n        mask[..., 1:] = mask[..., :-1].clone()\n        mask[..., 0] = 0\n        logits[sorted_indices[mask]] = float('-inf')\n    \n    probs = F.softmax(logits, dim=-1)\n    return torch.multinomial(probs, 1).item()\n\nlogits = torch.randn(100)\nprint(\"Temperature sampling:\")\nfor temp in [0.1, 0.5, 1.0, 2.0]:\n    tokens = [sample_with_temperature(logits.clone(), temperature=temp) for _ in range(5)]\n    print(f\"  T={temp}: {tokens}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Temperature sampling:\n  T=0.1: [98, 98, 98, 98, 98]\n  T=0.5: [88, 98, 16, 4, 98]\n  T=1.0: [64, 27, 96, 16, 95]\n  T=2.0: [89, 88, 16, 48, 98]"
+     "text": "Temperature sampling:\n  T=0.1: [59, 59, 59, 59, 59]\n  T=0.5: [69, 69, 59, 59, 59]\n  T=1.0: [59, 57, 77, 19, 57]\n  T=2.0: [43, 33, 79, 5, 38]"
     }
    ],
    "kind": "program"
@@ -399,12 +399,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\nimport math\n\ndef attention_with_viz(Q, K, V, mask=None):\n    d_k = Q.size(-1)\n    scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)\n    if mask is not None:\n        scores = scores.masked_fill(mask == 0, float('-inf'))\n    weights = torch.softmax(scores, dim=-1)\n    output = torch.matmul(weights, V)\n    return output, weights\n\nseq_len, d = 5, 16\nwords = [\"The\", \"cat\", \"sat\", \"on\", \"mat\"]\nQ = K = V = torch.randn(1, seq_len, d)\n_, attn = attention_with_viz(Q, K, V)\n\nprint(\"Attention matrix:\")\nprint(f\"{'':>6}\", end=\"\")\nfor w in words:\n    print(f\"{w:>6}\", end=\"\")\nprint()\nfor i, w in enumerate(words):\n    print(f\"{w:>6}\", end=\"\")\n    for j in range(seq_len):\n        print(f\"{attn[0, i, j]:.3f} \", end=\"\")\n    print()"
+     "code": "import torch\nimport torch.nn as nn\nimport math\ntorch.manual_seed(0)\n\ndef attention_with_viz(Q, K, V, mask=None):\n    d_k = Q.size(-1)\n    scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)\n    if mask is not None:\n        scores = scores.masked_fill(mask == 0, float('-inf'))\n    weights = torch.softmax(scores, dim=-1)\n    output = torch.matmul(weights, V)\n    return output, weights\n\nseq_len, d = 5, 16\nwords = [\"The\", \"cat\", \"sat\", \"on\", \"mat\"]\nQ = K = V = torch.randn(1, seq_len, d)\n_, attn = attention_with_viz(Q, K, V)\n\nprint(\"Attention matrix:\")\nprint(f\"{'':>6}\", end=\"\")\nfor w in words:\n    print(f\"{w:>6}\", end=\"\")\nprint()\nfor i, w in enumerate(words):\n    print(f\"{w:>6}\", end=\"\")\n    for j in range(seq_len):\n        print(f\"{attn[0, i, j]:.3f} \", end=\"\")\n    print()"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Attention matrix:\n         The   cat   sat    on   mat\n   The0.963 0.010 0.020 0.004 0.002 \n   cat0.118 0.804 0.041 0.007 0.030 \n   sat0.099 0.017 0.850 0.028 0.006 \n    on0.006 0.001 0.010 0.977 0.006 \n   mat0.017 0.018 0.008 0.021 0.936"
+     "text": "Attention matrix:\n         The   cat   sat    on   mat\n   The0.844 0.063 0.034 0.034 0.026\n   cat0.017 0.946 0.030 0.004 0.003\n   sat0.040 0.128 0.784 0.010 0.039\n    on0.002 0.001 0.001 0.995 0.001\n   mat0.006 0.002 0.008 0.006 0.978"
     }
    ],
    "kind": "program"
@@ -417,12 +417,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\nimport random\n\nclass SimpleMLM(nn.Module):\n    def __init__(self, vocab_size, d_model=64):\n        super().__init__()\n        self.embedding = nn.Embedding(vocab_size, d_model)\n        self.encoder = nn.TransformerEncoderLayer(d_model, nhead=4, batch_first=True)\n        self.head = nn.Linear(d_model, vocab_size)\n    \n    def forward(self, x):\n        emb = self.embedding(x)\n        encoded = self.encoder(emb)\n        return self.head(encoded)\n\ndef mask_tokens(input_ids, mask_prob=0.15, mask_token=0):\n    masked = input_ids.clone()\n    mask_positions = torch.rand(masked.shape) < mask_prob\n    masked[mask_positions] = mask_token\n    return masked, mask_positions\n\nvocab_size = 100\nmodel = SimpleMLM(vocab_size)\ninput_ids = torch.randint(1, vocab_size, (4, 20))\nmasked_input, mask_pos = mask_tokens(input_ids)\nlogits = model(masked_input)\nprint(f\"Input: {input_ids.shape}, Logits: {logits.shape}\")\nprint(f\"Masked positions: {mask_pos.sum().item()}\")"
+     "code": "import torch\nimport torch.nn as nn\nimport random\ntorch.manual_seed(0)\n\nclass SimpleMLM(nn.Module):\n    def __init__(self, vocab_size, d_model=64):\n        super().__init__()\n        self.embedding = nn.Embedding(vocab_size, d_model)\n        self.encoder = nn.TransformerEncoderLayer(d_model, nhead=4, batch_first=True)\n        self.head = nn.Linear(d_model, vocab_size)\n    \n    def forward(self, x):\n        emb = self.embedding(x)\n        encoded = self.encoder(emb)\n        return self.head(encoded)\n\ndef mask_tokens(input_ids, mask_prob=0.15, mask_token=0):\n    masked = input_ids.clone()\n    mask_positions = torch.rand(masked.shape) < mask_prob\n    masked[mask_positions] = mask_token\n    return masked, mask_positions\n\nvocab_size = 100\nmodel = SimpleMLM(vocab_size)\ninput_ids = torch.randint(1, vocab_size, (4, 20))\nmasked_input, mask_pos = mask_tokens(input_ids)\nlogits = model(masked_input)\nprint(f\"Input: {input_ids.shape}, Logits: {logits.shape}\")\nprint(f\"Masked positions: {mask_pos.sum().item()}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Input: torch.Size([4, 20]), Logits: torch.Size([4, 20, 100])\nMasked positions: 21"
+     "text": "Input: torch.Size([4, 20]), Logits: torch.Size([4, 20, 100])\nMasked positions: 7"
     }
    ],
    "kind": "program"

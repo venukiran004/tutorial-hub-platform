@@ -141,7 +141,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "CLIP: Contrastive image-text pretraining.",
-      "GPT-4o / Gemini: Native multimodal generation.",
+      "GPT-4o and Gemini onwards: native multimodal generation.",
       "Flamingo: Visual language model with cross-attention to images."
      ]
     }

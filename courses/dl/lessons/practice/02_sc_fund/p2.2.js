@@ -175,7 +175,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "scaler = torch.cuda.amp.GradScaler()\nwith torch.cuda.amp.autocast():\n    output = model(input)\n    loss = criterion(output, target)\nscaler.scale(loss).backward()\nscaler.step(optimizer)\nscaler.update()"
+     "code": "scaler = torch.amp.GradScaler('cuda')\nwith torch.amp.autocast('cuda'):\n    output = model(input)\n    loss = criterion(output, target)\nscaler.scale(loss).backward()\nscaler.step(optimizer)\nscaler.update()"
     },
     {
      "t": "p",

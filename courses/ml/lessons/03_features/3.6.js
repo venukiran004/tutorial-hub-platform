@@ -13,7 +13,7 @@ EC.receiveLesson({
     "Tune nested parameters, cache expensive steps, persist the fitted pipeline with its version, and score a single new row"
   ],
 
-  prerequisites: ["3.2", "3.3"],
+  prerequisites: ["3.2", "3.3", "python:15.5"],
 
   blocks: [
 

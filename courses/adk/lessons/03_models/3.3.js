@@ -30,13 +30,13 @@ pr = PlanReActPlanner()
 print("PlanReActPlanner injects", len(pr.build_planning_instruction(ctx, req)), "chars")
 
 bp = BuiltInPlanner(thinking_config=types.ThinkingConfig(
-        include_thoughts=True, thinking_budget=1024))
+        include_thoughts=True, thinking_level="medium"))
 print("BuiltInPlanner injects:", bp.build_planning_instruction(ctx, req))
 print("it carries thinking_config instead:", bp.thinking_config)` },
 
     { t: "out", text: `PlanReActPlanner injects an instruction of 3069 chars
 BuiltInPlanner injects an instruction: None
-  it carries thinking_config instead: include_thoughts=True thinking_budget=1024 thinking_level=None` },
+  it carries thinking_config instead: include_thoughts=True thinking_budget=None thinking_level=<ThinkingLevel.MEDIUM: 'MEDIUM'>` },
 
     { t: "p", text: "That contrast is the lesson in two lines. **`BuiltInPlanner` adds nothing to the prompt** — it configures the model's own thinking mode, so the reasoning happens inside the provider and you pay for it in thinking tokens. **`PlanReActPlanner` adds three thousand characters of instruction** to every request, teaching a model with no native reasoning mode to produce a plan in a format ADK can parse." },
 
@@ -149,7 +149,7 @@ system instruction length: 3137 chars` },
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "How much does BuiltInPlanner add to the system instruction?",
-      options: ["About 3,000 characters", "Nothing — it returns None", "A few hundred characters", "It depends on the thinking budget"],
+      options: ["About 3,000 characters", "Nothing — it returns None", "A few hundred characters", "It depends on the thinking level"],
       answer: 1,
       why: "The executed run prints `None` for its planning instruction. It works by setting `thinking_config` on the request so the provider's own reasoning mode does the work, which is why it costs thinking tokens rather than prompt tokens and why it needs a model that supports thinking." },
     { stem: "Why does PlanReActPlanner define a /*REPLANNING*/ section?",
@@ -161,7 +161,7 @@ system instruction length: 3137 chars` },
       answer: 1,
       why: "Reasoning comes back as parts flagged `thought=True`, alongside the answer. A client that does not filter on `part.thought` shows the user the model talking to itself — including anything it considered and rejected." },
     { stem: "You add a planner and your evaluation's trajectory score does not change. What does that tell you?",
-      options: ["The planner is working exactly as intended", "You pay extra prompt tokens for no benefit", "The evaluation set must be wrong", "You need a much bigger thinking budget"],
+      options: ["The planner is working exactly as intended", "You pay extra prompt tokens for no benefit", "The evaluation set must be wrong", "You need a much higher thinking level"],
       answer: 1,
       why: "The planner's main claim is better tool choice, which is exactly what `tool_trajectory_avg_score` measures. If it does not move, you have added thousands of characters to every request and latency to every turn without improving the behaviour you added it for." }
   ] },

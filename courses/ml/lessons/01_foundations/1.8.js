@@ -279,7 +279,10 @@ def adam(w, k):   m[:] = 0.9*m + 0.1*g; v[:] = 0.999*v + 0.001*g*g              
         { level: "bad", label: "Raw features, fixed learning rate, one epoch of SGD", code: `for row in data: w -= 0.1 * grad(row)          # tenure in months (1-60) beside a 0/1 flag`,
           note: "**Divergence or a crawl, depending on the rate**, and no way to tell which direction has converged. The units decide the outcome." },
         { level: "ok", label: "Standardised features, mini-batches, a decaying rate", code: `X = scaler.fit_transform(X_train)
-for epoch in range(30): lr = 0.5 / (1 + epoch); for batch in batches(X, 64): w -= lr * grad(batch)`,
+for epoch in range(30):
+    lr = 0.5 / (1 + epoch)
+    for batch in batches(X, 64):
+        w -= lr * grad(batch)`,
           note: "**Converges reliably.** The condition number is now near one; the decay lets the noise settle." },
         { level: "best", label: "Standardised features and a second-order solver, because the loss is convex", code: `LogisticRegression(solver="lbfgs", max_iter=1000)      # the default: L-BFGS with line search, no learning rate`,
           note: "**For a convex loss with a few hundred parameters, curvature-aware methods have no knobs and converge in tens of iterations.** Gradient descent with schedules is for the losses and scales where second-order is impossible — networks." }

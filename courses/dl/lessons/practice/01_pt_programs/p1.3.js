@@ -128,12 +128,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\nclass DiceLoss(nn.Module):\n    def forward(self, pred, target, smooth=1.0):\n        pred = torch.sigmoid(pred)\n        intersection = (pred * target).sum()\n        return 1 - (2 * intersection + smooth) / (pred.sum() + target.sum() + smooth)\npred = torch.randn(8, 1, 32, 32)\ntarget = torch.randint(0, 2, (8, 1, 32, 32)).float()\nprint(f\"Dice Loss: {DiceLoss()(pred, target).item():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\nclass DiceLoss(nn.Module):\n    def forward(self, pred, target, smooth=1.0):\n        pred = torch.sigmoid(pred)\n        intersection = (pred * target).sum()\n        return 1 - (2 * intersection + smooth) / (pred.sum() + target.sum() + smooth)\npred = torch.randn(8, 1, 32, 32)\ntarget = torch.randint(0, 2, (8, 1, 32, 32)).float()\nprint(f\"Dice Loss: {DiceLoss()(pred, target).item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Dice Loss: 0.4989"
+     "text": "Dice Loss: 0.4949"
     }
    ],
    "kind": "program"
@@ -182,12 +182,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\ndef gradient_penalty(D, real, fake):\n    alpha = torch.rand(real.size(0), 1)\n    interpolated = (alpha * real + (1 - alpha) * fake).requires_grad_(True)\n    d_interpolated = D(interpolated)\n    gradients = torch.autograd.grad(d_interpolated, interpolated,\n                                     grad_outputs=torch.ones_like(d_interpolated),\n                                     create_graph=True)[0]\n    gp = ((gradients.norm(2, dim=1) - 1) ** 2).mean()\n    return gp\nD = torch.nn.Sequential(torch.nn.Linear(10, 32), torch.nn.ReLU(), torch.nn.Linear(32, 1))\ngp = gradient_penalty(D, torch.randn(8, 10), torch.randn(8, 10))\nprint(f\"Gradient penalty: {gp.item():.4f}\")"
+     "code": "import torch\ntorch.manual_seed(0)\ndef gradient_penalty(D, real, fake):\n    alpha = torch.rand(real.size(0), 1)\n    interpolated = (alpha * real + (1 - alpha) * fake).requires_grad_(True)\n    d_interpolated = D(interpolated)\n    gradients = torch.autograd.grad(d_interpolated, interpolated,\n                                     grad_outputs=torch.ones_like(d_interpolated),\n                                     create_graph=True)[0]\n    gp = ((gradients.norm(2, dim=1) - 1) ** 2).mean()\n    return gp\nD = torch.nn.Sequential(torch.nn.Linear(10, 32), torch.nn.ReLU(), torch.nn.Linear(32, 1))\ngp = gradient_penalty(D, torch.randn(8, 10), torch.randn(8, 10))\nprint(f\"Gradient penalty: {gp.item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Gradient penalty: 0.6568"
+     "text": "Gradient penalty: 0.6046"
     }
    ],
    "kind": "program"
@@ -200,12 +200,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\n@torch.jit.script\ndef fused_relu_add(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:\n    return torch.relu(x + y)\na = torch.randn(3, 3)\nb = torch.randn(3, 3)\nresult = fused_relu_add(a, b)\nprint(f\"JIT result: {result}\")"
+     "code": "import torch\ntorch.manual_seed(0)\n@torch.jit.script\ndef fused_relu_add(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:\n    return torch.relu(x + y)\na = torch.randn(3, 3)\nb = torch.randn(3, 3)\nresult = fused_relu_add(a, b)\nprint(f\"JIT result: {result}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "JIT result: tensor([[0.0000, 0.6398, 0.8598],\n        [0.0000, 1.8648, 0.0000],\n        [0.3891, 0.0000, 0.0000]])"
+     "text": "JIT result: tensor([[1.1377, 0.0000, 0.0000],\n        [0.0000, 0.0161, 0.0000],\n        [0.5260, 0.2717, 0.0000]])"
     }
    ],
    "kind": "program"
@@ -272,12 +272,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\na = torch.randn(3, 4)\nb = torch.randn(4, 5)\n# Matrix multiply\nc = torch.einsum('ij,jk->ik', a, b)\nprint(f\"Matmul: {c.shape}\")\n# Batch matmul\na = torch.randn(2, 3, 4)\nb = torch.randn(2, 4, 5)\nc = torch.einsum('bij,bjk->bik', a, b)\nprint(f\"Batch matmul: {c.shape}\")\n# Trace\nm = torch.randn(4, 4)\ntrace = torch.einsum('ii->', m)\nprint(f\"Trace: {trace.item():.4f}\")"
+     "code": "import torch\ntorch.manual_seed(0)\na = torch.randn(3, 4)\nb = torch.randn(4, 5)\n# Matrix multiply\nc = torch.einsum('ij,jk->ik', a, b)\nprint(f\"Matmul: {c.shape}\")\n# Batch matmul\na = torch.randn(2, 3, 4)\nb = torch.randn(2, 4, 5)\nc = torch.einsum('bij,bjk->bik', a, b)\nprint(f\"Batch matmul: {c.shape}\")\n# Trace\nm = torch.randn(4, 4)\ntrace = torch.einsum('ii->', m)\nprint(f\"Trace: {trace.item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Matmul: torch.Size([3, 5])\nBatch matmul: torch.Size([2, 3, 5])\nTrace: -1.3690"
+     "text": "Matmul: torch.Size([3, 5])\nBatch matmul: torch.Size([2, 3, 5])\nTrace: -1.2511"
     }
    ],
    "kind": "program"

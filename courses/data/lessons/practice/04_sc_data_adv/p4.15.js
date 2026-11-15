@@ -307,7 +307,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Set datetime index\ndf = df.set_index('event_time').sort_index()\n\n# Time-based rolling window (last 1 hour of events)\ndf['rolling_1h_mean'] = df['value'].rolling('1H').mean()\ndf['rolling_1h_count'] = df['value'].rolling('1H').count()\n\n# For event-count-based window on irregular data\ndf['rolling_10events'] = df['value'].rolling(window=10, min_periods=1).mean()\n\n# Resampling to regular intervals first\nregular = df['value'].resample('5T').agg(['mean', 'count', 'sum'])\nregular = regular.fillna(method='ffill')  # forward fill gaps\n\n# Expanding (cumulative) for irregular data\ndf['cumulative_mean'] = df['value'].expanding().mean()"
+     "code": "# Set datetime index\ndf = df.set_index('event_time').sort_index()\n\n# Time-based rolling window (last 1 hour of events)\ndf['rolling_1h_mean'] = df['value'].rolling('1h').mean()\ndf['rolling_1h_count'] = df['value'].rolling('1h').count()\n\n# For event-count-based window on irregular data\ndf['rolling_10events'] = df['value'].rolling(window=10, min_periods=1).mean()\n\n# Resampling to regular intervals first\nregular = df['value'].resample('5min').agg(['mean', 'count', 'sum'])\nregular = regular.ffill()  # forward fill gaps\n\n# Expanding (cumulative) for irregular data\ndf['cumulative_mean'] = df['value'].expanding().mean()"
     }
    ],
    "kind": ""

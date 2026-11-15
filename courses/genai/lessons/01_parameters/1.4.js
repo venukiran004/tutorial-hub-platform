@@ -48,7 +48,7 @@ EC.receiveLesson({
     { t: "p", text: "All three penalties do the same kind of thing — modify the logits of tokens that have already been generated — and they differ in how much and how. Providers expose all three; here they are side by side." },
 
     { t: "dl", items: [
-      ["Frequency penalty", "`logit -= frequency_penalty × count(token)`. Scales with how many times the token has appeared. OpenAI's range is −2.0 to 2.0."],
+      ["Frequency penalty", "`logit -= frequency_penalty × count(token)`. Scales with how many times the token has appeared. On OpenAI's Chat Completions API and on vLLM the range is −2.0 to 2.0."],
       ["Presence penalty", "`logit -= presence_penalty × (1 if the token has appeared else 0)`. Flat, applied once, regardless of count. Same range."],
       ["Repetition penalty", "`logit /= repetition_penalty` (HuggingFace). Multiplicative rather than additive. Typically 1.0 to 2.0, where 1.0 means no penalty."]
     ] },

@@ -313,7 +313,7 @@ for static in (3000, 2400, 1650, 900, 300):
 
   interview: {
     title: "In an interview",
-    sub: "The Q6 on cost optimisation. A strong answer orders the levers by size rather than listing them.",
+    sub: "A strong answer orders the levers by size rather than listing them.",
     questions: [
       { level: "core",
         q: "How do you optimise LLM costs?",

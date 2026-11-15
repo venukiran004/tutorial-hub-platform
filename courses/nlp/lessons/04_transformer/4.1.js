@@ -142,7 +142,7 @@ EC.receiveLesson({
     { t: "diagram", kind: "timeline", title: "From one paper to everything", span: [2017, 2024], tick: 1,
       lanes: [
         { label: "Encoder-only", tone: "teal", bars: [[2018, 2020, "BERT, RoBERTa", "teal"]] },
-        { label: "Decoder-only", tone: "violet", bars: [[2018, 2024, "GPT-1 through GPT-4o, LLaMA, Claude", "violet"]] },
+        { label: "Decoder-only", tone: "violet", bars: [[2018, 2024, "GPT-1 onwards, Llama, Claude", "violet"]] },
         { label: "Encoder-decoder", tone: "accent", bars: [[2019, 2021, "T5, BART", "accent"]] },
         { label: "Beyond text", tone: "good", bars: [[2020, 2024, "ViT, multimodal, Gemini", "good"]] }
       ] },

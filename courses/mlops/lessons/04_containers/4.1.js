@@ -10,7 +10,7 @@ EC.receiveLesson({
     "Decide when a VM is the right answer instead"
   ],
 
-  prerequisites: ["3.6", "python:15.5"],
+  prerequisites: ["3.6", "python:14.5"],
 
   blocks: [
 

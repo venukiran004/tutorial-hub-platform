@@ -10,7 +10,7 @@ EC.receiveLesson({
     "Compute a metric's cardinality and recognise an unbounded label"
   ],
 
-  prerequisites: ["6.4", "python:15.3"],
+  prerequisites: ["6.4", "python:14.3"],
 
   blocks: [
 

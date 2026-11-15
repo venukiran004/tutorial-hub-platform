@@ -112,10 +112,10 @@ for trial in range(3):                                    # no seed set
     { t: "p", text: "Four sources, three of which a seed has no access to." },
 
     { t: "dl", items: [
-      ["Model weights", "Providers update models behind an alias. `gpt-4o` in March and `gpt-4o` in September are different weights, and the second one will answer differently no matter what you seed. Pinning a dated version — `gpt-4o-2024-08-06` — is the defence, and 12.4 is the lesson about what happens when that version is retired."],
+      ["Model weights", "Providers update models behind an alias. The same alias in March and in September can be different weights, and the second set will answer differently no matter what you seed. Pinning a dated snapshot rather than an alias is the defence — and a snapshot is itself retired on a published date: `gpt-4o-2024-08-06`, the pin of choice for two years, is switched off in January 2027. 12.4 is the lesson about what happens then."],
       ["Hardware and kernels", "Floating-point addition is not associative, so summing the same numbers in a different order gives a slightly different result. A request routed to a different GPU generation, or served by a kernel that tiles the matmul differently, produces slightly different logits from identical input."],
       ["Batch composition", "Your request is batched with whatever else arrived at the same moment. The batch size and padding change how the matrix multiplications are shaped, which changes the summation order, which changes the logits. You have no control over who you are batched with."],
-      ["The sampling draw", "The one a seed fixes. On a hosted model it is also the one you can remove entirely by setting `temperature=0`."]
+      ["The sampling draw", "The one a seed fixes. Where an API accepts `temperature=0`, that removes the draw entirely. Where the sampling parameters have been withdrawn (1.15), the draw is the provider's and you cannot fix it at all."]
     ] },
 
     /* ============================================================ 03 */
@@ -221,14 +221,16 @@ for bs in (1, 4, 16):
 
 
 
-    { t: "p", text: "OpenAI returns a `system_fingerprint` on every completion. It identifies the backend configuration — weights, serving stack, and whatever else they consider part of the deployment. The contract is: **if the fingerprint changes, do not expect the same output even with the same seed**." },
+    { t: "p", text: "OpenAI's Chat Completions API returns a `system_fingerprint` on every completion. It identifies the backend configuration — weights, serving stack, and whatever else they consider part of the deployment. The contract is: **if the fingerprint changes, do not expect the same output even with the same seed**." },
+
+    { t: "p", text: "That pair — `seed` in, fingerprint out — is the most any hosted API has offered, and it is narrower than it looks. OpenAI documents `seed` as a beta, best-effort feature of Chat Completions, and the Responses API has neither field. Anthropic has never had a seed, and current Claude and Gemini models no longer take a temperature either (1.15). On an open-weight server such as vLLM, `seed` works as it did in section 01, because the server is yours — though batching still applies. So read the listing below as a pattern rather than a recipe: **record whatever identity the API gives you with every response you keep.** Where there is no fingerprint, that is the `model` field of the response, which names the snapshot that actually served you." },
 
     { t: "code", lang: "python", title: "reproducible.py — using the fingerprint properly", code: `def call(messages, *, seed=42):
-    r = client.chat.completions.create(
-        model="gpt-4o-2024-08-06",          # pin a DATED version, not an alias
+    r = client.chat.completions.create(     # the one hosted API with both fields
+        model=PINNED,                       # a DATED snapshot id, not an alias
         messages=messages,
-        temperature=0,
-        seed=seed,
+        temperature=0,                      # where the model accepts it
+        seed=seed,                          # best-effort, by the provider's own description
     )
     return {
         "text": r.choices[0].message.content,
@@ -249,13 +251,13 @@ if current["fingerprint"] != baseline["fingerprint"]:
     { t: "callout", kind: "good", title: "Reproducibility that actually holds",
       body: [
         { t: "p", text: "**Pin a dated model version.** An alias is a moving target by design. This is the single largest source of drift and the easiest to remove." },
-        { t: "p", text: "**Set `temperature=0`,** which removes the sampling draw entirely — a stronger guarantee than a seed at a non-zero temperature, and one that does not depend on the provider implementing seeds well." },
-        { t: "p", text: "**Set a seed anyway,** for the cases where you cannot use temperature 0, and record it." },
-        { t: "p", text: "**Record `system_fingerprint` and `model` with every response you keep.** These are what let you answer \"did the model change\" six months later." },
+        { t: "p", text: "**Set `temperature=0` where the API accepts it,** which removes the sampling draw entirely — a stronger guarantee than a seed at a non-zero temperature, and one that does not depend on the provider implementing seeds well." },
+        { t: "p", text: "**Set a seed where there is one,** for the cases where you cannot use temperature 0, and record it." },
+        { t: "p", text: "**Record the returned `model` with every response you keep, and `system_fingerprint` where the API has one.** These are what let you answer \"did the model change\" six months later." },
         { t: "p", text: "**Cache on `(prompt, model_version, parameters, seed)`.** This is the only approach that gives a genuine guarantee, because it does not ask the model to be deterministic — it asks it once and remembers. For anything that must be byte-identical on re-read, such as a published report or a legal summary, this is the answer rather than a seed." }
       ] },
 
-    { t: "p", text: "That last point is the one worth internalising. If a system's correctness depends on an LLM returning the same bytes twice, the fix is not a better seed — it is to stop asking twice. Store the output the first time, key it on everything that could change it, and serve the stored copy. Everything else is an attempt to make a hosted, batched, floating-point system behave like a pure function, and it will be wrong occasionally in ways you find out about from a user." },
+    { t: "p", text: "That last point is the one worth internalising. If a system's correctness depends on an LLM returning the same bytes twice, the fix is not a better seed — it is to stop asking twice. Store the output the first time, key it on everything that could change it, and serve the stored copy. Everything else is an attempt to make a hosted, batched, floating-point system behave like a pure function, and it will be wrong occasionally in ways you find out about from a user. On the newest hosted models, which take neither a temperature nor a seed, pinning and caching are not the last resort but the whole strategy." },
 
     /* ============================================================ exercise */
     { t: "exercise", kind: "Challenge", title: "Find out how close the top two logits have to be for batching to flip them",
@@ -334,7 +336,8 @@ smallest gap: 1.566e-02 at position 29
     "Measured over 301 positions, **none** had a top-two gap within ten times the perturbation and one was within a hundred times — the margin is usually comfortable, which is why a greedy pipeline looks deterministic until it is not.",
     "**8.97% of positions had a top-two gap under 1.0 logit.** The model is undecided far more often than its confident-looking output suggests, and those are the positions at risk.",
     "**Pin a dated model version**, not an alias. This is the largest source of drift and the easiest to remove.",
-    "Record `system_fingerprint` and the returned `model` with every response you keep — they are the only signal that the backend moved.",
+    "Record the returned `model` with every response you keep, and `system_fingerprint` where the API has one — Chat Completions does, the Responses API and Claude do not. They are the only signal that the backend moved.",
+    "`seed` belongs to Chat Completions and to open-weight servers. The newest hosted models take neither a seed nor a temperature, and on those **pinning and caching are the whole strategy**.",
     "For output that must be identical on re-read, **cache on `(prompt, model_version, parameters, seed)`**. Do not ask a batched floating-point system to behave like a pure function; ask it once and remember."
   ],
 
@@ -371,8 +374,8 @@ smallest gap: 1.566e-02 at position 29
         q: "How do you get reproducible outputs from an LLM?",
         strong: "A strong answer starts with the honest framing — best-effort, not guaranteed — lists the levers in order of how much they buy, and ends with caching as the only real guarantee.",
         answer: [
-          { t: "p", text: "The honest answer is that you get best-effort reproducibility, not guaranteed. In order of how much each lever buys: pin a dated model version rather than an alias, because a provider moving the weights behind `gpt-4o` is the largest source of drift and the easiest to remove. Set `temperature=0`, which removes the sampling draw entirely. Set a seed for the cases where you cannot use temperature 0." },
-          { t: "p", text: "Then record `system_fingerprint` and the returned `model` with every response you keep. Those are the only signals you get that the backend moved, and without them a change is invisible until someone complains." },
+          { t: "p", text: "The honest answer is that you get best-effort reproducibility, not guaranteed. In order of how much each lever buys: pin a dated model version rather than an alias, because a provider moving the weights behind an alias is the largest source of drift and the easiest to remove. Set `temperature=0`, which removes the sampling draw entirely. Set a seed for the cases where you cannot use temperature 0. Both of those are now conditional: OpenAI's Responses API has no seed, and current Claude and Gemini models take neither." },
+          { t: "p", text: "Then record the returned `model` with every response you keep, and `system_fingerprint` on the APIs that have one. Those are the only signals you get that the backend moved, and without them a change is invisible until someone complains." },
           { t: "p", text: "And if the requirement is genuinely that the same input produces the same bytes — a published report, a legal summary — then the answer is not a parameter at all. Cache on `(prompt, model version, parameters, seed)` and serve the stored copy. Asking a hosted, batched, floating-point system to behave like a pure function will be wrong occasionally, and you find out from a user." }
         ] },
 
@@ -400,7 +403,7 @@ smallest gap: 1.566e-02 at position 29
         answer: [
           { t: "p", text: "Three hypotheses, and they are cheaply separable. The backend changed; the eval data changed; or the measurement is noisy and two points is within its error bars." },
           { t: "p", text: "I would check the last one first because it is free: what is the confidence interval on the score? Two points on a 200-example eval set is very often nothing at all — 9.16 is the lesson about the statistics nobody runs, and it is the most common explanation for a mysterious move." },
-          { t: "p", text: "For the backend, the discriminating check is `system_fingerprint` and the returned `model` field, compared against the previous run. If they moved, that is the answer, and the follow-up is a paired evaluation on the old and new backends rather than a comparison against a remembered number. If nobody recorded them, that is the finding — the instrumentation was missing and this is unanswerable this time, so the first fix is to record them from now on." },
+          { t: "p", text: "For the backend, the discriminating check is the returned `model` field, and `system_fingerprint` where the API has one, compared against the previous run. If they moved, that is the answer, and the follow-up is a paired evaluation on the old and new backends rather than a comparison against a remembered number. If nobody recorded them, that is the finding — the instrumentation was missing and this is unanswerable this time, so the first fix is to record them from now on." },
           { t: "p", text: "For the data, a hash of the eval set per run answers it in seconds. All three of these are things that have to be recorded *before* you need them, which is really the point: this question is a test of whether the pipeline was instrumented, not of how clever the investigation is. 12.5 is the lesson about instrumenting for exactly this." }
         ] }
     ]

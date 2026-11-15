@@ -290,7 +290,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from pydantic import BaseModel, validator, Field\nfrom typing import List, Optional\n\nclass Address(BaseModel):\n    street: str\n    city: str\n    zip_code: str = Field(..., pattern=r'^\\d{5}$')\n\nclass User(BaseModel):\n    name: str = Field(..., min_length=1, max_length=100)\n    age: int = Field(..., ge=0, le=150)\n    email: str\n    address: Optional[Address] = None\n    tags: List[str] = []\n    \n    @validator('email')\n    def validate_email(cls, v):\n        if '@' not in v:\n            raise ValueError('Invalid email')\n        return v\n\nuser = User(name=\"Alice\", age=30, email=\"alice@example.com\",\n            address={\"street\": \"123 Main St\", \"city\": \"NYC\", \"zip_code\": \"10001\"})\nprint(user.model_dump())",
+     "code": "from pydantic import BaseModel, field_validator, Field\nfrom typing import List, Optional\n\nclass Address(BaseModel):\n    street: str\n    city: str\n    zip_code: str = Field(..., pattern=r'^\\d{5}$')\n\nclass User(BaseModel):\n    name: str = Field(..., min_length=1, max_length=100)\n    age: int = Field(..., ge=0, le=150)\n    email: str\n    address: Optional[Address] = None\n    tags: List[str] = []\n    \n    @field_validator('email')\n    @classmethod\n    def validate_email(cls, v):\n        if '@' not in v:\n            raise ValueError('Invalid email')\n        return v\n\nuser = User(name=\"Alice\", age=30, email=\"alice@example.com\",\n            address={\"street\": \"123 Main St\", \"city\": \"NYC\", \"zip_code\": \"10001\"})\nprint(user.model_dump())",
      "numbered": false
     }
    ]

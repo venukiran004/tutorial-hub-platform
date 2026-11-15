@@ -75,12 +75,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\nclass NERModel(nn.Module):\n    def __init__(self, vocab_size=5000, embed_dim=64, hidden_dim=128, num_tags=9):\n        super().__init__()\n        self.embedding = nn.Embedding(vocab_size, embed_dim)\n        self.lstm = nn.LSTM(embed_dim, hidden_dim, batch_first=True, bidirectional=True)\n        self.fc = nn.Linear(hidden_dim * 2, num_tags)\n    \n    def forward(self, x):\n        emb = self.embedding(x)\n        lstm_out, _ = self.lstm(emb)\n        return self.fc(lstm_out)\n\n# BIO tags: B-PER, I-PER, B-ORG, I-ORG, B-LOC, I-LOC, B-MISC, I-MISC, O\nmodel = NERModel()\nx = torch.randint(0, 5000, (4, 30))\ntags = model(x)\nprint(f\"Input: {x.shape}, Tag logits: {tags.shape}\")\npredicted = tags.argmax(-1)\nprint(f\"Predicted tags: {predicted[0][:10]}\")"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\n\nclass NERModel(nn.Module):\n    def __init__(self, vocab_size=5000, embed_dim=64, hidden_dim=128, num_tags=9):\n        super().__init__()\n        self.embedding = nn.Embedding(vocab_size, embed_dim)\n        self.lstm = nn.LSTM(embed_dim, hidden_dim, batch_first=True, bidirectional=True)\n        self.fc = nn.Linear(hidden_dim * 2, num_tags)\n    \n    def forward(self, x):\n        emb = self.embedding(x)\n        lstm_out, _ = self.lstm(emb)\n        return self.fc(lstm_out)\n\n# BIO tags: B-PER, I-PER, B-ORG, I-ORG, B-LOC, I-LOC, B-MISC, I-MISC, O\nmodel = NERModel()\nx = torch.randint(0, 5000, (4, 30))\ntags = model(x)\nprint(f\"Input: {x.shape}, Tag logits: {tags.shape}\")\npredicted = tags.argmax(-1)\nprint(f\"Predicted tags: {predicted[0][:10]}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Input: torch.Size([4, 30]), Tag logits: torch.Size([4, 30, 9])\nPredicted tags: tensor([1, 0, 0, 0, 2, 2, 1, 1, 0, 0])"
+     "text": "Input: torch.Size([4, 30]), Tag logits: torch.Size([4, 30, 9])\nPredicted tags: tensor([6, 6, 6, 6, 8, 6, 7, 6, 6, 3])"
     }
    ],
    "kind": "program"
@@ -93,12 +93,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn.functional as F\n\nclass SimpleRAG:\n    def __init__(self, dim=64):\n        self.documents = []\n        self.embeddings = []\n        self.embed_fn = torch.nn.Linear(dim, dim, bias=False)\n    \n    def add_documents(self, docs, embeddings):\n        self.documents.extend(docs)\n        self.embeddings.extend(embeddings)\n    \n    def retrieve(self, query_embedding, top_k=3):\n        if not self.embeddings:\n            return []\n        db = torch.stack(self.embeddings)\n        query = query_embedding.unsqueeze(0)\n        sims = F.cosine_similarity(query, db)\n        top_idx = sims.topk(min(top_k, len(self.documents))).indices\n        return [(self.documents[i], sims[i].item()) for i in top_idx]\n\nrag = SimpleRAG()\ndocs = [\"Python is great for ML\", \"PyTorch is a DL framework\", \"Transformers changed NLP\"]\nembeds = [torch.randn(64) for _ in docs]\nrag.add_documents(docs, embeds)\n\nquery = torch.randn(64)\nresults = rag.retrieve(query, top_k=2)\nfor doc, score in results:\n    print(f\"  [{score:.4f}] {doc}\")"
+     "code": "import torch\nimport torch.nn.functional as F\ntorch.manual_seed(0)\n\nclass SimpleRAG:\n    def __init__(self, dim=64):\n        self.documents = []\n        self.embeddings = []\n        self.embed_fn = torch.nn.Linear(dim, dim, bias=False)\n    \n    def add_documents(self, docs, embeddings):\n        self.documents.extend(docs)\n        self.embeddings.extend(embeddings)\n    \n    def retrieve(self, query_embedding, top_k=3):\n        if not self.embeddings:\n            return []\n        db = torch.stack(self.embeddings)\n        query = query_embedding.unsqueeze(0)\n        sims = F.cosine_similarity(query, db)\n        top_idx = sims.topk(min(top_k, len(self.documents))).indices\n        return [(self.documents[i], sims[i].item()) for i in top_idx]\n\nrag = SimpleRAG()\ndocs = [\"Python is great for ML\", \"PyTorch is a DL framework\", \"Transformers changed NLP\"]\nembeds = [torch.randn(64) for _ in docs]\nrag.add_documents(docs, embeds)\n\nquery = torch.randn(64)\nresults = rag.retrieve(query, top_k=2)\nfor doc, score in results:\n    print(f\"  [{score:.4f}] {doc}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "[0.1107] Python is great for ML\n  [0.0785] PyTorch is a DL framework"
+     "text": "  [0.0359] Python is great for ML\n  [-0.1521] PyTorch is a DL framework"
     }
    ],
    "kind": "program"
@@ -147,12 +147,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\n\nclass SimpleCRF:\n    def __init__(self, num_tags):\n        self.num_tags = num_tags\n        self.transitions = torch.randn(num_tags, num_tags)\n    \n    def viterbi_decode(self, emissions):\n        seq_len, num_tags = emissions.shape\n        scores = emissions[0]\n        paths = []\n        \n        for t in range(1, seq_len):\n            prev_scores = scores.unsqueeze(1) + self.transitions\n            max_scores, max_indices = prev_scores.max(dim=0)\n            scores = max_scores + emissions[t]\n            paths.append(max_indices)\n        \n        # Backtrack\n        best_tag = scores.argmax().item()\n        best_path = [best_tag]\n        for indices in reversed(paths):\n            best_tag = indices[best_tag].item()\n            best_path.insert(0, best_tag)\n        \n        return best_path, scores.max().item()\n\ncrf = SimpleCRF(5)\nemissions = torch.randn(10, 5)  # 10 timesteps, 5 tags\npath, score = crf.viterbi_decode(emissions)\nprint(f\"Viterbi path: {path}\")\nprint(f\"Score: {score:.4f}\")"
+     "code": "import torch\ntorch.manual_seed(0)\n\nclass SimpleCRF:\n    def __init__(self, num_tags):\n        self.num_tags = num_tags\n        self.transitions = torch.randn(num_tags, num_tags)\n    \n    def viterbi_decode(self, emissions):\n        seq_len, num_tags = emissions.shape\n        scores = emissions[0]\n        paths = []\n        \n        for t in range(1, seq_len):\n            prev_scores = scores.unsqueeze(1) + self.transitions\n            max_scores, max_indices = prev_scores.max(dim=0)\n            scores = max_scores + emissions[t]\n            paths.append(max_indices)\n        \n        # Backtrack\n        best_tag = scores.argmax().item()\n        best_path = [best_tag]\n        for indices in reversed(paths):\n            best_tag = indices[best_tag].item()\n            best_path.insert(0, best_tag)\n        \n        return best_path, scores.max().item()\n\ncrf = SimpleCRF(5)\nemissions = torch.randn(10, 5)  # 10 timesteps, 5 tags\npath, score = crf.viterbi_decode(emissions)\nprint(f\"Viterbi path: {path}\")\nprint(f\"Score: {score:.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Viterbi path: [3, 1, 2, 0, 0, 1, 1, 0, 0, 1]\nScore: 19.1231"
+     "text": "Viterbi path: [2, 0, 4, 4, 0, 3, 3, 3, 2, 0]\nScore: 16.9276"
     }
    ],
    "kind": "program"
@@ -206,7 +206,7 @@ EC.receiveLesson({
     {
      "t": "out",
      "label": "Output when run",
-     "text": "running         → runn\n  happiness       → happi\n  beautiful       → beauti\n  effectively     → effective\n  processed       → process\n  computers       → computer\n  learning        → learn"
+     "text": "  running         → runn\n  happiness       → happi\n  beautiful       → beauti\n  effectively     → effective\n  processed       → process\n  computers       → computer\n  learning        → learn"
     }
    ],
    "kind": "program"
@@ -237,12 +237,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nclass SentenceEncoder(nn.Module):\n    def __init__(self, vocab_size=5000, embed_dim=64, hidden_dim=128):\n        super().__init__()\n        self.embedding = nn.Embedding(vocab_size, embed_dim)\n        self.encoder = nn.TransformerEncoderLayer(embed_dim, nhead=4, batch_first=True)\n        self.pool = lambda x: x.mean(dim=1)  # Mean pooling\n    \n    def forward(self, input_ids):\n        emb = self.embedding(input_ids)\n        encoded = self.encoder(emb)\n        return F.normalize(self.pool(encoded), dim=-1)\n\nmodel = SentenceEncoder()\nsent1 = torch.randint(0, 5000, (1, 10))\nsent2 = torch.randint(0, 5000, (1, 15))\nemb1, emb2 = model(sent1), model(sent2)\nsim = F.cosine_similarity(emb1, emb2)\nprint(f\"Sentence embeddings: {emb1.shape}, {emb2.shape}\")\nprint(f\"Similarity: {sim.item():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\nimport torch.nn.functional as F\ntorch.manual_seed(0)\n\nclass SentenceEncoder(nn.Module):\n    def __init__(self, vocab_size=5000, embed_dim=64, hidden_dim=128):\n        super().__init__()\n        self.embedding = nn.Embedding(vocab_size, embed_dim)\n        self.encoder = nn.TransformerEncoderLayer(embed_dim, nhead=4, batch_first=True)\n        self.pool = lambda x: x.mean(dim=1)  # Mean pooling\n    \n    def forward(self, input_ids):\n        emb = self.embedding(input_ids)\n        encoded = self.encoder(emb)\n        return F.normalize(self.pool(encoded), dim=-1)\n\nmodel = SentenceEncoder()\nsent1 = torch.randint(0, 5000, (1, 10))\nsent2 = torch.randint(0, 5000, (1, 15))\nemb1, emb2 = model(sent1), model(sent2)\nsim = F.cosine_similarity(emb1, emb2)\nprint(f\"Sentence embeddings: {emb1.shape}, {emb2.shape}\")\nprint(f\"Similarity: {sim.item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Sentence embeddings: torch.Size([1, 64]), torch.Size([1, 64])\nSimilarity: 0.1223"
+     "text": "Sentence embeddings: torch.Size([1, 64]), torch.Size([1, 64])\nSimilarity: 0.3321"
     }
    ],
    "kind": "program"

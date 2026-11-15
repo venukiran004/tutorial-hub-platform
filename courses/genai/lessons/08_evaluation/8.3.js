@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "8.3",
 
-  lede: "It is commonly said BLEU and ROUGE \u201creward surface overlap\u201d, so a correct paraphrase can score low and a fluent wrong answer can score high. Tested on a reference sentence and five candidates, that understates it: a factually **inverted** answer \u2014 the two latency figures swapped, so the claim is exactly backwards \u2014 scored **ROUGE-1 = 1.0000 and ROUGE-2 = 1.0000**, a perfect match, while a correct paraphrase scored **0.2581**. The metric is not merely weak on paraphrase; it is indifferent to whether the sentence means the opposite.",
+  lede: "It is commonly said that BLEU and ROUGE \u201creward surface overlap\u201d, so a correct paraphrase can score low and a fluent wrong answer can score high. Tested on a reference sentence and five candidates, that understates it: a factually **inverted** answer \u2014 the two latency figures swapped, so the claim is exactly backwards \u2014 scored **ROUGE-1 = 1.0000 and ROUGE-2 = 1.0000**, a perfect match, while a correct paraphrase scored **0.2581**. The metric is not merely weak on paraphrase; it is indifferent to whether the sentence means the opposite.",
 
   objectives: [
     "Match each reference-based metric to the task it was designed for",
@@ -163,7 +163,7 @@ r = rs.score(REF, c)      # rouge_score, with stemming`,
       body: [
         { t: "p", text: "My script printed that at n = 10, c = 1, \u201cpass@10 is 1.00 \u2014 with ten attempts a 10%-reliable model solves it essentially always\u201d. That is not what the number means. With n = 10 and k = 10 you are drawing *all* your samples, so if any one is correct the draw contains it \u2014 the estimator returns 1.0 by the `n - c < k` branch, not by estimating anything." },
         { t: "p", text: "It is a boundary condition, and it is why **n must exceed k substantially**. The informative row is the last one: at n = 100 with c = 5, pass@10 is **0.4162** \u2014 a genuine estimate that ten attempts solve the problem about 42% of the time." },
-        { t: "p", text: "The practical rule the reference implies and does not state: sample well beyond the k you intend to report. Reporting pass@10 from 10 samples is reporting 1.0 for every problem the model ever solves, which is why standard harnesses sample 100 or 200 for pass@10." }
+        { t: "p", text: "The practical rule, usually implied and rarely stated: sample well beyond the k you intend to report. Reporting pass@10 from 10 samples is reporting 1.0 for every problem the model ever solves, which is why standard harnesses sample 100 or 200 for pass@10." }
       ] },
 
     { t: "callout", kind: "insight", title: "pass@k is a property of a model *and a budget*",

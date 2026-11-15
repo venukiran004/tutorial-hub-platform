@@ -89,7 +89,7 @@ At $5 / 1M input and $15 / 1M output:
 
     { t: "callout", kind: "insight", title: "So \u201cattack input first\u201d is true and self-limiting",
       body: [
-        { t: "p", text: "The reference is right that input is normally the larger and most wasteful half \u2014 87% here, and most of it boilerplate. But applying the three input levers takes input from 87% to 72.7% of the bill, so the **next** lever is no longer an input lever." },
+        { t: "p", text: "The usual claim is right that input is normally the larger and most wasteful half \u2014 87% here, and most of it boilerplate. But applying the three input levers takes input from 87% to 72.7% of the bill, so the **next** lever is no longer an input lever." },
         { t: "p", text: "Output is priced higher per token, and after the input work it is 27% of a bill a quarter the original size. At that point capping `max_tokens` and asking for structure \u2014 11.8\u2019s second half \u2014 is where the remaining proportional saving is." },
         { t: "p", text: "That is a useful thing to know before you start, because it tells you when to stop. Each input lever has a smaller share to work on than the last, and the sequence has a natural end point rather than continuing indefinitely." }
       ] },

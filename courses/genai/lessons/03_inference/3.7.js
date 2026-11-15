@@ -178,7 +178,7 @@ print(n_shared, tot, n_shared + uniq, 100 * (tot - n_shared - uniq) / tot)`,
 
     { t: "callout", kind: "warn", title: "The feature matrix is a snapshot, and I cannot verify it here",
       body: [
-        { t: "p", text: "The reference carries a tick-box table across vLLM, TGI, TensorRT-LLM, Ollama and llama.cpp — PagedAttention, continuous batching, tensor parallelism, speculative decoding, CPU inference. The structure is the right way to think, and the specific ticks are the part that rots." },
+        { t: "p", text: "Comparisons of these servers usually come as a tick-box table across vLLM, TGI, TensorRT-LLM, Ollama and llama.cpp — PagedAttention, continuous batching, tensor parallelism, speculative decoding, CPU inference. The structure is the right way to think, and the specific ticks are the part that rots." },
         { t: "p", text: "Two of its rows I would already question: it marks CPU inference unavailable for vLLM, and continuous batching unavailable for llama.cpp. Both have moved — vLLM has a CPU backend and llama.cpp's server does batch concurrent requests. I am stating that as something to check rather than as a measurement, because this environment has no GPU and I could not install and run these servers to verify either claim." },
         { t: "p", text: "The durable advice is the habit: a framework feature matrix in any document more than a few months old should be re-read against the project's own changelog before a decision rests on it. What does not rot is the list of *properties worth asking about*, which is what the table is actually for." }
       ] },

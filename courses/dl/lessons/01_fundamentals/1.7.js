@@ -322,7 +322,7 @@ restored epoch 11: val acc 0.9316, test acc 0.9337` },
       why: "The loop halts only after `patience` epochs without improvement, so by then the model has moved on from its best point — in the trace, it stopped at epoch 16 while the best validation loss was at epoch 11. Restoring the checkpoint returns the weights that actually had the lowest validation loss." }
   ] },
 
-  interview: { title: "Interview", sub: "The Q5 and Q8", questions: [
+  interview: { title: "Interview", sub: "Two standard questions", questions: [
     { level: "Core", q: "Training loss is decreasing but validation loss is increasing. What do you do?",
       strong: "Overfitting; work the ordered checklist — data, regularisation, early stopping, capacity, batch norm, leakage check, cross-validation.",
       answer: [{ t: "p", text: "The divergence is overfitting: the model is fitting training noise. In order of preference: get more data, or augment what you have; increase regularisation — dropout from 0.3 to 0.5, add or raise weight decay; early-stop, checkpointing at the best validation loss; reduce capacity with fewer layers or units; add batch normalisation if absent; check for leakage, since a suspiciously low training loss can mean a feature encodes the label; and cross-validate to be sure the split was not simply unlucky. I would also confirm that model.eval() is called during validation so dropout and batch norm are in inference mode — otherwise the validation numbers themselves are wrong." }] },

@@ -302,7 +302,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# PyTorch automatic mixed precision\nfrom torch.cuda.amp import autocast, GradScaler\n\nscaler = GradScaler()\nfor data, target in loader:\n    with autocast():\n        output = model(data)\n        loss = criterion(output, target)\n    scaler.scale(loss).backward()\n    scaler.step(optimizer)\n    scaler.update()"
+     "code": "# PyTorch automatic mixed precision\nfrom torch.amp import autocast, GradScaler\n\nscaler = GradScaler('cuda')\nfor data, target in loader:\n    with autocast('cuda'):\n        output = model(data)\n        loss = criterion(output, target)\n    scaler.scale(loss).backward()\n    scaler.step(optimizer)\n    scaler.update()"
     },
     {
      "t": "p",

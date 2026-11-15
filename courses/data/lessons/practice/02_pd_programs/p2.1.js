@@ -86,7 +86,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'A': [1, np.nan, 3, np.nan, 5],\n    'B': [np.nan, 2, np.nan, 4, 5],\n    'C': [1, 2, 3, 4, 5]\n})\n\nprint(f\"Null counts:\\n{df.isnull().sum()}\")\nprint(f\"Null percentage:\\n{(df.isnull().sum() / len(df) * 100).round(1)}\")\n\n# Fill methods\nprint(df.fillna(0))                # Fill with value\nprint(df.fillna(method='ffill'))   # Forward fill\nprint(df.fillna(method='bfill'))   # Backward fill\nprint(df.fillna(df.mean()))        # Fill with mean\nprint(df.dropna())                 # Drop rows with NaN\nprint(df.dropna(thresh=2))        # Keep rows with at least 2 non-null"
+     "code": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'A': [1, np.nan, 3, np.nan, 5],\n    'B': [np.nan, 2, np.nan, 4, 5],\n    'C': [1, 2, 3, 4, 5]\n})\n\nprint(f\"Null counts:\\n{df.isnull().sum()}\")\nprint(f\"Null percentage:\\n{(df.isnull().sum() / len(df) * 100).round(1)}\")\n\n# Fill methods\nprint(df.fillna(0))                # Fill with value\nprint(df.ffill())                  # Forward fill\nprint(df.bfill())                  # Backward fill\nprint(df.fillna(df.mean()))        # Fill with mean\nprint(df.dropna())                 # Drop rows with NaN\nprint(df.dropna(thresh=2))        # Keep rows with at least 2 non-null"
     }
    ],
    "kind": "program"
@@ -112,7 +112,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'timestamp': pd.date_range('2024-01-01', periods=100, freq='D'),\n    'value': range(100)\n})\n\ndf['year'] = df['timestamp'].dt.year\ndf['month'] = df['timestamp'].dt.month\ndf['day_name'] = df['timestamp'].dt.day_name()\ndf['is_weekend'] = df['timestamp'].dt.dayofweek >= 5\ndf['quarter'] = df['timestamp'].dt.quarter\n\n# Resample\nmonthly = df.set_index('timestamp').resample('M')['value'].agg(['mean', 'sum'])\nprint(monthly)\n\n# Date arithmetic\ndf['next_week'] = df['timestamp'] + pd.Timedelta(days=7)\ndf['days_from_start'] = (df['timestamp'] - df['timestamp'].min()).dt.days\nprint(df[['timestamp', 'day_name', 'is_weekend', 'days_from_start']].head())"
+     "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'timestamp': pd.date_range('2024-01-01', periods=100, freq='D'),\n    'value': range(100)\n})\n\ndf['year'] = df['timestamp'].dt.year\ndf['month'] = df['timestamp'].dt.month\ndf['day_name'] = df['timestamp'].dt.day_name()\ndf['is_weekend'] = df['timestamp'].dt.dayofweek >= 5\ndf['quarter'] = df['timestamp'].dt.quarter\n\n# Resample\nmonthly = df.set_index('timestamp').resample('ME')['value'].agg(['mean', 'sum'])\nprint(monthly)\n\n# Date arithmetic\ndf['next_week'] = df['timestamp'] + pd.Timedelta(days=7)\ndf['days_from_start'] = (df['timestamp'] - df['timestamp'].min()).dt.days\nprint(df[['timestamp', 'day_name', 'is_weekend', 'days_from_start']].head())"
     }
    ],
    "kind": "program"
@@ -268,7 +268,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import pandas as pd\nimport numpy as np\n\n# Create time series\ndates = pd.date_range('2020-01-01', '2023-12-31', freq='D')\nts = pd.Series(np.random.randn(len(dates)).cumsum() + 100, index=dates, name='stock_price')\n\n# Resampling\nmonthly = ts.resample('M').agg(['mean', 'std', 'min', 'max'])\nquarterly = ts.resample('Q').mean()\nyearly = ts.resample('Y').mean()\nprint(monthly.tail())\n\n# Shift and pct_change\ndf = pd.DataFrame({'price': ts})\ndf['prev_day'] = df['price'].shift(1)\ndf['daily_return'] = df['price'].pct_change()\ndf['7d_return'] = df['price'].pct_change(7)\ndf['cumulative_return'] = (1 + df['daily_return']).cumprod() - 1\n\nprint(df.tail())"
+     "code": "import pandas as pd\nimport numpy as np\n\n# Create time series\ndates = pd.date_range('2020-01-01', '2023-12-31', freq='D')\nts = pd.Series(np.random.randn(len(dates)).cumsum() + 100, index=dates, name='stock_price')\n\n# Resampling\nmonthly = ts.resample('ME').agg(['mean', 'std', 'min', 'max'])\nquarterly = ts.resample('QE').mean()\nyearly = ts.resample('YE').mean()\nprint(monthly.tail())\n\n# Shift and pct_change\ndf = pd.DataFrame({'price': ts})\ndf['prev_day'] = df['price'].shift(1)\ndf['daily_return'] = df['price'].pct_change()\ndf['7d_return'] = df['price'].pct_change(7)\ndf['cumulative_return'] = (1 + df['daily_return']).cumprod() - 1\n\nprint(df.tail())"
     }
    ],
    "kind": "program"
@@ -294,7 +294,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import pandas as pd\ndf = pd.DataFrame({'grade': ['A', 'B', 'C', 'A', 'B']})\nmapping = {'A': 'Excellent', 'B': 'Good', 'C': 'Fair'}\ndf['description'] = df['grade'].map(mapping)\ndf['points'] = df['grade'].replace({'A': 4, 'B': 3, 'C': 2})\nprint(df)"
+     "code": "import pandas as pd\ndf = pd.DataFrame({'grade': ['A', 'B', 'C', 'A', 'B']})\nmapping = {'A': 'Excellent', 'B': 'Good', 'C': 'Fair'}\ndf['description'] = df['grade'].map(mapping)\ndf['points'] = df['grade'].map({'A': 4, 'B': 3, 'C': 2})\nprint(df)"
     }
    ],
    "kind": "program"

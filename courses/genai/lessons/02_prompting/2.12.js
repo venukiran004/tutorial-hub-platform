@@ -181,7 +181,7 @@ def n_needed(p1, p2, alpha=0.05, power=0.80):
 
     { t: "callout", kind: "trap", title: "Thirty to fifty cases cannot measure a prompt change",
       body: [
-        { t: "p", text: "This is not a criticism of the reference in particular — the 30–50 figure is the conventional advice everywhere, and it is wrong for the purpose people use it for. It is a reasonable size for *smoke testing* a prompt: catching that a change broke the format, or that a whole category now fails. It cannot tell you that version B is 3 points better than version A." },
+        { t: "p", text: "This is not a criticism of any one source — the 30–50 figure is the conventional advice everywhere, and it is wrong for the purpose people use it for. It is a reasonable size for *smoke testing* a prompt: catching that a change broke the format, or that a whole category now fails. It cannot tell you that version B is 3 points better than version A." },
         { t: "p", text: "The consequence in practice is a cycle that feels like progress and is not: change a prompt, run fifty cases, see 0.84 become 0.88, ship. That difference is well inside the noise of a fifty-case set, and half the time the change made things worse." },
         { t: "p", text: "Two honest ways out. **Use a bigger set** — production failures make it grow for free, and thousands of cases is achievable for a mature feature. Or **accept that the offline set is a smoke test** and get your real evidence from production A/B (§05), where the sample size arrives on its own." }
       ] },
@@ -397,7 +397,7 @@ for n in (30, 50, 100, 500, 1000, 5000):
 
   interview: {
     title: "In an interview",
-    sub: "The Q3. Most answers describe a process; the ones that stand out know whether the process can detect anything.",
+    sub: "Most answers describe a process; the ones that stand out know whether the process can detect anything.",
     questions: [
       { level: "core",
         q: "How do you evaluate and iterate on prompts?",

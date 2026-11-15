@@ -109,7 +109,7 @@ Output: {"winner": "A"|"B"|"tie", "reason": "..."}`,
     { t: "h2", n: "03", id: "kappa", text: "Calibrating the judge",
       sub: "Where raw agreement fails badly" },
 
-    { t: "p", text: "It is commonly said to measure judge-versus-human agreement with Cohen\u2019s \u03ba on a sample before trusting the judge. \u03ba corrects raw agreement for the agreement you would expect by chance, and the correction is not cosmetic." },
+    { t: "p", text: "The standard advice is to measure judge-versus-human agreement with Cohen\u2019s \u03ba on a sample before trusting the judge. \u03ba corrects raw agreement for the agreement you would expect by chance, and the correction is not cosmetic." },
 
     { t: "math", tex: "\\kappa = \\frac{p_o - p_e}{1 - p_e}" },
 

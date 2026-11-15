@@ -116,7 +116,7 @@ for ep in range(epochs):
     { t: "callout", kind: "note", title: "Nine epochs, against the \u201c1\u20133\u201d",
       body: [
         { t: "p", text: "The usual advice is 1\u20133 epochs and this run peaked at 9. Both are right, because an epoch is a pass over *your* data: 32 examples in batches of 4 is 8 optimiser steps per epoch, so nine epochs here is 72 steps. A 1,000-example dataset gives 250 steps in a single epoch." },
-        { t: "p", text: "So the transferable quantity is **steps**, not epochs, and the rule of thumb is calibrated for the dataset size the reference assumes. On a small set, quote both \u2014 and stop on the validation curve rather than on either number." }
+        { t: "p", text: "So the transferable quantity is **steps**, not epochs, and the rule of thumb is calibrated for the dataset size it assumes. On a small set, quote both \u2014 and stop on the validation curve rather than on either number." }
       ] },
 
     { t: "h2", n: "03", id: "lr", text: "Learning rate: the result that matters",
@@ -272,7 +272,7 @@ for ep in range(epochs):
       sub: "Each default, and what the measurement says it is protecting" },
 
     { t: "table",
-      head: ["Setting", "Reference's default", "What I measured"],
+      head: ["Setting", "Usual default", "What I measured"],
       rows: [
         ["`r` (rank)", "8 simple \u00b7 16 instructions \u00b7 32\u201364 complex", "Validation plateaus at r=32 (2.0415 \u2192 2.0396 at 64) while generic perplexity rises 10.0 \u2192 14.4 \u2014 the top of the range is where returns stop"],
         ["`lora_alpha`", "2 \u00d7 r", "Makes the multiplier the constant 2 (4.4), so `r` can be swept alone \u2014 and measurably under-trains r=32 against `\u03b1/\u221ar`"],

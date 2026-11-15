@@ -55,7 +55,7 @@ from google.adk.tools import google_search
 
 agent = LlmAgent(
     name="researcher",
-    model="gemini-2.5-flash",
+    model="gemini-3.8-flash",
     instruction="Answer using Google Search. Always say where the information came from.",
     tools=[google_search],
 )`,
@@ -86,7 +86,7 @@ agent = LlmAgent(
     UnsafeLocalCodeExecutor,    # in this process. The name is the documentation.
 )
 
-analyst = LlmAgent(name="analyst", model="gemini-2.5-pro",
+analyst = LlmAgent(name="analyst", model="gemini-4-carbon",
                    instruction="Use Python to compute answers. Show your working.",
                    code_executor=BuiltInCodeExecutor())`,
       caption: "Attached with `code_executor=`, not as a tool. The model writes Python, the executor runs it, and the output comes back to the model — so an arithmetic or data-manipulation answer is computed rather than predicted." },

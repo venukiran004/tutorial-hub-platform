@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "11.13",
 
-  lede: "It is cheaper to stop bad input than to clean bad output, so four checks run before the model. It is commonly said its jailbreak regexes are \u201ca first layer, not a solution\u201d \u2014 and measured, that is generous: **100% of eight literal attacks, 0% of thirteen paraphrases, and 60% of benign-but-tricky inputs wrongly blocked.** Recall 0.381, precision 0.571. The honest reading is that the regex layer is a tripwire for unsophisticated attempts whose main production effect is over-refusal.",
+  lede: "It is cheaper to stop bad input than to clean bad output, so four checks run before the model. Jailbreak regexes are commonly described as \u201ca first layer, not a solution\u201d \u2014 and measured, that is generous: **100% of eight literal attacks, 0% of thirteen paraphrases, and 60% of benign-but-tricky inputs wrongly blocked.** Recall 0.381, precision 0.571. The honest reading is that the regex layer is a tripwire for unsophisticated attempts whose main production effect is over-refusal.",
 
   objectives: [
     "Implement the four input guardrails and say what each costs",

@@ -146,7 +146,7 @@ trace.set_tracer_provider(provider)
 
 tracer = trace.get_tracer(__name__)
 with tracer.start_as_current_span("answer_question") as span:
-    span.set_attribute("gen_ai.request.model", "gpt-4o-mini")   # the semantic
+    span.set_attribute("gen_ai.request.model", "gpt-6-luna")   # the semantic
     span.set_attribute("gen_ai.usage.input_tokens", usage.input_tokens)
     span.set_attribute("gen_ai.usage.output_tokens", usage.output_tokens)
     result = chain.invoke(question)

@@ -199,7 +199,7 @@ r = torch.tensor([[1., 0., 1., 0., 0., 1.]])`,
 </svg>` },
 
     { t: "h2", n: "04", id: "memory", text: "What deleting the critic buys",
-      sub: "It is commonly said ~40%; measured it is 44%" },
+      sub: "Usually quoted as ~40%; measured it is 44%" },
 
     {"kind": "trace", "title": "Deleting the critic is 44% of the memory", "caption": "PPO holds four models at 7B — policy and critic trained, reference and reward model frozen — for **234.7 GB**. Dropping the critic takes it to 130.4 GB, and dropping the reward model too, which RLVR does, reaches **117.3 GB: the same as DPO**. So GRPO with a verifier costs exactly what the offline method costs while keeping the online exploration that 7.6 identified as PPO's one irreplaceable property.", "left": "method", "codeW": 230, "vars": ["memory at 7B", "vs PPO"], "steps": [{"code": "PPO - policy + critic trained", "state": ["234.7 GB", "1.00x"], "tone": "crit"}, {"code": "GRPO - policy trained, RM frozen", "state": ["130.4 GB", "0.56x"], "changed": [0], "tone": "accent"}, {"code": "GRPO + RLVR - no RM at all", "state": ["117.3 GB", "0.50x"], "changed": [0], "tone": "good"}, {"code": "DPO", "state": ["117.3 GB", "0.50x"], "tone": "good", "note": "the same, without exploration"}], "t": "diagram", "id": "dg-7_8-04-2"},
 

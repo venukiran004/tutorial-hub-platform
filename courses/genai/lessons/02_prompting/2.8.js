@@ -136,7 +136,7 @@ category = call(f"""Classify this query into one category:
 - CODE: Requires code generation
 
 Query: {query}
-Category:""", model="gpt-4o-mini", max_tokens=4)
+Category:""", model="gpt-6-luna", max_tokens=4)
 
 answer = call(PROMPTS[category].format(query=query), model=MODELS[category])
 

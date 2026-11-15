@@ -6,7 +6,7 @@
 EC.receiveLesson({
   id: "2.11",
 
-  lede: "**Everything in this module so far now assembles into one model class.** The `CustomCNN` is the standard anatomy from lesson 2.2 — conv, batch norm, ReLU, pool, channels doubling as space halves — capped by the global average pooling head from lesson 2.3. This lesson builds it, traces every shape through it, runs the training loop end to end, and flags the one API in the reference that has since been deprecated.",
+  lede: "**Everything in this module so far now assembles into one model class.** The `CustomCNN` is the standard anatomy from lesson 2.2 — conv, batch norm, ReLU, pool, channels doubling as space halves — capped by the global average pooling head from lesson 2.3. This lesson builds it, traces every shape through it, runs the training loop end to end, and flags the one commonly used API that has since been deprecated.",
 
   objectives: [
     "Build a production-shaped CNN as an `nn.Module` and trace its shapes",

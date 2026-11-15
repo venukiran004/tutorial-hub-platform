@@ -173,7 +173,7 @@ TV = T @ V.T                                  # text against image`,
     { t: "code", lang: "python", title: "describe at ingestion, embed the description", code: `def describe_image(image_path: str) -> str:
     with open(image_path, "rb") as f:
         b64 = base64.b64encode(f.read()).decode()
-    response = ChatOpenAI(model="gpt-4o").invoke([
+    response = ChatOpenAI(model="gpt-6.1-sol").invoke([
         {"type": "text", "text": "Describe this image in detail for search indexing."},
         {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}},
     ])

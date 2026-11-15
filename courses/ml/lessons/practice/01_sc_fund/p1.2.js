@@ -68,7 +68,7 @@ EC.receiveLesson({
     {
      "t": "out",
      "label": "Output when run",
-     "text": "petal_length: 0.4361\n  petal_width: 0.4361\n  sepal_length: 0.1061\n  sepal_width: 0.0217"
+     "text": "  petal_length: 0.4361\n  petal_width: 0.4361\n  sepal_length: 0.1061\n  sepal_width: 0.0217"
     }
    ],
    "kind": "program"

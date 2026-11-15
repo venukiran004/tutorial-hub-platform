@@ -136,7 +136,7 @@ print("batch of 16: %.2f GB (it says ~16 GB)" % (ex * 16 / 1e9))`,
       out: `  and the worked example, checked:
     'LLaMA-2 7B, seq 4096: 2 x 32 x 32 x 128 x 4096 x 2' = 2.15 GB (it says ~1 GB)
     batch of 16: 34.36 GB (it says ~16 GB)`,
-      caption: "Both figures in the reference are about half the correct value." },
+      caption: "Both commonly quoted figures are about half the correct value." },
 
     { t: "h2", n: "03", id: "concurrency", text: "The cache is what limits concurrency",
       sub: "Weights are paid once; the cache is paid per request" },
@@ -223,7 +223,7 @@ for seq in (1024, 4096, 16384, 32768):
         ["Waste", "Everything between actual and maximum length", "At most one partial block per request"],
         ["Fragmentation", "External — gaps too small to reuse", "None — blocks are uniform"],
         ["Sharing", "Impossible — each request owns its range", "**Blocks can be shared** between requests"],
-        ["Reference's claim", "—", "2–4× more concurrent requests"]
+        ["The usual claim", "—", "2–4× more concurrent requests"]
       ],
       caption: "From section 2. The sharing row is the one that matters beyond memory efficiency: it is what makes automatic prefix caching possible." },
 
@@ -359,7 +359,7 @@ configuration                   seq   GB/request   concurrent
         why: "The key and value for token 7 are identical at step 8 and at step 50, so caching them turns quadratic recomputation into linear work — measured at 4.94× for 24 tokens after a 128-token prompt, with the ratio growing as the sequence lengthens. Weights are still loaded every step, which is precisely why decode remains memory-bound (3.1). Nothing is compressed and nothing moves to the CPU." },
 
       { stem: "A reference says Llama-2 7B needs ~1 GB of KV cache at 4,096 tokens. Running the formula gives what?",
-        options: ["~1 GB — the reference is right", "2.15 GB — about double", "0.5 GB — the reference is pessimistic", "It depends on the batch size"],
+        options: ["~1 GB — the usual figure is right", "2.15 GB — about double", "0.5 GB — the usual figure is pessimistic", "It depends on the batch size"],
         answer: 1,
         why: "2 × 32 layers × 32 heads × 128 head_dim × 4096 tokens × 2 bytes is 2.15 GB, and the batch-of-16 figure is 34.36 GB rather than the quoted ~16 GB — both about double. Per-request cache size does not depend on batch size; total does, linearly. The consequence is not academic: a server sized on the quoted figure holds half the intended concurrency and fails as a cliff, because an allocation either fits or does not." },
 

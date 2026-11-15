@@ -271,7 +271,7 @@ print(W1.grad, b1.grad)     # [[0, 0], [-0.1938, -0.3877]]  [[0], [-0.1938]]`,
       why: "Each backward step multiplies by a saved forward value — a¹ for dW², the sign of z¹ for the ReLU gate, x for dW¹. Every layer's activations for every example in the batch must be held until the backward pass has consumed them; inference can discard each layer's output as soon as the next layer has used it." }
   ] },
 
-  interview: { title: "Interview", sub: "The Q1, and the follow-ups", questions: [
+  interview: { title: "Interview", sub: "The standard question, and the follow-ups", questions: [
     { level: "Core", q: "Explain backpropagation intuitively and mathematically.",
       strong: "Each layer's error signal is the layer above's, times the connecting weights, times the activation's local slope; weight gradients are error times input.",
       answer: [{ t: "p", text: "Intuitively: the output error is shared out backwards. Each unit is blamed in proportion to how strongly it fed the units above (the weights) and how sensitive its own output was (the activation's derivative). Mathematically: δˡ = ((Wˡ⁺¹)ᵀ δˡ⁺¹) ⊙ g′(zˡ), with δᴸ = ŷ − y for a sigmoid-or-softmax output with cross-entropy, and ∇_{Wˡ} L = δˡ (aˡ⁻¹)ᵀ / m. It is the chain rule with the shared factors computed once, and autograd frameworks implement it as reverse traversal of the computational graph, each operation contributing its own local backward()." }] },

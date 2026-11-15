@@ -53,48 +53,63 @@ EC.receiveLesson({
   <line x1="355" y1="69" x2="386" y2="69" style="stroke:var(--line)" stroke-width="1.4" marker-end="url(#fc-arrow)"/>
   <line x1="540" y1="69" x2="571" y2="69" style="stroke:var(--line)" stroke-width="1.4" marker-end="url(#fc-arrow)"/>
 
-  <text x="280" y="126" text-anchor="middle" class="s-mono">finish_reason: "tool_calls"</text>
-  <text x="465" y="126" text-anchor="middle" class="s-mono">role: "tool", tool_call_id</text>
+  <text x="280" y="126" text-anchor="middle" class="s-mono">type: "function_call"</text>
+  <text x="465" y="126" text-anchor="middle" class="s-mono">function_call_output</text>
 
   <rect x="20" y="152" width="720" height="40" rx="8" class="s-fill" style="stroke:var(--crit)" stroke-width="1.2"/>
   <text x="380" y="170" text-anchor="middle" class="s-label" style="fill:var(--crit)">the model is a text generator at steps 2 and 4 — it never touches your API</text>
   <text x="380" y="186" text-anchor="middle" class="s-sub">everything that can go wrong in the real world goes wrong in step 3</text>
 
   <text x="20" y="224" class="s-sub">Steps 2-4 repeat: the model may request another tool after seeing the first result.</text>
-  <text x="20" y="240" class="s-sub">Every turn re-sends every tool schema — measured below at ~85 tokens each.</text>
+  <text x="20" y="240" class="s-sub">Every turn re-sends every tool schema — measured below at ~94 tokens each.</text>
 </svg>` },
 
-    { t: "code", lang: "python", title: "roundtrip.py — the whole loop", code: `messages = [{"role": "user", "content": "What's the weather in Tokyo?"}]
+    { t: "code", lang: "python", title: "roundtrip.py — the whole loop", code: `history = [{"role": "user", "content": "What's the weather in Tokyo?"}]
 
 # ---- steps 1 and 2 -------------------------------------------------------
-r = client.chat.completions.create(model="gpt-4o", messages=messages,
-                                   tools=tools, tool_choice="auto")
-msg = r.choices[0].message
+r = client.responses.create(model="gpt-6.1-sol", input=history,
+                            tools=tools, tool_choice="auto")
 
-if msg.tool_calls:                       # finish_reason == "tool_calls"
-    messages.append(msg)                 # the ASSISTANT turn, verbatim
+calls = [item for item in r.output if item.type == "function_call"]
+
+if calls:
+    history += r.output                  # everything the model returned, verbatim
 
     # ---- step 3: yours ---------------------------------------------------
-    for call in msg.tool_calls:          # there may be several
-        args   = json.loads(call.function.arguments)   # validate these!
-        result = DISPATCH[call.function.name](**args)
+    for call in calls:                   # there may be several
+        args   = json.loads(call.arguments)            # validate these!
+        result = DISPATCH[call.name](**args)
 
-        messages.append({
-            "role": "tool",
-            "tool_call_id": call.id,     # MUST match, or the API rejects the turn
-            "content": json.dumps(result),
+        history.append({
+            "type": "function_call_output",
+            "call_id": call.call_id,     # MUST match, or the API rejects the turn
+            "output": json.dumps(result),
         })
 
     # ---- step 4 ----------------------------------------------------------
-    r = client.chat.completions.create(model="gpt-4o", messages=messages,
-                                       tools=tools)
-print(r.choices[0].message.content)`,
-      hl: [8, 16],
-      caption: "Two details cause most of the bugs. The assistant message containing the tool calls must go back into the history verbatim — dropping it makes the tool result reply to nothing. And every `tool_call_id` must be answered, or the request is rejected." },
+    r = client.responses.create(model="gpt-6.1-sol", input=history,
+                                tools=tools)
+print(r.output_text)`,
+      hl: [10, 19],
+      caption: "Two details cause most of the bugs. Everything the model returned with the call must go back into the history verbatim — the `function_call` items and, on a reasoning model, the reasoning items beside them. Dropping any of it makes the tool result reply to nothing. And every `call_id` must be answered, or the request is rejected." },
+
+    { t: "p", text: "The loop is the same on every API; the names are not. The listing above is OpenAI's Responses API, which GPT-6 Astra and GPT-6.1 Sol require for tool calling. Chat Completions — still the dialect vLLM, Ollama and most open-weight servers speak — and Anthropic's Messages API spell the same four steps differently:" },
+
+    { t: "table",
+      head: ["", "OpenAI · Responses", "Chat Completions · open-weight servers", "Anthropic · Messages"],
+      rows: [
+        ["A tool is declared as", "`type`, `name`, `description`, `parameters`, `strict` in one flat object", "the same fields nested under `function`", "`name`, `description`, `input_schema`"],
+        ["The call arrives as", "an `output` item of type `function_call`", "`message.tool_calls[i]`, with `finish_reason` `tool_calls`", "a `tool_use` content block, with `stop_reason` `tool_use`"],
+        ["Its arguments are", "`arguments`, a JSON string", "`function.arguments`, a JSON string", "`input`, already parsed"],
+        ["You match it by", "`call_id`", "`id`, sent back as `tool_call_id`", "`id`, sent back as `tool_use_id`"],
+        ["You answer with", "a `function_call_output` item", "a message with `role` `tool`", "a `tool_result` block in a `user` turn"],
+        ["Goes back verbatim", "every `output` item, reasoning included", "the assistant message", "the assistant `content`, thinking blocks included"]
+      ],
+      caption: "Gemini's `generateContent` has the same steps as `functionCall` and `functionResponse` parts. An agent framework writes this loop for you in whichever dialect its provider needs — which is the reason to have written it once by hand." },
 
     { t: "callout", kind: "trap", title: "The model can request several tools at once",
       body: [
-        { t: "p", text: "\"Weather in Tokyo and London\" produces **two** entries in `tool_calls` from a single response. Code written for one — `msg.tool_calls[0]` — silently drops the second, and then the follow-up request fails because one of the ids was never answered." },
+        { t: "p", text: "\"Weather in Tokyo and London\" produces **two** `function_call` items in a single response. Code written for one — take the first call, run it, answer it — silently drops the second, and then the follow-up request fails because one of the ids was never answered." },
         { t: "p", text: "The loop above iterates, which is the only correct shape. `parallel_tool_calls=False` disables the behaviour if your tools cannot be executed concurrently or if ordering matters, but disabling it is a real capability loss — the model then needs two round trips where one would have done." },
         { t: "p", text: "Note also that parallel here means *requested together*, not *executed concurrently*. Whether you run them in parallel is your decision in step 3." }
       ] },
@@ -103,7 +118,7 @@ print(r.choices[0].message.content)`,
     { t: "h2", n: "02", id: "what-the-model-sees", text: "What the model is actually reading",
       sub: "A name, a description, and a JSON Schema" },
 
-    {"kind": "flow", "title": "A tool definition does two different jobs", "caption": "The model reads one JSON object and uses its halves for different decisions. **Whether** to call and **which** one comes almost entirely from the `name` and `description` — a retrieval problem in miniature, matching intent against short text. **What arguments** to produce comes from the `parameters` schema and is enforced exactly as structured output is, which is why an `enum` on `unit` means the model cannot invent `kelvin`. Vague descriptions cause wrong-tool bugs; loose schemas cause wrong-argument bugs, and they are fixed in different places.", "cols": 3, "nodes": [{"id": "d", "label": "One tool definition", "sub": "85 tokens, here", "tone": "violet"}, {"id": "n", "label": "name and description", "sub": "whether, and which", "tone": "accent"}, {"id": "p", "label": "parameters schema", "sub": "what arguments", "tone": "accent"}, {"id": "r", "label": "Vague description: wrong tool", "sub": "fix the prose", "tone": "warn"}, {"id": "e", "label": "Loose schema: wrong arguments", "sub": "add an enum, a range", "tone": "warn"}, {"id": "f", "label": "Two bugs, two different fixes", "sub": "which is why this split matters", "tone": "teal"}], "edges": [["d", "n"], ["d", "p"], ["n", "r"], ["p", "e"], ["r", "f"], ["e", "f"]], "t": "diagram", "id": "dg-1_9-02-0"},
+    {"kind": "flow", "title": "A tool definition does two different jobs", "caption": "The model reads one JSON object and uses its halves for different decisions. **Whether** to call and **which** one comes almost entirely from the `name` and `description` — a retrieval problem in miniature, matching intent against short text. **What arguments** to produce comes from the `parameters` schema and, under `strict`, is enforced exactly as structured output is, which is why an `enum` on `unit` means the model cannot invent `kelvin`. Vague descriptions cause wrong-tool bugs; loose schemas cause wrong-argument bugs, and they are fixed in different places.", "cols": 3, "nodes": [{"id": "d", "label": "One tool definition", "sub": "94 tokens, here", "tone": "violet"}, {"id": "n", "label": "name and description", "sub": "whether, and which", "tone": "accent"}, {"id": "p", "label": "parameters schema", "sub": "what arguments", "tone": "accent"}, {"id": "r", "label": "Vague description: wrong tool", "sub": "fix the prose", "tone": "warn"}, {"id": "e", "label": "Loose schema: wrong arguments", "sub": "add an enum, a range", "tone": "warn"}, {"id": "f", "label": "Two bugs, two different fixes", "sub": "which is why this split matters", "tone": "teal"}], "edges": [["d", "n"], ["d", "p"], ["n", "r"], ["p", "e"], ["r", "f"], ["e", "f"]], "t": "diagram", "id": "dg-1_9-02-0"},
 
 
 
@@ -129,35 +144,40 @@ print(r.choices[0].message.content)`,
 
 
 
-    { t: "code", lang: "python", title: "g18.py — one tool definition", code: `tools = [{
+    { t: "code", lang: "python", title: "g19.py — one tool definition", code: `tools = [{
     "type": "function",
-    "function": {
-        "name": "get_weather",
-        "description": "Get current weather for a city",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "city": {"type": "string", "description": "City name"},
-                "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
-            },
-            "required": ["city"],
+    "name": "get_weather",
+    "description": "Get current weather for a city",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "city": {"type": "string", "description": "City name"},
+            "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
         },
+        "required": ["city", "unit"],
+        "additionalProperties": False,
     },
-}]`,
-      out: `one tool definition: 85 tokens`,
-      caption: "Every one of those strings is sent to the model on every request, and every one of them is doing work. The `description` and the per-property descriptions are how the model decides." },
+    "strict": True,
+}]
+
+print("one tool definition: %d tokens" % n(tools))   # n() is 1.8's tiktoken counter`,
+      out: `one tool definition: 94 tokens`,
+      hl: [11, 12, 14],
+      caption: "Every one of those strings is sent to the model on every request, and every one of them is doing work. The `description` and the per-property descriptions are how the model decides. The count is tiktoken's over the JSON as written; the provider renders tools into its own format, so the billed figure differs by a few tokens, and `client.responses.input_tokens.count(model=..., input=..., tools=tools)` reports it exactly." },
+
+    { t: "p", text: "`strict` is 1.8's guarantee applied to a tool's arguments, and it brings 1.8's rules with it: every property listed in `required`, and `additionalProperties` set to false. An argument you think of as optional becomes one the model must always supply, or one typed as nullable. Without `strict` the schema is a strong hint rather than a constraint, and the arguments can arrive missing a field or carrying an invented one." },
 
     { t: "p", text: "The model uses these in two distinct ways, and conflating them is how tool-selection problems get misdiagnosed:" },
 
     { t: "dl", items: [
       ["Deciding **whether** to call, and **which**", "Driven almost entirely by the tool's `name` and `description`. This is a retrieval problem in miniature — the model is matching the user's intent against a set of short text descriptions."],
-      ["Deciding **what arguments** to produce", "Driven by the `parameters` schema, and enforced the same way structured output is (1.8). The `enum` on `unit` means the model cannot invent `kelvin`."]
+      ["Deciding **what arguments** to produce", "Driven by the `parameters` schema, and under `strict` enforced the same way structured output is (1.8). The `enum` on `unit` means the model cannot invent `kelvin`."]
     ] },
 
     { t: "callout", kind: "good", title: "The description is the most load-bearing string in the request",
       body: [
         { t: "p", text: "If a tool is not being called when it should be, the description is where to look first — not the prompt. Write it for a reader who has no other context: what it does, when to use it, and when not to." },
-        { t: "p", text: "\"Get current weather for a city\" is adequate. \"Get current weather conditions for a specified city. Use whenever the user asks about weather, temperature or outdoor conditions. Do not use for forecasts more than 24 hours ahead — use `get_forecast` for those\" is better, and measured at **+31 tokens** over the terse version." },
+        { t: "p", text: "\"Get current weather for a city\" is adequate. \"Get current weather conditions for a specified city. Use whenever the user asks about weather, temperature or outdoor conditions. Do not use for forecasts more than 24 hours ahead; use `get_forecast` for those.\" is better, and measured at **+34 tokens** over the terse version." },
         { t: "p", text: "That is a good trade on a tool that is being missed and a bad one on a tool that is working. The boundary case — telling the model when *not* to use a tool, and naming the tool it should use instead — is the highest-value sentence you can add, because overlapping tools are the commonest cause of wrong selection." }
       ] },
 
@@ -197,16 +217,18 @@ print(r.choices[0].message.content)`,
         ["`\"auto\"`", "The model decides whether to call a tool and which", "The default. The conversation might or might not need a tool"],
         ["`\"none\"`", "Tools are visible but never called; text only", "You want the model to talk *about* the tools, or to force a summary turn"],
         ["`\"required\"`", "The model must call at least one tool, its choice which", "The turn is meaningless without data — a router, a lookup step"],
-        ["`{\"type\": \"function\", \"function\": {\"name\": \"x\"}}`", "That specific tool, always", "Structured output (1.8), or a pipeline step with exactly one action"]
+        ["`{\"type\": \"function\", \"name\": \"x\"}`", "That specific tool, always", "A pipeline step with exactly one action, or structured output where no schema mode exists (1.8)"]
       ],
-      caption: "Note that `none` still sends and bills for every schema — the tools are in the context whether or not they can be called." },
+      caption: "Note that `none` still sends and bills for every schema — the tools are in the context whether or not they can be called. The spellings are the Responses API's: Chat Completions nests the name under `function`, and Anthropic writes `required` as `any` and a named tool as `{\"type\": \"tool\", \"name\": \"x\"}`." },
 
-    { t: "p", text: "The forced-specific setting is the one that does double duty. It is how you get structured output from a provider without `response_format`, and it is also how you build a pipeline step that cannot go off the rails: if the only legal action is `extract_invoice_fields`, the model cannot decide to answer in prose instead." },
+    { t: "p", text: "The forced-specific setting is the one that does double duty. It is the fallback route to structured output where no schema mode exists (1.8), and it is also how you build a pipeline step that cannot go off the rails: if the only legal action is `extract_invoice_fields`, the model cannot decide to answer in prose instead." },
+
+    { t: "p", text: "Neither forcing setting is available everywhere. Claude Opus 5.5, Sonnet 5.5 and Fable 5.1 reject both with a 400, because a model that reasons before it acts is being told how to act first. On those models a fixed-shape step is a schema-mode call rather than a forced tool, and a step that must use a tool is `auto`, a prompt that says so, and a check in your code that a call came back." },
 
     { t: "callout", kind: "tradeoff", title: "auto is a decision you are delegating",
       body: [
         { t: "p", text: "`\"auto\"` lets the model choose, which is right for a conversational agent and wrong for a pipeline. The cost is that tool selection becomes a source of non-determinism you cannot see: the same question phrased two ways can select two different tools, and nothing in your logs says why unless you record the choice." },
-        { t: "p", text: "For anything with a fixed shape — extract, then classify, then summarise — force each step. You lose nothing, because there was never a decision to make, and you gain a pipeline whose control flow is in your code rather than in a model's judgement." },
+        { t: "p", text: "For anything with a fixed shape — extract, then classify, then summarise — force each step, or make each one a schema-mode call where forcing is not offered. You lose nothing, because there was never a decision to make, and you gain a pipeline whose control flow is in your code rather than in a model's judgement." },
         { t: "p", text: "9.13 is about measuring tool selection when you do delegate it, and it is worth reading before building anything with more than five tools." }
       ] },
 
@@ -214,7 +236,7 @@ print(r.choices[0].message.content)`,
     { t: "h2", n: "04", id: "the-cost", text: "What tools cost, measured",
       sub: "Every schema, on every turn, for the whole conversation" },
 
-    {"kind": "trace", "title": "Tools are a fixed tax on every request in the conversation", "caption": "One definition is 85 tokens, and definitions are resent on **every** turn because the model is stateless. Twenty tools is 1,700 tokens before the user has said anything — and at $2.50 per million input tokens, 100,000 requests with twenty tools is $425, or **$4,250 once each conversation runs ten turns**. Which is the argument for routing to a small tool subset rather than attaching the whole catalogue.", "left": "tools attached", "codeW": 150, "vars": ["tokens per request", "100k requests", "x10 turns"], "steps": [{"code": "1", "state": ["85", "$21.25", "$212.50"], "tone": "good"}, {"code": "5", "state": ["425", "$106.25", "$1,062.50"], "tone": "accent"}, {"code": "10", "state": ["850", "$212.50", "$2,125.00"], "tone": "warn"}, {"code": "20", "state": ["1,700", "$425.00", "$4,250.00"], "changed": [2], "tone": "crit"}, {"code": "50", "state": ["4,250", "$1,062.50", "$10,625.00"], "tone": "crit", "note": "route instead"}], "t": "diagram", "id": "dg-1_9-04-2"},
+    {"kind": "trace", "title": "Tools are a fixed tax on every request in the conversation", "caption": "One definition is 94 tokens, and definitions are resent on **every** turn because the model is stateless. Twenty tools is 1,880 tokens before the user has said anything — and at $2.00 per million input tokens, 100,000 requests with twenty tools is $376, or **$3,760 once each conversation runs ten turns**. Which is the argument for routing to a small tool subset rather than attaching the whole catalogue.", "left": "tools attached", "codeW": 150, "vars": ["tokens per request", "100k requests", "x10 turns"], "steps": [{"code": "1", "state": ["94", "$18.80", "$188.00"], "tone": "good"}, {"code": "5", "state": ["470", "$94.00", "$940.00"], "tone": "accent"}, {"code": "10", "state": ["940", "$188.00", "$1,880.00"], "tone": "warn"}, {"code": "20", "state": ["1,880", "$376.00", "$3,760.00"], "changed": [2], "tone": "crit"}, {"code": "50", "state": ["4,700", "$940.00", "$9,400.00"], "tone": "crit", "note": "route instead"}], "t": "diagram", "id": "dg-1_9-04-2"},
 
 
 
@@ -242,33 +264,34 @@ print(r.choices[0].message.content)`,
 
     { t: "p", text: "Tool definitions are input tokens. They are sent with the first request, and again with the second, and again with every turn of the conversation — because the model has no memory and the schemas have to be in the context each time it might need them." },
 
-    { t: "code", lang: "python", title: "g18.py — the arithmetic", code: `one = n(tools)                       # 85 tokens for the get_weather definition
+    { t: "code", lang: "python", title: "g19.py — the arithmetic", code: `one  = n(tools)                      # 94 tokens for the get_weather definition
+RATE = 2.00                          # $ per 1M input tokens: GPT-6.1 Sol, November 2026
 
 for k in (1, 5, 10, 20, 50):
-    print("%2d tools ~ %5d tokens, sent on EVERY request" % (k, one * k))
+    print("%2d tools ~ %5d tokens, sent on EVERY request in the conversation" % (k, one * k))
 
-print("at $2.50 per 1M input tokens, 20 tools on 100,000 requests costs $%.2f"
-      % (one * 20 * 100000 * 2.50 / 1_000_000))
+print()
+print("at $%.2f per 1M input tokens, 20 tools on 100,000 requests costs $%.2f"
+      % (RATE, one * 20 * 100000 * RATE / 1_000_000))
 print("with a 10-turn conversation each, that is $%.2f"
-      % (one * 20 * 100000 * 10 * 2.50 / 1_000_000))`,
-      out: `one tool definition: 85 tokens
-   1 tools ~    85 tokens, sent on EVERY request in the conversation
-   5 tools ~   425 tokens, sent on EVERY request in the conversation
-  10 tools ~   850 tokens, sent on EVERY request in the conversation
-  20 tools ~  1700 tokens, sent on EVERY request in the conversation
-  50 tools ~  4250 tokens, sent on EVERY request in the conversation
+      % (one * 20 * 100000 * 10 * RATE / 1_000_000))`,
+      out: ` 1 tools ~    94 tokens, sent on EVERY request in the conversation
+ 5 tools ~   470 tokens, sent on EVERY request in the conversation
+10 tools ~   940 tokens, sent on EVERY request in the conversation
+20 tools ~  1880 tokens, sent on EVERY request in the conversation
+50 tools ~  4700 tokens, sent on EVERY request in the conversation
 
-at $2.50 per 1M input tokens, 20 tools on 100,000 requests costs $425.00
-with a 10-turn conversation each, that is $4250.00`,
-      hl: [7, 8, 9],
-      caption: "Twenty tools across a hundred thousand ten-turn conversations is $4,250 in tool schemas alone — before a single user message is counted." },
+at $2.00 per 1M input tokens, 20 tools on 100,000 requests costs $376.00
+with a 10-turn conversation each, that is $3760.00`,
+      hl: [8, 9, 10, 11],
+      caption: "Twenty tools across a hundred thousand ten-turn conversations is $3,760 in tool schemas alone — before a single user message is counted. On a flagship model at $10 per million it is five times that." },
 
     { t: "p", text: "There are three responses to that number, and they compose." },
 
     { t: "ol", items: [
-      "**Put the tools at the front of the request and cache them.** They are perfectly static, which makes them an ideal prefix for prompt caching — 50% off on OpenAI, 90% on Anthropic. 1.13 has the arithmetic.",
+      "**Put the tools at the front of the request and cache them.** They are perfectly static, which makes them an ideal prefix for prompt caching — a cached prefix is billed at a tenth of the input rate or less on every major provider. 1.13 has the arithmetic.",
       "**Send only the tools the turn could plausibly need.** A router that selects five tools from fifty before the main call costs one cheap request and removes 45 schemas from an expensive one. This is retrieval over tools, and at scale it is the standard architecture.",
-      "**Edit the schemas.** The same argument as 1.8's: they are prompts. A verbose description measured +31 tokens over a terse one, which is worth paying where the tool is being mis-selected and wasted everywhere else."
+      "**Edit the schemas.** The same argument as 1.8's: they are prompts. A verbose description measured +34 tokens over a terse one, which is worth paying where the tool is being mis-selected and wasted everywhere else."
     ] },
 
     { t: "callout", kind: "insight", title: "Tool count degrades selection before it degrades the bill",
@@ -313,12 +336,12 @@ with a 10-turn conversation each, that is $4250.00`,
     { t: "code", lang: "python", title: "dispatch.py — the shape that does not get exploited", code: `DISPATCH = {"get_weather": get_weather, "lookup_order": lookup_order}
 
 def execute(call, *, user):
-    name = call.function.name
+    name = call.name
     if name not in DISPATCH:                       # never getattr() a model's string
         return {"error": f"unknown tool {name!r}"}
 
     try:
-        args = ArgModels[name](**json.loads(call.function.arguments))
+        args = ArgModels[name](**json.loads(call.arguments))
     except (json.JSONDecodeError, ValidationError) as e:
         return {"error": f"invalid arguments: {e}"}   # hand it back, do not raise
 
@@ -334,7 +357,7 @@ def execute(call, *, user):
       caption: "Every branch returns a dict rather than raising. A tool error handed back as a result is something the model can respond to — by retrying with different arguments, or by telling the user. An exception that escapes ends the conversation." },
 
     { t: "ul", items: [
-      "**Never dispatch by attribute lookup.** `getattr(module, call.function.name)` on a model-supplied string is remote code execution waiting for a prompt injection. Use an explicit allow-list dict.",
+      "**Never dispatch by attribute lookup.** `getattr(module, call.name)` on a model-supplied string is remote code execution waiting for a prompt injection. Use an explicit allow-list dict.",
       "**Authorise as the user, not as the agent.** The model has no identity; the request does. A `lookup_order` tool that does not check ownership will happily read another customer's order when a user asks it to.",
       "**Validate arguments even under a schema.** Well-typed is not safe: a `limit` of 1,000,000 is an integer, and a `path` of `../../etc/passwd` is a string.",
       "**Return errors as results.** The model can act on `{\"error\": \"city not found\"}`. It cannot act on a 500 from your server."
@@ -350,16 +373,16 @@ def execute(call, *, user):
         { t: "p", text: "Work out where the crossover is." }
       ],
       requirements: [
-        "Model a conversation of T turns against a catalogue of N tools of 85 tokens each",
-        "Compute the direct cost: all N schemas on every turn, at GPT-4o input rates",
-        "Compute the routed cost: one GPT-4o-mini call carrying all N schemas, then T turns carrying 5",
+        "Model a conversation of T turns against a catalogue of N tools of 94 tokens each",
+        "Compute the direct cost: all N schemas on every turn, at a mid-tier input rate of $2.00 per 1M tokens",
+        "Compute the routed cost: one call to a small model at $0.10 per 1M carrying all N schemas, then T turns carrying 5",
         "Find the smallest N at which routing is cheaper, for T = 1, 3 and 10",
         "State one reason to route that has nothing to do with cost"
       ],
       hint: "The router pays the full catalogue once at the cheap rate; the main model pays 5 schemas T times instead of N schemas T times. Sweep N and compare.",
       solution: { lang: "python", title: "g19_ex.py",
-        code: `TOK_PER_TOOL = 85
-BIG,  SMALL = 2.50, 0.15          # $ per 1M input tokens
+        code: `TOK_PER_TOOL = 94
+BIG,  SMALL = 2.00, 0.10          # $ per 1M input tokens: GPT-6.1 Sol and GPT-6 Luna
 KEEP = 5
 
 def direct(n, turns):
@@ -380,12 +403,12 @@ for turns in (1, 3, 10):
               % (d, r, 100 * (d - r) / d))
     else:
         print()`,
-        out: `turns=1   crossover at N=6      at N=50: direct $0.010625 vs routed $0.001700  (84% saved)
-turns=3   crossover at N=6      at N=50: direct $0.031875 vs routed $0.003825  (88% saved)
-turns=10  crossover at N=6      at N=50: direct $0.106250 vs routed $0.011263  (89% saved)`,
+        out: `turns=1   crossover at N=6      at N=50: direct $0.009400 vs routed $0.001410  (85% saved)
+turns=3   crossover at N=6      at N=50: direct $0.028200 vs routed $0.003290  (88% saved)
+turns=10  crossover at N=6      at N=50: direct $0.094000 vs routed $0.009870  (90% saved)`,
         notes: [
-          { t: "p", text: "The crossover is at six tools for every conversation length, which is lower than most people guess. The reason it does not move with turns is that the router is paid once and the saving recurs, so a longer conversation only makes routing look better — at ten turns and fifty tools it removes 89% of the schema cost." },
-          { t: "p", text: "The crossover being N=6 is an artefact of the 16.7× price gap between the two models. If your router were the same model as your main call, it would never pay: you would be sending the full catalogue anyway, just twice. Routing is a cost saving specifically because a small model is good enough to choose among descriptions, which is a much easier task than using the tool." },
+          { t: "p", text: "The crossover is at six tools for every conversation length, which is lower than most people guess. The reason it does not move with turns is that the router is paid once and the saving recurs, so a longer conversation only makes routing look better — at ten turns and fifty tools it removes 90% of the schema cost." },
+          { t: "p", text: "The crossover sits at N=6 — one more than the five tools kept — because at a 20× price gap the router is nearly free. Set `SMALL` equal to `BIG` and the picture changes with conversation length: a single-turn request never pays, because you send the whole catalogue once either way and then five schemas more; a three-turn conversation crosses over at N=8; a ten-turn one is back at N=6. So the price gap is what makes routing pay on short conversations, and the turn count does the work on long ones. A small model is good enough for the job because choosing among descriptions is a much easier task than using the tool." },
           { t: "p", text: "The non-cost reason to route is selection quality, and it is the better argument. The model picks a tool by matching intent against short descriptions, and that gets less reliable as the set grows and descriptions start to overlap. Five well-separated tools are chosen correctly more often than fifty overlapping ones — so routing improves accuracy and reduces cost at the same time, which is rare enough to take when it is offered." }
         ] } },
 
@@ -401,13 +424,14 @@ turns=10  crossover at N=6      at N=50: direct $0.106250 vs routed $0.011263  (
 
   takeaways: [
     "**The model does not execute anything.** It reads schemas and emits arguments; your code runs the function and sends the result back. The model appears at steps 2 and 4 of a four-step loop and never touches your API.",
-    "The assistant message carrying the tool calls must go back into the history **verbatim**, and every `tool_call_id` must be answered or the follow-up request is rejected.",
-    "**Several tools can be requested in one response.** Code written for `tool_calls[0]` drops the rest and then fails on the unanswered id. `parallel_tool_calls=False` disables it at the cost of an extra round trip.",
+    "Everything the model returned with a tool call goes back into the history **verbatim** — on a reasoning model that includes the reasoning items — and every `call_id` must be answered or the follow-up request is rejected.",
+    "The loop is identical on every API and the names are not: `function_call` and `function_call_output` on the Responses API, `tool_calls` and a `tool` message on Chat Completions, `tool_use` and `tool_result` on Anthropic.",
+    "**Several tools can be requested in one response.** Code written for the first call drops the rest and then fails on the unanswered id. `parallel_tool_calls=False` disables it at the cost of an extra round trip.",
     "The model uses `name` and `description` to decide **whether and which**, and the `parameters` schema to decide **what arguments** — two different jobs, and tool-selection problems live in the first.",
-    "A measured tool definition is **85 tokens**, re-sent every turn. Twenty tools across 100,000 ten-turn conversations is **$4,250** in schemas alone at GPT-4o input rates.",
-    "`tool_choice` has four values: `auto` delegates the decision, `none` bills for schemas that cannot be called, `required` forces some tool, and naming one forces that tool — which is also how you get structured output without `response_format`.",
+    "A measured tool definition is **94 tokens**, re-sent every turn. Twenty tools across 100,000 ten-turn conversations is **$3,760** in schemas alone at $2.00 per million input tokens.",
+    "`tool_choice` has four values: `auto` delegates the decision, `none` bills for schemas that cannot be called, `required` forces some tool, and naming one forces that tool. The newest Claude models reject both forcing settings, so a fixed-shape step there is a schema-mode call (1.8).",
     "**Tool count degrades selection before it degrades the bill.** Overlapping descriptions produce wrong choices, and the fix is usually a sentence saying when *not* to use a tool.",
-    "Routing to five relevant tools crosses over at **N = 6** and saves **89%** of schema cost at fifty tools over ten turns — and improves selection accuracy at the same time.",
+    "Routing to five relevant tools crosses over at **N = 6** and saves **90%** of schema cost at fifty tools over ten turns — and improves selection accuracy at the same time.",
     "**Step 3 is not trusted input.** Never dispatch by `getattr` on a model-supplied name, authorise as the user rather than the agent, validate values as well as types, and return tool errors as results the model can recover from."
   ],
 
@@ -415,16 +439,16 @@ turns=10  crossover at N=6      at N=50: direct $0.106250 vs routed $0.011263  (
     title: "Check yourself",
     questions: [
       { stem: "A user asks for the weather in Tokyo and London. What comes back from the model?",
-        options: ["One tool call; you loop and call it twice", "Two tool_calls, each executed and answered", "A text answer, as it cannot call two tools", "An error, as tools take one argument set"],
+        options: ["One tool call; you loop and call it twice", "Two calls, each one executed and answered", "A text answer, as it cannot call two tools", "An error, as tools take one argument set"],
         answer: 1,
-        why: "Parallel tool calling means a single response can carry several calls, and each one has its own `tool_call_id` that must be answered — code reading only `tool_calls[0]` drops the second and then the follow-up request is rejected for an unanswered id. The first option describes what you would have to do with `parallel_tool_calls=False`, which costs an extra round trip. The third and fourth invent limits that do not exist; producing multiple calls is standard behaviour on current models." },
+        why: "Parallel tool calling means a single response can carry several calls, and each one has its own `call_id` that must be answered — code that handles only the first drops the second and then the follow-up request is rejected for an unanswered id. The first option describes what you would have to do with `parallel_tool_calls=False`, which costs an extra round trip. The third and fourth invent limits that do not exist; producing multiple calls is standard behaviour on current models." },
 
       { stem: "A tool works perfectly when it is the only one defined, but is called correctly only 70% of the time in a set of forty. Where do you look first?",
         options: ["The sampling temperature used", "The descriptions, for overlap", "The parameters schema shape", "The system prompt's wording"],
         answer: 1,
         why: "Selection is driven by matching intent against tool names and descriptions, so a tool that is right in isolation and wrong in a crowd is almost always losing to a neighbour whose description covers part of the same ground — and the fix is a sentence in both saying when not to use them and which to use instead. The parameters schema governs what arguments are produced once a tool is chosen, so it cannot affect selection. Temperature affects sampling broadly but is not the mechanism here. The system prompt is worth a look but is the weaker lever: the descriptions sit right beside the decision." },
 
-      { stem: "Your agent has 50 tools at 85 tokens each and runs 10-turn conversations. What is the single most effective change?",
+      { stem: "Your agent has 50 tools at 94 tokens each and runs 10-turn conversations. What is the single most effective change?",
         options: ["Shorten each description by a few tokens", "Route: pick ~5 tools with a cheap model first", "Use tool_choice=\"none\" when tools are unneeded", "Cache the responses for repeat questions"],
         answer: 1,
         why: "Routing removes 45 schemas from every turn of an expensive call at the price of one cheap call, which measured at 90% of schema cost saved at N=50 over 10 turns — and it improves selection accuracy, because five well-separated tools are chosen correctly more often than fifty overlapping ones. Shortening descriptions helps marginally and risks the selection quality that the descriptions carry. `tool_choice=\"none\"` still sends and bills for every schema, so it saves nothing on input tokens. Response caching addresses a different problem entirely." },
@@ -438,15 +462,15 @@ turns=10  crossover at N=6      at N=50: direct $0.106250 vs routed $0.011263  (
 
   interview: {
     title: "In an interview",
-    sub: "The Q6 asks about function calling versus tool use. The more revealing question is what happens in step 3.",
+    sub: "The usual opener is function calling versus tool use. The more revealing question is what happens in step 3.",
     questions: [
       { level: "core",
         q: "What is the difference between function calling and tool use?",
         strong: "Nothing — the naming differs by provider. A strong answer says so quickly and then spends the time on the thing that matters: the model does not execute anything.",
         answer: [
-          { t: "p", text: "Functionally identical; the naming differs by provider. OpenAI calls them tools with `type: \"function\"`, Anthropic calls them tools. The mechanism is the same in both: the model sees a name, a description and a JSON Schema, decides whether to call, and returns arguments." },
-          { t: "p", text: "The part worth spending the answer on is that the model does not execute anything. It produces a structured object; your application runs the function and sends the result back as a `tool` role message. So a four-step loop, and the model appears at two of them." },
-          { t: "p", text: "And then the practical details that separate people who have shipped this: the assistant message with the tool calls goes back into the history verbatim, every `tool_call_id` must be answered, and a single response can contain several calls — code written for one silently drops the rest and then fails on the unanswered id." }
+          { t: "p", text: "Functionally identical; the naming differs by provider. OpenAI calls them tools with `type: \"function\"`, Anthropic calls them tools, and the field names differ — `function_call` and `call_id` on one, `tool_use` and `tool_use_id` on the other. The mechanism is the same in both: the model sees a name, a description and a JSON Schema, decides whether to call, and returns arguments." },
+          { t: "p", text: "The part worth spending the answer on is that the model does not execute anything. It produces a structured object; your application runs the function and sends the result back as the next input. So a four-step loop, and the model appears at two of them." },
+          { t: "p", text: "And then the practical details that separate people who have shipped this: everything the model returned with the call goes back into the history verbatim, reasoning items included, every call id must be answered, and a single response can contain several calls — code written for one silently drops the rest and then fails on the unanswered id." }
         ] },
 
       { level: "core",
@@ -472,8 +496,8 @@ turns=10  crossover at N=6      at N=50: direct $0.106250 vs routed $0.011263  (
         q: "You have an agent with fifty tools and it is slow and expensive. What do you change?",
         strong: "A strong answer quantifies first, proposes routing, and knows that the quality argument is stronger than the cost one.",
         answer: [
-          { t: "p", text: "Quantify first: a tool definition is around 85 tokens, so fifty is roughly 4,250 tokens re-sent on every turn. Across a hundred thousand ten-turn conversations at GPT-4o input rates that is $10,625 in schemas before anyone has said anything, and it is also latency, because prefill is compute-bound in prompt length." },
-          { t: "p", text: "Then route. A cheap model picks five relevant tools from the catalogue, and the expensive call carries only those. I worked the crossover and it is at six tools — lower than most people expect — and at fifty tools over ten turns it removes about 89% of the schema cost. Put the surviving tools at the very front of the request so prompt caching can hold them, which takes another 50% or 90% off depending on provider." },
+          { t: "p", text: "Quantify first: a tool definition is around 94 tokens, so fifty is roughly 4,700 tokens re-sent on every turn. Across a hundred thousand ten-turn conversations at $2 per million input tokens that is $9,400 in schemas before anyone has said anything, and it is also latency, because prefill is compute-bound in prompt length." },
+          { t: "p", text: "Then route. A cheap model picks five relevant tools from the catalogue, and the expensive call carries only those. I worked the crossover and it is at six tools — lower than most people expect — and at fifty tools over ten turns it removes about 90% of the schema cost. Put the surviving tools at the very front of the request so prompt caching can hold them, which takes roughly another 90% off what is left." },
           { t: "p", text: "But the argument I would actually lead with is quality, not cost. Selection accuracy falls as the tool set grows, because the model is matching intent against fifty short descriptions and they start to overlap. Five well-separated tools get chosen correctly more often than fifty. So routing makes the agent cheaper, faster *and* more accurate, and it is unusual to get all three." },
           { t: "p", text: "If fifty tools are genuinely all needed in one turn, that is normally a sign the agent is doing several jobs and wants splitting into several agents with a handoff — which is the same argument one level up." }
         ] }

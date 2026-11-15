@@ -258,7 +258,7 @@ for t in (0.0, 0.3, 0.7, 1.0, 1.4):
     { t: "p", text: "Published guidance gives ranges by task, and they are a reasonable starting point — they encode what people have converged on rather than anything derived:" },
 
     { t: "table",
-      head: ["Task", "Reference range", "What the range is really saying"],
+      head: ["Task", "Typical range", "What the range is really saying"],
       rows: [
         ["Code generation", "0.0 – 0.2", "There is one right answer and you want it every time"],
         ["Factual Q&A", "0.0 – 0.3", "Same, with a little room where several phrasings are equally correct"],
@@ -275,6 +275,12 @@ for t in (0.0, 0.3, 0.7, 1.0, 1.4):
         { t: "p", text: "Take 20 real inputs. Run each at tau = 0, 0.5, 0.7 and 1.0, three samples per setting. Score the output on whatever your task's metric is, and also count how many of the three samples are meaningfully different. You now have two curves: quality against tau, and diversity against tau." },
         { t: "p", text: "Pick the largest tau at which quality has not yet dropped. That is the standard answer and it takes an afternoon. What it buys you is the ability to say *why* the number is what it is when someone changes it six months later." },
         { t: "p", text: "Do not do this with top-p also in play. 1.3 measures why: the two interact, so the curve you fit at one top-p does not hold at another." }
+      ] },
+
+    { t: "callout", kind: "note", title: "Where the dial still exists",
+      body: [
+        { t: "p", text: "Everything in this lesson holds wherever the sampler is exposed: open-weight servers, Hugging Face's `generate`, and OpenAI's APIs. It is no longer exposed everywhere. As of late 2026, current Claude models reject a `temperature` with a 400 and Gemini 3.6 and later ignore it; both steer variety through the prompt and a reasoning-depth setting instead. 1.15 has the matrix." },
+        { t: "p", text: "The mechanism has not gone anywhere — those models still sample from a softmax over logits. What you have lost on them is the dial, which makes the sweep above something you run on the models that still take it, and makes the prompt the place variety is asked for on the ones that do not." }
       ] },
 
     /* ============================================================ 05 */
@@ -312,7 +318,7 @@ for t in (0.0, 0.3, 0.7, 1.0, 1.4):
 
     { t: "ol", items: [
       "**The limit does exist**, and it is the argmax — as tau goes to zero the mass concentrates entirely on the largest logit. So the branch is *consistent* with the formula; it is just not computed by it. Ties are the exception: the limit of a tie is a uniform distribution over the tied tokens, while argmax picks the lowest index.",
-      "**`temperature=0` and `temperature=0.0001` are different code paths.** The second one actually divides, and with logits in the hundreds that overflows `exp()` before the max-subtraction saves it. This is why several providers document a minimum of 0.01 rather than 0, and why a config that works on one provider can fail on another.",
+      "**`temperature=0` and `temperature=0.0001` are different code paths.** The second one actually divides, and with logits in the hundreds that overflows `exp()` before the max-subtraction saves it. This is why some stacks refuse the value outright — Hugging Face's `generate` raises on `temperature=0.0` and tells you to set `do_sample=False` instead — and why a config that works on one stack can fail on another.",
       "**It does not guarantee reproducibility.** The sampler is skipped, so the randomness of sampling is gone — but the logits themselves are not bit-identical from one server call to the next, for reasons measured in 1.7."
     ] },
 
@@ -410,7 +416,7 @@ tau ratio               : 1.6468`,
     "Entropy is not linear in tau: doubling it on the measured prompt took a temperature increase of 1.65×, and moved the candidate set from 10 tokens to 310.",
     "**Certainty is a property of the step.** \"The Eiffel Tower is located in the city of\" measured *higher* entropy (6.0774) than \"The capital of France is\" (5.9985), because GPT-2 knows the answer is a city without knowing which one.",
     "Low temperature is repeatable, not accurate. At tau = 0.0 and 0.3 the measured generations looped; the parameter that fixes repetition is in 1.4, not this lesson.",
-    "`temperature=0` is a branch in the code, not a limit of the formula — which is why some providers document a minimum of 0.01, and why it still does not guarantee identical output (1.7)."
+    "`temperature=0` is a branch in the code, not a limit of the formula — which is why some stacks reject the value 0 outright, and why it still does not guarantee identical output (1.7)."
   ],
 
   quiz: {

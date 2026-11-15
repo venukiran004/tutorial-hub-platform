@@ -501,7 +501,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Example: Great Expectations for data validation\nimport great_expectations as ge\n\nvalidator = ge.from_pandas(new_data)\n\n# Schema checks\nvalidator.expect_column_values_to_be_of_type(\"age\", \"int\")\nvalidator.expect_column_values_to_be_between(\"age\", 0, 120)\nvalidator.expect_column_values_to_not_be_null(\"user_id\")\n\n# Distribution checks  \nvalidator.expect_column_mean_to_be_between(\"price\", 10, 100)\nvalidator.expect_column_stdev_to_be_between(\"price\", 1, 50)\n\n# Custom checks\nvalidator.expect_column_values_to_match_regex(\"email\", r\"^.+@.+\\..+$\")"
+     "code": "# Example: Great Expectations for data validation\nimport great_expectations as ge\n\nvalidator = ge.from_pandas(new_data)   # the 0.x API; GX 1.x builds a batch from a data context instead\n\n# Schema checks\nvalidator.expect_column_values_to_be_of_type(\"age\", \"int\")\nvalidator.expect_column_values_to_be_between(\"age\", 0, 120)\nvalidator.expect_column_values_to_not_be_null(\"user_id\")\n\n# Distribution checks  \nvalidator.expect_column_mean_to_be_between(\"price\", 10, 100)\nvalidator.expect_column_stdev_to_be_between(\"price\", 1, 50)\n\n# Custom checks\nvalidator.expect_column_values_to_match_regex(\"email\", r\"^.+@.+\\..+$\")"
     },
     {
      "t": "p",

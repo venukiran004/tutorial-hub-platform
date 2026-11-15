@@ -80,7 +80,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "The reference declares `self.dW = None` and `self.db = None` and never assigns them, so its layer cannot learn. Three gradients are needed: one for the weights, one for the bias, and one to pass back to the previous layer." },
+    { t: "p", text: "A common skeleton declares `self.dW = None` and `self.db = None` and never assigns them, so the layer cannot learn. Three gradients are needed: one for the weights, one for the bias, and one to pass back to the previous layer." },
 
     { t: "dl", items: [
       ["`db`", "Sum `dout` over batch and both spatial axes. The bias was added identically at every position, so every position contributes."],

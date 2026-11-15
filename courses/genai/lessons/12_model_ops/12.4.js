@@ -113,7 +113,7 @@ spread: 4636 to 4861 tokens for the SAME text = 4.9% difference`,
     { t: "callout", kind: "insight", title: "Vectors from two different embedding models are not comparable",
       body: [
         { t: "p", text: "There is no partial migration and no \u2018re-embed the new documents only\u2019. It is all or nothing, per index \u2014 which makes an embedding deprecation a **re-index of the entire corpus** rather than a prompt-tuning exercise." },
-        { t: "p", text: "Verified, the token cost is trivial: 5M chunks at 400 tokens is 2.0B tokens, which at $0.02 per million is **$40**. The reference is right that this is cheap. The real costs have no token price at all \u2014 index rebuild compute, dual storage during cutover, and re-tuning score thresholds." },
+        { t: "p", text: "Verified, the token cost is trivial: 5M chunks at 400 tokens is 2.0B tokens, which at $0.02 per million is **$40**. The usual claim that this is cheap is right. The real costs have no token price at all \u2014 index rebuild compute, dual storage during cutover, and re-tuning score thresholds." },
         { t: "p", text: "That last item is the one 12.6 measures, and it is the one teams skip. A `score_threshold = 0.78` abstain guard was calibrated on the old model\u2019s similarity distribution, and on the new model 0.78 may mean something entirely different \u2014 so the no-context guard either fires constantly or never fires." }
       ] },
 

@@ -47,7 +47,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import pandas as pd\ndf = pd.DataFrame({\n    'city': ['NYC', 'NYC', 'LA', 'LA'],\n    'year': [2023, 2024, 2023, 2024],\n    'sales': [100, 120, 80, 95]\n})\npivoted = df.set_index(['city', 'year']).unstack()\nprint(pivoted)\nstacked = pivoted.stack()\nprint(stacked)"
+     "code": "import pandas as pd\ndf = pd.DataFrame({\n    'city': ['NYC', 'NYC', 'LA', 'LA'],\n    'year': [2023, 2024, 2023, 2024],\n    'sales': [100, 120, 80, 95]\n})\npivoted = df.set_index(['city', 'year']).unstack()\nprint(pivoted)\nstacked = pivoted.stack(future_stack=True)\nprint(stacked)"
     }
    ],
    "kind": "program"
@@ -190,7 +190,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import pandas as pd\nimport numpy as np\n\n# Create interval-based binning\nscores = np.random.randint(0, 100, 20)\nbins = pd.IntervalIndex.from_breaks([0, 40, 60, 80, 100])\nlabels = ['Fail', 'Pass', 'Good', 'Excellent']\n\nresult = pd.cut(scores, bins)\nprint(pd.value_counts(result))"
+     "code": "import pandas as pd\nimport numpy as np\n\n# Create interval-based binning\nscores = np.random.randint(0, 100, 20)\nbins = pd.IntervalIndex.from_breaks([0, 40, 60, 80, 100])\nlabels = ['Fail', 'Pass', 'Good', 'Excellent']\n\nresult = pd.cut(scores, bins)\nprint(pd.Series(result).value_counts())"
     }
    ],
    "kind": "program"
@@ -255,7 +255,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import pandas as pd\nimport numpy as np\n\nnp.random.seed(42)\nn = 500\ndf = pd.DataFrame({\n    'user_id': np.random.randint(1, 100, n),\n    'order_date': pd.date_range('2024-01-01', periods=n, freq='8H'),\n    'amount': np.random.randint(10, 500, n)\n})\n\ndf['order_month'] = df['order_date'].dt.to_period('M')\ndf['cohort'] = df.groupby('user_id')['order_month'].transform('min')\ncohort_data = df.groupby(['cohort', 'order_month']).agg(\n    users=('user_id', 'nunique'),\n    revenue=('amount', 'sum')\n).reset_index()\nprint(cohort_data.head(10))"
+     "code": "import pandas as pd\nimport numpy as np\n\nnp.random.seed(42)\nn = 500\ndf = pd.DataFrame({\n    'user_id': np.random.randint(1, 100, n),\n    'order_date': pd.date_range('2024-01-01', periods=n, freq='8h'),\n    'amount': np.random.randint(10, 500, n)\n})\n\ndf['order_month'] = df['order_date'].dt.to_period('M')\ndf['cohort'] = df.groupby('user_id')['order_month'].transform('min')\ncohort_data = df.groupby(['cohort', 'order_month']).agg(\n    users=('user_id', 'nunique'),\n    revenue=('amount', 'sum')\n).reset_index()\nprint(cohort_data.head(10))"
     }
    ],
    "kind": "program"

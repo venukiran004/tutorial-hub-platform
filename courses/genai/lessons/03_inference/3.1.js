@@ -104,7 +104,7 @@ for n in (16, 32, 64, 128, 256, 512):
 
 
     { t: "table",
-      head: ["Metric", "What it is", "Phase", "Reference's target"],
+      head: ["Metric", "What it is", "Phase", "Commonly quoted target"],
       rows: [
         ["**TTFT** — time to first token", "Latency until the first output token", "**Prefill**", "< 500 ms"],
         ["**TPOT** — time per output token", "Latency for each subsequent token", "**Decode**", "< 50 ms"],

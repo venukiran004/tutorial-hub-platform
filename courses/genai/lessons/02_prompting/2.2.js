@@ -201,7 +201,7 @@ for shots in (0, 1, 2, 4, 8):
       body: [
         { t: "p", text: "Order sensitivity in few-shot prompting is real — it is one of the better-documented findings in the area, and on classification tasks with imbalanced labels it can move accuracy by tens of points. It did not appear here." },
         { t: "p", text: "The likely reason is that this task has a single unambiguous pattern and four examples that all demonstrate it identically. There is no ambiguity for the ordering to resolve, so nothing changes. Order effects show up where examples carry *conflicting* signal — different formats, different implicit rules, an imbalanced label distribution that the last example biases toward." },
-        { t: "p", text: "The practical reading is not \"order does not matter\". It is that the rules in the reference are heuristics with conditions, and the only way to know whether one applies to your task is to try it. Four orderings is a ten-minute experiment (2.12)." }
+        { t: "p", text: "The practical reading is not \"order does not matter\". It is that the usual ordering rules are heuristics with conditions, and the only way to know whether one applies to your task is to try it. Four orderings is a ten-minute experiment (2.12)." }
       ] },
 
     /* ============================================================ 04 */
@@ -392,7 +392,7 @@ best accuracy per token: 2 shots`,
     "Measured on GPT-2-medium, which has no instruction tuning at all: **0 of 6 correct at zero shots** with the right answer as low as rank 431, and **6 of 6 at two shots**, all at rank 1.",
     "The rank column shows this is not a threshold effect — the model already knew what an opposite was; it did not know that producing one was the task.",
     "Probability mass on the right answer for `hard` went **0.00030 → 0.74837** with two examples, a factor of 2,500 — and fell back to 0.48411 by eight. **Returns are diminishing and not monotonic.**",
-    "**Anything you can demonstrate you do not have to describe** — the few-shot example in the reference never names its label set, and the examples establish it.",
+    "**Anything you can demonstrate you do not have to describe** — a few-shot prompt never has to name its label set, and the examples establish it.",
     "**One mislabelled example in four halved accuracy**, 6/6 to 3/6. Examples are a specification, and a contradictory one is a competing hypothesis about the task.",
     "State the rule *as well as* showing it where you can: an instruction survives one bad example in a way a pure pattern does not.",
     "**Order did not matter on this task** — four orderings all gave 6/6. Order effects are real and appear where examples carry conflicting signal, which this task had none of.",

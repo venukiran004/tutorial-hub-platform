@@ -260,7 +260,7 @@ print(p.item())   # 0.9555`,
       why: "Fine-tuning moves a pretrained model a short distance, so the learning rate is a hundred times smaller than a from-scratch Adam default, and decoupled weight decay keeps the regularisation honest across parameters with very different gradient scales. AdamW at 10⁻⁵–5 × 10⁻⁵ is the standard." }
   ] },
 
-  interview: { title: "Interview", sub: "The Q3, and where it leads", questions: [
+  interview: { title: "Interview", sub: "The standard question, and where it leads", questions: [
     { level: "Core", q: "Compare Adam and SGD. When would you prefer each?",
       strong: "Adam for a fast, robust default and for transformers; SGD with momentum and a schedule for the best generalisation on CNNs when you can afford to tune it; AdamW for fine-tuning.",
       answer: [{ t: "p", text: "Adam keeps per-parameter adaptive learning rates from a second-moment estimate plus momentum from a first-moment estimate, so it converges quickly with the defaults lr = 10⁻³, β = (0.9, 0.999) and is forgiving of the learning rate. SGD with momentum has one global rate, needs tuning and a schedule, but is repeatedly observed to generalise better — it tends to settle in flatter minima. In practice: Adam for prototyping and for transformers, SGD + momentum + cosine for the final training of convolutional networks, and AdamW — decoupled weight decay — as the standard for fine-tuning pretrained models." }] },

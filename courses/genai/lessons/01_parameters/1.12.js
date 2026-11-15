@@ -114,8 +114,8 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "stream.py", code: `stream = client.chat.completions.create(
-    model="gpt-4o",
+    { t: "code", lang: "python", title: "stream.py — the Chat Completions chunk stream", code: `stream = client.chat.completions.create(
+    model="gpt-6-luna",
     messages=[{"role": "user", "content": "Tell me a story"}],
     stream=True,
     stream_options={"include_usage": True},    # without this, usage never arrives
@@ -138,6 +138,44 @@ if finish == "length":                         # 1.5 -- still applies to streams
     raise Truncated(text)`,
       hl: [6, 10, 17],
       caption: "Three things that bite. `include_usage` is off by default. The final usage chunk carries no `choices`, so indexing `chunk.choices[0]` unguarded raises on the last chunk. And `finish_reason` arrives on its own chunk, after the content." },
+
+    { t: "p", text: "That chunk format is the one every OpenAI-compatible server speaks, vLLM and Ollama included, which is why it comes first. The two hosted APIs you are most likely to call directly stream **typed events** instead: each line names what it is, and the ending is an event of its own rather than a field you have to notice." },
+
+    { t: "code", lang: "python", title: "stream_events.py — the same client on the Responses API", code: `stream = client.responses.create(
+    model="gpt-6.1-sol",
+    input="Tell me a story",
+    stream=True,
+)
+
+parts, final = [], None
+for event in stream:
+    if event.type == "response.output_text.delta":
+        parts.append(event.delta)
+        emit(event.delta)
+    elif event.type in ("response.completed", "response.incomplete", "response.failed"):
+        final = event.response                 # status and usage, in one object
+    elif event.type == "error":
+        raise StreamError(event.message)
+
+text = "".join(parts)
+if final is None:                              # no terminal event: the stream was cut
+    raise Interrupted(text)
+if final.status == "incomplete":               # 1.5 -- the cap, or a filter
+    raise Truncated(text, final.incomplete_details.reason)
+usage = final.usage                            # no opt-in needed here`,
+      hl: [12, 13, 18, 19],
+      caption: "Dispatch on `event.type` and ignore the types you do not handle — there are dozens, and new ones are added. Usage needs no opt-in because the terminal event carries the whole response object. What does not change is the last check: a loop that ends without a terminal event is an interruption, not an answer." },
+
+    { t: "table",
+      head: ["", "Chat Completions · open-weight servers", "OpenAI · Responses", "Anthropic · Messages"],
+      rows: [
+        ["Text arrives in", "`chunk.choices[0].delta.content`", "`response.output_text.delta` events, as `event.delta`", "`content_block_delta` events, as `delta.text`"],
+        ["The ending is", "`finish_reason` on a late chunk", "a terminal event: `response.completed`, `.incomplete` or `.failed`", "`message_delta` carrying `stop_reason`, then `message_stop`"],
+        ["Usage arrives", "in a final chunk, only with `include_usage`", "on the terminal event, as `response.usage`", "input on `message_start`, output on `message_delta`"],
+        ["An interruption looks like", "no `finish_reason` was ever seen", "no terminal event was ever seen", "no `message_stop` was ever seen"],
+        ["A failure mid-stream is", "an error object in the body, or a dropped connection", "an `error` event, or `response.failed`", "an `error` event"]
+      ],
+      caption: "Three vocabularies for one transport: server-sent events over an HTTP response that is held open. The checks are the same in each — guard every access, look for the ending explicitly, and treat its absence as an interruption. The rest of this lesson uses the chunk format's names." },
 
     { t: "callout", kind: "trap", title: "Usage arrives at the end, which is too late for a budget check",
       body: [
@@ -332,10 +370,11 @@ threshold 3000 ms -- output length at which the silent wait exceeds it:
     "Streaming does not make a response faster. Same tokens, same cost, same total time — it changes **when the first token arrives**.",
     "**TTFT is a property of the prompt; total time is a property of the output.** Measured, TTFT moved only 38.6 → 50.7 ms across a twelvefold change in output length, while the whole-response wait grew to **110.9×** the TTFT.",
     "Prefill is what you are waiting for: a 513-token prompt took **936.5 ms** against 46.1 ms for a 9-token one. Streaming cannot help before prefill finishes.",
-    "`stream_options={\"include_usage\": True}` is off by default, and the usage chunk carries **no `choices`** — indexing `chunk.choices[0]` unguarded raises on the last chunk.",
+    "On Chat Completions, `stream_options={\"include_usage\": True}` is off by default, and the usage chunk carries **no `choices`** — indexing `chunk.choices[0]` unguarded raises on the last chunk.",
+    "The Responses API and Claude stream **typed events** instead: text in delta events, and the ending as an event of its own that carries the status and the usage. Dispatch on the type and ignore the ones you do not handle.",
     "**Usage arrives at the end**, so it is an audit record rather than a control. Enforce budgets by counting input yourself and bounding output with `max_tokens`.",
     "A stream returns HTTP 200 before the response is complete, so errors arrive **after** the user has read part of the answer — content filtering, dropped connections, provider errors in the body.",
-    "**`finish_reason is None` after the loop means the stream was interrupted**, not that the answer ended. It is the only way to tell, and it is the check most clients omit.",
+    "**`finish_reason is None` after the loop means the stream was interrupted**, not that the answer ended — on an event stream, the same is true of a loop that saw no terminal event. It is the only way to tell, and it is the check most clients omit.",
     "The one case where streaming saves money is **aborting** — and the abort must close the connection, or the server generates and bills for tokens nobody reads.",
     "At a one-second perceived-latency budget with a 100-token prompt, the crossover is **36 output tokens** — about a sentence, which is why streaming is the default for anything a person reads.",
     "On a 2,000-token prompt, prefill alone is about 3,566 ms and **streaming does not help at all**. The lever there is prompt length or prompt caching."
@@ -383,8 +422,8 @@ threshold 3000 ms -- output length at which the silent wait exceeds it:
         q: "What do you have to get right in a streaming client?",
         strong: "A strong answer names usage accounting, the empty-choices chunk, and the interrupted-stream check.",
         answer: [
-          { t: "p", text: "Three things. `stream_options={\"include_usage\": True}` is off by default, so without it you never learn the token counts at all. The final usage chunk has an empty `choices` array, so unguarded `chunk.choices[0]` raises on the last chunk of every stream — a bug that only appears once the first one is fixed." },
-          { t: "p", text: "Third and most important: checking that a `finish_reason` actually arrived. If the loop ends without one, the connection closed before the response completed — and that is indistinguishable from a finished answer unless you look. Most clients do not, so a truncated stream is silently presented as a complete answer." },
+          { t: "p", text: "Three things, and I will use the Chat Completions chunk format because it is the one most servers speak. `stream_options={\"include_usage\": True}` is off by default, so without it you never learn the token counts at all. The final usage chunk has an empty `choices` array, so unguarded `chunk.choices[0]` raises on the last chunk of every stream — a bug that only appears once the first one is fixed." },
+          { t: "p", text: "Third and most important: checking that a `finish_reason` actually arrived. If the loop ends without one, the connection closed before the response completed — and that is indistinguishable from a finished answer unless you look. Most clients do not, so a truncated stream is silently presented as a complete answer. On an event-stream API such as Responses or Claude's the same check is whether a terminal event arrived." },
           { t: "p", text: "And a design point rather than a code one: the UI needs three states — streaming, complete, interrupted. Without the third, the failure case leaves you choosing between showing a truncated answer as if it were whole and deleting text the user is reading." }
         ] },
 

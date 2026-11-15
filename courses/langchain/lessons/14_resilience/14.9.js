@@ -142,7 +142,7 @@ await client.runs.create(thread["thread_id"], "agent", input=payload,
 # with two prompts or two models is two assistants, so a prompt change is a
 # deployment of config rather than of code.
 assistant = await client.assistants.create(
-    graph_id="agent", config={"configurable": {"model": "gpt-4o-mini"}},
+    graph_id="agent", config={"configurable": {"model": "gpt-6-luna"}},
     name="cheap-tier")
 await client.assistants.set_latest(assistant["assistant_id"], version=3)
 

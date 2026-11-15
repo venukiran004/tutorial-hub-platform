@@ -198,18 +198,22 @@ import threading
 
 counter = 0
 
+def one():
+    return 1
+
 def increment():
     global counter
-    for _ in range(100_000):
-        counter += 1          # NOT atomic
+    for _ in range(1_000_000):
+        counter += one()      # NOT atomic: read, call, add, store
 
 threads = [threading.Thread(target=increment) for _ in range(4)]
 for t in threads: t.start()
 for t in threads: t.join()
 
-print(counter)                # 400000 expected`,
-        out: `271043`},
-      { t: "p", text: "`counter += 1` compiles to at least four bytecodes: load the global, load the constant, add, store. The GIL can be released between any two of them, so two threads can both read 5, both compute 6, and both store 6 — one increment lost." },
+print(counter)                # 4000000 expected`,
+        out: `2801685`},
+      { t: "p", text: "`counter += one()` compiles to several bytecodes: load the global, call, add, store. A thread can be switched out after the load and before the store, so two threads can both read 5, both compute 6, and both store 6 — one increment lost. The printed figure differs on every run; three runs here gave 3,000,000, 3,837,056 and 2,801,685." },
+      { t: "p", text: "The call is in the example for a reason. Since CPython 3.10 the interpreter only switches threads at loop back-edges and function calls, so a bare `counter += 1` in a tight loop usually prints the right answer — the same four threads gave exactly 4,000,000 here. That is an implementation accident, not a guarantee: the statement is still several bytecodes, any call between the read and the write reopens the window, and on a free-threaded build there is no GIL to hide behind at all. Code that is only correct because of where the interpreter happens to switch is not correct." },
       { t: "code", lang: "python", title: "the fix is a lock, as in any language", numbered: false, code: `
 lock = threading.Lock()
 

@@ -47,19 +47,18 @@ EC.receiveLesson({
 
     { t: "p", text: "\"What's in this image?\" invites a description, and a description is almost never what a system wants. The four-component check from 2.1 applies exactly as it does to text: the image is the **input**, and the instruction, context and output format still have to be supplied." },
 
-    { t: "code", lang: "python", title: "vision.py — the call shape", code: `response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{
+    { t: "code", lang: "python", title: "vision.py — the call shape", code: `response = client.responses.create(
+    model="gpt-6.1-sol",
+    input=[{
         "role": "user",
         "content": [
-            {"type": "text", "text": "What's in this image?"},      # under-specified
-            {"type": "image_url", "image_url": {
-                "url": "https://example.com/image.jpg",
-                "detail": "high",
-            }},
+            {"type": "input_text", "text": "What's in this image?"},      # under-specified
+            {"type": "input_image",
+             "image_url": "https://example.com/image.jpg",
+             "detail": "high"},
         ],
     }],
-    max_tokens=300,
+    max_output_tokens=2000,
 )`,
       caption: "The `content` is a list, which is what makes the ordering in §02 a decision rather than an accident." },
 

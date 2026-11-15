@@ -150,7 +150,7 @@ rows.append(("big model, single sample", 0.85, 20))`,
       hl: [4, 6],
       caption: "At 5 error modes, voting@8 beats the big model on accuracy *and* costs 2.5\u00d7 less." },
 
-    { t: "callout", kind: "good", title: "It is commonly said \u201coften the right answer\u201d; the measurement says it is not close",
+    { t: "callout", kind: "good", title: "It is commonly called \u201coften the right answer\u201d; the measurement says it is not close",
       body: [
         { t: "p", text: "Its comparison has voting@8 at 78% losing on accuracy to the big model\u2019s 85% while winning on cost \u2014 a genuine trade-off. With realistic error scattering, voting@8 reaches **93.8%** at 8\u00d7 cost against 85% at 20\u00d7. It wins on both axes." },
         { t: "p", text: "So the recommendation is right and its justification understates the case. That matters for how confidently you would propose it: \u201ccheaper but slightly worse\u201d is an argument you might lose, and \u201ccheaper *and* better\u201d is not." },

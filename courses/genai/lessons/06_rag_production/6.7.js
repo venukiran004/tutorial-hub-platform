@@ -84,7 +84,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "The reference locates the cost correctly: generation dominates, and generation cost scales with how much retrieved context you put in the prompt. That makes the context budget the main cost lever, and unlike most cost levers it is enforceable by arithmetic rather than by estimation." },
+    { t: "p", text: "The usual account locates the cost correctly: generation dominates, and generation cost scales with how much retrieved context you put in the prompt. That makes the context budget the main cost lever, and unlike most cost levers it is enforceable by arithmetic rather than by estimation." },
 
     { t: "code", lang: "python", title: "pack until the budget is spent, then stop", code: `def assemble_context(chunks, count_tokens, max_context_tokens=3000):
     """Pack highest-ranked chunks until the token budget is spent."""

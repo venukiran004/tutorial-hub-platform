@@ -55,7 +55,7 @@ def get_weather(city: str) -> dict:
 
 agent = LlmAgent(
     name="weather_agent",
-    model="gemini-2.5-flash",                       # or any BaseLlm instance
+    model="gemini-3.8-flash",                       # or any BaseLlm instance
     instruction="Answer weather questions using the get_weather tool.",
     tools=[get_weather],                            # a plain function is a tool
 )

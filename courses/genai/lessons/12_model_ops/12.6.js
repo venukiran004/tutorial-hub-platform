@@ -37,9 +37,9 @@ class LLMResponse:
     tool_calls: list          # NORMALISED shape -- the part that actually earns its keep
 
 MODELS = {
-    "summariser":   {"provider": "anthropic", "model": "claude-sonnet-5",  "prompt": "summarise@v7"},
+    "summariser":   {"provider": "anthropic", "model": "claude-sonnet-5-5", "prompt": "summarise@v7"},
     "router":       {"provider": "openai",    "model": "gpt-...-2026-01-30", "prompt": "route@v3"},
-    "extractor":    {"provider": "anthropic", "model": "claude-sonnet-5",  "prompt": "extract@v12"},
+    "extractor":    {"provider": "anthropic", "model": "claude-sonnet-5-5", "prompt": "extract@v12"},
 }
 # Business logic says llm("summariser", ...). It never names a vendor or a snapshot.`,
       hl: [7, 10, 14],

@@ -7,7 +7,7 @@
 EC.receiveLesson({
   id: "3.4",
 
-  lede: "**`model=\"gemini-2.5-pro\"` is a lookup, and you can add entries to the table.** ADK resolves a model string to a class through a registry of regex patterns, which is how one field accepts Gemini, Claude, anything LiteLLM drives — and anything you write. That last case is not exotic: a model class is two methods, and the one every trace in this course was produced with is about fifteen lines. This lesson registers a working model, resolves it, runs an agent on it, and then adds the one method that makes live streaming possible.",
+  lede: "**`model=\"gemini-4-carbon\"` is a lookup, and you can add entries to the table.** ADK resolves a model string to a class through a registry of regex patterns, which is how one field accepts Gemini, Claude, anything LiteLLM drives — and anything you write. That last case is not exotic: a model class is two methods, and the one every trace in this course was produced with is about fifteen lines. This lesson registers a working model, resolves it, runs an agent on it, and then adds the one method that makes live streaming possible.",
 
   objectives: [
     "Explain how a model string becomes a class",
@@ -28,11 +28,11 @@ EC.receiveLesson({
 print(inspect.signature(LLMRegistry.resolve))   # (model: str) -> type[BaseLlm]
 print(inspect.signature(LLMRegistry.register))  # (llm_cls: type[BaseLlm]) -> None
 
-for name in ["gemini-2.5-pro", "gemini-1.5-flash-002", "fake-model"]:
+for name in ["gemini-4-carbon", "gemini-3.5-flash-lite", "fake-model"]:
     print(LLMRegistry.resolve(name))` },
 
-    { t: "out", text: `resolve('gemini-2.5-pro') -> Gemini
-resolve('gemini-1.5-flash-002') -> Gemini
+    { t: "out", text: `resolve('gemini-4-carbon') -> Gemini
+resolve('gemini-3.5-flash-lite') -> Gemini
 resolve('fake-model') -> ValueError: Model fake-model not found.` },
 
     { t: "p", text: "Two model ids that differ in version and family both resolve to the same class, because `Gemini.supported_models()` returns patterns rather than a list of names — which is what stops the registry needing an update every time a model id changes. An unregistered name raises `ValueError` at resolution, not later at call time, so a typo in a model string fails at agent construction rather than in production." },
@@ -41,7 +41,7 @@ resolve('fake-model') -> ValueError: Model fake-model not found.` },
       caption: "Passing a BaseLlm instance directly skips the registry entirely — which is how a fake model works in tests without registering anything.",
       cols: 4,
       nodes: [
-        { id: "s", label: "model=\"gemini-2.5-pro\"", sub: "a string on LlmAgent", tone: "accent" },
+        { id: "s", label: "model=\"gemini-4-carbon\"", sub: "a string on LlmAgent", tone: "accent" },
         { id: "r", label: "LLMRegistry.resolve", sub: "regex match over registered classes", tone: "violet" },
         { id: "c", label: "A BaseLlm subclass", sub: "Gemini, Claude, LiteLlm, yours", tone: "good" },
         { id: "i", label: "canonical_model", sub: "the instance the agent calls", tone: "warn" }
@@ -165,7 +165,7 @@ agent = LlmAgent(name="a", model="echo-1", instruction="x")` },
   ],
 
   quiz: { title: "Check your understanding", questions: [
-    { stem: "Why do gemini-2.5-pro and gemini-1.5-flash-002 resolve to the same class?",
+    { stem: "Why do gemini-4-carbon and gemini-3.5-flash-lite resolve to the same class?",
       options: ["They are registered aliases of each other", "supported_models() returns regex patterns", "The registry silently falls back to Gemini", "Version suffixes are stripped before lookup"],
       answer: 1,
       why: "Each class advertises patterns it answers to, so one `Gemini` class covers every id matching its patterns. That is what stops the registry needing a code change every time a provider publishes a new model id." },
@@ -184,9 +184,9 @@ agent = LlmAgent(name="a", model="echo-1", instruction="x")` },
   ] },
 
   interview: { title: "Interview", sub: "Model implementation questions", questions: [
-    { level: "Core", q: "How does ADK turn `model=\"gemini-2.5-pro\"` into something it can call?",
+    { level: "Core", q: "How does ADK turn `model=\"gemini-4-carbon\"` into something it can call?",
       strong: "`LLMRegistry.resolve` matches the string against regex patterns each registered class advertises.",
-      answer: [{ t: "p", text: "Every model class implements `supported_models()` returning regex patterns, and the registry matches the string against them — which is why `gemini-2.5-pro` and `gemini-1.5-flash-002` both resolve to the same `Gemini` class, and why a new model id usually needs no code change. An unregistered name raises `ValueError` at resolution rather than at call time, so a typo fails when you construct the agent. You can also skip the registry entirely by passing a `BaseLlm` instance, which is what I do in tests." }] },
+      answer: [{ t: "p", text: "Every model class implements `supported_models()` returning regex patterns, and the registry matches the string against them — which is why `gemini-4-carbon` and `gemini-3.5-flash-lite` both resolve to the same `Gemini` class, and why a new model id usually needs no code change. An unregistered name raises `ValueError` at resolution rather than at call time, so a typo fails when you construct the agent. You can also skip the registry entirely by passing a `BaseLlm` instance, which is what I do in tests." }] },
     { level: "Senior", q: "When would you write your own model class?",
       strong: "Tests, an internal or self-hosted model, or wrapping a provider — not for parameters, providers LiteLLM covers, or fallback.",
       answer: [{ t: "p", text: "Three good reasons. Testing, where a scripted model makes agent behaviour deterministic and free — it is about fifteen lines and it is how I would produce reproducible traces of tool dispatch, state deltas and callbacks without an API key. An internal or self-hosted model behind our own gateway with our own auth and retry policy. And wrapping a provider by subclassing its class, so auth and request translation keep working while I add caching or instrumentation. What I would push back on is writing one for something LiteLLM already drives, for changing generation parameters — that is `generate_content_config` — or for falling back between providers, since `FallbackModel` exists. And if the wrapper needs session state, it should have been a `before_model_callback`." }] },

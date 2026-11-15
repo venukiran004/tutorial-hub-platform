@@ -93,7 +93,7 @@ EC.receiveLesson({
 
 
     { t: "table",
-      head: ["Method", "Bits", "How", "Reference's quality note"],
+      head: ["Method", "Bits", "How", "Usual quality note"],
       rows: [
         ["FP16 / BF16", "16", "Standard half precision; BF16 has more range", "Baseline"],
         ["INT8 (W8A8)", "8", "Weights **and** activations to 8-bit", "Minimal"],

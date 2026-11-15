@@ -45,7 +45,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "`tiktoken` is a family of encodings, not one. `cl100k_base` is GPT-4 and GPT-3.5; `o200k_base` is GPT-4o and later. They give different answers, and the difference is not uniform — it depends on the language." },
+    { t: "p", text: "`tiktoken` is a family of encodings, not one. `cl100k_base` belonged to the GPT-4 and GPT-3.5 generation; `o200k_base` arrived with GPT-4o. They give different answers, and the difference is not uniform — it depends on the language. That is the durable point: **a token count is a property of a model's tokeniser, not of the text**, and every new model family is entitled to a new one." },
 
     { t: "code", lang: "python", title: "g13.py — two encodings, six samples", code: `enc  = tiktoken.get_encoding("cl100k_base")
 o200 = tiktoken.get_encoding("o200k_base")
@@ -71,7 +71,7 @@ for name, s in samples:
         { t: "p", text: "The same argument applies to model choice across providers. Two models quoted at the same price per million tokens are not the same price per *document* if one tokenises your language better." }
       ] },
 
-    { t: "p", text: "For a non-OpenAI model there is no `tiktoken` encoding at all, and the answer comes from the model's own tokeniser:" },
+    { t: "p", text: "So a local encoding is exact only for the models it was built for. For an open-weight model the answer comes from the model's own tokeniser, and for a hosted one from the provider's counting endpoint, which runs the real thing:" },
 
     { t: "code", lang: "python", title: "count.py — one function, several providers", code: `from functools import lru_cache
 import tiktoken
@@ -79,20 +79,19 @@ from transformers import AutoTokenizer
 
 @lru_cache(maxsize=None)                  # loading a tokenizer is not cheap
 def _tok(model):
-    if model.startswith(("gpt-4o", "o1", "o3", "o4")):
-        return ("tiktoken", tiktoken.get_encoding("o200k_base"))
-    if model.startswith(("gpt-4", "gpt-3.5")):
-        return ("tiktoken", tiktoken.get_encoding("cl100k_base"))
-    return ("hf", AutoTokenizer.from_pretrained(HF_NAME[model]))
+    if model in TIKTOKEN_ENCODING:            # a table YOU verified against usage, per model
+        return tiktoken.get_encoding(TIKTOKEN_ENCODING[model])
+    return AutoTokenizer.from_pretrained(HF_NAME[model])       # open weights
 
 def count(text, model):
-    kind, t = _tok(model)
-    return len(t.encode(text)) if kind == "tiktoken" else len(t.encode(text))
+    return len(_tok(model).encode(text))
 
-# Anthropic exposes a count endpoint instead of publishing a tokenizer:
-#   client.messages.count_tokens(model=..., messages=[...])
-# It is a network call, so cache aggressively or estimate and verify.`,
-      caption: "The `lru_cache` matters: constructing a HuggingFace tokeniser takes tens of milliseconds, which is fine once and catastrophic per request in a loop." },
+# A hosted model is counted by its provider, with the tokeniser it will really use:
+#   OpenAI     client.responses.input_tokens.count(model=..., input=[...])
+#   Anthropic  client.messages.count_tokens(model=..., messages=[...])
+#   Gemini     client.models.count_tokens(model=..., contents=[...])
+# Each is a network call, so cache aggressively, or estimate locally and reconcile.`,
+      caption: "The `lru_cache` matters: constructing a HuggingFace tokeniser takes tens of milliseconds, which is fine once and catastrophic per request in a loop. The counting endpoints also see what a local encoder cannot — tool definitions, schemas and the chat envelope of §02." },
 
     /* ============================================================ 02 */
     { t: "h2", n: "02", id: "the-envelope", text: "The chat envelope nobody counts",
@@ -155,7 +154,7 @@ on a 50-turn conversation of 20-token messages it is 153 of 1153 tokens.`,
     { t: "h2", n: "03", id: "cost", text: "From tokens to money",
       sub: "The arithmetic is trivial; getting the rates right is not" },
 
-    {"kind": "trace", "title": "A price table, and a claim it does not support", "caption": "The same call priced four ways spans a factor of 66, from $0.000450 to $0.030000 — which is the real argument for routing rather than picking one model. The second half is a correction worth carrying: **GPT-4o-mini is widely called \"30× cheaper\" than GPT-4o, and its own price table says 16.7×** on both input and output. Still an enormous saving, and not the number people repeat.", "left": "model", "codeW": 150, "vars": ["$/1M in", "$/1M out", "this call"], "steps": [{"code": "gpt-4o-mini", "state": ["0.15", "0.60", "$0.000450"], "tone": "good"}, {"code": "gpt-4o", "state": ["2.50", "10.00", "$0.007500"], "tone": "accent"}, {"code": "claude-sonnet", "state": ["3.00", "15.00", "$0.010500"], "tone": "accent"}, {"code": "o3", "state": ["10.00", "40.00", "$0.030000"], "changed": [2], "tone": "crit", "note": "66x the first row"}, {"code": "4o / 4o-mini ratio", "state": ["16.7x", "16.7x", "not 30x"], "tone": "violet"}], "t": "diagram", "id": "dg-1_14-03-2"},
+    {"kind": "trace", "title": "One call, priced four ways", "caption": "The same call priced four ways spans a factor of 100, from $0.000350 to $0.035000 — which is the real argument for routing rather than picking one model. The second thing the table shows is its own shape: **output is priced at five times input on every row**, so a third of the tokens is 71% of the bill, and the part of a request you control least is the part that dominates it.", "left": "model", "codeW": 170, "vars": ["$/1M in", "$/1M out", "this call"], "steps": [{"code": "gpt-6-luna", "state": ["0.10", "0.50", "$0.000350"], "tone": "good"}, {"code": "gpt-6.1-sol", "state": ["2.00", "10.00", "$0.007000"], "tone": "accent"}, {"code": "claude-sonnet-5-5", "state": ["2.00", "10.00", "$0.007000"], "tone": "accent"}, {"code": "gpt-6-astra", "state": ["10.00", "50.00", "$0.035000"], "changed": [2], "tone": "crit", "note": "100x the first row"}, {"code": "output / input", "state": ["5x", "5x", "on every row"], "tone": "violet"}], "t": "diagram", "id": "dg-1_14-03-2"},
 
 
 
@@ -181,36 +180,43 @@ on a 50-turn conversation of 20-token messages it is 153 of 1153 tokens.`,
 
 
 
-    { t: "code", lang: "python", title: "g18.py — a cost table", code: `PRICES = {"gpt-4o":        (2.50, 10.00),        # $ per 1M (input, output)
-          "gpt-4o-mini":   (0.15,  0.60),
-          "claude-sonnet": (3.00, 15.00),
-          "o3":           (10.00, 40.00)}
+    { t: "code", lang: "python", title: "g114.py — a cost table", code: `PRICES = {"gpt-6-luna":        (0.10,  0.50),      # $ per 1M (input, output), November 2026
+          "gpt-6.1-sol":       (2.00, 10.00),
+          "claude-sonnet-5-5": (2.00, 10.00),
+          "gpt-6-astra":      (10.00, 50.00)}
 
+print("  %-18s %9s %10s %12s" % ("model", "$/1M in", "$/1M out", "this call"))
 for m, (i, o) in PRICES.items():
-    print("%-15s %10.2f %10.2f %12.6f" % (m, i, o, (1000 * i + 500 * o) / 1e6))`,
-      out: `  model              $/1M in   $/1M out    this call
-  gpt-4o                2.50      10.00     0.007500
-  gpt-4o-mini           0.15       0.60     0.000450
-  claude-sonnet         3.00      15.00     0.010500
-  o3                   10.00      40.00     0.030000`,
-      caption: "Rates as of 2024–2025. A 1,000-in / 500-out call ranges from $0.00045 to $0.03 — a factor of 67 across four models for identical work." },
+    print("  %-18s %9.2f %10.2f %12.6f" % (m, i, o, (1000 * i + 500 * o) / 1e6))`,
+      out: `  model                $/1M in   $/1M out    this call
+  gpt-6-luna              0.10       0.50     0.000350
+  gpt-6.1-sol             2.00      10.00     0.007000
+  claude-sonnet-5-5       2.00      10.00     0.007000
+  gpt-6-astra            10.00      50.00     0.035000`,
+      caption: "List prices read in November 2026. A 1,000-in / 500-out call ranges from $0.00035 to $0.035 — a factor of 100 across four models for identical work." },
 
-    { t: "p", text: "The worked example checks out: `(1000 × 2.50 + 500 × 10.00) / 1,000,000` = $0.0075, which is what it prints. One of its *claims*, however, does not:" },
+    { t: "p", text: "The arithmetic is one line: `(1000 × 2.00 + 500 × 10.00) / 1,000,000` = $0.0070. What the line hides is which of its two terms you control. The input count is yours to measure before sending. The output count is the model's — and on a model that reasons, most of it is tokens you never see (1.10):" },
 
-    { t: "code", lang: "python", title: "g18.py — checking a claim against its own table", code: `print("it is commonly claimed GPT-4o-mini is '30x cheaper' than GPT-4o.")
-print("  from its own price table: input %.2f/%.2f = %.1fx, output %.2f/%.2f = %.1fx"
-      % (2.50, 0.15, 2.50 / 0.15, 10.00, 0.60, 10.00 / 0.60))`,
-      out: `it is commonly claimed GPT-4o-mini is '30x cheaper' than GPT-4o.
-  from its own price table: input 2.50/0.15 = 16.7x, output 10.00/0.60 = 16.7x
-  so the factor is 16.7x on both, not 30x.`,
-      hl: [1, 2, 3],
-      caption: "A commonly repeated claim is that GPT-4o-mini is 30x cheaper than GPT-4o, yet the published prices make it 16.7×. The ratio is the same on input and output, so there is no mix of the two that produces 30." },
+    { t: "code", lang: "python", title: "g114.py — what the sheet does not price", code: `i, o = 2.00, 10.00                                   # gpt-6.1-sol, $ per 1M
+plain = (1000 * i + 500 * o) / 1e6
+print("1,000 in + 500 out            : $%.6f   output is %.0f%% of it"
+      % (plain, 100 * 500 * o / 1e6 / plain))
+for reasoning in (500, 2000, 8000):
+    cost = (1000 * i + (500 + reasoning) * o) / 1e6
+    print("  with %5d reasoning tokens : $%.6f   %.1fx the figure above"
+          % (reasoning, cost, cost / plain))`,
+      out: `1,000 in + 500 out            : $0.007000   output is 71% of it
+  with   500 reasoning tokens : $0.012000   1.7x the figure above
+  with  2000 reasoning tokens : $0.027000   3.9x the figure above
+  with  8000 reasoning tokens : $0.087000   12.4x the figure above`,
+      hl: [1, 3],
+      caption: "Output is a third of the tokens and 71% of the bill, because it is priced at five times input. Reasoning tokens are billed as output, so the same visible answer costs between 1.7 and 12.4 times the sheet's figure depending on a depth setting that appears nowhere on the price page." },
 
     { t: "callout", kind: "trap", title: "Model prices go stale faster than the documents that quote them",
       body: [
-        { t: "p", text: "Every price in this lesson is quoted from the reference and dated there. They will be wrong by the time you read this — provider pricing moves, and it has moved downward consistently." },
+        { t: "p", text: "Every price in this lesson was read from the provider's own page in November 2026. They will be wrong by the time you read this — provider pricing moves, sometimes on a date announced in advance, and not always downward: Gemini 4 Carbon's launch price doubles on 1 December 2026." },
         { t: "p", text: "So do not hardcode rates in application code. Put them in configuration with the date they were checked, and fail loudly on a model you have no rate for rather than silently defaulting to one. A cost dashboard built on a rate table that is a year old reports confident fiction." },
-        { t: "p", text: "And verify a ratio before repeating it. The 30× figure above has been quoted widely enough that it reads as common knowledge; the number from the table is 16.7×, and both cannot be true." }
+        { t: "p", text: "And compute a ratio from the sheet rather than repeating one. \"The small model is ten times cheaper\" is the kind of figure that gets quoted for years after the pair of models it described has been retired; the table above is a hundredfold, and it will not be that next year either." }
       ] },
 
     /* ============================================================ 04 */
@@ -252,8 +258,8 @@ class Rate:
     checked: str                      # the date you verified it -- not optional
 
 RATES = {
-    "gpt-4o":      Rate(2.50, 10.00, "2024-08-06"),
-    "gpt-4o-mini": Rate(0.15,  0.60, "2024-08-06"),
+    "gpt-6.1-sol": Rate(2.00, 10.00, "2026-11-10"),
+    "gpt-6-luna":  Rate(0.10,  0.50, "2026-11-10"),
 }
 
 PER_MESSAGE, PER_REPLY = 3, 3         # reconcile against usage.prompt_tokens
@@ -348,22 +354,22 @@ residuals: [0.14, -0.21, 0.07]`,
     { t: "callout", kind: "scenario", title: "Incident: the per-customer quota that let one tenant use four times their allowance",
       body: [
         { t: "p", text: "**Symptom.** A platform sold tiers by monthly token allowance and enforced them in code. Reconciliation against the provider's invoice found one large customer had consumed roughly four times their metered allowance without the quota ever triggering." },
-        { t: "p", text: "**What the counter did.** It summed `len(enc.encode(content))` across the messages, with `cl100k_base`. The product had moved to GPT-4o eighteen months earlier." },
+        { t: "p", text: "**What the counter did.** It summed `len(enc.encode(content))` across the messages, with the encoding of the model the product had launched on. It had changed model family twice since." },
         { t: "p", text: "**Mechanism.** Three errors compounding, all in the same direction. The encoding was wrong for the model, though for this customer's mostly-English text that was a small error. The chat envelope was never counted, which on their workload — long conversations of many short turns — was around 13%. And the counter ignored tool definitions entirely, which at roughly 85 tokens each (1.9) across a dozen tools was the largest term by far. Every one of these undercounts, so the meter always read low and never high." },
         { t: "p", text: "**Fix.** The counter now counts the full serialised request — messages, envelope, tools, schema — and is reconciled against `usage.prompt_tokens` on the first response of every deploy, failing the deploy if the gap exceeds 1%. The durable lesson is the direction of the errors: everything a naive counter forgets is something that adds tokens, so estimation error in metering is systematically optimistic. If you bill on it, you have to reconcile it against the provider's own number rather than trusting your arithmetic." }
       ] }
   ],
 
   takeaways: [
-    "**The encoding is part of the answer.** `cl100k_base` is GPT-4 and GPT-3.5; `o200k_base` is GPT-4o and later, and they disagree.",
+    "**The encoding is part of the answer.** A token count belongs to a model's tokeniser, not to the text: `cl100k_base` and `o200k_base`, one model generation apart, disagree on the same sentence.",
     "English is identical between them. **French measured 73 tokens under `cl100k_base` and 57 under `o200k_base`** — a 22% reduction for the same characters, which is a 22% input-cost reduction for non-English traffic.",
     "Two models at the same price per million tokens are **not the same price per document** if one tokenises your language better.",
-    "Non-OpenAI models need their own tokeniser, and Anthropic exposes a count endpoint rather than publishing one. Cache tokeniser construction — it is tens of milliseconds.",
+    "A local encoding is exact only for the models it was built for. Open-weight models need their own tokeniser, and hosted ones have a counting endpoint — on OpenAI, Anthropic and Gemini alike — that runs the real one. Cache tokeniser construction — it is tens of milliseconds.",
     "**The chat envelope is not free**: roughly 3 tokens per message plus 3 to prime the reply on recent OpenAI chat models. That was 69% overhead on two short messages and 13% on a 50-turn conversation.",
     "The envelope scales with the **number** of messages, not their length, so it hurts most on conversations made of many short turns.",
     "Reconcile your counter against `usage.prompt_tokens` once per model family. It is one request and it closes a class of silent arithmetic error.",
     "The envelope constant is a property of the **template and the tokeniser together** — pairing a chat template with a tokeniser that lacks its special tokens fitted at 16.36 per message plus 9.50 fixed, not 3 and 3.",
-    "**The \"30× cheaper\" claim contradicts its own price table**, which gives 2.50/0.15 = 16.7× on input and 10.00/0.60 = 16.7× on output. Verify a ratio before repeating it.",
+    "**Output is priced at five times input** on current models, so a 1,000-in / 500-out call is 71% output by cost — and reasoning tokens are billed as output, which took the same call from $0.007 to $0.087 at 8,000 of them.",
     "Estimation errors in metering are **systematically optimistic** — the envelope, the tools and the schema are all things a naive counter forgets, and all of them add tokens."
   ],
 
@@ -380,15 +386,15 @@ residuals: [0.14, -0.21, 0.07]`,
         answer: 1,
         why: "The chat format wraps each message in role and boundary tokens — about 3 per message plus 3 to prime the reply on recent OpenAI models — and tool definitions and schemas are sent as input too, at roughly 85 tokens per tool. All of these are additions, which is why a naive counter is systematically optimistic and a quota built on one lets tenants over-consume. The third option names one message where the problem is per-message. Output tokens are a separate figure that no input counter is expected to produce." },
 
-      { stem: "It is commonly said GPT-4o-mini is \"30× cheaper\" than GPT-4o. Its price table lists $2.50 and $0.15 per million input tokens. What is the real ratio?",
-        options: ["30×, as stated", "16.7×, both ways", "Not computable here", "About 8× overall"],
+      { stem: "A model is priced at $2 per million input tokens and $10 per million output. For a call with 1,000 input and 500 output tokens, what share of the cost is output?",
+        options: ["A third, matching its share of the tokens", "About 71%, as output costs five times more", "Half, because the two rates average out", "It cannot be computed from the price sheet"],
         answer: 1,
-        why: "2.50 ÷ 0.15 = 16.7 on input, and 10.00 ÷ 0.60 = 16.7 on output, so the factor is the same on both and no mix of the two produces 30. The claim and the table are in the same document and cannot both be right — which is the reason to check a ratio against the numbers before repeating it. The figures are sufficient to compute the answer, so the third option is wrong, and 8× matches nothing in the table." },
+        why: "Input costs 1,000 × $2 and output 500 × $10 per million, which is $0.002 against $0.005 — output is 71% of a $0.007 call despite being a third of its tokens. The first option counts tokens instead of pricing them, which is the mistake that makes people optimise the prompt and ignore the answer length. Nothing averages, because the two rates apply to different quantities. And the sheet is sufficient for this call; what it cannot tell you is how many reasoning tokens will be added to the output side." },
 
       { stem: "Where should model prices live in your codebase?",
         options: ["Hardcoded constants, as they rarely change", "Dated config that raises on unknown models", "Fetched from the provider at startup", "Derived from each month's invoice"],
         answer: 1,
-        why: "Prices move, mostly downward, so a rate table needs a checked-on date to be auditable and must fail loudly on a model it has no rate for — silently defaulting to another model's price turns a cost dashboard into confident fiction. Hardcoding makes the staleness invisible. Providers do not generally expose a pricing endpoint to fetch at startup. Deriving from the invoice is a useful reconciliation but far too slow to price a request you are about to send." }
+        why: "Prices move, in both directions, so a rate table needs a checked-on date to be auditable and must fail loudly on a model it has no rate for — silently defaulting to another model's price turns a cost dashboard into confident fiction. Hardcoding makes the staleness invisible. Providers do not generally expose a pricing endpoint to fetch at startup. Deriving from the invoice is a useful reconciliation but far too slow to price a request you are about to send." }
     ]
   },
 
@@ -400,7 +406,7 @@ residuals: [0.14, -0.21, 0.07]`,
         q: "How do you count tokens for a chat request?",
         strong: "A strong answer names the encoding per model family, includes the envelope, and mentions reconciling against the provider.",
         answer: [
-          { t: "p", text: "With the right encoding for the model — `o200k_base` for GPT-4o and later, `cl100k_base` for GPT-4 and 3.5, and the model's own tokenizer for anything non-OpenAI. Anthropic exposes a count endpoint rather than publishing a tokenizer, so that is a network call and wants caching." },
+          { t: "p", text: "With the tokenizer the model will actually use. For open weights that is the model's own tokenizer, loaded once. For a hosted model it is the provider's counting endpoint — OpenAI, Anthropic and Gemini each have one — which is a network call and wants caching; a local encoding such as `tiktoken`'s is exact only for the model family it was built for, so I treat it as an estimate until it has been reconciled." },
           { t: "p", text: "And I would count the envelope, not just the content. The chat format wraps each message in role and boundary tokens — about three per message plus three to prime the reply on recent OpenAI models. On two short messages I measured that at 69% overhead; on a fifty-turn conversation it is 13%. It scales with the number of messages rather than their length, so many short turns is the worst case." },
           { t: "p", text: "Then I would reconcile once against `usage.prompt_tokens`. One request tells you your envelope constant exactly, and it closes a class of silent error permanently. The constant is a property of the template and tokenizer together, so it gets re-derived when the model family changes." }
         ] },

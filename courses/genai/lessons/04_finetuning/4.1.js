@@ -47,7 +47,7 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "The practical consequence is prompt length",
       body: [
         { t: "p", text: "If the behaviour is in the weights you stop paying for it in tokens. A three-hundred-token style instruction prepended to every request costs three hundred tokens on every request forever; the same behaviour fine-tuned in costs nothing per call." },
-        { t: "p", text: "That is the cost argument, and 3.12\u2019s arithmetic makes it concrete: at GPT-4o\u2019s blended rate, 300 extra prompt tokens on a million calls is about $750. It is also a latency argument \u2014 a shorter prompt is a shorter prefill (3.1)." },
+        { t: "p", text: "That is the cost argument, and 3.12\u2019s arithmetic makes it concrete: at a mid-tier input rate of $2 per million, 300 extra prompt tokens on a million calls is $600. It is also a latency argument \u2014 a shorter prompt is a shorter prefill (3.1)." },
         { t: "p", text: "The argument that matters more is consistency. A prompt can be overridden by the conversation, drifted away from over a long context, or ignored under an unusual input. A weight is not negotiable in the same way." }
       ] },
 

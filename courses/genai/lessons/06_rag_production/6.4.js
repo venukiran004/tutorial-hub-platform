@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.4",
 
-  lede: "It is commonly said vector RAG \u201cfails for multi-hop questions\u201d. That is usually asserted and it is actually **checkable** \u2014 and the check is stronger than a recall number. Over a six-sentence corpus where every chunk is a single clean sentence, **zero chunks contain both endpoints** of the question. So there is no `k` at which a top-k of chunks contains the answer, however good the retriever. The answer is not in a chunk; it is in the path between four of them.",
+  lede: "It is commonly said that vector RAG \u201cfails for multi-hop questions\u201d. That is usually asserted and it is actually **checkable** \u2014 and the check is stronger than a recall number. Over a six-sentence corpus where every chunk is a single clean sentence, **zero chunks contain both endpoints** of the question. So there is no `k` at which a top-k of chunks contains the answer, however good the retriever. The answer is not in a chunk; it is in the path between four of them.",
 
   objectives: [
     "State the three query shapes a vector index structurally cannot answer",
@@ -119,7 +119,7 @@ for doc, s in CHUNKS:
 
     { t: "code", lang: "python", title: "extraction, then storage", code: `from langchain_experimental.graph_transformers import LLMGraphTransformer
 
-llm = ChatOpenAI(model="gpt-4o", temperature=0)
+llm = ChatOpenAI(model="gpt-6.1-sol")
 transformer = LLMGraphTransformer(llm=llm)
 
 documents = [Document(page_content="Apple was founded by Steve Jobs in 1976. "
@@ -144,7 +144,7 @@ graph.add_graph_documents(graph_docs)`,
       body: [
         { t: "p", text: "One model call per document, at ingestion. 6.2 put that on the right side of the ledger \u2014 ingestion runs on the slow clock, so per-document model calls cost nothing per query. For a corpus of a few thousand documents this is an afternoon and a modest bill." },
         { t: "p", text: "The cost that bites is maintenance. A changed document needs its entities re-extracted and its old edges removed, which is 6.3\u2019s orphan problem with a harder deletion: a stale *edge* is invisible in a way a stale chunk is not, because nothing displays it directly \u2014 it just quietly makes a traversal find a path that no longer exists." },
-        { t: "p", text: "So budget for it as a second index with its own ingestion pipeline, freshness story and failure modes, maintained alongside the vector index rather than instead of it. That is the real reason the reference marks GraphRAG \u201coverkill\u201d for small corpora \u2014 not the compute, the operational surface." }
+        { t: "p", text: "So budget for it as a second index with its own ingestion pipeline, freshness story and failure modes, maintained alongside the vector index rather than instead of it. That is the real reason GraphRAG is called \u201coverkill\u201d for small corpora \u2014 not the compute, the operational surface." }
       ] },
 
     { t: "h2", n: "03", id: "traverse", text: "Traversal answers the question exactly \u2014 and sometimes a different question",

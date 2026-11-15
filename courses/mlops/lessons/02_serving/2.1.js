@@ -10,7 +10,7 @@ EC.receiveLesson({
     "List the three things a prediction response must carry for an incident to be traceable"
   ],
 
-  prerequisites: ["1.5", "python:14.7"],
+  prerequisites: ["1.5", "python:15.7"],
 
   blocks: [
 

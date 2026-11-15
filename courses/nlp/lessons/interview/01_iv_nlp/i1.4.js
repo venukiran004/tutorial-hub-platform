@@ -424,7 +424,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from pydantic import BaseModel\nfrom langchain_openai import ChatOpenAI\n\nclass MovieReview(BaseModel):\n    title: str\n    sentiment: Literal[\"positive\", \"negative\", \"neutral\"]\n    score: float  # 0.0 to 1.0\n    summary: str\n\nllm = ChatOpenAI(model=\"gpt-4o\").with_structured_output(MovieReview)\nresult = llm.invoke(\"Review: This movie was absolutely brilliant...\")\n# result.sentiment → \"positive\", result.score → 0.95"
+     "code": "from pydantic import BaseModel\nfrom langchain_openai import ChatOpenAI\n\nclass MovieReview(BaseModel):\n    title: str\n    sentiment: Literal[\"positive\", \"negative\", \"neutral\"]\n    score: float  # 0.0 to 1.0\n    summary: str\n\nllm = ChatOpenAI(model=\"gpt-6.1-sol\").with_structured_output(MovieReview)\nresult = llm.invoke(\"Review: This movie was absolutely brilliant...\")\n# result.sentiment → \"positive\", result.score → 0.95"
     },
     {
      "t": "ul",

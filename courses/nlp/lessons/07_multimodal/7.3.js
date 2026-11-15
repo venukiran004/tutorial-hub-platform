@@ -31,14 +31,14 @@ EC.receiveLesson({
       rows: [
         ["Dual encoder", "CLIP, SigLIP", "Two towers, similarity only", "Retrieval, zero-shot classification"],
         ["Bridge to an LLM", "BLIP-2, LLaVA, Flamingo", "Vision encoder → connector → LLM", "VQA, captioning, visual chat"],
-        ["Native multimodal", "Gemini, GPT-4o", "All modalities in one stack from pretraining", "Everything, including generation"]
+        ["Native multimodal", "Gemini, GPT-4o and their successors", "All modalities in one stack from pretraining", "Everything, including generation"]
       ] },
 
     { t: "table",
       head: ["Model", "Architecture", "Notable for"],
       rows: [
-        ["GPT-4o", "Proprietary native multimodal", "Vision, text and audio in one model"],
-        ["Gemini 2.0", "Native multimodal", "All modalities plus actions"],
+        ["GPT-4o, then the GPT-5 and GPT-6 families", "Proprietary native multimodal", "Vision, text and audio in one model"],
+        ["Gemini 2.0 onwards", "Native multimodal", "All modalities plus actions"],
         ["LLaVA 1.6", "ViT + MLP + Vicuna", "The open-source reference design"],
         ["BLIP-2", "ViT + Q-Former + LLM", "Bottleneck bridging — 32 learned queries"],
         ["Qwen-VL", "ViT + Qwen", "Multilingual and document understanding"],

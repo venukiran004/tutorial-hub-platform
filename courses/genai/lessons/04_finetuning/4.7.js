@@ -16,7 +16,7 @@ EC.receiveLesson({
   blocks: [
 
     { t: "h2", n: "01", id: "substitution", text: "What I changed, and why",
-      sub: "The recipe is the; the model is not" },
+      sub: "The recipe is the standard one; the model is not" },
 
     {"kind": "flow", "title": "Two substitutions, and what each one does not change", "caption": "`bitsandbytes` requires CUDA and this machine has none, so the four-bit path cannot run at all — the base here is GPT-2 in fp32. **That changes only memory**: the arithmetic runs in bf16 either way, so the training dynamics are the same ones 4.5 describes. The second substitution replaces a convenience wrapper with an explicit loop, so every line is visible — same optimiser, same loss, same updates.", "cols": 3, "nodes": [{"id": "q", "label": "No CUDA, so no 4-bit path", "sub": "bitsandbytes needs it", "tone": "warn"}, {"id": "f", "label": "GPT-2 in fp32 instead", "sub": "the base changes", "tone": "accent"}, {"id": "m", "label": "Which changes memory only", "sub": "arithmetic is bf16 either way", "tone": "good"}, {"id": "t", "label": "An explicit loop, not a wrapper", "sub": "every line visible", "tone": "accent"}, {"id": "s", "label": "Same optimiser, loss and updates", "sub": "so the recipe is unchanged", "tone": "good"}], "edges": [["q", "f"], ["f", "m"], ["t", "s"], ["m", "s"]], "t": "diagram", "id": "dg-4_7-01-0"},
 
@@ -42,7 +42,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "note", title: "The Q is missing from this QLoRA",
       body: [
-        { t: "p", text: "The reference loads Qwen2.5-1.5B-Instruct with `BitsAndBytesConfig(load_in_4bit=True)`. **bitsandbytes requires CUDA and this machine has none**, so the four-bit path cannot run at all. The base here is GPT-2 in fp32." },
+        { t: "p", text: "The standard recipe loads a model such as Qwen2.5-1.5B-Instruct with `BitsAndBytesConfig(load_in_4bit=True)`. **bitsandbytes requires CUDA and this machine has none**, so the four-bit path cannot run at all. The base here is GPT-2 in fp32." },
         { t: "p", text: "Everything else is the recipe unchanged \u2014 the dataset shape, the `LoraConfig`, the training loop, the before/after test, the merge. 4.5 covers what the four-bit storage would have changed, and it is only memory: the arithmetic runs in bf16 either way, so the training dynamics here are the same ones a QLoRA run would show." },
         { t: "p", text: "The other substitution is the trainer. The usual choice is `trl`\u2019s `SFTTrainer`, which is a convenience wrapper; this runs the loop explicitly so that every line is visible. Same optimiser, same loss, same updates. One detail if you do reach for it: `SFTTrainer` and `DPOTrainer` take `processing_class=tokenizer` in current `trl` — the older `tokenizer=` argument is deprecated, and the deprecation warning is easy to miss in a training log." }
       ] },

@@ -45,10 +45,10 @@ async for event in runner.run_async(user_id="u1", session_id="s1", new_message=m
       ] },
 
     { t: "dl", items: [
-      ["Images", "Counted as a fixed number of tokens per tile, so a screenshot is comparable to a page of text. Excellent for layout questions — 'which field is empty on this form' — and wasteful for text you could have extracted."],
+      ["Images", "Counted as a fixed number of tokens per image at the resolution level you ask for — 1,120 by default on current Gemini models and 280 at the lowest level — so a screenshot is comparable to a page or two of text. Excellent for layout questions — 'which field is empty on this form' — and wasteful for text you could have extracted."],
       ["PDFs and documents", "Handled natively by the Gemini models: pages become both text and images, so tables and stamps survive. This is usually better than your own text extraction, and always more expensive."],
       ["Audio", "Transcription and understanding in one step; the conversation-level equivalent is the live streaming path (lesson 10.2)."],
-      ["Video", "Sampled at a frame rate plus the audio track; the most expensive modality by a wide margin, and the one where a URI reference rather than inline bytes is mandatory in practice."]
+      ["Video", "Sampled at a frame rate, at about 70 tokens a frame, plus the audio track at about 25 tokens a second; the most expensive modality by a wide margin, and the one where a URI reference rather than inline bytes is mandatory in practice."]
     ] },
 
     { t: "callout", kind: "tradeoff", title: "Multimodal or pre-process",
@@ -56,7 +56,7 @@ async for event in runner.run_async(user_id="u1", session_id="s1", new_message=m
 
     { t: "h2", n: "02", text: "Other providers", id: "providers" },
 
-    {"kind": "trace", "title": "Four ways to reach a model, and one contract underneath all of them", "caption": "**Everything in this table is a `BaseLlm` producing `LlmResponse` objects from an async generator, which is why the last row works at all.** The scripted model used throughout this course is not a testing special case — it is the same interface the real adapters implement, so an agent cannot tell the difference. That is what makes testing without a network straightforward rather than a mocking exercise. **The LiteLLM row is the one to reach for by default** for a non-Google provider: one line, maintained elsewhere, and it covers OpenAI, Azure, Bedrock and Ollama alike.", "left": "how you reach it", "codeW": 190, "vars": ["example", "when"], "steps": [{"code": "a model string", "state": ["'gemini-2.5-pro', 'claude-sonnet-5-5'", "first-party, on Vertex AI"], "tone": "good"}, {"code": "a shipped adapter class", "state": ["Gemini, Claude, Gemma, ApigeeLlm", "when you need its own options"], "changed": [0, 1], "tone": "good"}, {"code": "LiteLlm(model=...)", "state": ["OpenAI, Azure, Bedrock, Ollama", "the default for anything else"], "changed": [0, 1], "tone": "violet"}, {"code": "your own BaseLlm subclass", "state": ["a scripted model, a gateway, a cache", "testing, or provider-level concerns"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-3_2-02-0"},
+    {"kind": "trace", "title": "Four ways to reach a model, and one contract underneath all of them", "caption": "**Everything in this table is a `BaseLlm` producing `LlmResponse` objects from an async generator, which is why the last row works at all.** The scripted model used throughout this course is not a testing special case — it is the same interface the real adapters implement, so an agent cannot tell the difference. That is what makes testing without a network straightforward rather than a mocking exercise. **The LiteLLM row is the one to reach for by default** for a non-Google provider: one line, maintained elsewhere, and it covers OpenAI, Azure, Bedrock and Ollama alike.", "left": "how you reach it", "codeW": 190, "vars": ["example", "when"], "steps": [{"code": "a model string", "state": ["'gemini-4-carbon', 'claude-sonnet-5-5'", "first-party, on Vertex AI"], "tone": "good"}, {"code": "a shipped adapter class", "state": ["Gemini, Claude, Gemma, ApigeeLlm", "when you need its own options"], "changed": [0, 1], "tone": "good"}, {"code": "LiteLlm(model=...)", "state": ["OpenAI, Azure, Bedrock, Ollama", "the default for anything else"], "changed": [0, 1], "tone": "violet"}, {"code": "your own BaseLlm subclass", "state": ["a scripted model, a gateway, a cache", "testing, or provider-level concerns"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-3_2-02-0"},
 
     { t: "code", lang: "python", title: "The adapters ADK ships",
       code: `from google.adk.models import Gemini, Claude, Gemma, LiteLlm, ApigeeLlm, FallbackModel
@@ -67,7 +67,7 @@ a1 = LlmAgent(name="a1", model="claude-sonnet-5-5", instruction="…")
 
 # 2. anything LiteLLM drives — OpenAI, Anthropic direct, Azure, Bedrock, Ollama, …
 #    pip install "google-adk[extensions]"
-a2 = LlmAgent(name="a2", model=LiteLlm(model="openai/gpt-4o"), instruction="…")
+a2 = LlmAgent(name="a2", model=LiteLlm(model="openai/gpt-6.1-sol"), instruction="…")
 a3 = LlmAgent(name="a3", model=LiteLlm(model="ollama_chat/llama3.1"), instruction="…")
 
 # 3. your own
@@ -108,7 +108,7 @@ LLMRegistry.register(MyLlm)`,
 
     { t: "code", lang: "python", title: "A fallback across providers",
       code: `resilient = FallbackModel(
-    models=[Gemini(model="gemini-2.5-pro"),
+    models=[Gemini(model="gemini-4-carbon"),
             LiteLlm(model="anthropic/claude-sonnet-5-5")],
     retriable_status_codes=[429, 500, 503],
 )`,
@@ -176,7 +176,7 @@ LLMRegistry.register(MyLlm)`,
       answer: [{ t: "p", text: "A user message is a types.Content with a parts list, and a part can carry text, inline bytes with a mime type, or a file URI. So the change is entirely on the calling side: build the Content with an extra part and pass it to run_async. Small screenshots go inline; large documents and video go by URI so they are not re-uploaded in the request body. The only agent-side consideration is the model — it must be one that accepts that modality — and the only operational one is not leaving a large part in the conversation after the turn that needed it, because the history is re-sent on every subsequent call." }] },
     { level: "Core", q: "What does it take to run an ADK agent on a non-Google model?",
       strong: "Swap the model object for LiteLlm or another adapter; expect to revisit tool-calling behaviour, structured output and any built-in tools.",
-      answer: [{ t: "p", text: "Mechanically it is one line: model=LiteLlm(model='openai/gpt-4o') instead of a Gemini string, with the extensions extra installed. The framework — agents, runner, sessions, events, callbacks, function tools — is provider-agnostic, so nothing else in the code changes. What does not carry over is behaviour: how eagerly the model calls tools, whether it issues several calls per turn, how reliably it produces schema-valid output, and its reasoning configuration. And the built-in tools that execute on Google's side — google_search, url_context, built-in code execution — simply do not exist elsewhere, so an agent that depends on them needs function-tool replacements. I would re-run the evalset against the new provider rather than assume parity." }] },
+      answer: [{ t: "p", text: "Mechanically it is one line: model=LiteLlm(model='openai/gpt-6.1-sol') instead of a Gemini string, with the extensions extra installed. The framework — agents, runner, sessions, events, callbacks, function tools — is provider-agnostic, so nothing else in the code changes. What does not carry over is behaviour: how eagerly the model calls tools, whether it issues several calls per turn, how reliably it produces schema-valid output, and its reasoning configuration. And the built-in tools that execute on Google's side — google_search, url_context, built-in code execution — simply do not exist elsewhere, so an agent that depends on them needs function-tool replacements. I would re-run the evalset against the new provider rather than assume parity." }] },
     { level: "Senior", q: "When is multimodal input the wrong answer even though it works?",
       strong: "When the same media answers many questions: pre-process once into state or an index rather than re-sending it every turn.",
       answer: [{ t: "p", text: "Multimodal input is right when the question is about the artefact — is this form signed, which field is empty, what does this chart show — because no extraction pipeline preserves what the model needs. It is wrong when one document serves many questions across many turns and users, because every turn re-sends and re-reads it, and the history keeps it in context afterwards. There the correct design is to process it once: extract, chunk and index for retrieval, or run a single extraction tool and keep the structured result in state. The tell is whether the media changes as often as the question does; if the question changes and the media does not, the media belongs behind a tool rather than in the prompt." }] }

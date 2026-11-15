@@ -153,11 +153,18 @@
     warn:       { kind: "Watch out",          icon: I.alert },
     good:       { kind: "Best practice",      icon: I.checkCircle },
     note:       { kind: "Note",               icon: I.bulb },
-    mental:     { kind: "Mental model",       icon: I.brain }
+    mental:     { kind: "Mental model",       icon: I.brain },
+    // The measured result a section turns on. DL and NLP used this kind 95
+    // times before it had a label or a colour: it fell through to "Note" in
+    // the accent colour, so the one finding meant to stand out looked like an
+    // aside.
+    crit:       { kind: "Key result",         icon: I.target }
   };
   function callout(b) {
     var meta = CALLOUT[b.kind] || CALLOUT.note;
-    var cls = b.kind === "note" || b.kind === "mental" ? "insight" : b.kind;
+    // An unknown kind takes the note's class as well as its label, so a typo
+    // can never produce a callout with a class no stylesheet knows.
+    var cls = !CALLOUT[b.kind] || b.kind === "note" || b.kind === "mental" ? "insight" : b.kind;
     var h = '<div class="callout-h"><span class="callout-ic">' + meta.icon + "</span>" +
       '<span class="callout-kind">' + esc(b.label || meta.kind) + "</span>" +
       (b.title ? '<span class="callout-title">' + inline(b.title) + "</span>" : "") + "</div>";
@@ -241,7 +248,12 @@
       var s = b.solution;
       sol = '<div class="solution" id="' + id + '-sol" hidden>' +
         '<div class="sol-h">' + I.checkCircle + "<span>Reference solution</span></div>" +
-        (s.code ? codeBlock({ code: s.code, lang: s.lang || "python", title: s.title || "solution.py" }) : "") +
+        // `out`, `caption` and `hl` are passed through: the contract documents
+        // solution.out, and 518 solutions carried one that never reached the
+        // page because only code, lang and title were forwarded.
+        (s.code ? codeBlock({ code: s.code, lang: s.lang || "python", title: s.title || "solution.py",
+                              out: s.out, outLabel: s.outLabel, caption: s.caption, hl: s.hl })
+                : (s.out ? outBlock({ text: s.out, label: s.outLabel }) : "")) +
         (s.notes ? '<div class="sol-notes">' + body({ body: s.notes }) + "</div>" : "") +
         "</div>";
     }

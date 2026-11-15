@@ -33,7 +33,7 @@ EC.receiveLesson({
 
 agent = LlmAgent(
     name="support_agent",                 # required, unique among its siblings
-    model="gemini-2.5-flash",             # a model id, or a BaseLlm instance
+    model="gemini-3.8-flash",             # a model id, or a BaseLlm instance
     description="Answers billing and account questions.",   # read by OTHER agents
     instruction="You are a support agent. Use the tools to look things up.",
     tools=[lookup_invoice, open_ticket],  # functions, BaseTool objects or toolsets
@@ -148,7 +148,7 @@ print(dict(session.state))` },
       solution: { lang: "python", title: "Solution",
         code: `# (a) classifier: stateless, structured, no tools, cheap
 classifier = LlmAgent(
-    name="classifier", model="gemini-2.5-flash-lite",
+    name="classifier", model="gemini-3.5-flash-lite",
     instruction="Classify the message as one of: billing, tech, sales, spam, other.",
     include_contents="none",            # one message in, one label out — history would only add cost and drift
     output_schema=Label,                # validated, not free text
@@ -157,7 +157,7 @@ classifier = LlmAgent(
 
 # (b) support agent: conversational, tools, routes to a specialist
 support = LlmAgent(
-    name="support", model="gemini-2.5-flash",
+    name="support", model="gemini-3.8-flash",
     description="Front-line support for account and connectivity questions.",   # the coordinator reads this
     instruction="Help the user. Use the tools before answering. Transfer billing questions to the billing agent.",
     tools=[lookup_account, open_ticket],
@@ -166,7 +166,7 @@ support = LlmAgent(
 
 # (c) summariser: reads state, writes state, no conversation
 summariser = LlmAgent(
-    name="summariser", model="gemini-2.5-flash",
+    name="summariser", model="gemini-3.8-flash",
     instruction="Summarise {draft} in three bullets.",
     include_contents="none",            # its input is state, not the chat
     output_key="summary",               # the next agent reads {summary}

@@ -103,7 +103,7 @@ EC.receiveLesson({
   caption: "..." }           // optional: prose below the block
 
 { t: "callout", kind: "insight" | "trap" | "tradeoff" | "warn" | "good"
-              | "note" | "mental" | "scenario",
+              | "note" | "mental" | "scenario" | "production" | "crit",
   title: "...", body: [ ...blocks... ] }
 
 { t: "ladder", title: "...", rungs: [
@@ -134,7 +134,8 @@ alone under its title.
 Callout kinds carry meaning — use the right one:
 `trap` a mistake people actually make · `tradeoff` no single right answer ·
 `insight` how this appears in real systems · `mental` a model to hold ·
-`warn` a hazard · `good` a practice to adopt · `scenario` a worked incident
+`warn` a hazard · `good` a practice to adopt · `scenario` a worked incident ·
+`production` what changes at scale · `crit` the one result to remember
 
 ---
 

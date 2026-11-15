@@ -90,7 +90,7 @@ out = model.generate(**ids, max_new_tokens=40, do_sample=False,
 
     { t: "callout", kind: "trap", title: "The illustration is the one case that works",
       body: [
-        { t: "p", text: "The reference predicts that \u201cWhat is the capital of France?\u201d continues as *\u201cWhat is the capital of Germany? What is the capital of Spain?\u201d* because questions come in lists. gpt2 did not do that. It produced **\u201cThe capital of France is Paris.\u201d** \u2014 correct, well-formed, and exactly what an aligned model would say." },
+        { t: "p", text: "The usual prediction is that \u201cWhat is the capital of France?\u201d continues as *\u201cWhat is the capital of Germany? What is the capital of Spain?\u201d* because questions come in lists. gpt2 did not do that. It produced **\u201cThe capital of France is Paris.\u201d** \u2014 correct, well-formed, and exactly what an aligned model would say." },
         { t: "p", text: "The reason is that this particular question is close to a cliché. \u201cThe capital of France is Paris\u201d is an extremely common sentence on the internet, so the helpful continuation and the likely continuation coincide. The example was chosen for clarity and happens to be the case where the distinction collapses." },
         { t: "p", text: "The other three prompts show the real thing. \u201cExplain photosynthesis in one sentence\u201d became a *comment about sentences*; \u201cList three prime numbers\u201d became \u201cThe third prime number\u201d; the email request became third-person fiction with dialogue. Each treats the instruction as a sentence to continue rather than a task to perform \u2014 which is the claim, stated properly." }
       ] },

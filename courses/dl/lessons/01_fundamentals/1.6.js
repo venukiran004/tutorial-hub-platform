@@ -248,7 +248,7 @@ print(f"He weights, zero biases:           {net(x).std():.3f}")     # 0.695`,
       why: "The measured standard deviation of a default nn.Linear(512, 256) weight was 0.0255 = √(1/(3·512)), a sixth of the He variance. For shallow networks the optimiser corrects it; for deep plain ReLU stacks without normalisation you should set He initialisation explicitly." }
   ] },
 
-  interview: { title: "Interview", sub: "The Q2, and the derivation behind it", questions: [
+  interview: { title: "Interview", sub: "The standard question, and the derivation behind it", questions: [
     { level: "Core", q: "Why can't we initialise all weights to zero?",
       strong: "Symmetry: identical units get identical gradients and never differentiate; random initialisation breaks the tie, scaled by He or Xavier to preserve variance.",
       answer: [{ t: "p", text: "If every weight in a layer is the same, every unit computes the same function of the input, so the backward pass gives each unit the same gradient and the update keeps them equal. The layer behaves as one unit forever, whatever its width. Random initialisation makes the units different from the start. The scale is then chosen to keep the activation variance roughly constant across layers: He, variance 2/fan_in, for ReLU; Xavier, 2/(fan_in + fan_out), for sigmoid and tanh." }] },

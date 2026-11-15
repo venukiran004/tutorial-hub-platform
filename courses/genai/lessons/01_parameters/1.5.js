@@ -19,7 +19,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "one-budget", text: "One budget, two claims on it",
       sub: "context_window = input_tokens + output_tokens" },
 
-    { t: "p", text: "The context window is the number of positions the model can attend over. It is a property of the architecture and the training, and it covers everything: the system prompt, the conversation history, the retrieved documents, the tool definitions, and every token the model generates in reply. `max_tokens` — renamed `max_completion_tokens` on newer OpenAI endpoints — caps only the last of those." },
+    { t: "p", text: "The context window is the number of positions the model can attend over. It is a property of the architecture and the training, and it covers everything: the system prompt, the conversation history, the retrieved documents, the tool definitions, and every token the model generates in reply. The output cap — `max_tokens` on Claude and on open-weight servers, `max_output_tokens` on OpenAI's Responses API and on Gemini — limits only the last of those. This lesson writes `max_tokens` for all of them." },
 
     { t: "viz", title: "The window, and what claims it", caption: "Everything above the line shares one budget. max_tokens is a cap on the right-hand portion, and it cannot buy space the prompt has already spent.",
       svg: `<svg viewBox="0 0 760 210" width="100%" role="img" aria-label="Context window split between prompt and output">
@@ -56,28 +56,29 @@ EC.receiveLesson({
     { t: "code", lang: "python", title: "g13.py — what a real document costs", code: `import tiktoken
 enc = tiktoken.get_encoding("cl100k_base")
 
-for name, ctx in (("GPT-4o", 128000), ("GPT-4o-mini", 128000),
-                  ("Claude 3.5 Sonnet", 200000), ("Gemini 1.5 Pro", 2000000),
-                  ("Llama 3.1", 128000)):
+print("%-24s %9s %12s %15s" % ("model", "context", "prompt used", "left for output"))
+for name, ctx in (("GPT-6 Astra", 1_050_000), ("Claude Opus 5.5", 1_000_000),
+                  ("Gemini 4 Carbon", 1_048_576), ("Claude Haiku 4.5", 200_000),
+                  ("Llama 3.1, open weights", 128_000)):
     used = 8000
-    print("%-22s %10d %12d %14d" % (name, ctx, used, ctx - used))
+    print("%-24s %9d %12d %15d" % (name, ctx, used, ctx - used))
 
 doc = "The quick brown fox jumps over the lazy dog. " * 2000
 n = len(enc.encode(doc))
-
-print("a %d-character document is %d tokens -- %.1f%% of a 128K window"
-      % (len(doc), n, 100.0 * n / 128000))
+print()
+print("a %d-character document is %d tokens -- %.1f%% of a 128K window, %.1f%% of a 1M one"
+      % (len(doc), n, 100.0 * n / 128000, 100.0 * n / 1_000_000))
 print("asking for max_tokens=4096 alongside it needs %d of 128000" % (n + 4096))`,
-      out: `  model (provider figure)    context  prompt used left for output
-  GPT-4o                     128000         8000         120000
-  GPT-4o-mini                128000         8000         120000
-  Claude 3.5 Sonnet          200000         8000         192000
-  Gemini 1.5 Pro            2000000         8000        1992000
-  Llama 3.1                  128000         8000         120000
+      out: `model                      context  prompt used left for output
+GPT-6 Astra                1050000         8000         1042000
+Claude Opus 5.5            1000000         8000          992000
+Gemini 4 Carbon            1048576         8000         1040576
+Claude Haiku 4.5            200000         8000          192000
+Llama 3.1, open weights     128000         8000          120000
 
-  a 90000-character document is 20001 tokens -- 15.6% of a 128K window
-  asking for max_tokens=4096 alongside it needs 24097 of 128000`,
-      caption: "Context figures as of 2024–2025 — check them against the provider before relying on them. The document arithmetic is measured here with tiktoken." },
+a 90000-character document is 20001 tokens -- 15.6% of a 128K window, 2.0% of a 1M one
+asking for max_tokens=4096 alongside it needs 24097 of 128000`,
+      caption: "Context figures as each provider listed them in November 2026 — check them before relying on them. A long window is not a free one: OpenAI lists a higher price above 272,000 input tokens, and GPT-6 Astra accepts 922,000 input tokens of its 1,050,000. The window you can afford, and the one a self-hosted model gives you, is usually far smaller than the largest on the table, which is why the arithmetic below uses 128K. The document count is measured here with tiktoken." },
 
     { t: "callout", kind: "trap", title: "A large window is not an invitation to fill it",
       body: [
@@ -142,7 +143,7 @@ the claim: 1 token ~ 4 characters (English) ~ 0.75 words
 
     { t: "ol", items: [
       "**The rule is right for the case it was measured on and wrong elsewhere.** 4.43 against a claimed 4 is fine. 1.95 for UUIDs is not — a log line full of identifiers costs more than twice what the estimate says, and a retrieval corpus of such lines will overflow a budget you thought had headroom.",
-      "**Words per token is the weaker rule.** It is commonly said 0.75; English prose measured **0.89**, and JSON measured 0.31. The word count of a document tells you very little about what it will cost.",
+      "**Words per token is the weaker rule.** The figure usually quoted is 0.75; English prose measured **0.89**, and JSON measured 0.31. The word count of a document tells you very little about what it will cost.",
       "**The tokeniser matters as much as the text.** French took 73 tokens under `cl100k_base` and **57** under `o200k_base` — a 22% reduction for the same text, because the newer vocabulary has more non-English subwords. Estimating with the wrong encoding is a different error from estimating with the wrong rule."
     ] },
 
@@ -195,6 +196,16 @@ the claim: 1 token ~ 4 characters (English) ~ 0.75 words
       ],
       caption: "The first two are the ones every client must handle; the second is the one that gets skipped." },
 
+    { t: "table",
+      head: ["Outcome", "OpenAI · Chat Completions", "OpenAI · Responses", "Anthropic", "Gemini"],
+      rows: [
+        ["Finished naturally", "`finish_reason` `stop`", "`status` `completed`", "`stop_reason` `end_turn`", "`finishReason` `STOP`"],
+        ["Hit the output cap", "`finish_reason` `length`", "`status` `incomplete`, reason `max_output_tokens`", "`stop_reason` `max_tokens`", "`finishReason` `MAX_TOKENS`"],
+        ["Wants a tool", "`finish_reason` `tool_calls`", "a `function_call` item in `output`", "`stop_reason` `tool_use`", "a `functionCall` part"],
+        ["Blocked", "`finish_reason` `content_filter`", "`status` `incomplete`, reason `content_filter`", "`stop_reason` `refusal`", "`finishReason` `SAFETY`"]
+      ],
+      caption: "The same four outcomes under each API's own names. The rest of this lesson uses the Chat Completions spelling, `finish_reason`, because it is the one open-weight servers also speak. The branch you must write is the second row, whatever it is called." },
+
     { t: "code", lang: "python", title: "g13.py — the cap, from inside the loop", code: `ids = tok("Write a short poem about the sea.", return_tensors="pt").input_ids
 
 for cap in (5, 15, 40):
@@ -215,7 +226,7 @@ for cap in (5, 15, 40):
       body: [
         { t: "p", text: "Setting `max_tokens=200` because you want a short answer produces a long answer with the last 80% missing. The model has no knowledge of the cap while generating — it is applied by the server, from outside, and nothing in the prompt tells the model to aim for a length." },
         { t: "p", text: "If you want short output, ask for it in the prompt — and then set `max_tokens` somewhat above what you asked for, as a safety net against a runaway generation. The cap is there to bound the bill and the latency, not to shape the response." },
-        { t: "p", text: "For reasoning models the cap is more dangerous still, because `max_completion_tokens` covers the hidden reasoning tokens *and* the visible output. A cap that is too low can consume the entire budget on thinking and return nothing at all. 1.10 measures that." }
+        { t: "p", text: "For reasoning models the cap is more dangerous still, because the cap covers the hidden reasoning tokens *and* the visible output. A cap that is too low can consume the entire budget on thinking and return nothing at all. 1.10 measures that." }
       ] },
 
     /* ============================================================ 04 */
@@ -385,7 +396,7 @@ most optimistic estimate: logline, off by 66.7%
       { stem: "You want responses of about two sentences. What is the right way to get them?",
         options: ["Set max_tokens=60 and nothing else", "Ask for two sentences; keep max_tokens as a net", "Set max_tokens=60 and lower the temperature", "Use a stop sequence at the second full stop"],
         answer: 1,
-        why: "The model has no knowledge of `max_tokens` while generating — the cap is applied by the server from outside — so using it to shape length produces a longer answer with the end missing, not a shorter answer. Only the prompt can tell the model to aim for a length. The third option adds an irrelevant parameter; temperature affects which tokens are chosen, not how many. The fourth is closer to workable but fragile: full stops appear in abbreviations and decimals, and 1.6 shows that a stop sequence truncates server-side after the tokens are already generated and billed." }
+        why: "The model has no knowledge of `max_tokens` while generating — the cap is applied by the server from outside — so using it to shape length produces a longer answer with the end missing, not a shorter answer. Only the prompt can tell the model to aim for a length. The third option adds an irrelevant parameter; temperature affects which tokens are chosen, not how many. The fourth is closer to workable but fragile: full stops appear in abbreviations and decimals, so the cut lands in the wrong place, and 1.6 shows that a stop string ends the response without making what is left a complete answer." }
     ]
   },
 

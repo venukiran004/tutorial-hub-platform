@@ -153,7 +153,7 @@ EC.receiveLesson({
       options: ["Both resolutions improve", "Finer frequency, coarser time", "Nothing changes at all", "Frequency resolution worsens"],
       answer: 1,
       why: "The two trade off exactly: 400 samples gives 40 Hz resolution, 800 samples gives 20 Hz, and the time resolution degrades correspondingly. This is the uncertainty principle, and 25 ms is the compromise the field settled on for speech." },
-    { stem: "It is commonly said one octave at 100–200 Hz 'sounds bigger' than one at 4000–8000 Hz. Is that right in mel terms?",
+    { stem: "It is commonly said that one octave at 100–200 Hz 'sounds bigger' than one at 4000–8000 Hz. Is that right in mel terms?",
       options: ["Yes: 132.74 against 693.96 mel", "No: the high octave spans more mel", "Yes, by about a factor of 5", "Mel does not apply to octaves"],
       answer: 1,
       why: "Its own table gives 132.74 mel for the low octave and 693.96 for the high one, so the high octave is larger in mel. The mel scale is near-linear below 1 kHz rather than a pure log, so octaves are not equal steps. The correct statement is 1.3274 mel per Hz at the bottom against 0.1735 at the top — a factor of 7.7." },

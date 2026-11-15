@@ -137,7 +137,7 @@ margin = rw - rl`,
     { t: "h2", n: "04", id: "length", text: "The length bias, and where it comes from",
       sub: "A sum over tokens is not a score" },
 
-    { t: "p", text: "DPO is known to make outputs longer, and SimPO exists partly to fix it. The reference mentions the symptom; the mechanism is visible as soon as you compute an implicit reward on real text." },
+    { t: "p", text: "DPO is known to make outputs longer, and SimPO exists partly to fix it. The symptom is widely reported; the mechanism is visible as soon as you compute an implicit reward on real text." },
 
     { t: "code", lang: "python", title: "g76.py \u00a7C \u2014 summed response log-probability against length, gpt2", code: `def seq_logprob(prompt, response):
     """Sum of log P over RESPONSE tokens only -- exactly what DPO uses."""

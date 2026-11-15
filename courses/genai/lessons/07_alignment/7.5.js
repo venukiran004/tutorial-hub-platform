@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.5",
 
-  lede: "RLHF generates answers, scores them with the reward model from 7.4, and pushes the policy toward what scored well \u2014 with a KL leash so it cannot wander into gibberish that happens to fool the scorer. The reference prices this as \u201croughly 4 \u00d7 7B parameters resident\u201d, which badly understates it: the two *trained* models carry gradients and Adam states, so the real bill for a 7B policy is **234.7 GB**, about **18\u00d7** one model\u2019s weights and three 80 GB cards before a single activation. That number, more than anything about the mathematics, is why DPO and GRPO exist.",
+  lede: "RLHF generates answers, scores them with the reward model from 7.4, and pushes the policy toward what scored well \u2014 with a KL leash so it cannot wander into gibberish that happens to fool the scorer. This is usually priced as \u201croughly 4 \u00d7 7B parameters resident\u201d, which badly understates it: the two *trained* models carry gradients and Adam states, so the real bill for a 7B policy is **234.7 GB**, about **18\u00d7** one model\u2019s weights and three 80 GB cards before a single activation. That number, more than anything about the mathematics, is why DPO and GRPO exist.",
 
   objectives: [
     "Write the RLHF objective and say what each term does",

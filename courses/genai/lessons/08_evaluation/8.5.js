@@ -208,15 +208,15 @@ def tiers(models, intervals):
 for gap in (5, 10, 20, 50, 100):
     print("gap %4d Elo -> win rate %.4f -> need %9.0f comparisons"
           % (gap, expected(1500 + gap, 1500), comparisons_needed(gap)))`,
-        out: `  gap    5 Elo -> win rate 0.5072 -> need    186097 comparisons
-  gap   10 Elo -> win rate 0.5144 -> need     46520 comparisons
-  gap   20 Elo -> win rate 0.5288 -> need     11628 comparisons
-  gap   50 Elo -> win rate 0.5719 -> need      1848 comparisons
-  gap  100 Elo -> win rate 0.6401 -> need       457 comparisons`,
+        out: `  gap    5 Elo -> win rate 0.5072 -> need     18553 comparisons
+  gap   10 Elo -> win rate 0.5144 -> need      4641 comparisons
+  gap   20 Elo -> win rate 0.5288 -> need      1163 comparisons
+  gap   50 Elo -> win rate 0.5715 -> need       189 comparisons
+  gap  100 Elo -> win rate 0.6401 -> need        50 comparisons`,
         notes: [
-          { t: "p", text: "**The scaling is quadratic in the gap, which is brutal at the top.** Resolving 100 Elo takes 457 comparisons and resolving 5 Elo takes 186,097 \u2014 a 407-fold increase for a twentyfold smaller gap. Fine distinctions between frontier models are economically hard, not just slow." },
-          { t: "p", text: "**These figures are stricter than the lesson's 1,163** because this function requires the halfwidth to be narrower than the whole gap rather than comparing one rating against a fixed reference. Both are defensible; the point is to state which criterion you used, since they differ by an order of magnitude." },
-          { t: "p", text: "**At $3 a human vote, resolving 10 Elo is about $140,000.** That is the real reason leaderboards accumulate votes over months and why a new model's rank is markedly less certain on its first day than a month later, with no change to the model." },
+          { t: "p", text: "**The scaling is quadratic in the gap, which is brutal at the top.** Resolving 100 Elo takes 50 comparisons and resolving 5 Elo takes 18,553 \u2014 a 369-fold increase for a twentyfold smaller gap. Fine distinctions between frontier models are economically hard, not just slow." },
+          { t: "p", text: "**The 20-Elo row is the lesson's 1,163, reproduced** \u2014 the same criterion, a 95% interval whose halfwidth is narrower than the gap. It is the weakest criterion worth using: when the halfwidth equals the true gap, the observed gap clears it only about half the time. Planning for 80% power at the same significance level multiplies every row by (1.96 + 0.84)\u00b2 / 1.96\u00b2, which is about 2.0, so say which criterion you used whenever you quote a sample size." },
+          { t: "p", text: "**At $3 a human vote, resolving 10 Elo is about $14,000, and 5 Elo about $56,000.** That is the real reason leaderboards accumulate votes over months and why a new model's rank is markedly less certain on its first day than a month later, with no change to the model." },
           { t: "p", text: "**The `tiers` function is the output to act on.** If adjacent intervals overlap, those ranks are not distinguishable and the ordering between them is noise \u2014 so the honest reading of a top ten is usually two or three tiers rather than ten positions." },
           { t: "p", text: "One thing this deliberately assumes: that votes are independent and identically distributed, which they are not. Prompts arrive non-uniformly, voters differ in strictness, and models are updated mid-collection \u2014 all of which make the real intervals wider than the binomial arithmetic suggests, so treat these as optimistic floors." }
         ] } },
@@ -232,7 +232,7 @@ for gap in (5, 10, 20, 50, 100):
         { t: "p", text: "**\u201cModel X is ranked third on the arena and model Y is fifth. Should we prefer X?\u201d**" },
         { t: "p", text: "Only if their confidence intervals do not overlap, which at the top of a leaderboard they usually do. The arena publishes those intervals \u2014 it is secondary reporting, launch slides and procurement documents, that drops the \u00b1 and turns a statistically indistinguishable cluster into an ordered list." },
         { t: "p", text: "The arithmetic is unforgiving because Elo gaps near the top are small. Two models 20 Elo apart win against each other 52.88% of the time, so you need about 1,163 comparisons for a 95% interval narrower than the gap. At 100 comparisons the interval is \u00b168 Elo, more than three times the gap you are trying to measure." },
-        { t: "p", text: "And it scales quadratically. Resolving 100 Elo takes a few hundred votes; resolving 5 Elo takes over a hundred thousand. At one to five dollars a human preference label, separating two frontier models is a six-figure labelling exercise, which is why these distinctions firm up over months rather than days." },
+        { t: "p", text: "And it scales quadratically. Resolving 100 Elo takes about fifty votes; resolving 5 Elo takes more than eighteen thousand. At one to five dollars a human preference label, separating one pair of frontier models that close is a five-figure labelling exercise, and a leaderboard has many pairs, which is why these distinctions firm up over months rather than days." },
         { t: "p", text: "So my reading of a top ten is usually two or three statistically separable tiers rather than ten positions, and I would treat X and Y as the same tier unless the published intervals say otherwise." },
         { t: "p", text: "The second thing I would raise is what preference measures. Voters favour confident, well-formatted, longer answers \u2014 which are exactly the reward hacks that show up when you optimise against a learned preference model. An arena is a reward model made of people, so it has the same exploitable directions. It is a good measure of how much people enjoy using a model and a poor measure of whether it is right." },
         { t: "p", text: "What it does have that no static benchmark does is contamination resistance, because there is no fixed answer key to leak and the prompts come from whoever showed up today. So I would use it to screen, use execution-scored benchmarks for correctness, and make the actual decision on our own eval set and an A/B." }
@@ -247,7 +247,7 @@ for gap in (5, 10, 20, 50, 100):
     "**Two models 20 Elo apart win 52.88% of their matchups**, which is a coin flip with a small bias.",
     "**Resolving a 20-Elo gap takes about 1,163 comparisons**; at 100 comparisons the interval is \u00b168 Elo.",
     "**Halving the interval costs 4\u00d7 the votes**, and at $1\u20135 per human label that makes fine distinctions economically hard rather than merely slow.",
-    "**The requirement scales quadratically in the gap** \u2014 457 comparisons for 100 Elo against 186,097 for 5 Elo.",
+    "**The requirement scales quadratically in the gap** \u2014 50 comparisons for 100 Elo against 18,553 for 5 Elo.",
     "**LMSYS does publish intervals** \u2014 it is secondary reporting that drops them and turns an indistinguishable cluster into an ordered list.",
     "**If two intervals overlap the ordering is noise**, so a top ten usually resolves to two or three real tiers.",
     "**Preference is not correctness**: voters favour confident, well-formatted, longer answers \u2014 the same directions 7.11 catalogued as reward hacks.",
@@ -260,7 +260,7 @@ for gap in (5, 10, 20, 50, 100):
       { stem: "Two models are 20 Elo apart. How many pairwise comparisons are needed before that gap is statistically resolvable?",
         options: ["A few dozen, as Elo converges quickly", "About a thousand or more", "Around 200, the standard arena sample", "None; preference is subjective"],
         answer: 1,
-        why: "A 20-Elo gap corresponds to winning just under 53% of matchups, which is close to a coin flip, and the binomial standard error falls only as the square root of the sample size. That gives \u00b168.2 Elo at 100 comparisons \u2014 more than three times the gap \u2014 and about \u00b121.6 at 1,000. The requirement also scales quadratically as the gap narrows, so 5 Elo needs on the order of a hundred thousand comparisons." },
+        why: "A 20-Elo gap corresponds to winning just under 53% of matchups, which is close to a coin flip, and the binomial standard error falls only as the square root of the sample size. That gives \u00b168.2 Elo at 100 comparisons \u2014 more than three times the gap \u2014 and about \u00b121.6 at 1,000. The requirement also scales quadratically as the gap narrows, so 5 Elo needs about 18,500 comparisons." },
 
       { stem: "What does an Elo rating of 1,247 tell you on its own?",
         options: ["Above average, as 1,200 is the starting rating", "Nothing: only differences are identified", "It wins about 62% of comparisons", "It is calibrated to a fixed reference model"],
@@ -298,7 +298,7 @@ for gap in (5, 10, 20, 50, 100):
         strong: "A strong answer computes the sample size rather than gesturing at noise.",
         answer: [
           { t: "p", text: "It depends entirely on the gap and the number of comparisons, and the arithmetic is less forgiving than people expect. Two models 20 Elo apart win against each other 52.88% of the time, so you need roughly 1,163 comparisons for a 95% interval narrower than the gap. At 100 comparisons the interval is \u00b168 Elo." },
-          { t: "p", text: "And it scales quadratically as the gap narrows \u2014 457 comparisons for a 100-Elo gap, about 186,000 for a 5-Elo gap. At one to five dollars per human preference label that is a six-figure exercise to separate two frontier models, which is why these distinctions firm up over months." },
+          { t: "p", text: "And it scales quadratically as the gap narrows \u2014 about 50 comparisons for a 100-Elo gap, about 18,600 for a 5-Elo gap. At one to five dollars per human preference label that is a five-figure exercise to separate a single pair of frontier models, which is why these distinctions firm up over months." },
           { t: "p", text: "So my reading of a top ten is two or three statistically separable tiers rather than ten positions. If adjacent intervals overlap, the ordering between those models is noise." },
           { t: "p", text: "In fairness to LMSYS, they publish the intervals \u2014 the problem is secondary reporting that quotes a rank without the \u00b1. And I would treat the binomial arithmetic as an optimistic floor, since votes are not independent and identically distributed: prompts arrive non-uniformly, voters differ in strictness, and models get updated mid-collection." }
         ] },

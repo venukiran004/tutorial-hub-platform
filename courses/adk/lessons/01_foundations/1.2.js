@@ -84,7 +84,7 @@ from langchain_community.tools import WikipediaQueryRun       # any LangChain to
 
 agent = LlmAgent(
     name="researcher",
-    model="gemini-2.5-flash",
+    model="gemini-3.8-flash",
     tools=[LangchainTool(tool=WikipediaQueryRun(...))],       # wrapped, not rewritten
 )`,
       caption: "`google.adk.tools.langchain_tool` and `crewai_tool` exist precisely so that the integration breadth of other ecosystems is not a reason to avoid ADK's runtime. The wrapper adapts the other library's tool interface to `BaseTool` (lesson 4.6)." },

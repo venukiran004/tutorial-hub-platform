@@ -39,12 +39,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nfrom torchvision import transforms\n\naugmentation = transforms.Compose([\n    transforms.RandomResizedCrop(224),\n    transforms.RandomHorizontalFlip(p=0.5),\n    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),\n    transforms.RandomRotation(15),\n    transforms.ToTensor(),\n    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),\n])\n\n# Applied per image during training\nfrom PIL import Image\nimport numpy as np\ndummy_img = Image.fromarray(np.random.randint(0, 255, (256, 256, 3), dtype=np.uint8))\naugmented = augmentation(dummy_img)\nprint(f\"Augmented tensor: {augmented.shape}, range: [{augmented.min():.2f}, {augmented.max():.2f}]\")"
+     "code": "import torch\nfrom torchvision import transforms\ntorch.manual_seed(0)\n\naugmentation = transforms.Compose([\n    transforms.RandomResizedCrop(224),\n    transforms.RandomHorizontalFlip(p=0.5),\n    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),\n    transforms.RandomRotation(15),\n    transforms.ToTensor(),\n    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),\n])\n\n# Applied per image during training\nfrom PIL import Image\nimport numpy as np\nnp.random.seed(0)\ndummy_img = Image.fromarray(np.random.randint(0, 255, (256, 256, 3), dtype=np.uint8))\naugmented = augmentation(dummy_img)\nprint(f\"Augmented tensor: {augmented.shape}, range: [{augmented.min():.2f}, {augmented.max():.2f}]\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Augmented tensor: torch.Size([3, 224, 224]), range: [-2.12, 2.54]"
+     "text": "Augmented tensor: torch.Size([3, 224, 224]), range: [-2.12, 2.52]"
     }
    ],
    "kind": "program"
@@ -75,12 +75,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\n\n# Create\na = torch.tensor([1, 2, 3])\nb = torch.zeros(3, 4)\nc = torch.ones(3, 4)\nd = torch.randn(3, 4)\ne = torch.arange(0, 10, 2)\nf = torch.linspace(0, 1, 5)\n\n# Reshape\nx = torch.randn(2, 3, 4)\nprint(f\"view: {x.view(6, 4).shape}\")\nprint(f\"permute: {x.permute(2, 0, 1).shape}\")\nprint(f\"unsqueeze: {x.unsqueeze(0).shape}\")\nprint(f\"squeeze: {x.unsqueeze(0).squeeze(0).shape}\")\nprint(f\"flatten: {x.flatten().shape}\")\n\n# Math\nm = torch.randn(3, 3)\nprint(f\"matmul: {(m @ m.T).shape}\")\nprint(f\"sum: {m.sum():.4f}\")\nprint(f\"mean: {m.mean():.4f}\")\nprint(f\"argmax: {m.argmax()}\")"
+     "code": "import torch\ntorch.manual_seed(0)\n\n# Create\na = torch.tensor([1, 2, 3])\nb = torch.zeros(3, 4)\nc = torch.ones(3, 4)\nd = torch.randn(3, 4)\ne = torch.arange(0, 10, 2)\nf = torch.linspace(0, 1, 5)\n\n# Reshape\nx = torch.randn(2, 3, 4)\nprint(f\"view: {x.view(6, 4).shape}\")\nprint(f\"permute: {x.permute(2, 0, 1).shape}\")\nprint(f\"unsqueeze: {x.unsqueeze(0).shape}\")\nprint(f\"squeeze: {x.unsqueeze(0).squeeze(0).shape}\")\nprint(f\"flatten: {x.flatten().shape}\")\n\n# Math\nm = torch.randn(3, 3)\nprint(f\"matmul: {(m @ m.T).shape}\")\nprint(f\"sum: {m.sum():.4f}\")\nprint(f\"mean: {m.mean():.4f}\")\nprint(f\"argmax: {m.argmax()}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "view: torch.Size([6, 4])\npermute: torch.Size([4, 2, 3])\nunsqueeze: torch.Size([1, 2, 3, 4])\nsqueeze: torch.Size([2, 3, 4])\nflatten: torch.Size([24])\nmatmul: torch.Size([3, 3])\nsum: 0.3594\nmean: 0.0399\nargmax: 2"
+     "text": "view: torch.Size([6, 4])\npermute: torch.Size([4, 2, 3])\nunsqueeze: torch.Size([1, 2, 3, 4])\nsqueeze: torch.Size([2, 3, 4])\nflatten: torch.Size([24])\nmatmul: torch.Size([3, 3])\nsum: -3.4406\nmean: -0.3823\nargmax: 1"
     }
    ],
    "kind": "program"
@@ -165,12 +165,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\nclass VAE(nn.Module):\n    def __init__(self, input_dim=784, latent_dim=20):\n        super().__init__()\n        self.encoder = nn.Sequential(nn.Linear(input_dim, 256), nn.ReLU())\n        self.mu = nn.Linear(256, latent_dim)\n        self.logvar = nn.Linear(256, latent_dim)\n        self.decoder = nn.Sequential(\n            nn.Linear(latent_dim, 256), nn.ReLU(),\n            nn.Linear(256, input_dim), nn.Sigmoid()\n        )\n    \n    def reparameterize(self, mu, logvar):\n        std = torch.exp(0.5 * logvar)\n        eps = torch.randn_like(std)\n        return mu + eps * std\n    \n    def forward(self, x):\n        h = self.encoder(x)\n        mu, logvar = self.mu(h), self.logvar(h)\n        z = self.reparameterize(mu, logvar)\n        return self.decoder(z), mu, logvar\n\nvae = VAE()\nx = torch.randn(8, 784)\nrecon, mu, logvar = vae(x)\nkl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())\nprint(f\"Reconstruction: {recon.shape}, KL Loss: {kl_loss.item():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\n\nclass VAE(nn.Module):\n    def __init__(self, input_dim=784, latent_dim=20):\n        super().__init__()\n        self.encoder = nn.Sequential(nn.Linear(input_dim, 256), nn.ReLU())\n        self.mu = nn.Linear(256, latent_dim)\n        self.logvar = nn.Linear(256, latent_dim)\n        self.decoder = nn.Sequential(\n            nn.Linear(latent_dim, 256), nn.ReLU(),\n            nn.Linear(256, input_dim), nn.Sigmoid()\n        )\n    \n    def reparameterize(self, mu, logvar):\n        std = torch.exp(0.5 * logvar)\n        eps = torch.randn_like(std)\n        return mu + eps * std\n    \n    def forward(self, x):\n        h = self.encoder(x)\n        mu, logvar = self.mu(h), self.logvar(h)\n        z = self.reparameterize(mu, logvar)\n        return self.decoder(z), mu, logvar\n\nvae = VAE()\nx = torch.randn(8, 784)\nrecon, mu, logvar = vae(x)\nkl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())\nprint(f\"Reconstruction: {recon.shape}, KL Loss: {kl_loss.item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Reconstruction: torch.Size([8, 784]), KL Loss: 6.0604"
+     "text": "Reconstruction: torch.Size([8, 784]), KL Loss: 6.9340"
     }
    ],
    "kind": "program"
@@ -201,12 +201,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\nimport copy\n\ndef update_ema(ema_model, model, decay=0.999):\n    with torch.no_grad():\n        for ema_p, model_p in zip(ema_model.parameters(), model.parameters()):\n            ema_p.data.mul_(decay).add_(model_p.data, alpha=1 - decay)\n\nmodel = nn.Linear(10, 1)\nema_model = copy.deepcopy(model)\n\nfor step in range(10):\n    model.weight.data += torch.randn_like(model.weight) * 0.1\n    update_ema(ema_model, model, decay=0.99)\n\nprint(f\"Model weight mean: {model.weight.mean():.4f}\")\nprint(f\"EMA weight mean: {ema_model.weight.mean():.4f}\")\nprint(\"EMA is smoother — moves slowly toward model weights\")"
+     "code": "import torch\nimport torch.nn as nn\nimport copy\ntorch.manual_seed(0)\n\ndef update_ema(ema_model, model, decay=0.999):\n    with torch.no_grad():\n        for ema_p, model_p in zip(ema_model.parameters(), model.parameters()):\n            ema_p.data.mul_(decay).add_(model_p.data, alpha=1 - decay)\n\nmodel = nn.Linear(10, 1)\nema_model = copy.deepcopy(model)\n\nfor step in range(10):\n    model.weight.data += torch.randn_like(model.weight) * 0.1\n    update_ema(ema_model, model, decay=0.99)\n\nprint(f\"Model weight mean: {model.weight.mean():.4f}\")\nprint(f\"EMA weight mean: {ema_model.weight.mean():.4f}\")\nprint(\"EMA is smoother — moves slowly toward model weights\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Model weight mean: 0.0311\nEMA weight mean: 0.0495\nEMA is smoother — moves slowly toward model weights"
+     "text": "Model weight mean: 0.1328\nEMA weight mean: 0.0052\nEMA is smoother — moves slowly toward model weights"
     }
    ],
    "kind": "program"
@@ -237,12 +237,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\ndef distillation_loss(student_logits, teacher_logits, labels, temp=4.0, alpha=0.7):\n    soft_loss = F.kl_div(\n        F.log_softmax(student_logits / temp, dim=1),\n        F.softmax(teacher_logits / temp, dim=1),\n        reduction='batchmean'\n    ) * (temp ** 2)\n    hard_loss = F.cross_entropy(student_logits, labels)\n    return alpha * soft_loss + (1 - alpha) * hard_loss\n\nstudent_logits = torch.randn(8, 10)\nteacher_logits = torch.randn(8, 10)\nlabels = torch.randint(0, 10, (8,))\nloss = distillation_loss(student_logits, teacher_logits, labels)\nprint(f\"Distillation loss: {loss.item():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\nimport torch.nn.functional as F\ntorch.manual_seed(0)\n\ndef distillation_loss(student_logits, teacher_logits, labels, temp=4.0, alpha=0.7):\n    soft_loss = F.kl_div(\n        F.log_softmax(student_logits / temp, dim=1),\n        F.softmax(teacher_logits / temp, dim=1),\n        reduction='batchmean'\n    ) * (temp ** 2)\n    hard_loss = F.cross_entropy(student_logits, labels)\n    return alpha * soft_loss + (1 - alpha) * hard_loss\n\nstudent_logits = torch.randn(8, 10)\nteacher_logits = torch.randn(8, 10)\nlabels = torch.randint(0, 10, (8,))\nloss = distillation_loss(student_logits, teacher_logits, labels)\nprint(f\"Distillation loss: {loss.item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Distillation loss: 1.3225"
+     "text": "Distillation loss: 1.5076"
     }
    ],
    "kind": "program"
@@ -273,12 +273,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\n# Regular linear layer\nregular = nn.Linear(64, 32)\n# Spectral normalized (constrains Lipschitz constant)\nspec_norm = nn.utils.spectral_norm(nn.Linear(64, 32))\n\nx = torch.randn(8, 64)\n_ = spec_norm(x)  # Forward pass computes spectral norm\n\nprint(f\"Regular weight norm: {regular.weight.norm():.4f}\")\nprint(f\"Spec norm weight sigma: {spec_norm.weight_orig.norm():.4f}\")\nprint(\"Spectral norm stabilizes GAN training\")"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\n\n# Regular linear layer\nregular = nn.Linear(64, 32)\n# Spectral normalized (constrains Lipschitz constant)\nspec_norm = nn.utils.spectral_norm(nn.Linear(64, 32))\n\nx = torch.randn(8, 64)\n_ = spec_norm(x)  # Forward pass computes spectral norm\n\nprint(f\"Regular weight norm: {regular.weight.norm():.4f}\")\nprint(f\"Spec norm weight sigma: {spec_norm.weight_orig.norm():.4f}\")\nprint(\"Spectral norm stabilizes GAN training\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Regular weight norm: 3.2203\nSpec norm weight sigma: 3.3097\nSpectral norm stabilizes GAN training"
+     "text": "Regular weight norm: 3.2885\nSpec norm weight sigma: 3.2193\nSpectral norm stabilizes GAN training"
     }
    ],
    "kind": "program"
@@ -345,12 +345,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn.functional as F\n\ndef nt_xent_loss(z1, z2, temperature=0.5):\n    z1 = F.normalize(z1, dim=1)\n    z2 = F.normalize(z2, dim=1)\n    batch_size = z1.size(0)\n    z = torch.cat([z1, z2], dim=0)\n    sim = torch.mm(z, z.T) / temperature\n    # Mask diagonal\n    mask = ~torch.eye(2 * batch_size, dtype=bool)\n    sim = sim[mask].view(2 * batch_size, -1)\n    labels = torch.cat([torch.arange(batch_size) + batch_size - 1,\n                        torch.arange(batch_size)])\n    return F.cross_entropy(sim, labels)\n\nz1 = torch.randn(8, 128)\nz2 = torch.randn(8, 128)\nloss = nt_xent_loss(z1, z2)\nprint(f\"NT-Xent Loss: {loss.item():.4f}\")"
+     "code": "import torch\nimport torch.nn.functional as F\ntorch.manual_seed(0)\n\ndef nt_xent_loss(z1, z2, temperature=0.5):\n    z1 = F.normalize(z1, dim=1)\n    z2 = F.normalize(z2, dim=1)\n    batch_size = z1.size(0)\n    z = torch.cat([z1, z2], dim=0)\n    sim = torch.mm(z, z.T) / temperature\n    # Mask diagonal\n    mask = ~torch.eye(2 * batch_size, dtype=bool)\n    sim = sim[mask].view(2 * batch_size, -1)\n    labels = torch.cat([torch.arange(batch_size) + batch_size - 1,\n                        torch.arange(batch_size)])\n    return F.cross_entropy(sim, labels)\n\nz1 = torch.randn(8, 128)\nz2 = torch.randn(8, 128)\nloss = nt_xent_loss(z1, z2)\nprint(f\"NT-Xent Loss: {loss.item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "NT-Xent Loss: 2.7549"
+     "text": "NT-Xent Loss: 2.7621"
     }
    ],
    "kind": "program"
@@ -453,12 +453,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\n\ndef linear_beta_schedule(timesteps):\n    beta_start = 0.0001\n    beta_end = 0.02\n    return torch.linspace(beta_start, beta_end, timesteps)\n\ndef forward_diffusion(x_0, t, betas):\n    alphas = 1.0 - betas\n    alpha_bar = torch.cumprod(alphas, dim=0)\n    sqrt_alpha_bar = torch.sqrt(alpha_bar[t]).unsqueeze(-1)\n    sqrt_one_minus = torch.sqrt(1 - alpha_bar[t]).unsqueeze(-1)\n    noise = torch.randn_like(x_0)\n    x_t = sqrt_alpha_bar * x_0 + sqrt_one_minus * noise\n    return x_t, noise\n\nbetas = linear_beta_schedule(1000)\nx_0 = torch.randn(4, 784)\nt = torch.tensor([0, 250, 500, 999])\nx_noisy, noise = forward_diffusion(x_0, t, betas)\nprint(f\"Original std: {x_0.std():.4f}\")\nfor i, ti in enumerate(t):\n    print(f\"t={ti.item()}: noisy std = {x_noisy[i].std():.4f}\")"
+     "code": "import torch\ntorch.manual_seed(0)\n\ndef linear_beta_schedule(timesteps):\n    beta_start = 0.0001\n    beta_end = 0.02\n    return torch.linspace(beta_start, beta_end, timesteps)\n\ndef forward_diffusion(x_0, t, betas):\n    alphas = 1.0 - betas\n    alpha_bar = torch.cumprod(alphas, dim=0)\n    sqrt_alpha_bar = torch.sqrt(alpha_bar[t]).unsqueeze(-1)\n    sqrt_one_minus = torch.sqrt(1 - alpha_bar[t]).unsqueeze(-1)\n    noise = torch.randn_like(x_0)\n    x_t = sqrt_alpha_bar * x_0 + sqrt_one_minus * noise\n    return x_t, noise\n\nbetas = linear_beta_schedule(1000)\nx_0 = torch.randn(4, 784)\nt = torch.tensor([0, 250, 500, 999])\nx_noisy, noise = forward_diffusion(x_0, t, betas)\nprint(f\"Original std: {x_0.std():.4f}\")\nfor i, ti in enumerate(t):\n    print(f\"t={ti.item()}: noisy std = {x_noisy[i].std():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Original std: 0.9940\nt=0: noisy std = 0.9740\nt=250: noisy std = 1.0123\nt=500: noisy std = 0.9831\nt=999: noisy std = 0.9912"
+     "text": "Original std: 1.0032\nt=0: noisy std = 1.0251\nt=250: noisy std = 0.9894\nt=500: noisy std = 1.0477\nt=999: noisy std = 1.0185"
     }
    ],
    "kind": "program"

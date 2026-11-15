@@ -516,7 +516,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "scaler = torch.cuda.amp.GradScaler()\nfor batch in loader:\n    with torch.cuda.amp.autocast():  # FP16 forward pass\n        output = model(batch)\n        loss = criterion(output)\n    scaler.scale(loss).backward()    # Scaled FP16 gradients\n    scaler.step(optimizer)           # Unscale + FP32 update\n    scaler.update()                  # Adjust scaling factor"
+     "code": "scaler = torch.amp.GradScaler('cuda')\nfor batch in loader:\n    with torch.amp.autocast('cuda'):  # FP16 forward pass\n        output = model(batch)\n        loss = criterion(output)\n    scaler.scale(loss).backward()    # Scaled FP16 gradients\n    scaler.step(optimizer)           # Unscale + FP32 update\n    scaler.update()                  # Adjust scaling factor"
     },
     {
      "t": "p",

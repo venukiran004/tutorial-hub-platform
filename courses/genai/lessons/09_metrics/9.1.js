@@ -86,7 +86,7 @@ EC.receiveLesson({
     { t: "callout", kind: "good", title: "And the arithmetic held up, which is worth saying",
       body: [
         { t: "p", text: "I verified all twelve worked examples: perplexity, BLEU with its four clipped precisions and brevity penalty, three ROUGE variants, pass@k at four values of k, the full five-query retrieval scoreboard with seven metrics each, NDCG, position bias, Cohen\u2019s \u03ba, a latency budget and a confidence interval. Every figure matched." },
-        { t: "p", text: "One near-miss is instructive. BLEU-4 is stated as **0.5789**, and multiplying the *rounded* intermediates \u2014 0.8187 \u00d7 0.7071 \u2014 gives 0.5787. At full precision it is 0.818731 \u00d7 0.707107 = **0.578930**, so the reference is right and the rounded check was wrong." },
+        { t: "p", text: "One near-miss is instructive. BLEU-4 is stated as **0.5789**, and multiplying the *rounded* intermediates \u2014 0.8187 \u00d7 0.7071 \u2014 gives 0.5787. At full precision it is 0.818731 \u00d7 0.707107 = **0.578930**, so the stated value is right and the rounded check was wrong." },
         { t: "p", text: "That is a useful warning about verifying by hand: rounding intermediates propagates, and a two-in-the-fourth-decimal disagreement is more likely to be your arithmetic than theirs. Verify at full precision or do not conclude." }
       ] },
 

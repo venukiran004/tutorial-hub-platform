@@ -1,11 +1,11 @@
 EC.receiveLesson({
   id: "1.11",
 
-  lede: "An image does not arrive at a language model as an image. It arrives as tokens, and the number of them is computable before you send anything — which matters, because a single high-detail photograph costs about the same as three pages of text. This lesson implements the tiling formula, checks the worked figure against it, and finds the resizing step that makes the naive calculation right for the wrong reason.",
+  lede: "An image does not arrive at a language model as an image. It arrives as tokens, and the number of them is computable before you send anything — which matters, because **one phone photograph sent with the default settings costs 14,364 input tokens** on a current flagship, as much as forty pages of text. This lesson implements the counting rule, checks it against the provider's own worked figures, shows that the three major providers count the same picture three different ways, and finds the one setting that moves the bill sixty-fold.",
 
   objectives: [
     "Compute the token cost of an image from its dimensions and the detail setting",
-    "Explain what the low and high detail settings each buy and cost",
+    "Explain what the low, high and original settings each buy and cost",
     "Predict the effect of resizing an image before sending it",
     "Budget a multimodal request the way you would a text one",
     "Recognise when an image is the wrong input entirely"
@@ -16,179 +16,180 @@ EC.receiveLesson({
   blocks: [
 
     /* ============================================================ 01 */
-    { t: "h2", n: "01", id: "the-formula", text: "Images become tokens, by a formula you can run",
-      sub: "85 for the base, 170 for every 512-pixel tile" },
+    { t: "h2", n: "01", id: "the-formula", text: "Images become tokens, by a rule you can run",
+      sub: "Patches of pixels, counted and multiplied" },
 
-    { t: "p", text: "The rule fits in two lines: `detail=\"low\"` is always 85 tokens, and `detail=\"high\"` is `85 + 170 × tiles`, where a tile is a 512-pixel square. What it leaves out is the resizing that happens before the tiling, and that omission is the interesting part." },
+    { t: "p", text: "On OpenAI's current models the rule is short: cover the image with 32-pixel squares, count them, and multiply by a per-model factor — 1.2 for the GPT-6 and GPT-5.6 families. What makes it interesting is the resizing that happens first, which depends on a request field called `detail`, and on what that field defaults to." },
 
-    { t: "code", lang: "python", title: "g18.py — the tiling, implemented", code: `import math
+    { t: "code", lang: "python", title: "g111.py — the patch rule, implemented", code: `import math
 
-def img_tokens(w, h, detail="high"):
-    if detail == "low":
-        return 85                                  # fixed, regardless of size
+PATCH = 32
 
-    s = min(2048 / max(w, h), 1.0)                 # 1. fit inside 2048x2048
-    w, h = w * s, h * s
+def patches(w, h):
+    return math.ceil(round(w / PATCH, 6)) * math.ceil(round(h / PATCH, 6))
 
-    s = min(768 / min(w, h), 1.0)                  # 2. shortest side down to 768
-    w, h = w * s, h * s
+def img_tokens(w, h, detail="high", multiplier=1.2):
+    if detail == "low":                              # fit inside 512 x 512
+        s = min(512 / w, 512 / h, 1.0)
+        w, h = w * s, h * s
+    elif detail == "high" and patches(w, h) > 2500:  # at most 2,500 patches
+        r = math.sqrt(PATCH * PATCH * 2500 / (w * h))
+        r *= min(math.floor(w * r / PATCH) / (w * r / PATCH),      # land on whole
+                 math.floor(h * r / PATCH) / (h * r / PATCH))      # patches
+        w, h = w * r, h * r
+    # detail == "original": the dimensions are kept as they are
+    return math.ceil(round(patches(w, h) * multiplier, 6))`,
+      hl: [9, 10, 12, 13, 17],
+      caption: "Three branches, three budgets. `low` shrinks the image to fit a 512-pixel square, `high` shrinks it until 2,500 patches cover it, and `original` does not shrink it at all. The budgets are GPT-6 Astra's, as OpenAI's image guide listed them in November 2026." },
 
-    tiles = math.ceil(w / 512) * math.ceil(h / 512)   # 3. count 512px tiles
-    return 85 + 170 * tiles`,
-      hl: [6, 9],
-      caption: "Two resize steps before any counting. The first bounds the longest side, the second bounds the shortest — and the second is what puts a ceiling on the whole thing." },
+    { t: "code", lang: "python", title: "g111.py — checked against the guide, then six images", code: `print("the three worked figures in OpenAI's guide, detail=high:")
+for w, h, want in ((1024, 1024, 1229), (2048, 2048, 3000), (4096, 512, 2458)):
+    print("  %-10s -> %5d   guide says %d" % ("%dx%d" % (w, h), img_tokens(w, h), want))
+print()
+print("  %-12s %7s %7s %9s" % ("image", "low", "high", "original"))
+for w, h in ((512, 512), (1024, 1024), (1600, 1600), (2048, 2048),
+             (4032, 3024), (4096, 4096)):
+    print("  %-12s %7d %7d %9d" % ("%dx%d" % (w, h), img_tokens(w, h, "low"),
+                                   img_tokens(w, h, "high"), img_tokens(w, h, "original")))`,
+      out: `the three worked figures in OpenAI's guide, detail=high:
+  1024x1024  ->  1229   guide says 1229
+  2048x2048  ->  3000   guide says 3000
+  4096x512   ->  2458   guide says 2458
 
-    { t: "code", lang: "python", title: "g18.py — six images", code: `for w, h in ((512, 512), (1024, 1024), (1024, 768),
-             (2048, 2048), (4096, 4096), (150, 150)):
-    hi = img_tokens(w, h)
-    print("%-14s %8d %8d %10d" % ("%dx%d" % (w, h), 85, hi, (hi - 85) // 170))`,
-      out: `the reference: detail=low is 85; detail=high is 85 + 170 x tiles
-it claims 1024x1024 at high detail ~ 765 tokens
+  image            low    high  original
+  512x512          308     308       308
+  1024x1024        308    1229      1229
+  1600x1600        308    3000      3000
+  2048x2048        308    3000      4916
+  4032x3024        231    2942     14364
+  4096x4096        308    3000     19661`,
+      hl: [11, 12],
+      caption: "The implementation reproduces all three of the guide's worked figures, so the table beneath them can be trusted. Read the last two columns: `high` stops at 3,000 tokens however large the image is, and `original` does not stop." },
 
-  image               low     high      tiles
-  512x512              85      255          1
-  1024x1024            85      765          4
-  1024x768             85      765          4
-  2048x2048            85      765          4
-  4096x4096            85      765          4
-  150x150              85      255          1
-
-naive 1024x1024 -> 2x2 = 4 tiles -> 85 + 680 = 765, which matches the reference.
-but the real pipeline shrinks the shortest side to 768 first, giving 765.`,
-      hl: [6, 9, 10],
-      caption: "The 765 for a 1024×1024 image is correct. It is correct by coincidence: the naive 2×2 tiling gives 765, and so does the real pipeline after shrinking the shortest side to 768 — but for different reasons, and they stop agreeing immediately." },
-
-    { t: "callout", kind: "insight", title: "There is a ceiling, and it arrives sooner than you think",
+    { t: "callout", kind: "trap", title: "The default now charges for every pixel",
       body: [
-        { t: "p", text: "Look at the last three rows: 1024×1024, 2048×2048 and 4096×4096 all cost **765 tokens**. The shortest-side-to-768 step means any square image above about 768 pixels resizes to the same 768×768 and tiles identically." },
-        { t: "p", text: "So sending a 4K photograph costs exactly what sending a 1024-pixel version of it costs, and the extra 15 megabytes buy nothing at all — they are discarded server-side before the model sees anything. Resizing client-side saves upload time and bandwidth for free." },
-        { t: "p", text: "The ceiling is not universal: a very wide panorama has a long side that survives the 2048 bound and a short side already under 768, so it tiles into more columns and costs more. Square images hit the ceiling; extreme aspect ratios do not." }
+        { t: "p", text: "`detail` defaults to `auto`, and on GPT-6 Astra `auto` means `original`. So a request that never mentions `detail` sends a 4032×3024 phone photograph at **14,364 tokens**, where `high` would have cost 2,942 and `low` 231." },
+        { t: "p", text: "On the models of two years earlier the default went the other way. An image was fitted into a fixed grid of tiles before it was counted, so a 4K upload cost the same 765 tokens as a 1024-pixel one and the extra megapixels were simply discarded. Code and cost estimates written against that rule — and there is a great deal of both — are now wrong by more than an order of magnitude, in the expensive direction." },
+        { t: "p", text: "There is a hard edge above it as well: an image needing more than 30,000 patches is **rejected**, not resized. A 6000×6000 scan is 35,344 patches, so the same code that quietly overpaid for a phone photograph fails outright on a flatbed scan." }
       ] },
 
-    { t: "viz", title: "What the two resize steps do", caption: "Measured with the implementation above. The two bounds mean a square image cannot exceed four tiles however large it starts.",
-      svg: `<svg viewBox="0 0 760 220" width="100%" role="img" aria-label="Image token cost against source size">
-  <text x="20" y="26" class="s-label">high detail — tokens</text>
+    { t: "viz", title: "One phone photograph, three settings", caption: "The same 4032×3024 image on GPT-6 Astra. The bar lengths are to scale: `original` is 62 times `low`.",
+      svg: `<svg viewBox="0 0 760 196" width="100%" role="img" aria-label="Image token cost of one photograph at three detail settings">
+  <text x="20" y="24" class="s-label">input tokens for one 4032x3024 photograph</text>
 
-  <rect x="20" y="40" width="34" height="26" rx="4" style="fill:var(--good)" opacity="0.8"/>
-  <text x="62" y="58" class="s-mono">255</text>
-  <text x="120" y="58" class="s-sub">150x150 — one tile after resize</text>
+  <rect x="20" y="40" width="11" height="26" rx="3" style="fill:var(--good)" opacity="0.85"/>
+  <text x="40" y="58" class="s-mono">231</text>
+  <text x="96" y="58" class="s-sub">detail="low" — shrunk to fit 512x512</text>
 
-  <rect x="20" y="74" width="34" height="26" rx="4" style="fill:var(--good)" opacity="0.8"/>
-  <text x="62" y="92" class="s-mono">255</text>
-  <text x="120" y="92" class="s-sub">512x512 — one tile</text>
+  <rect x="20" y="84" width="143" height="26" rx="4" style="fill:var(--warn)" opacity="0.8"/>
+  <text x="172" y="102" class="s-mono">2,942</text>
+  <text x="236" y="102" class="s-sub">detail="high" — shrunk to 2,500 patches</text>
 
-  <rect x="20" y="108" width="102" height="26" rx="4" style="fill:var(--warn)" opacity="0.8"/>
-  <text x="130" y="126" class="s-mono">765</text>
-  <text x="188" y="126" class="s-sub">1024x1024 — four tiles</text>
+  <rect x="20" y="128" width="700" height="26" rx="4" style="fill:var(--crit)" opacity="0.75"/>
+  <text x="30" y="146" class="s-mono" style="fill:var(--ink)">14,364</text>
+  <text x="100" y="146" class="s-sub" style="fill:var(--ink)">detail="original", which is what auto means here — nothing shrunk</text>
 
-  <rect x="20" y="142" width="102" height="26" rx="4" style="fill:var(--warn)" opacity="0.8"/>
-  <text x="130" y="160" class="s-mono">765</text>
-  <text x="188" y="160" class="s-sub">4096x4096 — still four tiles, 15 MB discarded before the model sees it</text>
-
-  <rect x="20" y="176" width="11" height="26" rx="3" style="fill:var(--accent)" opacity="0.85"/>
-  <text x="40" y="194" class="s-mono">85</text>
-  <text x="120" y="194" class="s-sub">any size at detail="low" — 9.0x cheaper than 765</text>
+  <text x="20" y="182" class="s-sub">At $10 per million input tokens: $0.0023, $0.0294 and $0.1436 per photograph.</text>
 </svg>` },
 
     /* ============================================================ 02 */
     { t: "h2", n: "02", id: "what-detail-buys", text: "What the detail setting is actually choosing",
-      sub: "One tile of context against a grid of tiles" },
+      sub: "How many pixels survive the trip to the model" },
 
-    {"kind": "trace", "title": "Detail is a 9x price dial, and often buys nothing", "caption": "One 1024×1024 image costs $0.001912 at `detail=high` and $0.000212 at `low` — **9.0×**, measured. Whether that is worth paying turns entirely on whether the question needs resolution. \"Is there a person in this photo?\" is answered by a 512-pixel view, and nine times the tokens changes nothing. \"What does this sign say?\" is exactly what the tiles are for.", "left": "the question", "codeW": 220, "vars": ["detail", "why"], "steps": [{"code": "Is there a person in this photo?", "state": ["low", "512px answers it"], "tone": "good"}, {"code": "Which of these four layouts?", "state": ["low", "coarse structure"], "tone": "good"}, {"code": "What does this sign say?", "state": ["high", "text needs resolution"], "changed": [0], "tone": "accent"}, {"code": "Read the table in this scan", "state": ["high, or OCR", "see section 04"], "tone": "warn"}, {"code": "Describe this image", "state": ["low first", "measure before paying"], "tone": "violet"}], "t": "diagram", "id": "dg-1_11-02-0"},
+    {"kind": "trace", "title": "Detail is a price dial, and often buys nothing", "caption": "One 4032×3024 photograph costs $0.1436 at `original`, $0.0294 at `high` and $0.0023 at `low` — **62×** from top to bottom, measured. Whether the top is worth paying turns entirely on whether the question needs resolution. \"Is there a person in this photo?\" is answered by a 512-pixel view, and sixty times the tokens changes nothing. \"What does this sign say?\" is exactly what the pixels are for.", "left": "the question", "codeW": 220, "vars": ["detail", "why"], "steps": [{"code": "Is there a person in this photo?", "state": ["low", "512px answers it"], "tone": "good"}, {"code": "Which of these four layouts?", "state": ["low", "coarse structure"], "tone": "good"}, {"code": "What does this sign say?", "state": ["high", "text needs resolution"], "changed": [0], "tone": "accent"}, {"code": "Read the table in this scan", "state": ["high, or OCR", "see section 05"], "tone": "warn"}, {"code": "Click the button in a screenshot", "state": ["original", "coordinates must hold"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-1_11-02-0"},
 
+    { t: "p", text: "`detail=\"low\"` gives the model a view of the whole image no larger than 512 pixels on a side. `detail=\"high\"` gives it up to 2,500 patches — a 1600×1600 image passes through untouched and anything larger is shrunk to that budget. `detail=\"original\"` sends the pixels you uploaded. The difference is whether the model can read small text and resolve fine structure, and what it costs is the whole of this table:" },
 
+    { t: "code", lang: "python", title: "g111.py — the price of detail", code: `RATE = 10.00        # dollars per 1M input tokens
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    { t: "p", text: "`detail=\"low\"` gives the model a single 512-pixel view of the whole image, for a flat 85 tokens. `detail=\"high\"` gives it that overview *plus* a grid of 512-pixel crops at higher resolution. The difference is whether the model can read small text and resolve fine structure, and it costs 9× on the measured square image." },
-
-    { t: "code", lang: "python", title: "g18.py — the price of detail", code: `print("cost of one high-detail 1024x1024 image at $2.50/1M input: $%.6f"
-      % (765 * 2.5 / 1e6))
-print("  the same image at detail=low                           : $%.6f"
-      % (85 * 2.5 / 1e6))
-print("  ratio: %.1fx" % (765 / 85))`,
-      out: `cost of one high-detail 1024x1024 image at $2.50/1M input: $0.001912
-  the same image at detail=low                           : $0.000212
-  ratio: 9.0x`,
-      caption: "Using the $2.50 per million input tokens. Two tenths of a penny per image sounds like nothing until you multiply by a document pipeline's volume." },
+W, H = 4032, 3024                                   # a 12-megapixel phone photograph
+for detail in ("low", "high", "original"):
+    t = img_tokens(W, H, detail)
+    print("%-9s %6d tokens  $%.5f per image  $%8.2f per 10,000 images"
+          % (detail, t, t * RATE / 1e6, t * RATE / 1e6 * 10000))
+print("original / low : %.1fx" % (img_tokens(W, H, "original") / img_tokens(W, H, "low")))
+print("original / high: %.1fx" % (img_tokens(W, H, "original") / img_tokens(W, H, "high")))`,
+      out: `low          231 tokens  $0.00231 per image  $   23.10 per 10,000 images
+high        2942 tokens  $0.02942 per image  $  294.20 per 10,000 images
+original   14364 tokens  $0.14364 per image  $ 1436.40 per 10,000 images
+original / low : 62.2x
+original / high: 4.9x`,
+      caption: "At GPT-6 Astra's $10 per million input tokens. Fourteen cents an image sounds like nothing until you multiply by a document pipeline's volume — and it is the price of not setting one field." },
 
     { t: "table",
       head: ["Task", "Detail", "Why"],
       rows: [
-        ["\"Is there a person in this photo?\"", "`low`", "A 512-pixel view answers it; 9× more tokens changes nothing"],
-        ["\"What does this sign say?\"", "`high`", "Text needs resolution — this is what the tiles are for"],
+        ["\"Is there a person in this photo?\"", "`low`", "A 512-pixel view answers it; sixty times the tokens changes nothing"],
+        ["\"What does this sign say?\"", "`high`", "Text needs resolution — this is what the patches are for"],
         ["\"Which of these four layouts is this?\"", "`low`", "Classification over coarse structure"],
-        ["\"Read the table in this scan\"", "`high`, or do not use a vision model", "Dense text is what OCR is for — see §04"],
-        ["\"Describe this image\"", "`low` first", "Measure whether `high` changes the answer before paying for it"]
+        ["\"Read the table in this scan\"", "`high`, or do not use a vision model", "Dense text is what OCR is for — see §05"],
+        ["\"Click the Save button in this screenshot\"", "`original`", "The answer is a pixel coordinate, so the image must not be rescaled"],
+        ["\"Describe this image\"", "`low` first", "Measure whether more detail changes the answer before paying for it"]
       ],
-      caption: "The default is `auto`, which lets the provider decide. For a pipeline processing the same kind of image repeatedly, choosing explicitly is worth the five minutes it takes to test." },
+      caption: "The default is `auto`, which lets the provider decide — and the provider's decision is the expensive one. For a pipeline processing the same kind of image repeatedly, choosing explicitly is worth the five minutes it takes to test." },
 
     { t: "callout", kind: "good", title: "Test whether detail changes the answer",
       body: [
         { t: "p", text: "Take 50 real images from your pipeline. Run each at `low` and at `high`. Compare the answers on whatever metric the task has." },
-        { t: "p", text: "For a surprising number of tasks the answers are identical, and you have been paying 9× for nothing. For OCR-like tasks the difference is dramatic and obvious. Either way it is a half-hour experiment that settles the question with evidence instead of an assumption." },
-        { t: "p", text: "Run the same comparison after any model upgrade. Vision encoders change between versions, and a task that needed `high` on one model may not on the next." }
+        { t: "p", text: "For a surprising number of tasks the answers are identical, and you have been paying many times over for nothing. For OCR-like tasks the difference is dramatic and obvious. Either way it is a half-hour experiment that settles the question with evidence instead of an assumption." },
+        { t: "p", text: "Run the same comparison after any model upgrade. Vision encoders change between versions, the counting rule changed completely between two generations of the same provider's models, and a task that needed `high` on one model may not on the next." }
       ] },
 
     /* ============================================================ 03 */
-    { t: "h2", n: "03", id: "budgeting", text: "Budgeting a multimodal request",
+    { t: "h2", n: "03", id: "three-providers", text: "The same picture, counted three ways",
+      sub: "A cost model written for one provider is wrong on the next" },
+
+    { t: "p", text: "The patch rule above is one provider's. The other two count differently enough that a cost estimate does not survive a migration:" },
+
+    { t: "table",
+      head: ["", "OpenAI · GPT-6 family", "Anthropic · current Claude models", "Google · Gemini 3 and 4"],
+      rows: [
+        ["Unit", "32-pixel patches × 1.2", "28-pixel patches", "a fixed charge per image"],
+        ["What sets the cost", "pixel area, after the `detail` resize", "pixel area, up to a ceiling", "the resolution level only"],
+        ["The control", "`detail`: `low`, `high`, `original`, `auto`", "resize before you send", "`resolution`: `low` 280, `medium` 560, `high` 1,120, `ultra_high` 2,240"],
+        ["Ceiling per image", "none at `original`; rejected above 30,000 patches", "4,784 tokens, 2,576 px on the long edge", "the level you chose"],
+        ["Default", "`auto`, which is `original` on Astra", "full size up to the ceiling", "1,120 tokens"]
+      ],
+      caption: "From each provider's image documentation in November 2026. Anthropic counts ⌈width / 28⌉ × ⌈height / 28⌉ visual tokens; Gemini does not look at the dimensions at all." },
+
+    { t: "code", lang: "python", title: "g111.py — one image, three bills", code: `def claude_tokens(w, h, long_edge=2576, cap=4784):
+    s = min(long_edge / max(w, h), 1.0)              # downscaled to the long-edge limit
+    w, h = w * s, h * s
+    return min(math.ceil(w / 28) * math.ceil(h / 28), cap)   # 28-px patches, capped
+
+GEMINI = {"low": 280, "medium": 560, "high": 1120, "ultra_high": 2240}   # per image, any size
+
+print("  %-12s %16s %12s %14s" % ("image", "OpenAI original", "Claude", "Gemini default"))
+for w, h in ((512, 512), (1024, 1024), (2048, 2048), (4032, 3024)):
+    print("  %-12s %16d %12d %14d" % ("%dx%d" % (w, h), img_tokens(w, h, "original"),
+                                      claude_tokens(w, h), GEMINI["high"]))`,
+      out: `  image         OpenAI original       Claude Gemini default
+  512x512                   308          361           1120
+  1024x1024                1229         1369           1120
+  2048x2048                4916         4784           1120
+  4032x3024               14364         4784           1120`,
+      caption: "A thumbnail is cheapest on OpenAI and dearest on Gemini; a phone photograph is the other way round, by a factor of thirteen. Which provider is cheap for images depends on how big your images are — and that is before the three different prices per token." },
+
+    { t: "callout", kind: "insight", title: "The counting rule is a property of the model, not of the image",
+      body: [
+        { t: "p", text: "Text has the same problem in miniature — 1.14 measures one sentence at 73 tokens under one encoding and 57 under another. Images have it at full size: the same file is 308, 361 or 1,120 tokens depending only on where it is sent, and 14,364 or 231 depending on one field." },
+        { t: "p", text: "The practical consequence is that the image counter belongs with the model configuration, versioned alongside the model id. When the model changes, the counter changes with it, and the cost dashboard does not silently keep applying last year's rule." }
+      ] },
+
+    /* ============================================================ 04 */
+    { t: "h2", n: "04", id: "budgeting", text: "Budgeting a multimodal request",
       sub: "Images are input tokens and share the window with everything else" },
 
-    {"kind": "flow", "title": "Image tokens are input tokens, and they cannot be truncated", "caption": "Everything from 1.5 applies unchanged — image tokens count against the window and leave less room for output. What is different is that they arrive in **large indivisible blocks**. You can drop a retrieved chunk to make room; you cannot shave 200 tokens off an image. So a multimodal budget has to be computed before the prompt is assembled, not trimmed afterwards.", "cols": 3, "nodes": [{"id": "i", "label": "An image is input tokens", "sub": "765 per page at high detail", "tone": "accent"}, {"id": "w", "label": "Counted against the window", "sub": "like any other input", "tone": "accent"}, {"id": "b", "label": "But indivisible", "sub": "no partial image", "tone": "crit"}, {"id": "t", "label": "So text cannot be trimmed to fit", "sub": "the block is all or nothing", "tone": "crit"}, {"id": "c", "label": "Compute the budget first", "sub": "images, then output, then prompt", "tone": "good"}, {"id": "d", "label": "Or decide to send fewer images", "sub": "the only real lever", "tone": "teal"}], "edges": [["i", "w"], ["w", "b"], ["b", "t"], ["t", "c"], ["c", "d"]], "t": "diagram", "id": "dg-1_11-03-1"},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    {"kind": "flow", "title": "Image tokens are input tokens, and they cannot be truncated", "caption": "Everything from 1.5 applies unchanged — image tokens count against the window and leave less room for output. What is different is that they arrive in **large indivisible blocks**. You can drop a retrieved chunk to make room; you cannot shave 200 tokens off an image. So a multimodal budget has to be computed before the prompt is assembled, not trimmed afterwards.", "cols": 3, "nodes": [{"id": "i", "label": "An image is input tokens", "sub": "2,574 for a scanned page", "tone": "accent"}, {"id": "w", "label": "Counted against the window", "sub": "like any other input", "tone": "accent"}, {"id": "b", "label": "But indivisible", "sub": "no partial image", "tone": "crit"}, {"id": "t", "label": "So text cannot be trimmed to fit", "sub": "the block is all or nothing", "tone": "crit"}, {"id": "c", "label": "Compute the budget first", "sub": "images, then output, then prompt", "tone": "good"}, {"id": "d", "label": "Or decide to send fewer images", "sub": "or smaller ones", "tone": "teal"}], "edges": [["i", "w"], ["w", "b"], ["b", "t"], ["t", "c"], ["c", "d"]], "t": "diagram", "id": "dg-1_11-03-1"},
 
     { t: "p", text: "Everything from 1.5 applies unchanged: image tokens are input tokens, they count against the context window, and they leave less room for output. What is different is that they arrive in large indivisible blocks — you cannot truncate an image to fit." },
 
-    { t: "code", lang: "python", title: "multimodal_budget.py", code: `def plan(images, prompt, *, window=128_000, reserve_output=2_000, detail="high"):
-    per_image = 85 if detail == "low" else None    # per-image cost, computed below
+    { t: "code", lang: "python", title: "multimodal_budget.py", code: `def plan(images, prompt, *, window=1_050_000, reserve_output=30_000, detail="high"):
     costs = [img_tokens(w, h, detail) for (w, h) in images]
 
-    text = len(enc.encode(prompt))
+    text = count_tokens(prompt)                 # the model's own counter (1.14)
     total = text + sum(costs)
-    room  = window - reserve_output
+    room  = window - reserve_output             # reasoning and answer need the rest (1.10)
 
     return {
         "text_tokens":  text,
@@ -200,53 +201,30 @@ print("  ratio: %.1fx" % (765 / 85))`,
              if text + sum(costs[:i]) <= room), 0),
     }
 
-# 40 high-detail scans alongside a 2,000-token instruction:
-#   40 x 765 = 30,600 image tokens + 2,000 text = 32,600 of 126,000 -- fits.
-# The same 40 at 1,445 tokens each (wide scans, more tiles) = 57,800 -- also fits.
-# 200 of them does not, and there is no partial image to drop.`,
-      caption: "The `images_that_fit` calculation exists because the failure is all-or-nothing per image. Dropping half a document's pages is a decision, and it should be an explicit one rather than a truncation you discover later." },
+# An A4 page scanned at 150 dpi is 1240 x 1754: 39 x 55 patches, 2,574 tokens.
+#   40 pages  = 102,960 image tokens -- fits, and costs $1.03 in input on Astra.
+#   400 pages = 1,029,600            -- does not fit a 1,050,000 window once the
+#                                       output reserve is taken, and there is no
+#                                       partial page to drop.`,
+      caption: "The `images_that_fit` calculation exists because the failure is all-or-nothing per image. Dropping half a document's pages is a decision, and it should be an explicit one rather than a truncation you discover later. With million-token windows the constraint that binds first is usually the bill rather than the window — and a request above 272,000 input tokens is charged at the higher long-context rate (1.15)." },
 
-    { t: "callout", kind: "trap", title: "Images do not compress like text",
+    { t: "callout", kind: "warn", title: "Images do not compress like text",
       body: [
-        { t: "p", text: "When a text prompt is too long you can summarise, chunk, or drop the least relevant passage. An image is 765 tokens or it is absent — there is no 400-token version of it that keeps the important half." },
-        { t: "p", text: "The one lever is `detail`, which is a 9× step rather than a slider. So a multimodal budget is much lumpier than a text one, and the planning has to happen before the request rather than as a graceful degradation inside it." },
-        { t: "p", text: "For video the same logic applies with a much worse constant: the advice is to extract key frames rather than sending everything, because a 30-second clip at 1 frame per second is 30 images and 22,950 tokens at high detail." }
+        { t: "p", text: "When a text prompt is too long you can summarise, chunk, or drop the least relevant passage. An image is its full token count or it is absent — there is no half-price version that keeps the important half." },
+        { t: "p", text: "The levers are `detail` and a resize before upload, and both are steps rather than sliders in what the model can then see. So a multimodal budget is much lumpier than a text one, and the planning has to happen before the request rather than as a graceful degradation inside it." },
+        { t: "p", text: "For video the same logic applies with a much worse constant. Sent as frames to a patch-counting model, thirty seconds at one 1280×720 frame per second is 30 images and 33,120 tokens; a five-minute clip is 331,200. Gemini, which takes video natively, charges 70 tokens a frame and 25 a second for the audio — 2,850 tokens for the same thirty seconds. Either way the question is which frames, not whether to send them all." }
       ] },
 
-    /* ============================================================ 04 */
-    { t: "h2", n: "04", id: "wrong-tool", text: "When an image is the wrong input",
+    /* ============================================================ 05 */
+    { t: "h2", n: "05", id: "wrong-tool", text: "When an image is the wrong input",
       sub: "A vision model is not an OCR engine, and is priced accordingly" },
 
-    {"kind": "flow", "title": "Plausible-but-wrong costs more to find than obviously-wrong", "caption": "A vision model will read a scanned document, often well. It will also cost 765 tokens a page at high detail, take seconds, and occasionally hallucinate a digit — and that is the whole argument. **An OCR engine with low confidence produces garbage that is obviously garbage**; a vision model produces plausible numbers. The first failure is caught by the next person who looks; the second is caught by an audit, months later, if at all.", "cols": 3, "nodes": [{"id": "s", "label": "A scanned table", "sub": "the case that comes up constantly", "tone": "accent"}, {"id": "v", "label": "A vision model reads it", "sub": "765 tokens a page, seconds", "tone": "warn"}, {"id": "o", "label": "OCR reads it", "sub": "cheaper, and faster", "tone": "good"}, {"id": "p", "label": "Fails as plausible numbers", "sub": "one digit, quietly wrong", "tone": "crit"}, {"id": "g", "label": "Fails as obvious garbage", "sub": "with a confidence score", "tone": "good"}, {"id": "c", "label": "The second failure is cheaper", "sub": "11.1 is why models produce the first", "tone": "teal"}], "edges": [["s", "v"], ["s", "o"], ["v", "p"], ["o", "g"], ["p", "c"], ["g", "c"]], "t": "diagram", "id": "dg-1_11-04-2"},
+    {"kind": "flow", "title": "Plausible-but-wrong costs more to find than obviously-wrong", "caption": "A vision model will read a scanned document, often well. It will also cost 2,574 tokens a page, take seconds, and occasionally hallucinate a digit — and that is the whole argument. **An OCR engine with low confidence produces garbage that is obviously garbage**; a vision model produces plausible numbers. The first failure is caught by the next person who looks; the second is caught by an audit, months later, if at all.", "cols": 3, "nodes": [{"id": "s", "label": "A scanned table", "sub": "the case that comes up constantly", "tone": "accent"}, {"id": "v", "label": "A vision model reads it", "sub": "2,574 tokens a page, seconds", "tone": "warn"}, {"id": "o", "label": "OCR reads it", "sub": "cheaper, and faster", "tone": "good"}, {"id": "p", "label": "Fails as plausible numbers", "sub": "one digit, quietly wrong", "tone": "crit"}, {"id": "g", "label": "Fails as obvious garbage", "sub": "with a confidence score", "tone": "good"}, {"id": "c", "label": "The second failure is cheaper", "sub": "11.1 is why models produce the first", "tone": "teal"}], "edges": [["s", "v"], ["s", "o"], ["v", "p"], ["o", "g"], ["p", "c"], ["g", "c"]], "t": "diagram", "id": "dg-1_11-04-2"},
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    { t: "p", text: "The case that comes up constantly is a scanned document. A vision model will read it, often well. It will also cost 765 tokens per page at high detail, take seconds, and hallucinate a digit occasionally in a way that a dedicated OCR engine does not." },
+    { t: "p", text: "The case that comes up constantly is a scanned document. A vision model will read it, often well. It will also cost 2,574 tokens per page, take seconds, and hallucinate a digit occasionally in a way that a dedicated OCR engine does not." },
 
     { t: "ul", items: [
-      "**Dense text on a page** — an invoice, a form, a contract scan — is what OCR is built for. Run OCR, send the text. A page of extracted text is usually 300–800 tokens rather than 765 plus whatever the answer costs, and it is greppable, diffable and auditable afterwards.",
+      "**Dense text on a page** — an invoice, a form, a contract scan — is what OCR is built for. Run OCR, send the text. A page of extracted text is usually 300–800 tokens rather than 2,574 for its image, and it is greppable, diffable and auditable afterwards.",
       "**Layout and structure** — which box is a total, where the signature block is — is where a vision model beats OCR, because OCR discards the geometry that answers the question.",
       "**Both** is the common real answer: OCR for the text, a vision model for the layout questions, and 6.5's multimodal retrieval when the corpus is large.",
       "**Charts and diagrams** genuinely need vision. There is no text layer that answers \"is this line trending up\"."
@@ -255,144 +233,159 @@ print("  ratio: %.1fx" % (765 / 85))`,
     { t: "p", text: "The failure mode worth naming is that a vision model reading a scanned table produces plausible numbers. An OCR engine with low confidence produces garbage that is obviously garbage. Plausible-but-wrong is much more expensive to discover than obviously-wrong, and 11.1 is the lesson about why models produce it." },
 
     /* ============================================================ exercise */
-    { t: "exercise", kind: "Challenge", title: "Find the resize that costs nothing",
+    { t: "exercise", kind: "Challenge", title: "Find the resize that bounds the bill",
       difficulty: "core", minutes: 20,
       body: [
-        { t: "p", text: "The measurement showed 1024×1024 and 4096×4096 costing the same 765 tokens, because the pipeline shrinks the shortest side to 768 before tiling. Somewhere below that, resizing starts to save money." },
-        { t: "p", text: "Find the boundaries: the largest image you can send without paying more than the minimum, and the smallest resize that changes the cost." }
+        { t: "p", text: "The measurement showed a 4032×3024 photograph costing 14,364 tokens at the default and 2,942 at `detail=\"high\"`. A client-side resize before upload is a third option, and unlike `detail` it also saves the upload." },
+        { t: "p", text: "A receipt-scanning feature receives 56,400 phone photographs a month. Work out what each choice costs, and where `high` and `original` stop being the same thing." }
       ],
       requirements: [
-        "Implement the tiling function from §01",
-        "Sweep square images from 100 to 4096 pixels and report every size at which the token count changes",
-        "Do the same for a 16:9 aspect ratio, and explain why the two differ",
-        "Report the largest square image that costs 255 tokens, and the smallest that costs 765",
-        "State what this means for a client-side resize step"
+        "Implement the patch rule from §01",
+        "For a 4:3 photograph, find the largest long side at which `high` and `original` cost the same",
+        "Compute tokens and cost per photograph for: no resize at the default, `high`, client-side resizes to 1568, 1024 and 768 pixels on the long side, and `low`",
+        "Report the monthly bill for each at $10 per million input tokens",
+        "State which option you would ship, and what it gives up"
       ],
-      hint: "The cost only changes at the boundaries where `ceil(w/512)` or `ceil(h/512)` increments, after the two resize steps. Sweep and diff rather than reasoning about it.",
+      hint: "`high` and `original` agree exactly while the image needs 2,500 patches or fewer, so sweep the long side and compare the two. The monthly bill is tokens × rate × volume — the interesting part is how far apart the rows are.",
       solution: { lang: "python", title: "g111_ex.py",
         code: `import math
 
-def img_tokens(w, h):
-    s = min(2048 / max(w, h), 1.0); w, h = w * s, h * s
-    s = min(768 / min(w, h), 1.0);  w, h = w * s, h * s
-    return 85 + 170 * (math.ceil(w / 512) * math.ceil(h / 512))
+PATCH = 32
 
-def transitions(ratio_w, ratio_h, label):
-    prev, out = None, []
-    for side in range(100, 4097):
-        w = side; h = int(side * ratio_h / ratio_w)
-        t = img_tokens(w, h)
-        if t != prev:
-            out.append((w, h, t))
-            prev = t
-    print("%s: %d cost levels" % (label, len(out)))
-    for w, h, t in out:
-        print("    from %5dx%-5d : %4d tokens" % (w, h, t))
+def patches(w, h):
+    return math.ceil(round(w / PATCH, 6)) * math.ceil(round(h / PATCH, 6))
 
-transitions(1, 1, "square")
+def img_tokens(w, h, detail="high", multiplier=1.2):
+    if detail == "low":
+        s = min(512 / w, 512 / h, 1.0); w, h = w * s, h * s
+    elif detail == "high" and patches(w, h) > 2500:
+        r = math.sqrt(PATCH * PATCH * 2500 / (w * h))
+        r *= min(math.floor(w * r / PATCH) / (w * r / PATCH),
+                 math.floor(h * r / PATCH) / (h * r / PATCH))
+        w, h = w * r, h * r
+    return math.ceil(round(patches(w, h) * multiplier, 6))
+
+RATE, PHOTOS = 10.00, 56_400            # dollars per 1M input tokens; photos a month
+
+# 1. where does detail=high start capping a 4:3 photograph?
+last_equal = max(L for L in range(256, 4033)
+                 if img_tokens(L, L * 3 // 4, "high") == img_tokens(L, L * 3 // 4, "original"))
+print("high and original agree up to a long side of %d px (%d tokens)"
+      % (last_equal, img_tokens(last_equal, last_equal * 3 // 4, "original")))
 print()
-transitions(16, 9, "16:9")`,
-        out: `square: 2 cost levels
-    from   100x100   :  255 tokens
-    from   513x513   :  765 tokens
 
-16:9: 4 cost levels
-    from   100x56    :  255 tokens
-    from   513x288   :  425 tokens
-    from   912x513   :  765 tokens
-    from  1025x576   : 1105 tokens`,
+# 2. the bill for one month of phone photographs, by what the client does first
+print("%-34s %8s %10s %12s" % ("client-side step", "tokens", "per photo", "per month"))
+for label, long_side, detail in (("none, detail left at auto", 4032, "original"),
+                                 ("none, detail=high",          4032, "high"),
+                                 ("resize long side to 1568",   1568, "original"),
+                                 ("resize long side to 1024",   1024, "original"),
+                                 ("resize long side to 768",     768, "original"),
+                                 ("none, detail=low",           4032, "low")):
+    t = img_tokens(long_side, long_side * 3 // 4, detail)
+    print("%-34s %8d %10.5f %12.2f" % (label, t, t * RATE / 1e6, t * RATE / 1e6 * PHOTOS))`,
+        out: `high and original agree up to a long side of 1835 px (2993 tokens)
+
+client-side step                     tokens  per photo    per month
+none, detail left at auto             14364    0.14364      8101.30
+none, detail=high                      2942    0.02942      1659.29
+resize long side to 1568               2176    0.02176      1227.26
+resize long side to 1024                922    0.00922       520.01
+resize long side to 768                 519    0.00519       292.72
+none, detail=low                        231    0.00231       130.28`,
         notes: [
-          { t: "p", text: "A square image has exactly two prices, and the boundary is at **513**, not where the resize steps are. Up to 512×512 it is one tile and 255 tokens; from 513×513 it is four tiles and 765, and it stays 765 forever — because the shortest-side shrink to 768 only engages above 768 and always lands back on four tiles. So the only client-side resize that saves tokens on a square image is down to 512." },
-          { t: "p", text: "The 16:9 case has four levels and tops out at **1105**, not 765 — a wide image needs three tile columns where a square needs two. It reaches 1105 at 1025×576 and stays there: a 4K widescreen screenshot is fitted to 2048 wide, then shrunk to 1365×768, which is still three columns by two rows. Aspect ratio, not size, is what sets the ceiling." },
-          { t: "p", text: "Two separate rules fall out, and they are often confused. **For tokens**, the only lever is dropping below 513 on the long side, which takes a square image from 765 to 255 — a real 3× saving, at the cost of the resolution the tiles existed to capture. **For bandwidth and latency**, resize to 768 on the shortest side: everything above that is discarded server-side, so a 4K upload pays transmission costs for pixels the model never sees. Above 513 pixels the two rules point in different directions, which is why they have to be stated separately." }
+          { t: "p", text: "The top row is the bill for doing nothing: **$8,101 a month**, against $130 at `low` — a 62× spread on identical traffic, decided by a field most code never sets. Setting `detail=\"high\"` alone is a fivefold saving and a one-line change, which makes it the first thing to ship." },
+          { t: "p", text: "`high` and `original` are the same thing up to a long side of 1,835 pixels on a 4:3 image, because that is where 2,500 patches run out. So a client-side resize to anything at or below that makes the default harmless: the image arrives small enough that no setting can inflate it. That is a stronger guarantee than setting `detail`, because it survives someone removing the field, a model whose `auto` resolves differently, and a provider that counts pixels with no ceiling at all." },
+          { t: "p", text: "What you would ship depends on what the model has to read. A resize to 1,024 pixels is $520 a month and keeps a receipt's total line legible; 768 is $293 and starts to lose small print; `low` at $130 is fine for the merchant's logo and useless for the amounts. The honest answer is the one from §02 — test the two cheapest candidates against 200 real receipts and pick the cheapest that holds accuracy — and the resize also shrinks a multi-megabyte upload to a small fraction of its size, which the user feels directly." }
         ] } },
 
     /* ============================================================ scenario */
     { t: "callout", kind: "scenario", title: "Incident: the receipt scanner whose bill was 40× the estimate",
       body: [
         { t: "p", text: "**Symptom.** An expense tool let users photograph receipts. The estimate — built from average text-request costs — put it at about $200 a month at the expected volume. The first full month came in at $8,100." },
-        { t: "p", text: "**What was happening.** Phones were uploading 4032×3024 photographs. Each one cost 765 tokens at `detail=\"high\"` — the default `auto` had resolved to high on every image because they were large. Users also, reasonably, photographed a receipt several times when the first attempt looked blurry, so the mean images per expense was 2.7 rather than 1." },
-        { t: "p", text: "**Mechanism.** Two multipliers nobody had modelled. The cost estimate had been built from a text-only prototype and never revised when images were added; and `detail` had never been set, so the most expensive branch was taken by default. The 15-megapixel uploads made no difference to quality whatsoever — the measurement in §01 shows 4096×4096 and 1024×1024 both resolving to 765 tokens, so the extra pixels were discarded server-side after being paid for in upload bandwidth and latency." },
-        { t: "p", text: "**Fix.** Client-side resize to 768 on the shortest side before upload, which cut upload time noticeably and token cost not at all — then an A/B on `detail=\"low\"` against `high` over 200 real receipts, which found high detail necessary for the total line and unnecessary for the merchant name, so the pipeline now makes two cheap calls instead of one expensive one where it can. Final cost was $940 a month. The durable change was that image tokens are now computed client-side and logged per request, so the bill is predictable from the traffic — which is 11.7's whole argument." }
+        { t: "p", text: "**What was happening.** Phones were uploading 4032×3024 photographs. Each one cost 14,364 input tokens, because `detail` had never been set and the default `auto` sent every pixel. Users also, reasonably, photographed a receipt several times when the first attempt looked blurry, so the mean images per expense was 2.7 rather than 1." },
+        { t: "p", text: "**Mechanism.** Two multipliers nobody had modelled. The cost estimate had been built from a text-only prototype and never revised when images were added; and the image-cost function in the team's dashboard was the tile rule from the previous model generation, which priced every photograph at a flat 765 tokens. The model had been upgraded, the counting rule had changed underneath it, and the dashboard was reporting a nineteenth of the real figure." },
+        { t: "p", text: "**Fix.** A client-side resize to 1,024 pixels on the long side before upload, which bounded each photograph at 922 tokens whatever the default did and cut upload time noticeably — then an A/B on `detail=\"low\"` against the resized image over 200 real receipts, which found the larger image necessary for the total line and unnecessary for the merchant name, so the pipeline now makes two cheap calls instead of one expensive one where it can. The bill settled at about $520 a month. The durable change was that image tokens are now computed client-side with the counter for the model actually deployed, and logged per request beside `usage`, so the two can be reconciled — which is 11.7's whole argument." }
       ] }
   ],
 
   takeaways: [
-    "Images become **input tokens**: `detail=\"low\"` is a flat **85**, `detail=\"high\"` is **85 + 170 × tiles** where a tile is 512 pixels square.",
-    "Before tiling there are two resizes: fit inside 2048×2048, then shrink the **shortest side to 768**. The formula omits both.",
-    "That gives a ceiling. Measured: **1024×1024, 2048×2048 and 4096×4096 all cost 765 tokens** — a 4K upload is discarded server-side after you have paid to transmit it.",
-    "The figure of 765 for a 1024×1024 image is correct, and correct by coincidence — the naive 2×2 tiling and the real pipeline agree there and diverge immediately after.",
-    "High detail costs **9.0×** low detail on a square image: $0.001912 against $0.000212 at $2.50 per million input tokens.",
-    "A square image has exactly **two prices**: 255 tokens up to 512×512, and 765 from 513×513 upward, forever. A 16:9 image has four and tops out at **1105**, because a wide image needs three tile columns where a square needs two.",
-    "**Two different resize rules.** For tokens, only dropping below 513 on the long side helps (765 → 255). For bandwidth and latency, resize to 768 on the shortest side, since everything above it is discarded server-side.",
-    "**Images do not compress like text.** There is no 400-token version of a 765-token image — the only lever is a 9× step in `detail`, so multimodal budgets must be planned before the request.",
-    "Video multiplies the constant: 30 seconds at 1 fps is 30 images and 22,950 tokens at high detail. Extract key frames.",
+    "Images become **input tokens**. On OpenAI's current models: cover the image with 32-pixel patches, count them, multiply by 1.2 — after a resize that depends on `detail`.",
+    "`low` fits the image into 512×512, `high` shrinks it to at most 2,500 patches, and `original` sends every pixel. Measured on a 4032×3024 photograph: **231, 2,942 and 14,364 tokens**.",
+    "**The default is the expensive branch.** `detail` defaults to `auto`, which on GPT-6 Astra means `original` — and an image above 30,000 patches is rejected rather than resized.",
+    "The spread from `low` to `original` is **62×** on a phone photograph: $0.0023 against $0.1436 at $10 per million input tokens.",
+    "`high` and `original` agree up to about 1,835 pixels on the long side of a 4:3 image, so **a client-side resize below that makes the default harmless** and saves the upload as well.",
+    "**The three providers count the same picture three ways**: 32-pixel patches × 1.2 on OpenAI, 28-pixel patches capped at 4,784 tokens on Claude, and a flat 280 to 2,240 per image on Gemini whatever its size.",
+    "The counting rule belongs to the model, not the image. The earlier tile rule priced any large image at a flat 765 tokens, so a cost function that outlives a model upgrade can be wrong by an order of magnitude.",
+    "**Images do not compress like text.** There is no half-price version of an image — the levers are `detail` and a resize, so multimodal budgets must be planned before the request.",
+    "Video multiplies the constant: thirty seconds at one 720p frame a second is 33,120 tokens as images. Choose frames; do not send them all.",
     "**A vision model is not an OCR engine.** Dense text is cheaper and more auditable through OCR; layout and charts are what vision is for; and a vision model misreading a table produces plausible numbers rather than obvious garbage."
   ],
 
   quiz: {
     title: "Check yourself",
     questions: [
-      { stem: "You send a 4096×4096 photograph at `detail=\"high\"`. How many tokens does it cost?",
-        options: ["About 12,000, since it is 64 tiles", "765 — the same as a 1024×1024 image", "85, since detail is capped", "It depends on the image content"],
+      { stem: "You send a 4032×3024 phone photograph to GPT-6 Astra without setting `detail`. Roughly how many input tokens does it cost?",
+        options: ["About 300, the flat low-detail cost", "About 14,400 — every pixel is billed", "About 3,000, the high-detail ceiling", "It depends on the image content"],
         answer: 1,
-        why: "The pipeline fits the image inside 2048×2048 and then shrinks the shortest side to 768, so a large square image always ends up as 768×768 and tiles into four — 85 + 170×4 = 765, measured identically for 1024, 2048 and 4096 pixel squares. The first option applies the tiling to the original dimensions and skips both resize steps. 85 is the flat `low` cost, not a cap on `high`. Content is irrelevant: the cost is a function of dimensions alone." },
+        why: "`detail` defaults to `auto`, which on this model means `original`: the image is not resized, so it is 126 × 95 patches of 32 pixels, times 1.2 — 14,364 tokens. The 3,000 figure is what `high` would have cost, because `high` shrinks the image to 2,500 patches first, and roughly 300 is what `low` costs after fitting it into 512×512; neither applies unless you ask for it. Content is irrelevant: the cost is a function of dimensions and the setting alone." },
 
-      { stem: "Your pipeline asks \"is there a person in this photo?\" at `detail=\"high\"`. What is the likely finding if you test `low`?",
-        options: ["Accuracy collapses; high detail always wins", "Same answers; you are paying 9× for nothing", "Low detail is not supported for photographs", "Latency increases at low detail"],
+      { stem: "Your pipeline asks \"is there a person in this photo?\" at the default detail. What is the likely finding if you test `low`?",
+        options: ["Accuracy collapses; more pixels always win", "Same answers, at a fraction of the tokens", "Low detail is not supported for photographs", "Latency increases at the low setting"],
         answer: 1,
-        why: "Low detail gives the model a 512-pixel view of the whole image, which is ample for coarse recognition — and it costs 85 tokens against 765, a measured 9.0× difference. The task that genuinely needs the tiles is reading small text or resolving fine structure, not detecting whether a person is present. The first option assumes more resolution always helps, which is the assumption the half-hour A/B in §02 exists to test. Low detail is supported everywhere, and fewer tokens reduce latency rather than increasing it." },
+        why: "Low detail gives the model a 512-pixel view of the whole image, which is ample for coarse recognition — and it costs 231 tokens against 14,364 on a phone photograph, a measured 62× difference. The task that genuinely needs the pixels is reading small text or resolving fine structure, not detecting whether a person is present. The first option assumes more resolution always helps, which is the assumption the half-hour A/B in §02 exists to test. Low detail is supported everywhere, and fewer tokens reduce latency rather than increasing it." },
 
       { stem: "You need to extract line items from 500 scanned invoices per day. What is the best architecture?",
-        options: ["Send each page to a vision model at high detail", "OCR for text; vision only for layout questions", "Send each page at low detail to save tokens", "Send the whole PDF as a single image"],
+        options: ["Send each page to a vision model at full detail", "OCR for text; vision only for layout questions", "Send each page at low detail to save tokens", "Send the whole PDF as a single image"],
         answer: 1,
-        why: "Dense text on a page is what OCR is built for: it produces greppable, diffable output at typically 300–800 tokens a page, and a low-confidence OCR result is obviously garbage where a vision model's misreading is a plausible wrong number — much more expensive to discover. Vision earns its cost on the geometry OCR discards, such as which box is the total. High detail on every page is the expensive default the incident in §04 was built on. Low detail would make the text unreadable, which is the one thing the tiles were for. A whole PDF as one image loses resolution on every page at once." },
+        why: "Dense text on a page is what OCR is built for: it produces greppable, diffable output at typically 300–800 tokens a page, and a low-confidence OCR result is obviously garbage where a vision model's misreading is a plausible wrong number — much more expensive to discover. Vision earns its cost on the geometry OCR discards, such as which box is the total. Full detail on every page is the expensive default the closing incident was built on. Low detail would make the text unreadable, which is the one thing the pixels were for. A whole PDF as one image loses resolution on every page at once." },
 
-      { stem: "Why does resizing a 4000-pixel image to 768 on the shortest side before upload help?",
-        options: ["It cuts tokens from 765 to 255", "It saves bandwidth and latency, not tokens", "It halves the cost of the request", "It switches detail from high to low"],
+      { stem: "Why does resizing a 4032×3024 photograph to 1,024 pixels on the long side before upload help?",
+        options: ["It saves bandwidth only; tokens are unchanged", "It cuts tokens about sixteen-fold, at any default", "It changes which model reads the image", "It switches detail from original to low"],
         answer: 1,
-        why: "Both sizes resolve to 765 tokens because the server shrinks the shortest side to 768 before tiling, so the token cost is identical — what the client-side resize saves is transmitting megabytes that are discarded on arrival, which shows up as upload time and latency. Getting to 255 tokens would require going below 513 pixels on the long side, which is a different and lossier decision. Nothing about the upload size changes the `detail` setting, which is an explicit request parameter." }
+        why: "At 1024×768 the image is 768 patches and 922 tokens, against 14,364 for the full-size upload, and because it is already under every resize budget no `detail` setting can make it cost more — the saving does not depend on a default staying put. The first option was true of the previous generation's tile rule, which discarded the extra pixels server-side after charging a flat rate, and is exactly the assumption that now costs money. The resize does not select a model or change `detail`; it changes what there is to count." }
     ]
   },
 
   interview: {
     title: "In an interview",
-    sub: "The Q7. Most candidates know images cost tokens; few can compute how many, and fewer know about the resize.",
+    sub: "Most candidates know images cost tokens; few can compute how many, and fewer know the rule changed.",
     questions: [
       { level: "core",
         q: "How do multimodal inputs affect token usage?",
-        strong: "A strong answer gives the formula, a concrete number, and the resize step that the documentation's version leaves out.",
+        strong: "A strong answer gives a counting rule, a concrete number, and the fact that the rule and its default differ by provider and by model generation.",
         answer: [
-          { t: "p", text: "Images are converted to input tokens and billed at the input rate. `detail=\"low\"` is a flat 85 tokens whatever the image size. `detail=\"high\"` is 85 plus 170 for each 512-pixel tile — a 1024×1024 image is four tiles, so 765 tokens." },
-          { t: "p", text: "The part that is usually missed: before tiling, the image is fitted inside 2048×2048 and then its shortest side is shrunk to 768. That puts a ceiling on the cost — I measured 1024×1024, 2048×2048 and 4096×4096 all coming out at exactly 765 tokens. So a 4K upload costs the same as a 1K one and the extra pixels are discarded server-side." },
-          { t: "p", text: "Practically: high detail is 9× low detail, which is worth testing rather than assuming. And resizing client-side to 768 on the shortest side saves upload bandwidth and latency even though it saves no tokens." }
+          { t: "p", text: "Images are converted to input tokens and billed at the input rate, and the conversion is a function of the image's dimensions that you can compute before sending. On OpenAI's current models it is 32-pixel patches times 1.2, after a resize that depends on `detail`: `low` fits the image into 512 pixels, `high` shrinks it to 2,500 patches, `original` leaves it alone." },
+          { t: "p", text: "The part that is usually missed is the default. `detail` is `auto` unless you set it, and on the flagship that means `original` — so a 12-megapixel phone photograph is 14,364 tokens, where `high` would be 2,942 and `low` 231. That is a 62× spread decided by a field most code never sets." },
+          { t: "p", text: "And it is provider-specific. Claude counts 28-pixel patches up to a ceiling of a few thousand tokens; Gemini charges a flat amount per image by resolution level regardless of size. So I keep the image counter with the model configuration and reconcile it against `usage`, because the previous generation's rule priced any large image at a flat 765 tokens and a lot of dashboards still apply it." }
         ] },
 
       { level: "core",
         q: "When would you not use a vision model for a document?",
         strong: "A strong answer separates text from layout and names the failure mode that makes the distinction matter.",
         answer: [
-          { t: "p", text: "When the question is about the text rather than the layout. Dense text on a page is what OCR is built for — a page of extracted text is typically 300–800 tokens against 765 for the image plus whatever the answer costs, and the output is greppable, diffable and auditable afterwards in a way an image is not." },
+          { t: "p", text: "When the question is about the text rather than the layout. Dense text on a page is what OCR is built for — a page of extracted text is typically 300–800 tokens against roughly 2,600 for the page image, and the output is greppable, diffable and auditable afterwards in a way an image is not." },
           { t: "p", text: "Vision earns its cost on the things OCR discards: which box is the total, where the signature block is, whether this chart is trending up. There is no text layer that answers the last one." },
           { t: "p", text: "The argument I would lead with, though, is the failure mode. An OCR engine reading a bad scan produces garbage that is obviously garbage, with a confidence score. A vision model reading the same scan produces a plausible number. Plausible-but-wrong is far more expensive to find than obviously-wrong, and on financial documents that difference is the whole risk." }
         ] },
 
       { level: "advanced",
         q: "A receipt-scanning feature costs 40 times its estimate. Where do you look?",
-        strong: "A strong answer proposes the multipliers in order of likely size and knows that `detail` defaults to something expensive.",
+        strong: "A strong answer proposes the multipliers in order of likely size and knows that the detail default is the expensive branch.",
         answer: [
-          { t: "p", text: "Three multipliers, and I would check them in this order. First, `detail`: if it was never set, it defaults to `auto`, which resolves to high on large images — that is a 9× difference against low, and phone photographs are always large." },
+          { t: "p", text: "Three multipliers, and I would check them in this order. First, `detail`: if it was never set it is `auto`, and on a current flagship that sends every pixel. A phone photograph is then about 14,000 tokens rather than a few hundred, and phone photographs are always large." },
           { t: "p", text: "Second, images per transaction. Users photograph a receipt more than once when the first attempt looks blurry, so the real figure is often two or three, not one. That is a multiplier nobody puts in the estimate because it is a behaviour rather than a parameter." },
-          { t: "p", text: "Third — and this one costs bandwidth rather than tokens, but it is worth finding — upload size. A 15-megapixel photograph costs exactly what a 1-megapixel one costs in tokens, because the server shrinks the shortest side to 768 before tiling. So the extra megabytes are pure waste: latency and bandwidth for pixels that are discarded." },
-          { t: "p", text: "The fix that generalises is to compute image tokens client-side from the dimensions and log them per request. Then the bill is predictable from the traffic, and a 40× surprise becomes a dashboard rather than an invoice." }
+          { t: "p", text: "Third, the estimate itself. If it came from a cost function written for an earlier model, it may be applying a counting rule that no longer exists — the old tile rule capped a large image at 765 tokens, so a dashboard still using it under-reports by an order of magnitude and nobody is alerted." },
+          { t: "p", text: "The fix that generalises is a client-side resize, which bounds the cost whatever the default does, plus computing image tokens with the deployed model's own rule and logging them per request. Then the bill is predictable from the traffic, and a 40× surprise becomes a dashboard rather than an invoice." }
         ] },
 
       { level: "advanced",
         q: "How would you handle video input?",
         strong: "A strong answer starts from the arithmetic, which rules out the naive approach immediately.",
         answer: [
-          { t: "p", text: "Start with the number, because it settles the design. At one frame per second and high detail, thirty seconds of video is thirty images and 22,950 tokens. A five-minute clip is over 200,000 — more than most context windows, before anything else is in the request." },
-          { t: "p", text: "So the question is never \"send the video\", it is \"which frames\". Key-frame extraction on scene changes rather than a fixed interval, because a static shot contributes thirty near-identical images and one is enough. Then `detail=\"low\"` on the frames unless the task needs to read something in them, which is another 9×." },
+          { t: "p", text: "Start with the number, because it settles the design. Sent as frames to a model that counts patches, one 720p frame is about 1,100 tokens, so thirty seconds at a frame a second is 33,000 tokens and a five-minute clip is over 330,000 — a third of a million-token window, and a real bill, before anything else is in the request." },
+          { t: "p", text: "So the question is never \"send the video\", it is \"which frames\". Key-frame extraction on scene changes rather than a fixed interval, because a static shot contributes thirty near-identical images and one is enough. Then the lowest detail on the frames unless the task needs to read something in them." },
+          { t: "p", text: "A model that takes video natively changes the constant rather than the logic: Gemini charges on the order of 70 tokens a frame, so the same thirty seconds is a few thousand tokens — but it is sampling frames for you, and you should know at what rate before trusting it with something brief." },
           { t: "p", text: "For anything where the audio carries the content — a meeting, a lecture, a call — transcribe it and send text. That is orders of magnitude cheaper and usually better, because the model gets the whole thing rather than a sample of frames. 13.9 covers what to expect from the transcription, and 6.5 covers retrieval when the video corpus is large enough that you cannot send any of it directly." }
         ] }
     ]

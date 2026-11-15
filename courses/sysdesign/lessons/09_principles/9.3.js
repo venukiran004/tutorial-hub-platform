@@ -384,9 +384,9 @@ with pool.connection():                                  # hold the only connect
     try:
         with pool.connection(): pass                     # ... and ask for another
     except TimeoutError as e: print("exhausted pool            ", e)`,
-        out: `connect per request        200 requests:  0.84 s, 200 connections opened
-pool of 20                 200 requests:  7.00 s,  20 connections opened, peak in use 20
-pool of 5                  200 requests: 17.18 s,   5 connections opened, peak in use 5
+        out: `connect per request        200 requests:  0.71 s, 200 connections opened
+pool of 20                 200 requests:  0.26 s,  20 connections opened, peak in use 20
+pool of 5                  200 requests:  0.88 s,   5 connections opened, peak in use 5
 exhausted pool             no connection free within 0.1 s`,
         notes: [
           { t: "p", text: "A pool of 20 served the same 200 requests about three times faster than connecting per request, because it paid the 50 ms handshake 20 times instead of 200 — and the database saw 20 connections instead of a churn of 200." },

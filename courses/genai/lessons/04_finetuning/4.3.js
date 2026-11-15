@@ -139,7 +139,7 @@ r99 = int((cum < 0.99).sum()) + 1`,
 
     { t: "callout", kind: "trap", title: "A rank-8 adapter discards more than half the update",
       body: [
-        { t: "p", text: "It is commonly said *\u201ctheir product `B\u00b7A` is the \u2018change\u2019 you wanted\u201d*, and at the ranks it recommends \u2014 8 for simple tasks, 16 for instructions \u2014 that product can represent **45.2% and 57.9%** of the change the full fine-tune actually made. The median layer needs rank 94 for 90%." },
+        { t: "p", text: "LoRA is usually explained as *\u201ctheir product `B\u00b7A` is the \u2018change\u2019 you wanted\u201d*, and at the ranks usually recommended \u2014 8 for simple tasks, 16 for instructions \u2014 that product can represent **45.2% and 57.9%** of the change the full fine-tune actually made. The median layer needs rank 94 for 90%." },
         { t: "p", text: "So the decomposition is an *approximation*, not a factorisation, and the gap is large. A reader who takes the sentence literally will be surprised the first time a rank-8 adapter underperforms a full fine-tune on a hard task \u2014 and will reach for a learning-rate change rather than for more rank." },
         { t: "p", text: "The honest form of the claim: **the update is low-rank enough to be worth approximating, and the approximation is lossy in a way the rank controls.** That is also why `r` is the first hyperparameter to raise when a LoRA run plateaus above the loss a full fine-tune reaches." }
       ] },
@@ -189,7 +189,7 @@ sr = torch.linalg.svdvals(rnd)`,
 
     { t: "callout", kind: "note", title: "What this \u0394W is, and is not",
       body: [
-        { t: "p", text: "This update comes from 4.1\u2019s run: twelve examples, eight epochs, a style task on a 124M model. That is a small adaptation, and small adaptations are plausibly more concentrated than large ones. A multi-thousand-example instruction tune may well need more rank, which is consistent with the reference putting complex tasks at r = 32\u201364." },
+        { t: "p", text: "This update comes from 4.1\u2019s run: twelve examples, eight epochs, a style task on a 124M model. That is a small adaptation, and small adaptations are plausibly more concentrated than large ones. A multi-thousand-example instruction tune may well need more rank, which is consistent with the common guidance that puts complex tasks at r = 32\u201364." },
         { t: "p", text: "The measurement also includes whatever that run\u2019s overfitting contributed \u2014 4.1 showed it memorising training replies, and memorisation is itself a direction in weight space. So I would treat the 103 as an order of magnitude rather than a constant, and the real transferable result as the contrast with the random baseline, which does not depend on the task size." }
       ] },
 
@@ -294,7 +294,7 @@ for r in (1, 2, 4, 8, 16, 32, 64):
           { t: "p", text: "**The random baseline is what makes the result meaningful.** Noise of the same shape and spread holds 2.5% in its top eight directions and needs 559 for 90%. The real update is 18\u00d7 more concentrated at rank 8 and needs a fifth as many directions \u2014 fine-tuning moves weights along a few directions that matter, which is precisely the property LoRA exploits." },
           { t: "p", text: "**Attention output projections are the most concentrated** \u2014 `attn.c_proj` needs 44\u201378 directions for 90% while `mlp.c_fc` needs 122\u2013131. If you are choosing where to spend rank, that ordering is a hint, and it is consistent with adapters on attention projections being the common default." },
           { t: "p", text: "**The parameter table is the trade stated plainly.** Rank 8 trains 1.39% of the parameters for 45.2% of the update; rank 64 trains 11.11% for 84.0%. Energy is not linear in parameters \u2014 the first few directions are worth far more than the last few \u2014 which is why small ranks work at all and why doubling `r` has diminishing returns." },
-          { t: "p", text: "Two limits. This \u0394W comes from twelve examples over eight epochs on a 124M model, and a larger adaptation may be less concentrated \u2014 consistent with the reference suggesting r = 32\u201364 for complex tasks. And Frobenius energy is not task quality: a rank that discards 55% of the norm may lose much less than 55% of the behaviour, which is the empirical reason LoRA works and is not something this measurement can show." }
+          { t: "p", text: "Two limits. This \u0394W comes from twelve examples over eight epochs on a 124M model, and a larger adaptation may be less concentrated \u2014 consistent with the common guidance of r = 32\u201364 for complex tasks. And Frobenius energy is not task quality: a rank that discards 55% of the norm may lose much less than 55% of the behaviour, which is the empirical reason LoRA works and is not something this measurement can show." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",

@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "1.13",
 
-  lede: "Two discounts are available on almost every LLM API and both are large enough to change what a product can afford. The **Batch API** halves the price of work that can wait a day. **Prompt caching** discounts the part of your prompt that does not change between requests — 50% on OpenAI, 90% on Anthropic — and it is free, automatic on one provider, and silently forfeited by putting the wrong thing first. This lesson carries both through on one workload and works out what the ordering mistake costs.",
+  lede: "Two discounts are available on almost every LLM API and both are large enough to change what a product can afford. The **Batch API** halves the price of work that can wait a day. **Prompt caching** discounts the part of your prompt that does not change between requests — by 90% or more on all three major providers in late 2026 — and it is automatic on two of them and silently forfeited by putting the wrong thing first. This lesson carries both through on one workload and works out what the ordering mistake costs.",
 
   objectives: [
     "Decide whether a workload is eligible for the Batch API",
@@ -45,7 +45,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "The Batch API takes a file of requests, processes them asynchronously within a stated window — 24 hours on OpenAI — and charges 50% of the real-time rate. There is no quality difference; it is the same models, run when the provider has spare capacity." },
+    { t: "p", text: "The Batch API takes a file of requests, processes them asynchronously within a stated window — 24 hours on OpenAI, a 24-hour target on Gemini — and charges 50% of the real-time rate on OpenAI, Anthropic and Google alike. There is no quality difference; it is the same models, run when the provider has spare capacity." },
 
     { t: "code", lang: "python", title: "batch.py — the whole flow", code: `import json
 
@@ -55,23 +55,24 @@ with open("batch_input.jsonl", "w") as f:
         f.write(json.dumps({
             "custom_id": f"request-{i}",              # YOUR key, not theirs
             "method": "POST",
-            "url": "/v1/chat/completions",
+            "url": "/v1/responses",
             "body": {
-                "model": "gpt-4o-mini",
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 100,
+                "model": "gpt-6-luna",
+                "input": prompt,
+                "reasoning": {"effort": "none"},      # a summary has no search in it (1.10)
+                "max_output_tokens": 300,
             },
         }) + "\\n")
 
 # 2. upload and create
 batch_file = client.files.create(file=open("batch_input.jsonl", "rb"), purpose="batch")
 batch = client.batches.create(input_file_id=batch_file.id,
-                              endpoint="/v1/chat/completions",
+                              endpoint="/v1/responses",
                               completion_window="24h")
 
 # 3. poll -- validating -> in_progress -> completed (or failed / expired)
 batch = client.batches.retrieve(batch.id)`,
-      hl: [6],
+      hl: [7],
       caption: "The `custom_id` is the important field: results come back unordered and you match on it, so it has to carry enough information to find the row it belongs to." },
 
     { t: "callout", kind: "trap", title: "Results come back unordered, and some may be missing",
@@ -97,7 +98,19 @@ batch = client.batches.retrieve(batch.id)`,
     { t: "h2", n: "02", id: "caching", text: "Prompt caching pays you for putting the static part first",
       sub: "The cache matches a prefix, which makes ordering a cost decision" },
 
-    { t: "p", text: "A prompt cache stores the processed state of tokens the server has already seen, so a request whose beginning matches a recent one skips the work of reprocessing it. The discount is on input tokens: **50% on OpenAI, automatic, above a 1,024-token minimum; 90% on Anthropic, with explicit `cache_control` markers**." },
+    { t: "p", text: "A prompt cache stores the processed state of tokens the server has already seen, so a request whose beginning matches a recent one skips the work of reprocessing it. The discount is on input tokens, and by late 2026 it is steep everywhere: **a cached token is billed at a tenth of the input rate or less on OpenAI, Anthropic and Google alike**. What differs is the small print." },
+
+    { t: "table",
+      head: ["", "OpenAI", "Anthropic", "Google · Gemini"],
+      rows: [
+        ["How it is switched on", "automatic", "one top-level `cache_control` field, or explicit breakpoints", "automatic"],
+        ["Price of a cached token", "0.10× input; 0.05× on GPT-6.1 Sol and Terra", "0.10× input or less, by model", "about 0.10× input; 0.05× on Gemini 4 Carbon"],
+        ["Price of writing an entry", "1.25× input at the default lifetime", "1.25× input at the default lifetime", "none listed for automatic caching"],
+        ["Default lifetime", "30 minutes, or 12 hours at a higher write price", "5 minutes, or 1 hour at a higher write price", "not published"],
+        ["Minimum prefix", "1,024 tokens", "512 to 4,096 tokens, by model", "4,096 tokens on Gemini 3.6 and later"],
+        ["Where a hit is reported", "`usage.input_tokens_details.cached_tokens`", "`usage.cache_read_input_tokens`", "`cached_content_token_count`"]
+      ],
+      caption: "Read from each provider's caching documentation in November 2026. Every multiplier is per model and per lifetime, so read the row for the model you deploy — and note that a prefix below the minimum does not error, it simply never caches." },
 
     { t: "p", text: "The critical property is in the word *prefix*. The cache matches from the start of the request and stops at the first difference — so a single variable token at the front invalidates everything behind it." },
 
@@ -123,34 +136,41 @@ batch = client.batches.retrieve(batch.id)`,
   <line x1="20" y1="182" x2="26" y2="182" style="stroke:var(--crit)" stroke-width="2"/>
   <text x="130" y="198" text-anchor="middle" class="s-sub" style="fill:var(--crit)">0 tokens hit — the first token already differs</text>
 
-  <text x="20" y="220" class="s-sub">Measured below: the difference is $125 per 100,000 requests on a 1,200-token prompt.</text>
+  <text x="20" y="220" class="s-sub">Measured below: the difference is $180 per 100,000 requests on a 1,200-token prompt.</text>
 </svg>` },
 
-    { t: "code", lang: "python", title: "g18.py — what each discount is worth", code: `REQS, IN_TOK, OUT_TOK = 100_000, 1_200, 300
-IN_RATE, OUT_RATE = 2.50, 10.00      # $ per 1M
+    { t: "code", lang: "python", title: "g113.py — what each discount is worth", code: `REQS, IN_TOK, OUT_TOK = 100_000, 1_200, 300
+IN_RATE, OUT_RATE = 2.00, 10.00      # $ per 1M
 STATIC = 1000                        # tokens of the prompt that never change
 
 base_in  = REQS * IN_TOK  * IN_RATE  / 1e6
 base_out = REQS * OUT_TOK * OUT_RATE / 1e6
+print("workload: %s requests, %d input + %d output tokens each" % (format(REQS, ","), IN_TOK, OUT_TOK))
+print("  baseline: $%.2f input + $%.2f output = $%.2f" % (base_in, base_out, base_in + base_out))
+print()
+print("  %-36s: $%.2f  (saves $%.2f)" % ("batch API (50% off both)", (base_in + base_out) / 2, (base_in + base_out) / 2))
 
-for label, disc in (("OpenAI auto-cache (50% off input)",   0.5),
-                    ("Anthropic cache hit (90% off input)", 0.9)):
+for label, disc in (("cache hit at 0.10x (90% off input)", 0.90),
+                    ("cache hit at 0.05x (95% off input)", 0.95)):
     cached_in = REQS * (STATIC * (1 - disc) + (IN_TOK - STATIC)) * IN_RATE / 1e6
-    print("%-35s: $%.2f  (saves $%.2f)" % (label, cached_in + base_out, base_in - cached_in))`,
+    print("  %-36s: $%.2f  (saves $%.2f)" % (label, cached_in + base_out, base_in - cached_in))
+
+cached_in = REQS * (STATIC * 0.10 + (IN_TOK - STATIC)) * IN_RATE / 1e6
+print()
+print("  both batch and a 0.10x cache, where they stack: $%.2f" % ((cached_in + base_out) / 2))`,
       out: `workload: 100,000 requests, 1200 input + 300 output tokens each
-  baseline: $300.00 input + $300.00 output = $600.00
+  baseline: $240.00 input + $300.00 output = $540.00
 
-  batch API (50% off both)          : $300.00  (saves $300.00)
-  OpenAI auto-cache (50% off input)  : $475.00  (saves $125.00)
-  Anthropic cache hit (90% off input): $375.00  (saves $225.00)
+  batch API (50% off both)            : $270.00  (saves $270.00)
+  cache hit at 0.10x (90% off input)  : $360.00  (saves $180.00)
+  cache hit at 0.05x (95% off input)  : $350.00  (saves $190.00)
 
-  both batch and cache, Anthropic-style : $187.50`,
-      hl: [4, 5, 6],
-      caption: "One workload, four columns. Batching halves everything; caching only touches input, so its ceiling is the input half of the bill. Together they take $600 to $187.50 — a 69% reduction with no change to the model or the prompt." },
+  both batch and a 0.10x cache, where they stack: $180.00`,
+      caption: "One workload, four columns, at $2 and $10 per million tokens — the November 2026 list price of GPT-6.1 Sol and Claude Sonnet 5.5. Batching halves everything; caching only touches input, so its ceiling is the input share of the bill. Together they take $540 to $180 — a two-thirds reduction with no change to the model or the prompt. The cache rows are the steady state, after the one-off write." },
 
     { t: "callout", kind: "insight", title: "Caching is bounded by the input share of your bill",
       body: [
-        { t: "p", text: "In the workload above, input is $300 of a $600 bill, so even a perfect 100% cache discount could not save more than half. The batch discount applies to output too, which is why it beats caching here despite the smaller headline percentage." },
+        { t: "p", text: "In the workload above, input is $240 of a $540 bill, so even a perfect 100% cache discount could not save more than 44%. The batch discount applies to output too, which is why it beats caching here despite the smaller headline percentage." },
         { t: "p", text: "Which one wins depends on the shape of your traffic. A RAG endpoint with a 20,000-token context and a 200-token answer is almost all input, and caching dominates. A creative-writing feature with a 200-token prompt and a 2,000-token answer is almost all output, and caching is nearly worthless." },
         { t: "p", text: "Work out your own input/output split before choosing where to spend effort. It takes one query against your usage logs and it determines which of these two lessons matters to you." }
       ] },
@@ -159,7 +179,7 @@ for label, disc in (("OpenAI auto-cache (50% off input)",   0.5),
     { t: "h2", n: "03", id: "ordering", text: "The ordering mistake, priced",
       sub: "What it costs to put the user's question at the top" },
 
-    {"kind": "flow", "title": "The cache matches a prefix, so one variable token at the front costs everything", "caption": "Prompt caching keys on the **longest common prefix**, which makes message order a pricing decision. Static system text and documents first, variable user content last, and the cache hits. Put the query first and one variable token invalidates every static token behind it — measured on this workload, **$125.00 per 100,000 requests** for an ordering that looks like a style preference.", "cols": 3, "nodes": [{"id": "c", "label": "The cache matches a prefix", "sub": "longest common, from the front", "tone": "violet"}, {"id": "r", "label": "SYSTEM, then DOCS, then QUERY", "sub": "static first", "tone": "good"}, {"id": "h", "label": "The static prefix hits", "sub": "1,000 tokens at cache price", "tone": "good"}, {"id": "w", "label": "QUERY, then SYSTEM, then DOCS", "sub": "variable first", "tone": "crit"}, {"id": "m", "label": "Nothing behind it can match", "sub": "one token invalidates all of it", "tone": "crit"}, {"id": "p", "label": "$125.00 per 100,000 requests", "sub": "for the order alone", "tone": "crit"}], "edges": [["c", "r"], ["r", "h"], ["c", "w"], ["w", "m"], ["m", "p"]], "t": "diagram", "id": "dg-1_13-03-1"},
+    {"kind": "flow", "title": "The cache matches a prefix, so one variable token at the front costs everything", "caption": "Prompt caching keys on the **longest common prefix**, which makes message order a pricing decision. Static system text and documents first, variable user content last, and the cache hits. Put the query first and one variable token invalidates every static token behind it — measured on this workload, **$180.00 per 100,000 requests** for an ordering that looks like a style preference.", "cols": 3, "nodes": [{"id": "c", "label": "The cache matches a prefix", "sub": "longest common, from the front", "tone": "violet"}, {"id": "r", "label": "SYSTEM, then DOCS, then QUERY", "sub": "static first", "tone": "good"}, {"id": "h", "label": "The static prefix hits", "sub": "1,000 tokens at cache price", "tone": "good"}, {"id": "w", "label": "QUERY, then SYSTEM, then DOCS", "sub": "variable first", "tone": "crit"}, {"id": "m", "label": "Nothing behind it can match", "sub": "one token invalidates all of it", "tone": "crit"}, {"id": "p", "label": "$180.00 per 100,000 requests", "sub": "for the order alone", "tone": "crit"}], "edges": [["c", "r"], ["r", "h"], ["c", "w"], ["w", "m"], ["m", "p"]], "t": "diagram", "id": "dg-1_13-03-1"},
 
 
 
@@ -191,8 +211,8 @@ bad  = "USER QUERY(variable) + SYSTEM(1000 static tokens) + DOCS(static)"`,
   not        : USER QUERY(variable) + SYSTEM(1000 static tokens) + DOCS(static)
   the cache matches a PREFIX, so one variable token at the front
   invalidates every token behind it. Measured cost of that mistake on the
-  workload above: $125.00 per 100,000 requests.`,
-      caption: "$125 per hundred thousand requests, on OpenAI's 50% discount. On Anthropic's 90% it is $225. The fix is moving a string." },
+  workload above: $180.00 per 100,000 requests.`,
+      caption: "$180 per hundred thousand requests at a 90% discount, and $190 where a cached token costs a twentieth. The fix is moving a string." },
 
     { t: "p", text: "Four things break a cache, and three of them are avoidable:" },
 
@@ -219,8 +239,8 @@ bad  = "USER QUERY(variable) + SYSTEM(1000 static tokens) + DOCS(static)"`,
     { t: "callout", kind: "tradeoff", title: "When a cache write is not worth it",
       body: [
         { t: "p", text: "Writing to the cache costs about 25% extra on the first request, so the arrangement pays for itself on the **second** hit and is a loss if there is never one." },
-        { t: "p", text: "That makes caching a bad fit for genuinely one-off prompts — a long document summarised once and never revisited pays Anthropic’s write premium for nothing. It is an excellent fit for anything with a shared prefix across many requests: a system prompt, a tool catalogue, a schema (1.8), a few-shot block." },
-        { t: "p", text: "There is also a lifetime to consider. Caches expire — typically minutes of inactivity — so a low-traffic endpoint may never get a second hit before the entry is evicted. High volume is what makes caching pay, and it is another reason to measure your own traffic before optimising." }
+        { t: "p", text: "That makes caching a bad fit for genuinely one-off prompts — a long document summarised once and never revisited pays the write premium for nothing. It is an excellent fit for anything with a shared prefix across many requests: a system prompt, a tool catalogue, a schema (1.8), a few-shot block." },
+        { t: "p", text: "There is also a lifetime to consider. Caches expire — after five minutes on Claude's default and thirty on OpenAI's — so a low-traffic endpoint may never get a second hit before the entry is evicted. High volume is what makes caching pay, and it is another reason to measure your own traffic before optimising." }
       ] },
 
     /* ============================================================ exercise */
@@ -232,14 +252,14 @@ bad  = "USER QUERY(variable) + SYSTEM(1000 static tokens) + DOCS(static)"`,
       ],
       requirements: [
         "Model a workload as (input tokens, static share of the input, output tokens)",
-        "Compute the baseline cost, the batch-only cost, and the cache-only cost at both 50% and 90%",
+        "Compute the baseline cost, the batch-only cost, and the cache-only cost at both 90% and 95%",
         "Sweep the output/input ratio from 0.05 to 5 and find where caching stops beating batching",
         "Do the same sweep for the static share, at a fixed output/input ratio",
         "State one non-cost reason to choose caching over batching"
       ],
       hint: "Batch saves 50% of (input + output). A 90% cache saves 0.9 × static × input_rate. Set them equal and the crossover falls out, but sweeping makes the shape visible.",
       solution: { lang: "python", title: "g113_ex.py",
-        code: `IN_RATE, OUT_RATE = 2.50, 10.00
+        code: `IN_RATE, OUT_RATE = 2.00, 10.00
 
 def costs(in_tok, static_share, out_tok, cache_disc):
     static = in_tok * static_share
@@ -250,41 +270,52 @@ def costs(in_tok, static_share, out_tok, cache_disc):
     return base, batch, cached
 
 print("static share 0.8, sweeping the output/input ratio:")
-print("  %8s %10s %10s %10s %10s" % ("out/in", "base", "batch", "cache50", "cache90"))
+print("  %8s %10s %10s %10s %10s" % ("out/in", "base", "batch", "cache90", "cache95"))
 for ratio in (0.05, 0.1, 0.25, 0.5, 1.0, 2.0, 5.0):
     in_tok = 2000; out_tok = in_tok * ratio
-    b, ba, c5 = costs(in_tok, 0.8, out_tok, 0.5)
-    _, _,  c9 = costs(in_tok, 0.8, out_tok, 0.9)
-    winner = "cache90" if c9 < ba else "batch"
+    b, ba, c90 = costs(in_tok, 0.8, out_tok, 0.90)
+    _, _,  c95 = costs(in_tok, 0.8, out_tok, 0.95)
+    winner = "cache" if c90 < ba else "batch"
     print("  %8.2f %10.6f %10.6f %10.6f %10.6f   %s"
-          % (ratio, b, ba, c5, c9, winner))
+          % (ratio, b, ba, c90, c95, winner))
 
 print()
 print("output/input 0.15, sweeping the static share:")
 print("  %8s %10s %10s %10s" % ("static", "batch", "cache90", "winner"))
 for share in (0.2, 0.4, 0.6, 0.8, 0.95):
-    b, ba, c9 = costs(2000, share, 300, 0.9)
+    b, ba, c90 = costs(2000, share, 300, 0.90)
     print("  %8.2f %10.6f %10.6f   %s"
-          % (share, ba, c9, "cache90" if c9 < ba else "batch"))`,
+          % (share, ba, c90, "cache" if c90 < ba else "batch"))
+
+print()
+# the exact crossovers, from setting the two costs equal
+#   cache wins when  0.9 * s * IN  >  0.5 * (IN + r * OUT)     (per input token)
+r_star = (0.9 * 0.8 * IN_RATE - 0.5 * IN_RATE) / (0.5 * OUT_RATE)
+s_star = 0.5 * (IN_RATE + 0.15 * OUT_RATE) / (0.9 * IN_RATE)
+print("at 80%% static, a 90%% cache beats batching while out/in < %.3f" % r_star)
+print("at out/in 0.15, it takes a static share above %.3f" % s_star)`,
         out: `static share 0.8, sweeping the output/input ratio:
-    out/in       base      batch    cache50    cache90
-      0.05   0.006000   0.003000   0.004000   0.002400   cache90
-      0.10   0.007000   0.003500   0.005000   0.003400   cache90
-      0.25   0.010000   0.005000   0.008000   0.006400   batch
-      0.50   0.015000   0.007500   0.013000   0.011400   batch
-      1.00   0.025000   0.012500   0.023000   0.021400   batch
-      2.00   0.045000   0.022500   0.043000   0.041400   batch
-      5.00   0.105000   0.052500   0.103000   0.101400   batch
+    out/in       base      batch    cache90    cache95
+      0.05   0.005000   0.002500   0.002120   0.001960   cache
+      0.10   0.006000   0.003000   0.003120   0.002960   batch
+      0.25   0.009000   0.004500   0.006120   0.005960   batch
+      0.50   0.014000   0.007000   0.011120   0.010960   batch
+      1.00   0.024000   0.012000   0.021120   0.020960   batch
+      2.00   0.044000   0.022000   0.041120   0.040960   batch
+      5.00   0.104000   0.052000   0.101120   0.100960   batch
 
 output/input 0.15, sweeping the static share:
     static      batch    cache90     winner
-      0.20   0.004000   0.007100   batch
-      0.40   0.004000   0.006200   batch
-      0.60   0.004000   0.005300   batch
-      0.80   0.004000   0.004400   batch
-      0.95   0.004000   0.003725   cache90`,
+      0.20   0.003500   0.006280   batch
+      0.40   0.003500   0.005560   batch
+      0.60   0.003500   0.004840   batch
+      0.80   0.003500   0.004120   batch
+      0.95   0.003500   0.003580   batch
+
+at 80% static, a 90% cache beats batching while out/in < 0.088
+at out/in 0.15, it takes a static share above 0.972`,
         notes: [
-          { t: "p", text: "Caching only wins in a narrow region: a high static share **and** very little output. At 80% static it takes an output/input ratio below about 0.11 before a 90% cache beats batching, and at an output/input ratio of 0.15 it takes a static share above about 0.9. Outside that corner, batching's advantage — that it discounts output too — dominates." },
+          { t: "p", text: "Caching only wins in a narrow region: a high static share **and** very little output. At 80% static it takes an output/input ratio below about 0.09 before a 90% cache beats batching, and at an output/input ratio of 0.15 it takes a static share above 0.97 — the corner is this small because output is priced at five times input, so even a little of it outweighs the whole prefix. Outside that corner, batching's advantage — that it discounts output too — dominates." },
           { t: "p", text: "That corner is not a rare shape, though: it is exactly a RAG endpoint. A large static system prompt and document block, a short question, a short answer. Which is why caching feels essential to teams building retrieval and irrelevant to teams building writing tools, and both are right about their own traffic." },
           { t: "p", text: "The non-cost reason to prefer caching is latency, and it is often the stronger argument. A cache hit skips prefill for the cached prefix, so it cuts time-to-first-token — which 1.12 measured at 936.5 ms for a 513-token prompt and rising linearly. Batching cannot help with latency at all; it makes it a day. So the honest framing is that these are not competing options: batching is for offline work and caching is for interactive work, and the cost comparison only matters when a workload could genuinely be either." }
         ] } },
@@ -292,22 +323,22 @@ output/input 0.15, sweeping the static share:
     /* ============================================================ scenario */
     { t: "callout", kind: "scenario", title: "Incident: the cache hit rate that was zero and nobody noticed",
       body: [
-        { t: "p", text: "**Symptom.** A support-assistant endpoint had been built carefully for prompt caching: a 3,000-token system prompt with product documentation, deliberately placed first, the user's question last. The expected 50% discount on 3,000 of every 3,400 input tokens never appeared on the bill." },
+        { t: "p", text: "**Symptom.** A support-assistant endpoint had been built carefully for prompt caching: a 3,000-token system prompt with product documentation, deliberately placed first, the user's question last. The expected 90% discount on 3,000 of every 3,400 input tokens never appeared on the bill." },
         { t: "p", text: "**What was in the system prompt.** Line two read: `Current time: 2026-09-25T11:24:16Z`. It had been added months earlier so the assistant could answer \"is support open right now\"." },
-        { t: "p", text: "**Mechanism.** The cache matches a prefix. A timestamp with second precision meant the prefix differed on essentially every request, so the match failed at token 12 and the remaining 2,988 tokens of carefully-ordered static content were reprocessed at full price every time. Worse, with Anthropic’s explicit cache each request also paid the roughly 25% write premium for an entry nothing would ever match — so the careful arrangement was costing more than no caching at all." },
-        { t: "p", text: "**Fix.** The timestamp moved to the end of the static block and was rounded to the day, with the current time supplied through a tool call when it was genuinely needed. Hit rate went from zero to above 90%. The real finding was that nobody had been looking: OpenAI reports `usage.prompt_tokens_details.cached_tokens` on every response and it had been zero since the feature shipped. One line in the logging would have caught it on day one, which is 10.6's argument — a metric you do not record cannot tell you anything, however carefully you designed the thing it measures." }
+        { t: "p", text: "**Mechanism.** The cache matches a prefix. A timestamp with second precision meant the prefix differed on essentially every request, so the match failed at token 12 and the remaining 2,988 tokens of carefully-ordered static content were reprocessed at full price every time. Worse, each request also paid the roughly 25% write premium for an entry nothing would ever match — so the careful arrangement was costing more than no caching at all." },
+        { t: "p", text: "**Fix.** The timestamp moved to the end of the static block and was rounded to the day, with the current time supplied through a tool call when it was genuinely needed. Hit rate went from zero to above 90%. The real finding was that nobody had been looking: every provider reports cached tokens in the `usage` block of each response, and the figure had been zero since the feature shipped. One line in the logging would have caught it on day one, which is 10.6's argument — a metric you do not record cannot tell you anything, however carefully you designed the thing it measures." }
       ] }
   ],
 
   takeaways: [
     "The **Batch API** is 50% off both input and output for work that can wait 24 hours. Same models, same quality — the discount is for flexible scheduling.",
     "Batch results come back **unordered, and individual requests can fail** while the batch succeeds. Match on `custom_id`, make it meaningful, and handle the `expired` state.",
-    "**Prompt caching discounts a prefix**: 50% on OpenAI (automatic, 1,024-token minimum), 90% on Anthropic (explicit `cache_control`).",
-    "Because it is a *prefix* match, **one variable token at the front invalidates everything behind it**. Measured cost of that mistake: $125 per 100,000 requests at 50%, $225 at 90%.",
-    "On a 100,000-request workload at 1,200 in / 300 out: baseline **$600**, batch **$300**, OpenAI cache **$475**, Anthropic cache **$375**, both together **$187.50**.",
+    "**Prompt caching discounts a prefix**, and in late 2026 a cached token costs a tenth of the input rate or less on OpenAI, Anthropic and Google — automatic on OpenAI and Gemini, one field on Claude, above a minimum prefix of 512 to 4,096 tokens.",
+    "Because it is a *prefix* match, **one variable token at the front invalidates everything behind it**. Measured cost of that mistake: $180 per 100,000 requests at a 90% discount.",
+    "On a 100,000-request workload at 1,200 in / 300 out: baseline **$540**, batch **$270**, a 90% cache **$360**, both together **$180**.",
     "**Caching is bounded by the input share of your bill.** Batch discounts output too, which is why it wins on output-heavy traffic despite the smaller headline number.",
     "Caching beats batching only in a narrow corner — high static share and very little output — which happens to be exactly the shape of a RAG endpoint.",
-    "On Anthropic a cache write costs about **25% extra**, so it pays for itself on the second hit and is a loss on a genuinely one-off prompt. Caches also expire, so low traffic may never get a second hit.",
+    "A cache write costs about **25% extra** on both OpenAI and Claude, so it pays for itself on the second hit and is a loss on a genuinely one-off prompt. Entries expire — after 5 minutes on Claude's default, 30 on OpenAI's — so low traffic may never get a second hit.",
     "The commonest cache-killer is a **timestamp near the top of the system prompt**. Round it to the day and put it at the end of the static block.",
     "**The non-cost argument for caching is latency**: a hit skips prefill, which 1.12 measured at 936.5 ms for a 513-token prompt. Batching makes latency a day, so the two are not really competing."
   ],
@@ -316,19 +347,19 @@ output/input 0.15, sweeping the static share:
     title: "Check yourself",
     questions: [
       { stem: "Your prompt is `[user question][3,000-token system prompt]`. What is your cache hit rate?",
-        options: ["About 88%, since most of it is static", "Effectively zero: the first token varies", "50%, the OpenAI discount rate", "It depends on the question's length"],
+        options: ["About 88%, since most of it is static", "Effectively zero: the first token varies", "90%, the discount on a cache hit", "It depends on the question's length"],
         answer: 1,
-        why: "A prompt cache matches from the start and stops at the first difference, so a variable user question in front means the match fails immediately and all 3,000 static tokens are reprocessed at full price — and on Anthropic you also pay the roughly 25% write premium for an entry nothing will match. The first option assumes the cache can find static content anywhere in the prompt, which is precisely what a prefix cache cannot do. 50% is the discount on tokens that do hit, not a hit rate. Question length is irrelevant when the mismatch is at token one." },
+        why: "A prompt cache matches from the start and stops at the first difference, so a variable user question in front means the match fails immediately and all 3,000 static tokens are reprocessed at full price — and you also pay the roughly 25% write premium for an entry nothing will match. The first option assumes the cache can find static content anywhere in the prompt, which is precisely what a prefix cache cannot do. 90% is the discount on tokens that do hit, not a hit rate. Question length is irrelevant when the mismatch is at token one." },
 
       { stem: "A workload is 200 input tokens and 2,000 output tokens per request. Which optimisation helps more?",
         options: ["Prompt caching, at 90%", "The Batch API, if it can wait", "Both help equally", "Neither suits output-heavy work"],
         answer: 1,
-        why: "Caching discounts input only, and input is a small fraction of this bill — even a perfect 100% input discount could not touch the 2,000 output tokens that dominate it. Batching takes 50% off both, so on output-heavy traffic it is the only lever of the two that reaches the expensive part. The sweep in the exercise shows caching losing to batching everywhere above an output/input ratio of about 0.11 at an 80% static share. The fourth option is wrong: batching very much applies, provided a day of latency is acceptable." },
+        why: "Caching discounts input only, and input is a small fraction of this bill — even a perfect 100% input discount could not touch the 2,000 output tokens that dominate it. Batching takes 50% off both, so on output-heavy traffic it is the only lever of the two that reaches the expensive part. The sweep in the exercise shows caching losing to batching everywhere above an output/input ratio of about 0.09 at an 80% static share. The fourth option is wrong: batching very much applies, provided a day of latency is acceptable." },
 
       { stem: "Why does a `Current time: 2026-09-25T11:24:16Z` line near the top of a system prompt matter?",
         options: ["It wastes about 12 tokens per call", "It changes each second, breaking the cache", "It confuses the model about the date", "Timestamps are excluded from caching"],
         answer: 1,
-        why: "The cache matches a prefix and stops at the first difference, so a second-precision timestamp at token 12 means the remaining thousands of static tokens miss on every request — plus, on Anthropic, the roughly 25% write premium for a cache entry nothing will ever match. The token cost of the line itself is trivial by comparison. Nothing about timestamps is excluded from caching; the problem is entirely that the value varies. The model is not confused by the date — it is the cache that is." },
+        why: "The cache matches a prefix and stops at the first difference, so a second-precision timestamp at token 12 means the remaining thousands of static tokens miss on every request — plus the roughly 25% write premium for a cache entry nothing will ever match. The token cost of the line itself is trivial by comparison. Nothing about timestamps is excluded from caching; the problem is entirely that the value varies. The model is not confused by the date — it is the cache that is." },
 
       { stem: "Which of these is NOT a good Batch API candidate?",
         options: ["Nightly summarisation of the day's documents", "Backfilling embeddings across a corpus", "A chat assistant's replies", "A scheduled evaluation run over a golden set"],
@@ -339,15 +370,15 @@ output/input 0.15, sweeping the static share:
 
   interview: {
     title: "In an interview",
-    sub: "The Q8 asks about prompt caching. The stronger version of the answer covers why ordering is the whole decision.",
+    sub: "The stronger version of the answer covers why ordering is the whole decision.",
     questions: [
       { level: "core",
         q: "What is prompt caching and how does it work?",
-        strong: "A strong answer says prefix, gives both providers' numbers, and draws the ordering conclusion without being prompted.",
+        strong: "A strong answer says prefix, gives the size of the discount, and draws the ordering conclusion without being prompted.",
         answer: [
-          { t: "p", text: "The server stores the processed state of tokens it has already seen, so a request whose beginning matches a recent one skips reprocessing that part. The discount is on input tokens: 50% on OpenAI, automatic above a 1,024-token minimum, and 90% on Anthropic with explicit `cache_control` markers." },
+          { t: "p", text: "The server stores the processed state of tokens it has already seen, so a request whose beginning matches a recent one skips reprocessing that part. The discount is on input tokens and it is large: a cached token is billed at a tenth of the input rate or less on OpenAI, Anthropic and Google. It is automatic on OpenAI and Gemini and takes one field on Claude, above a minimum prefix that runs from about 500 to 4,000 tokens depending on the model." },
           { t: "p", text: "The word that matters is *prefix*. It matches from the start and stops at the first difference — so ordering is a cost decision. Static content first: system prompt, tool definitions, documents, few-shot examples. Variable content last: the user's query. Put the query at the top and your hit rate is zero, however much static content follows it." },
-          { t: "p", text: "I would also mention Anthropic’s write premium: about 25% extra on the first request, so it pays for itself on the second hit and is a loss on a genuinely one-off prompt. And caches expire after minutes of inactivity, so low-traffic endpoints may never get that second hit." }
+          { t: "p", text: "I would also mention the write premium: about 25% extra on the first request on both OpenAI and Claude, so it pays for itself on the second hit and is a loss on a genuinely one-off prompt. And caches expire after minutes of inactivity, so low-traffic endpoints may never get that second hit." }
         ] },
 
       { level: "core",
@@ -364,18 +395,18 @@ output/input 0.15, sweeping the static share:
         strong: "A strong answer notes they discount different things, gives the traffic shape that decides it, and points out they are not really competitors.",
         answer: [
           { t: "p", text: "They discount different parts of the bill, so the answer falls out of your input/output split. Caching touches input only, and only the static share of it. Batching takes 50% off both. So on output-heavy traffic — a writing tool, a long-form generator — batching is the only one of the two that reaches the expensive part." },
-          { t: "p", text: "I worked the crossover: at an 80% static share, a 90% cache beats batching only below an output/input ratio of about 0.11. That is a narrow corner — but it is exactly the shape of a RAG endpoint, a big static context and a short question and answer. Which is why caching feels essential to retrieval teams and irrelevant to everyone else, and both are right about their own traffic." },
-          { t: "p", text: "The framing I would actually offer is that they are not competing. Batching costs a day of latency; caching *improves* latency, because a hit skips prefill for the cached prefix. So batching is for offline work, caching is for interactive work, and the cost comparison only matters for the rare workload that could genuinely be either — where you can also do both, which on the workload I measured took $600 to $187.50." }
+          { t: "p", text: "I worked the crossover: at an 80% static share, a 90% cache beats batching only below an output/input ratio of about 0.09. That is a narrow corner — but it is exactly the shape of a RAG endpoint, a big static context and a short question and answer. Which is why caching feels essential to retrieval teams and irrelevant to everyone else, and both are right about their own traffic." },
+          { t: "p", text: "The framing I would actually offer is that they are not competing. Batching costs a day of latency; caching *improves* latency, because a hit skips prefill for the cached prefix. So batching is for offline work, caching is for interactive work, and the cost comparison only matters for the rare workload that could genuinely be either — where you can also do both, which on the workload I measured took $540 to $180." }
         ] },
 
       { level: "advanced",
         q: "You designed a prompt for caching and the discount never appeared. How do you debug it?",
         strong: "A strong answer starts with the metric rather than the design, and knows where the metric is.",
         answer: [
-          { t: "p", text: "First question: what is the hit rate? OpenAI reports `usage.prompt_tokens_details.cached_tokens` on every response. If nobody is logging it, that is the finding — a carefully designed cache strategy with no instrumentation is indistinguishable from none at all, and I have seen one sit at zero for months." },
+          { t: "p", text: "First question: what is the hit rate? Every provider reports it in the `usage` block — `input_tokens_details.cached_tokens` on OpenAI's Responses API, `cache_read_input_tokens` on Claude. If nobody is logging it, that is the finding — a carefully designed cache strategy with no instrumentation is indistinguishable from none at all, and I have seen one sit at zero for months." },
           { t: "p", text: "If it is zero, diff two consecutive requests byte for byte and find where they first differ. The usual culprits, in order: a timestamp in the system prompt — a second-precision one kills the cache instantly and is almost always unnecessary at that precision; tool definitions serialised from a dict or set with unstable ordering; a request id or session id that crept into the prefix; and a schema dumped without `sort_keys`." },
           { t: "p", text: "If the prefix is genuinely identical, then it is either below the minimum — 1,024 tokens on OpenAI — or the entries are expiring, which means the endpoint's traffic is too sparse to keep one warm." },
-          { t: "p", text: "The thing worth stressing is what a failed cache costs. On OpenAI it forfeits the discount, because there is no write fee. On Anthropic it is worse than no cache: you still pay the roughly 25% write premium on every request, for an entry nothing will ever match. So a broken caching strategy is actively costing money, not merely failing to save it." }
+          { t: "p", text: "The thing worth stressing is what a failed cache costs. It is worse than no cache: on OpenAI and on Claude you still pay the roughly 25% write premium on every request, for an entry nothing will ever match. So a broken caching strategy is actively costing money, not merely failing to save it." }
         ] }
     ]
   }

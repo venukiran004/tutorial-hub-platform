@@ -755,8 +755,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Multimodal LLMs:** Understand text + images + audio + video (GPT-4V, Gemini)",
-      "**Long context:** 1M+ token context windows (Gemini 1.5)",
+      "**Multimodal LLMs:** Understand text + images + audio + video (GPT-4o and Gemini onwards)",
+      "**Long context:** 1M+ token context windows (first on Gemini 1.5, standard on frontier models by 2026)",
       "**Reasoning:** Chain-of-thought, tree-of-thought, reasoning models",
       "**Efficiency:** Smaller models matching larger ones (Phi, Gemma)",
       "**Agentic AI:** LLMs using tools, planning, executing multi-step tasks",

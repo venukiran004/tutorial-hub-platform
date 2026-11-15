@@ -47,7 +47,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "chunking", text: "Chunking on the AST",
       sub: "And measuring exactly what naive chunking costs" },
 
-    { t: "p", text: "The reference contrasts naive text chunking with AST-based chunking and asserts the first splits mid-function. 5.4 settled on 500-character recursive chunks for prose, so the obvious question is what that setting does to code \u2014 which is a measurement, not an opinion." },
+    { t: "p", text: "The usual argument contrasts naive text chunking with AST-based chunking and asserts the first splits mid-function. 5.4 settled on 500-character recursive chunks for prose, so the obvious question is what that setting does to code \u2014 which is a measurement, not an opinion." },
 
     { t: "code", lang: "python", title: "g66.py \u2014 detecting a split, exactly", code: `# a function occupies characters [a, b) of the source
 a = offs[node.lineno - 1]

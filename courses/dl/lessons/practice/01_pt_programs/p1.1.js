@@ -147,12 +147,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\n# Without BatchNorm\nmodel_no_bn = nn.Sequential(nn.Linear(100, 256), nn.ReLU(), nn.Linear(256, 128), nn.ReLU(), nn.Linear(128, 10))\n\n# With BatchNorm\nmodel_bn = nn.Sequential(\n    nn.Linear(100, 256), nn.BatchNorm1d(256), nn.ReLU(),\n    nn.Linear(256, 128), nn.BatchNorm1d(128), nn.ReLU(),\n    nn.Linear(128, 10)\n)\n\nx = torch.randn(32, 100)\nout_no_bn = model_no_bn(x)\nout_bn = model_bn(x)\nprint(f\"Without BN — Mean: {out_no_bn.mean():.4f}, Std: {out_no_bn.std():.4f}\")\nprint(f\"With BN    — Mean: {out_bn.mean():.4f}, Std: {out_bn.std():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\n\n# Without BatchNorm\nmodel_no_bn = nn.Sequential(nn.Linear(100, 256), nn.ReLU(), nn.Linear(256, 128), nn.ReLU(), nn.Linear(128, 10))\n\n# With BatchNorm\nmodel_bn = nn.Sequential(\n    nn.Linear(100, 256), nn.BatchNorm1d(256), nn.ReLU(),\n    nn.Linear(256, 128), nn.BatchNorm1d(128), nn.ReLU(),\n    nn.Linear(128, 10)\n)\n\nx = torch.randn(32, 100)\nout_no_bn = model_no_bn(x)\nout_bn = model_bn(x)\nprint(f\"Without BN — Mean: {out_no_bn.mean():.4f}, Std: {out_no_bn.std():.4f}\")\nprint(f\"With BN    — Mean: {out_bn.mean():.4f}, Std: {out_bn.std():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Without BN — Mean: -0.0062, Std: 0.0908\nWith BN    — Mean: 0.1210, Std: 0.3467"
+     "text": "Without BN — Mean: -0.0410, Std: 0.1138\nWith BN    — Mean: 0.0035, Std: 0.4521"
     }
    ],
    "kind": "program"
@@ -165,12 +165,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\nmodel = nn.Sequential(\n    nn.Linear(10, 64), nn.ReLU(), nn.Dropout(0.5),\n    nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3),\n    nn.Linear(32, 1)\n)\nx = torch.randn(5, 10)\n\nmodel.train()\nout_train = model(x)\nprint(f\"Train mode output: {out_train.flatten()}\")\n\nmodel.eval()\nout_eval = model(x)\nprint(f\"Eval mode output: {out_eval.flatten()}\")\n# Eval mode: No dropout, deterministic output"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\n\nmodel = nn.Sequential(\n    nn.Linear(10, 64), nn.ReLU(), nn.Dropout(0.5),\n    nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3),\n    nn.Linear(32, 1)\n)\nx = torch.randn(5, 10)\n\nmodel.train()\nout_train = model(x)\nprint(f\"Train mode output: {out_train.flatten()}\")\n\nmodel.eval()\nout_eval = model(x)\nprint(f\"Eval mode output: {out_eval.flatten()}\")\n# Eval mode: No dropout, deterministic output"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Train mode output: tensor([ 0.1155,  0.0544, -0.0496,  0.2441,  0.0806], grad_fn=<ViewBackward0>)\nEval mode output: tensor([ 0.0704,  0.1579, -0.0205,  0.2373, -0.1730], grad_fn=<ViewBackward0>)"
+     "text": "Train mode output: tensor([-0.2351, -0.1149, -0.3739, -0.1640, -0.2229], grad_fn=<ViewBackward0>)\nEval mode output: tensor([-0.2028, -0.3335, -0.2867, -0.1991, -0.2384], grad_fn=<ViewBackward0>)"
     }
    ],
    "kind": "program"
@@ -201,12 +201,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\nclass Autoencoder(nn.Module):\n    def __init__(self, input_dim=784, latent_dim=32):\n        super().__init__()\n        self.encoder = nn.Sequential(\n            nn.Linear(input_dim, 256), nn.ReLU(),\n            nn.Linear(256, 64), nn.ReLU(),\n            nn.Linear(64, latent_dim)\n        )\n        self.decoder = nn.Sequential(\n            nn.Linear(latent_dim, 64), nn.ReLU(),\n            nn.Linear(64, 256), nn.ReLU(),\n            nn.Linear(256, input_dim), nn.Sigmoid()\n        )\n    def forward(self, x):\n        z = self.encoder(x)\n        return self.decoder(z), z\n\nae = Autoencoder()\nx = torch.randn(8, 784)\nreconstructed, latent = ae(x)\nprint(f\"Input: {x.shape}, Latent: {latent.shape}, Reconstructed: {reconstructed.shape}\")\nprint(f\"Reconstruction error: {nn.MSELoss()(reconstructed, x).item():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\n\nclass Autoencoder(nn.Module):\n    def __init__(self, input_dim=784, latent_dim=32):\n        super().__init__()\n        self.encoder = nn.Sequential(\n            nn.Linear(input_dim, 256), nn.ReLU(),\n            nn.Linear(256, 64), nn.ReLU(),\n            nn.Linear(64, latent_dim)\n        )\n        self.decoder = nn.Sequential(\n            nn.Linear(latent_dim, 64), nn.ReLU(),\n            nn.Linear(64, 256), nn.ReLU(),\n            nn.Linear(256, input_dim), nn.Sigmoid()\n        )\n    def forward(self, x):\n        z = self.encoder(x)\n        return self.decoder(z), z\n\nae = Autoencoder()\nx = torch.randn(8, 784)\nreconstructed, latent = ae(x)\nprint(f\"Input: {x.shape}, Latent: {latent.shape}, Reconstructed: {reconstructed.shape}\")\nprint(f\"Reconstruction error: {nn.MSELoss()(reconstructed, x).item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Input: torch.Size([8, 784]), Latent: torch.Size([8, 32]), Reconstructed: torch.Size([8, 784])\nReconstruction error: 1.2350"
+     "text": "Input: torch.Size([8, 784]), Latent: torch.Size([8, 32]), Reconstructed: torch.Size([8, 784])\nReconstruction error: 1.2264"
     }
    ],
    "kind": "program"
@@ -291,12 +291,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\ndef init_weights(module):\n    if isinstance(module, nn.Linear):\n        nn.init.kaiming_normal_(module.weight, mode='fan_out', nonlinearity='relu')\n        if module.bias is not None:\n            nn.init.zeros_(module.bias)\n    elif isinstance(module, nn.Conv2d):\n        nn.init.kaiming_normal_(module.weight, mode='fan_out', nonlinearity='relu')\n\nmodel = nn.Sequential(nn.Linear(100, 256), nn.ReLU(), nn.Linear(256, 10))\nmodel.apply(init_weights)\nfor name, param in model.named_parameters():\n    if 'weight' in name:\n        print(f\"{name}: mean={param.data.mean():.4f}, std={param.data.std():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\n\ndef init_weights(module):\n    if isinstance(module, nn.Linear):\n        nn.init.kaiming_normal_(module.weight, mode='fan_out', nonlinearity='relu')\n        if module.bias is not None:\n            nn.init.zeros_(module.bias)\n    elif isinstance(module, nn.Conv2d):\n        nn.init.kaiming_normal_(module.weight, mode='fan_out', nonlinearity='relu')\n\nmodel = nn.Sequential(nn.Linear(100, 256), nn.ReLU(), nn.Linear(256, 10))\nmodel.apply(init_weights)\nfor name, param in model.named_parameters():\n    if 'weight' in name:\n        print(f\"{name}: mean={param.data.mean():.4f}, std={param.data.std():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "0.weight: mean=0.0000, std=0.0879\n2.weight: mean=0.0034, std=0.4433"
+     "text": "0.weight: mean=-0.0000, std=0.0881\n2.weight: mean=-0.0026, std=0.4518"
     }
    ],
    "kind": "program"
@@ -309,12 +309,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\nmodel = nn.Linear(10, 1)\nx = torch.randn(5, 10) * 100  # Large inputs\ny = torch.randn(5, 1)\nloss = nn.MSELoss()(model(x), y)\nloss.backward()\n\n# Before clipping\ngrad_norm_before = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=float('inf'))\n\n# Apply clipping\nloss = nn.MSELoss()(model(x), y)\nmodel.zero_grad()\nloss.backward()\ntorch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)   # returns the norm BEFORE clipping\ngrad_norm_after = torch.cat([p.grad.flatten() for p in model.parameters()]).norm()\n\nprint(f\"Grad norm before clip: {grad_norm_before:.4f}\")\nprint(f\"Grad norm after clip: {grad_norm_after:.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\n\nmodel = nn.Linear(10, 1)\nx = torch.randn(5, 10) * 100  # Large inputs\ny = torch.randn(5, 1)\nloss = nn.MSELoss()(model(x), y)\nloss.backward()\n\n# Before clipping\ngrad_norm_before = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=float('inf'))\n\n# Apply clipping\nloss = nn.MSELoss()(model(x), y)\nmodel.zero_grad()\nloss.backward()\ntorch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)   # returns the norm BEFORE clipping\ngrad_norm_after = torch.cat([p.grad.flatten() for p in model.parameters()]).norm()\n\nprint(f\"Grad norm before clip: {grad_norm_before:.4f}\")\nprint(f\"Grad norm after clip: {grad_norm_after:.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Grad norm before clip: 16486.7617\nGrad norm after clip: 1.0000"
+     "text": "Grad norm before clip: 12438.8213\nGrad norm after clip: 1.0000"
     }
    ],
    "kind": "program"
@@ -327,12 +327,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\nmodel = nn.Sequential(nn.Linear(100, 256), nn.ReLU(), nn.Linear(256, 10))\noptimizer = torch.optim.Adam(model.parameters())\nscaler = torch.amp.GradScaler('cuda') if torch.cuda.is_available() else None\n\nx = torch.randn(32, 100)\ny = torch.randint(0, 10, (32,))\ncriterion = nn.CrossEntropyLoss()\n\n# Simulated mixed precision step\ndevice = 'cuda' if torch.cuda.is_available() else 'cpu'\nmodel = model.to(device)\nx, y = x.to(device), y.to(device)\n\nif device == 'cuda':\n    with torch.amp.autocast('cuda'):\n        out = model(x)\n        loss = criterion(out, y)\n    scaler.scale(loss).backward()\n    scaler.step(optimizer)\n    scaler.update()\nelse:\n    out = model(x)\n    loss = criterion(out, y)\n    loss.backward()\n    optimizer.step()\nprint(f\"Loss: {loss.item():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\n\nmodel = nn.Sequential(nn.Linear(100, 256), nn.ReLU(), nn.Linear(256, 10))\noptimizer = torch.optim.Adam(model.parameters())\nscaler = torch.amp.GradScaler('cuda') if torch.cuda.is_available() else None\n\nx = torch.randn(32, 100)\ny = torch.randint(0, 10, (32,))\ncriterion = nn.CrossEntropyLoss()\n\n# Simulated mixed precision step\ndevice = 'cuda' if torch.cuda.is_available() else 'cpu'\nmodel = model.to(device)\nx, y = x.to(device), y.to(device)\n\nif device == 'cuda':\n    with torch.amp.autocast('cuda'):\n        out = model(x)\n        loss = criterion(out, y)\n    scaler.scale(loss).backward()\n    scaler.step(optimizer)\n    scaler.update()\nelse:\n    out = model(x)\n    loss = criterion(out, y)\n    loss.backward()\n    optimizer.step()\nprint(f\"Loss: {loss.item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Loss: 2.2651"
+     "text": "Loss: 2.2997"
     }
    ],
    "kind": "program"
@@ -417,12 +417,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\nclass LabelSmoothingLoss(nn.Module):\n    def __init__(self, num_classes, smoothing=0.1):\n        super().__init__()\n        self.smoothing = smoothing\n        self.num_classes = num_classes\n    \n    def forward(self, pred, target):\n        confidence = 1.0 - self.smoothing\n        smooth_val = self.smoothing / (self.num_classes - 1)\n        true_dist = torch.full_like(pred, smooth_val)\n        true_dist.scatter_(1, target.unsqueeze(1), confidence)\n        return (-true_dist * torch.log_softmax(pred, dim=1)).sum(dim=1).mean()\n\ncriterion = LabelSmoothingLoss(num_classes=10, smoothing=0.1)\nlogits = torch.randn(8, 10)\ntargets = torch.randint(0, 10, (8,))\nloss = criterion(logits, targets)\nprint(f\"Label smoothing loss: {loss.item():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\n\nclass LabelSmoothingLoss(nn.Module):\n    def __init__(self, num_classes, smoothing=0.1):\n        super().__init__()\n        self.smoothing = smoothing\n        self.num_classes = num_classes\n    \n    def forward(self, pred, target):\n        confidence = 1.0 - self.smoothing\n        smooth_val = self.smoothing / (self.num_classes - 1)\n        true_dist = torch.full_like(pred, smooth_val)\n        true_dist.scatter_(1, target.unsqueeze(1), confidence)\n        return (-true_dist * torch.log_softmax(pred, dim=1)).sum(dim=1).mean()\n\ncriterion = LabelSmoothingLoss(num_classes=10, smoothing=0.1)\nlogits = torch.randn(8, 10)\ntargets = torch.randint(0, 10, (8,))\nloss = criterion(logits, targets)\nprint(f\"Label smoothing loss: {loss.item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Label smoothing loss: 2.7455"
+     "text": "Label smoothing loss: 2.4610"
     }
    ],
    "kind": "program"
@@ -435,12 +435,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\ncos_sim = nn.CosineSimilarity(dim=1)\na = torch.randn(5, 128)\nb = torch.randn(5, 128)\nsimilarity = cos_sim(a, b)\nprint(f\"Cosine similarities: {similarity}\")\n\n# Contrastive-like: similar pairs should have high cosine sim\npositive_pair = (torch.randn(1, 128), torch.randn(1, 128) + 0.1)\nnegative_pair = (torch.randn(1, 128), torch.randn(1, 128) * -1)\nprint(f\"Positive: {cos_sim(*positive_pair).item():.4f}\")\nprint(f\"Negative: {cos_sim(*negative_pair).item():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\ntorch.manual_seed(0)\n\ncos_sim = nn.CosineSimilarity(dim=1)\na = torch.randn(5, 128)\nb = torch.randn(5, 128)\nsimilarity = cos_sim(a, b)\nprint(f\"Cosine similarities: {similarity}\")\n\n# Contrastive-like: similar pairs should have high cosine sim\npositive_pair = (torch.randn(1, 128), torch.randn(1, 128) + 0.1)\nnegative_pair = (torch.randn(1, 128), torch.randn(1, 128) * -1)\nprint(f\"Positive: {cos_sim(*positive_pair).item():.4f}\")\nprint(f\"Negative: {cos_sim(*negative_pair).item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Cosine similarities: tensor([ 0.1029, -0.0412, -0.1402, -0.0378, -0.1580])\nPositive: -0.0560\nNegative: 0.1261"
+     "text": "Cosine similarities: tensor([-0.0272, -0.0234, -0.0109,  0.1306,  0.0077])\nPositive: 0.1286\nNegative: 0.0162"
     }
    ],
    "kind": "program"
@@ -453,12 +453,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\ndef focal_loss(pred, target, gamma=2.0, alpha=0.25):\n    ce = F.cross_entropy(pred, target, reduction='none')\n    pt = torch.exp(-ce)\n    loss = alpha * (1 - pt) ** gamma * ce\n    return loss.mean()\n\nlogits = torch.randn(16, 5)\ntargets = torch.randint(0, 5, (16,))\nfl = focal_loss(logits, targets)\nce = F.cross_entropy(logits, targets)\nprint(f\"Focal Loss: {fl.item():.4f}\")\nprint(f\"Cross Entropy: {ce.item():.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\nimport torch.nn.functional as F\ntorch.manual_seed(0)\n\ndef focal_loss(pred, target, gamma=2.0, alpha=0.25):\n    ce = F.cross_entropy(pred, target, reduction='none')\n    pt = torch.exp(-ce)\n    loss = alpha * (1 - pt) ** gamma * ce\n    return loss.mean()\n\nlogits = torch.randn(16, 5)\ntargets = torch.randint(0, 5, (16,))\nfl = focal_loss(logits, targets)\nce = F.cross_entropy(logits, targets)\nprint(f\"Focal Loss: {fl.item():.4f}\")\nprint(f\"Cross Entropy: {ce.item():.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Focal Loss: 0.4345\nCross Entropy: 2.1700"
+     "text": "Focal Loss: 0.3563\nCross Entropy: 1.8916"
     }
    ],
    "kind": "program"

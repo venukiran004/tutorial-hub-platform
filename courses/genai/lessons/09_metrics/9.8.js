@@ -203,7 +203,7 @@ SAME ranking, SAME labels, two standard conventions: 0.9724 vs 0.9575`,
       body: [
         { t: "p", text: "Q4 has four relevant chunks and only three in the top 10, so recall@10 is 0.7500 and D10 is simply absent. No reordering of the returned list can produce a chunk that was never returned." },
         { t: "p", text: "That is the distinction between a ranking fix and a retrieval fix, visible in one row. A reranker helps Q3 and does nothing for Q4; better embeddings, chunking or hybrid search help Q4." },
-        { t: "p", text: "6.1 measured the hybrid version of that fix: adding BM25 and reciprocal rank fusion took recall@5 from 95% to 100%, which is exactly the Q4-shaped problem being solved by changing what gets retrieved rather than how it is ordered." }
+        { t: "p", text: "6.1 measured the hybrid version of that fix: adding BM25 and reciprocal rank fusion took recall@5 from 95% to 100%, which is exactly that kind of problem being solved by changing what gets retrieved rather than how it is ordered." }
       ] },
 
     { t: "exercise", kind: "build", title: "Build the scoreboard for your own retriever", difficulty: "advanced", minutes: 40,

@@ -51,7 +51,7 @@ python -c "import importlib.metadata as m; print(m.version('google-adk'))"`,
       ] } },
 
     { t: "code", lang: "bash", title: "adk create, and what it writes",
-      code: `adk create --model gemini-2.5-flash --api_key YOUR_KEY my_app`,
+      code: `adk create --model gemini-3.8-flash --api_key YOUR_KEY my_app`,
       caption: "The generator asks nothing else; the flags it accepts are --model, --api_key, --project and --region (the last two for the Vertex AI backend). It prints a warning that the key lands in .env." },
 
     { t: "out", text: `my_app/.env
@@ -65,7 +65,7 @@ my_app/__init__.py
       code: `from google.adk.agents.llm_agent import Agent
 
 root_agent = Agent(
-    model='gemini-2.5-flash',
+    model='gemini-3.8-flash',
     name='root_agent',
     description='A helpful assistant for user questions.',
     instruction='Answer user questions to the best of your knowledge',

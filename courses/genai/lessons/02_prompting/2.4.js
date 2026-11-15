@@ -178,7 +178,7 @@ for p in (0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9):
     { t: "callout", kind: "good", title: "Use the agreement fraction, not just the winner",
       body: [
         { t: "p", text: "An answer that won 5 of 5 and one that won 2 of 5 are both \"the majority answer\", and treating them the same throws away the most useful thing self-consistency produces." },
-        { t: "p", text: "Unanimous agreement is a reasonable proxy for the model being confident in a way that a single call's logprob is not (1.1) — it is a spread over independent samples rather than a number conditional on your sampling settings. A bare plurality is a signal that the task is at the edge of the model's ability on this input." },
+        { t: "p", text: "Unanimous agreement is a reasonable proxy for the model being confident in a way that a single call's logprob is not (1.1) — it is a spread over independent samples of the whole answer rather than the probability of one token. A bare plurality is a signal that the task is at the edge of the model's ability on this input." },
         { t: "p", text: "The practical use is routing: accept unanimous answers, escalate low-agreement ones to a stronger model or a human. That converts a technique that improves average accuracy into one that also tells you which cases to distrust, and it is the same idea as the escalation rule in 11.9." }
       ] },
 
@@ -353,7 +353,7 @@ base accuracy 0.45
         answer: [
           { t: "p", text: "Run the same chain-of-thought prompt N times at a temperature above zero, extract the final answer from each, return the most common one. The lift is exactly binomial — from a per-sample accuracy of 0.70, twenty-one samples give 0.9736." },
           { t: "p", text: "The condition is the part worth leading with, because it is usually omitted: it only works above 50% per-sample accuracy. Voting amplifies whichever answer the model produces most often, so below chance it amplifies the systematic error. At p=0.30 with 21 samples you get 0.0264 — eleven times worse than a single call, for twenty-one times the cost." },
-          { t: "p", text: "And I would mention the thing most implementations discard: the agreement fraction. Five of five and three of five are both \"the majority answer\", and the difference is a better confidence signal than a logprob, because it is a spread over independent samples rather than a number conditional on your sampling settings." }
+          { t: "p", text: "And I would mention the thing most implementations discard: the agreement fraction. Five of five and three of five are both \"the majority answer\", and the difference is a better confidence signal than a logprob, because it is a spread over independent samples of the whole answer rather than the probability of one token." }
         ] },
 
       { level: "advanced",

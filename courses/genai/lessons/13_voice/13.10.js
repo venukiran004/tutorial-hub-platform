@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "13.10",
 
-  lede: "A tool call in a chat agent is a spinner. In a voice agent it is silence, and silence in a conversation means something \u2014 that you did not hear, or are confused, or have hung up. The mechanism that fixes it is almost free: say something canned first, then make the call. A filler does not hide the latency, it **splits one long silence into two short ones** \u2014 and worked through the real timeline, a 900 ms filler keeps every silence inside the responsive band for tool calls up to **800 ms**, where without it even a zero-latency tool leaves a 1,650 ms wait. It is commonly said the filler arrives at 300 ms. From end of speech it is **760 ms**, because the filler cannot start before the endpointer commits \u2014 the same measurement-boundary slip 13.3 warns about, in the claim.",
+  lede: "A tool call in a chat agent is a spinner. In a voice agent it is silence, and silence in a conversation means something \u2014 that you did not hear, or are confused, or have hung up. The mechanism that fixes it is almost free: say something canned first, then make the call. A filler does not hide the latency, it **splits one long silence into two short ones** \u2014 and worked through the real timeline, a 900 ms filler keeps every silence inside the responsive band for tool calls up to **800 ms**, where without it even a zero-latency tool leaves a 1,650 ms wait. The filler is commonly said to arrive at 300 ms. From end of speech it is **760 ms**, because the filler cannot start before the endpointer commits \u2014 the same measurement-boundary slip 13.3 warns about, in the claim.",
 
   objectives: [
     "Explain why a tool call is a different problem in voice than in chat",
@@ -210,7 +210,7 @@ EC.receiveLesson({
         answer: 1,
         why: "The tool runs underneath the filler, so nothing is removed from the critical path and the response arrives at the same moment. What changes is the distribution of silence: instead of one 2,550 ms gap in the band where users say \u201chello?\u201d, there is a 760 ms gap, speech, then an 890 ms gap. Since perception is banded rather than linear, that is a completely different experience for the same duration." },
 
-      { stem: "It is commonly said a filler arrives at 300 ms. Measured from end of speech with a fixed 700 ms endpointer, what is it?",
+      { stem: "A filler is commonly said to arrive at 300 ms. Measured from end of speech with a fixed 700 ms endpointer, what is it?",
         options: ["300 ms, as it needs no model call", "760 ms, after the endpointer commits", "1,650 ms, like any other first audio", "480 ms, counting canned synthesis"],
         answer: 1,
         why: "A filler skips prefill and generation, and pre-rendered audio skips synthesis too \u2014 but it still cannot be spoken before the system has decided the user stopped talking, which is the 700 ms threshold, plus 60 ms of playout. This is the same instrumentation error 13.3 warns about, now inside the module's own claim. The 300 ms figure is reachable, but only with the semantic endpointer from 13.5: a 300 ms backstop plus playout gives 360 ms." },

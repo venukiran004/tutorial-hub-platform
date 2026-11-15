@@ -282,7 +282,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) PyTorch Profiler: `torch.profiler` shows GPU vs. CPU timeline, (2) common causes: (a) data loading bottleneck: CPU can't feed GPU fast enough → increase `num_workers`, use persistent workers, (b) small batch size: GPU underutilized → increase batch size, (c) CPU preprocessing: move augmentations to GPU (kornia, NVIDIA DALI), (d) synchronisation: frequent CPU-GPU transfers → minimise `.item()`, `.numpy()` calls, (e) memory transfers: use pinned memory, (3) mixed precision: `torch.cuda.amp` → faster + fits larger batches, (4) data format: use optimised loaders (WebDataset, FFCV)."
+     "text": "**Answer:** (1) PyTorch Profiler: `torch.profiler` shows GPU vs. CPU timeline, (2) common causes: (a) data loading bottleneck: CPU can't feed GPU fast enough → increase `num_workers`, use persistent workers, (b) small batch size: GPU underutilized → increase batch size, (c) CPU preprocessing: move augmentations to GPU (kornia, NVIDIA DALI), (d) synchronisation: frequent CPU-GPU transfers → minimise `.item()`, `.numpy()` calls, (e) memory transfers: use pinned memory, (3) mixed precision: `torch.amp` → faster + fits larger batches, (4) data format: use optimised loaders (WebDataset, FFCV)."
     }
    ],
    "kind": ""

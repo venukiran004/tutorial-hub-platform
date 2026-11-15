@@ -26,8 +26,8 @@ EC.receiveLesson({
 
     { t: "code", lang: "yaml", title: "prompts/support_v3.yaml", code: `id: support_assistant
 version: 3
-model: claude-opus-4-8
-temperature: 0.2
+model: claude-opus-5-5
+effort: medium
 template: |
   You are a support assistant for Acme.
   Answer ONLY from the provided context; if absent, say you don't know.
@@ -37,7 +37,7 @@ changelog:
   - v3: added abstention rule (cut hallucinations on edge cases)
   - v2: tightened tone`,
       hl: [3, 4, 11],
-      caption: "The model and temperature live **in** the prompt artefact, not beside it. That is the load-bearing detail." },
+      caption: "The model and its settings live **in** the prompt artefact, not beside it. That is the load-bearing detail." },
 
     { t: "callout", kind: "insight", title: "The model belongs in the prompt file because the prompt is coupled to it",
       body: [

@@ -45,7 +45,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "1.5 introduced `finish_reason` for the truncation case. It is worth returning to properly, because it is the field that distinguishes a complete answer from a partial one, a tool request from a text reply, and a blocked response from a short one — and the text alone distinguishes none of them." },
+    { t: "p", text: "1.5 introduced `finish_reason` for the truncation case. It is worth returning to properly, because it is the field that distinguishes a complete answer from a partial one, a tool request from a text reply, and a blocked response from a short one — and the text alone distinguishes none of them. The name and the values are the Chat Completions API's, which this lesson uses throughout because open-weight servers speak it too; 1.5's table gives the same four outcomes under the names the Responses API, Claude and Gemini use, and every branch below has its equivalent on each." },
 
     { t: "code", lang: "python", title: "handle.py — every branch", code: `def handle(response):
     choice = response.choices[0]
@@ -104,7 +104,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "metadata.py", code: `usage = response.usage
+    { t: "code", lang: "python", title: "metadata.py", code: `usage = response.usage                   # Chat Completions names; the table below has the rest
 # prompt_tokens, completion_tokens, total_tokens
 # plus, on reasoning models:  completion_tokens_details.reasoning_tokens   (1.10)
 # plus, with prompt caching:  prompt_tokens_details.cached_tokens          (1.13)
@@ -116,7 +116,24 @@ EC.receiveLesson({
 #   x-ratelimit-remaining-tokens    29500
 #   x-ratelimit-reset-requests      6ms      when the request budget refills
 #   retry-after                     2        seconds, sent with a 429`,
-      caption: "Both limits apply at once, and which one binds depends on your traffic: many small requests exhaust RPM, a few large ones exhaust TPM. A client that only watches one of them will be surprised by the other." },
+      caption: "Both limits apply at once, and which one binds depends on your traffic: many small requests exhaust RPM, a few large ones exhaust TPM. A client that only watches one of them will be surprised by the other. The header names are OpenAI's. Claude sends the same information as `anthropic-ratelimit-requests-remaining`, `anthropic-ratelimit-input-tokens-remaining` and `anthropic-ratelimit-output-tokens-remaining`, limiting input and output tokens separately; `retry-after` is common to both." },
+
+    { t: "table",
+      head: ["The count", "Chat Completions", "OpenAI · Responses", "Anthropic · Messages", "Gemini"],
+      rows: [
+        ["Input", "`prompt_tokens`", "`input_tokens`", "`input_tokens`", "`prompt_token_count`"],
+        ["Output", "`completion_tokens`", "`output_tokens`", "`output_tokens`", "`candidates_token_count`"],
+        ["Reasoning", "`completion_tokens_details.reasoning_tokens`", "`output_tokens_details.reasoning_tokens`", "inside `output_tokens`, not broken out", "`thoughts_token_count`"],
+        ["Read from cache", "`prompt_tokens_details.cached_tokens`", "`input_tokens_details.cached_tokens`", "`cache_read_input_tokens`", "`cached_content_token_count`"]
+      ],
+      caption: "The same four numbers under each API's names. A cost logger that reads `prompt_tokens` from a Responses or Claude reply raises an `AttributeError` at best and records nothing at worst, so map them in one place." },
+
+    { t: "callout", kind: "warn", title: "The same word, counted differently",
+      body: [
+        { t: "p", text: "The names are the easy half. The counts do not nest the same way, and that is what breaks a cost reconciliation." },
+        { t: "p", text: "**Cached input.** On OpenAI and Gemini the cached count is *part of* the input count. On Claude, `input_tokens` *excludes* it: the full prompt is `input_tokens` plus `cache_read_input_tokens` plus `cache_creation_input_tokens`. A formula ported from one to the other is wrong by the whole cached prefix — which, on a well-cached workload, is most of the prompt." },
+        { t: "p", text: "**Reasoning.** On OpenAI the reasoning count is part of the output count, and on Claude it is inside `output_tokens` with no breakdown. On Gemini `thoughts_token_count` is reported beside `candidates_token_count` rather than inside it, so the billed output is the two added together." }
+      ] },
 
     { t: "p", text: "The two fields do different jobs and should be used differently. **`usage` is an audit record** — it arrives after the work is done, so it cannot prevent anything, but it is what reconciles your cost model against the invoice (1.14). **The rate-limit headers are a control signal** — they arrive on every response and tell you how much headroom is left, which is enough to slow down *before* a 429 rather than after." },
 
@@ -131,7 +148,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "backoff", text: "Exponential backoff, and why jitter is mandatory",
       sub: "Doubling the delay is half the answer" },
 
-    { t: "p", text: "The standard retry is to wait `base × 2^attempt`, capped. The worked example uses `tenacity` with `wait_exponential(min=1, max=60)`, which produces this schedule:" },
+    { t: "p", text: "The standard retry is to wait `base × 2^attempt`, capped at a maximum. With a base of one second and a cap of sixty, that produces this schedule:" },
 
     { t: "code", lang: "python", title: "g112.py — with and without jitter", code: `def backoff(attempt, base=1.0, cap=60.0, jitter=False):
     raw = min(cap, base * (2 ** attempt))
@@ -197,12 +214,18 @@ for a in range(7):
        reraise=True)
 def call(**kw):
     return client.chat.completions.create(**kw)`,
-      caption: "`retry_if_exception_type` is the part that encodes the table above — the retryable set, and nothing else. A policy written without it retries the 400s too, which the table says will fail identically every time." },
+      caption: "`retry_if_exception_type` is the part that encodes the table in the next section — the retryable set, and nothing else. A policy written without it retries the 400s too, which that table says will fail identically every time." },
+
+    { t: "callout", kind: "trap", title: "The SDK is already retrying",
+      body: [
+        { t: "p", text: "The official OpenAI and Anthropic Python clients retry on their own. `max_retries` defaults to 2, on connection errors, 408, 409, 429 and every 5xx, with backoff, jitter and `retry-after` honoured. So the decorator above wrapped around a default client is not five attempts: each of its five calls can be three requests, which is up to fifteen, on two nested schedules that know nothing about each other." },
+        { t: "p", text: "Choose one layer. Either build the client with `max_retries=0` and own the policy, which is what the rest of this lesson assumes, or drop the wrapper and set `max_retries` on the client. Look at `timeout` while you are there: the default is ten minutes, which no user-facing request should be allowed to wait." }
+      ] },
 
     { t: "callout", kind: "insight", title: "The retry budget is a latency decision",
       body: [
-        { t: "p", text: "Measured on the same schedule: 3 attempts is a worst case of 7.0 seconds before failing, 5 attempts is 31.0 seconds, and 7 attempts is 123.0 seconds. Those are user-visible waits on a synchronous request." },
-        { t: "p", text: "So the number of attempts is not a resilience setting to be maximised — it is a latency budget. A user-facing endpoint with a 10-second timeout can afford three attempts. A background job can afford seven, and should, because failing a batch item is more expensive there than waiting." },
+        { t: "p", text: "Add up the waits on the schedule above: three retries is a worst case of 7.0 seconds of waiting before the call fails, five retries is 31.0 seconds, and seven is 123.0 seconds. Those are user-visible waits on a synchronous request, before the requests themselves are counted." },
+        { t: "p", text: "So the number of retries is not a resilience setting to be maximised — it is a latency budget. A user-facing endpoint with a 10-second timeout can afford three. A background job can afford seven, and should, because failing a batch item is more expensive there than waiting." },
         { t: "p", text: "Set it from the timeout you have, and make sure the retry budget is smaller than it. A retry loop that outlives its caller's timeout is doing work nobody will receive." }
       ] },
 
@@ -210,7 +233,7 @@ def call(**kw):
     { t: "h2", n: "04", id: "what-to-retry", text: "What is worth retrying",
       sub: "Some errors will never succeed, however patient you are" },
 
-    {"kind": "matrix", "title": "What is worth retrying, and what retrying only costs you", "caption": "The dividing line is whether the same request could plausibly succeed. A 429 or a 5xx is transient, so backoff is exactly the right tool — and honour `retry-after` when it is present rather than guessing. The 'no' rows are deterministic: a malformed request will be malformed again, a blocked input will be blocked again, and an over-long prompt needs fixing rather than resending. **A timeout is the hard one**, because the request may already have been processed.", "cols": ["Retry?", "Notes"], "rows": ["429 rate limit", "500 / 502 / 503", "Timeout or reset", "400 bad request", "401 / 403", "404 unknown model", "content_filter", "Context length exceeded"], "cells": [[{"text": "yes", "tone": "good"}, "honour retry-after if present"], [{"text": "yes", "tone": "good"}, "transient; backoff applies"], [{"text": "yes, carefully", "tone": "warn"}, "it may already have run"], [{"text": "no", "tone": "crit"}, "it will be malformed again"], [{"text": "no", "tone": "crit"}, "credentials; retrying wastes time"], [{"text": "no", "tone": "crit"}, "often a deprecation - fail loudly"], [{"text": "no", "tone": "crit"}, "identical input, identical block"], [{"text": "no", "tone": "crit"}, "fix the prompt, do not resend it"]], "t": "diagram", "id": "dg-1_16-04-2"},
+    {"kind": "matrix", "title": "What is worth retrying, and what retrying only costs you", "caption": "The dividing line is whether the same request could plausibly succeed. A 429 or a 5xx is transient, so backoff is exactly the right tool — and honour `retry-after` when it is present rather than guessing. The 'no' rows are deterministic: a malformed request will be malformed again, a blocked input will be blocked again, and an over-long prompt needs fixing rather than resending. **A timeout is the hard one**, because the request may already have been processed.", "cols": ["Retry?", "Notes"], "rows": ["429 rate limit", "500 / 502 / 503 / 529", "Timeout or reset", "400 bad request", "401 / 403", "404 unknown model", "content_filter", "Context length exceeded"], "cells": [[{"text": "yes", "tone": "good"}, "honour retry-after if present"], [{"text": "yes", "tone": "good"}, "transient; backoff applies"], [{"text": "yes, carefully", "tone": "warn"}, "it may already have run"], [{"text": "no", "tone": "crit"}, "it will be malformed again"], [{"text": "no", "tone": "crit"}, "credentials; retrying wastes time"], [{"text": "no", "tone": "crit"}, "often a deprecation - fail loudly"], [{"text": "no", "tone": "crit"}, "identical input, identical block"], [{"text": "no", "tone": "crit"}, "fix the prompt, do not resend it"]], "t": "diagram", "id": "dg-1_16-04-2"},
 
 
 
@@ -240,7 +263,7 @@ def call(**kw):
       head: ["Error", "Retry?", "Notes"],
       rows: [
         ["`429` rate limit", "**Yes**", "Honour `retry-after` if present; this is what backoff is for"],
-        ["`500` / `502` / `503`", "**Yes**", "Transient server-side; backoff applies"],
+        ["`500` / `502` / `503`, and Claude's `529`", "**Yes**", "Transient or overloaded server-side; backoff applies"],
         ["Timeout / connection reset", "**Yes**, carefully", "The request may have been processed — see below"],
         ["`400` bad request", "No", "The request is malformed; it will be malformed again"],
         ["`401` / `403`", "No", "Credentials or permissions; retrying wastes time"],
@@ -256,6 +279,14 @@ def call(**kw):
 
 RETRYABLE = (RateLimitError, APIConnectionError, InternalServerError, APITimeoutError)
 
+def server_wait(e):
+    """Seconds from the retry-after header, when the error carries a response."""
+    headers = getattr(getattr(e, "response", None), "headers", {})
+    try:
+        return float(headers.get("retry-after"))
+    except (TypeError, ValueError):
+        return None
+
 def call_with_retry(fn, *, attempts=3, base=1.0, cap=60.0, deadline=None):
     for attempt in range(attempts):
         try:
@@ -263,7 +294,7 @@ def call_with_retry(fn, *, attempts=3, base=1.0, cap=60.0, deadline=None):
         except RETRYABLE as e:
             if attempt == attempts - 1:
                 raise
-            wait = getattr(e, "retry_after", None)      # honour the server first
+            wait = server_wait(e)                       # honour the server first
             if wait is None:
                 wait = random.uniform(0, min(cap, base * 2 ** attempt))
             if deadline and time.monotonic() + wait > deadline:
@@ -272,8 +303,8 @@ def call_with_retry(fn, *, attempts=3, base=1.0, cap=60.0, deadline=None):
             time.sleep(wait)
         except (BadRequestError, AuthenticationError, PermissionDeniedError):
             raise                                        # never retryable`,
-      hl: [11, 13, 14],
-      caption: "Three decisions worth the lines: the server's `retry-after` wins over your own schedule, the deadline check stops a retry outliving its caller, and non-retryable errors re-raise immediately rather than falling through to the sleep." },
+      hl: [20, 22, 23, 24],
+      caption: "Three decisions worth the lines: the server's `retry-after` wins over your own schedule, the deadline check stops a retry outliving its caller, and non-retryable errors re-raise immediately rather than falling through to the sleep. The header lives on the error's HTTP response, not on the exception itself, and a connection error has no response at all — hence the helper. `attempts` here counts calls, so three attempts is two waits. Run it on a client built with `max_retries=0`, so that this loop is the only retry policy in play." },
 
     /* ============================================================ exercise */
     { t: "exercise", kind: "Challenge", title: "Measure how much worse no jitter gets as the fleet grows",
@@ -351,12 +382,12 @@ for n in (10, 50, 200, 1000, 5000):
     "**`finish_reason` has four values and three need a branch**: `stop` is complete, `length` was cut off, `tool_calls` is waiting on you, `content_filter` was blocked. The text alone distinguishes none of them.",
     "Raise on an unknown `finish_reason`. Providers add values, and an `else` that treats unrecognised cases as success ships whatever the new one represents.",
     "**Never retry a `content_filter` identically** — the same input gets the same block, and where the filter is on the output you have already paid for the generated tokens.",
-    "**`usage` is an audit record; the rate-limit headers are a control signal.** Usage arrives after the work; the headers arrive on every response and tell you the remaining headroom.",
-    "Both RPM and TPM limits apply at once — many small requests exhaust one, a few large ones exhaust the other.",
+    "**`usage` is an audit record; the rate-limit headers are a control signal.** Usage arrives after the work; the headers arrive on every response with the remaining headroom — for requests and for tokens, and both limits apply at once.",
+    "Usage fields are named differently on every API **and nest differently**: Claude's `input_tokens` excludes cached tokens where OpenAI's and Gemini's input counts include them. Map them in one place.",
     "**Back off on the headroom, not on the error.** Reacting only to 429s is always reacting late, and converts a slope into a cliff.",
     "**Jitter is not optional.** Measured with 200 clients, no jitter put all 200 retries in one second; full jitter spread them over nine, with a worst second of 29 — a 6.9× reduction in peak.",
     "The advantage **grows with the fleet**: 5.0× at 10 clients, 7.5× at 5,000. Jitter matters more the larger the deployment, which is the opposite of how optional settings usually behave.",
-    "**The retry budget is a latency decision**: 3 attempts is a 7.0-second worst case, 5 is 31.0 seconds, 7 is 123.0 seconds. Set it from the caller's timeout and never let the loop outlive it.",
+    "**The retry budget is a latency decision**: three retries is a 7.0-second worst case of waiting, five is 31.0 seconds, seven is 123.0 seconds. Set it from the caller's timeout and never let the loop outlive it — and remember the official SDKs already retry twice by default, so a wrapper around one multiplies.",
     "`400`, `401`, `403`, `404`, context-length and `content_filter` errors are **not retryable** — retrying multiplies the latency of a failure and, on filtered output, the cost too.",
     "A timed-out request **may have been processed**. For anything with a side effect, an idempotency key belongs in front of the retry."
   ],
@@ -374,10 +405,10 @@ for n in (10, 50, 200, 1000, 5000):
         answer: 1,
         why: "A deterministic schedule produces identical delays from identical starting points, so the synchronisation that caused the rate limit is preserved through every round — measured, all 200 landed in one second, against nine seconds and a worst second of 29 with full jitter. Doubling the delay changes when the herd arrives, not that it is a herd. The collision repeats on every attempt, not just the first. Providers reject over a rate limit rather than queueing." },
 
-      { stem: "Your user-facing endpoint has a 10-second timeout. How many retry attempts can you afford?",
+      { stem: "Your user-facing endpoint has a 10-second timeout. How many retries can you afford?",
         options: ["As many as possible, for resilience", "About three; five outlives the timeout", "Seven, the usual library default", "One, since retries are unreliable"],
         answer: 1,
-        why: "The measured schedule gives worst cases of 7.0 seconds for three attempts, 31.0 for five and 123.0 for seven, so anything above three exceeds the caller's timeout — and a retry loop that outlives its caller is doing work nobody will receive. Maximising attempts treats retries as free, which they are not: they are latency the user experiences. A single attempt gives up the real benefit, since a 429 or a 503 very often succeeds on the second try." },
+        why: "The schedule gives worst-case waits of 7.0 seconds for three retries, 31.0 for five and 123.0 for seven, so anything above three exceeds the caller's timeout — and a retry loop that outlives its caller is doing work nobody will receive. Maximising attempts treats retries as free, which they are not: they are latency the user experiences. A single attempt gives up the real benefit, since a 429 or a 503 very often succeeds on the second try." },
 
       { stem: "Which of these should your client NOT retry?",
         options: ["A 429 rate-limit response", "A 503 from the provider", "A 400 for context overflow", "A connection reset by peer"],
@@ -395,7 +426,7 @@ for n in (10, 50, 200, 1000, 5000):
         strong: "A strong answer names three fields and says what each is for, distinguishing audit from control.",
         answer: [
           { t: "p", text: "`finish_reason` first, because it is the only thing that distinguishes a complete answer from a truncated one — the text looks the same either way. Four values: `stop`, `length`, `tool_calls`, `content_filter`, and I would raise on anything unrecognised rather than defaulting to success, because providers add values." },
-          { t: "p", text: "Then `usage`, which is an audit record — prompt and completion tokens, plus `reasoning_tokens` on a reasoning model and `cached_tokens` when prompt caching is on. It arrives after the work, so it cannot prevent anything; it is what reconciles your cost model against the invoice." },
+          { t: "p", text: "Then `usage`, which is an audit record — input and output tokens under whatever names the API gives them, plus the reasoning count on a reasoning model and the cached count when prompt caching is on. It arrives after the work, so it cannot prevent anything; it is what reconciles your cost model against the invoice." },
           { t: "p", text: "And the rate-limit headers, which are a control signal rather than a record. `x-ratelimit-remaining-requests` and `-tokens` tell you how much headroom is left on every response, which is enough to slow down before a 429 instead of after. Both RPM and TPM apply at once, and which binds depends on whether your traffic is many small requests or a few large ones." }
         ] },
 
@@ -404,7 +435,7 @@ for n in (10, 50, 200, 1000, 5000):
         strong: "Jitter, `retry-after`, a deadline check, and a non-retryable list. Missing jitter is the tell.",
         answer: [
           { t: "p", text: "Four things beyond the doubling. Jitter — sampling uniformly from zero to the capped delay rather than using it directly. Honour the server's `retry-after` header when it sends one, in preference to my own schedule. A deadline check, so the loop cannot outlive its caller's timeout. And an explicit non-retryable list that re-raises immediately: 400s, auth errors, context-length errors, content filtering." },
-          { t: "p", text: "Jitter is the one that gets left out and the one that matters most. Without it, every client that failed at the same moment retries at the same moment — I measured 200 clients all landing in a single second, against a worst second of 29 with full jitter. That is a 6.9× reduction in peak load, and the ratio grows with fleet size: 7.1× at five thousand clients." },
+          { t: "p", text: "Jitter is the one that gets left out and the one that matters most. Without it, every client that failed at the same moment retries at the same moment — I measured 200 clients all landing in a single second, against a worst second of 29 with full jitter. That is a 6.9× reduction in peak load, and the ratio grows with fleet size: 7.5× at five thousand clients." },
           { t: "p", text: "The individual delays look worse with jitter — shorter and unpredictable — and that is not a cost, because nobody is watching a single retry. They are watching whether the service recovers." }
         ] },
 

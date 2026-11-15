@@ -189,7 +189,7 @@ result = optimized(review="This product is amazing!")`,
     { t: "dl", items: [
       ["**Modular** — compose modules like functions", "True, and the most underrated of the four. A signature is a typed interface, so a chain (2.8) becomes composition rather than string concatenation, and a step can be swapped without touching its neighbours."],
       ["**Automatic** — no manual prompt tuning", "Partly. It automates example selection well; instruction search needs `MIPROv2` and much more compute. And it replaces prompt tuning with metric tuning, which is work, just different work."],
-      ["**Portable** — switch models without rewriting", "Genuinely true, and the strongest claim. The prompt is generated per adapter, so moving from GPT-4o to Claude to a local model does not mean rewriting anything — 1.15's argument that switching providers is a project is weakened considerably here."],
+      ["**Portable** — switch models without rewriting", "Genuinely true, and the strongest claim. The prompt is generated per adapter, so moving from a GPT model to Claude to a local model does not mean rewriting anything — 1.15's argument that switching providers is a project is weakened considerably here."],
       ["**Reproducible** — version control modules, not strings", "True with a caveat. You version the signature and the metric; the compiled artefact — the chosen demonstrations — also has to be saved, or the next compile produces a different prompt and your deployment is not reproducible after all."]
     ] },
 
@@ -351,7 +351,7 @@ Simple+CoT        162          -          -         -`,
 
   interview: {
     title: "In an interview",
-    sub: "The Q5. A good answer knows what the optimiser actually does, which is narrower than the marketing.",
+    sub: "A good answer knows what the optimiser actually does, which is narrower than the marketing.",
     questions: [
       { level: "core",
         q: "What is DSPy and how is it different from writing prompts?",

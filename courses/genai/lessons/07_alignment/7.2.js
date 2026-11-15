@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.2",
 
-  lede: "Chinchilla gives two numbers worth memorising \u2014 training FLOPs \u2248 6ND and D \u2248 20N \u2014 and the worked examples check out exactly: a 7B model compute-optimally trained is 140B tokens and **5.88 \u00d7 10\u00b2\u00b9** FLOPs, and Llama-3 8B at 15T tokens is **1,875 tokens per parameter, 93.8\u00d7 Chinchilla**. The part the reference asserts without quantifying is the interesting one, and the arithmetic is startling: over-training that 8B costs **7.2 \u00d7 10\u00b2\u00b3** training FLOPs, which is **1.22\u00d7 more than training a 70B Chinchilla-optimally**. The \u201cwasted\u201d training compute exceeds the entire cost of the bigger model.",
+  lede: "Chinchilla gives two numbers worth memorising \u2014 training FLOPs \u2248 6ND and D \u2248 20N \u2014 and the worked examples check out exactly: a 7B model compute-optimally trained is 140B tokens and **5.88 \u00d7 10\u00b2\u00b9** FLOPs, and Llama-3 8B at 15T tokens is **1,875 tokens per parameter, 93.8\u00d7 Chinchilla**. The part usually asserted without being quantified is the interesting one, and the arithmetic is startling: over-training that 8B costs **7.2 \u00d7 10\u00b2\u00b3** training FLOPs, which is **1.22\u00d7 more than training a 70B Chinchilla-optimally**. The \u201cwasted\u201d training compute exceeds the entire cost of the bigger model.",
 
   objectives: [
     "State the pretraining objective and the two Chinchilla relations",
@@ -105,7 +105,7 @@ flops = 6 * N * D`,
       ] },
 
     { t: "h2", n: "03", id: "crossover", text: "When the waste pays for itself",
-      sub: "The arithmetic the reference leaves out, and it is not small" },
+      sub: "The arithmetic that usually gets left out, and it is not small" },
 
     { t: "p", text: "The usual informal claim is that an aggressively over-trained 8B reaches roughly the quality of a Chinchilla-optimal 70B. Take that as given for a moment and the comparison becomes arithmetic." },
 

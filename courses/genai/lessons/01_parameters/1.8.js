@@ -19,7 +19,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "four-ways", text: "Four approaches, four guarantees",
       sub: "The ranking is the lesson; everything else is detail" },
 
-    { t: "p", text: "The reference ranks these by reliability and the ranking is worth memorising, because each step up removes an entire class of production bug." },
+    { t: "p", text: "They rank by reliability, and the ranking is worth memorising, because each step up removes an entire class of production bug." },
 
     { t: "code", lang: "python", title: "g18.py — the ranking", code: `rows = [
     ("prompt only",       "nothing",                  "may add prose, may invent fields"),
@@ -105,9 +105,9 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "The SDK offers a second spelling for the same thing. `client.beta.chat.completions.parse(..., response_format=FruitList)` validates the response for you and returns it on `message.parsed` as an instance of the class, with `message.refusal` set instead when the model declined. It is the same guarantee reached through a different call, and it removes the `json.loads` plus `model_validate` pair that would otherwise follow." },
+    { t: "p", text: "The SDKs offer a second spelling for the same thing. On OpenAI's Responses API, `client.responses.parse(..., text_format=FruitList)` validates the response for you and returns it on `response.output_parsed` as an instance of the class; on Claude, `client.messages.parse(..., output_format=FruitList)` does the same and returns it on `response.parsed_output`. It is the same guarantee reached through a different call, and it removes the `json.loads` plus `model_validate` pair that would otherwise follow." },
 
-    { t: "p", text: "Writing `response_format=FruitList` is convenient enough that it is easy to forget a JSON Schema is being generated and sent. It is worth looking at once, because every decision in the class shows up in it, and the size of it is on your bill." },
+    { t: "p", text: "Passing the class itself is convenient enough that it is easy to forget a JSON Schema is being generated and sent. It is worth looking at once, because every decision in the class shows up in it, and the size of it is on your bill." },
 
     { t: "code", lang: "python", title: "g18.py — the schema behind the class", code: `from pydantic import BaseModel
 from typing import List
@@ -261,8 +261,24 @@ class Strict(BaseModel):
       ] },
 
     /* ============================================================ 04 */
-    { t: "h2", n: "04", id: "anthropic", text: "When a provider has no schema mode",
-      sub: "A forced tool call is the structured output" },
+    { t: "h2", n: "04", id: "anthropic", text: "Other providers, and the fallback where there is no schema mode",
+      sub: "A schema mode where one exists; a forced tool call where it does not" },
+
+    { t: "p", text: "By late 2026 every major hosted API has a schema mode, each under its own name: `text.format` on OpenAI's Responses API, `output_config.format` on Claude, `response_format` or `response_schema` on Gemini. On Claude the SDK's `parse` call takes the same Pydantic class:" },
+
+    { t: "code", lang: "python", title: "claude_structured.py", code: `import anthropic
+
+client = anthropic.Anthropic()
+
+response = client.messages.parse(
+    model="claude-opus-5-5",
+    max_tokens=16000,                    # required on this API, and it must cover thinking
+    messages=[{"role": "user", "content": "List 3 fruits"}],
+    output_format=FruitList,             # the class from section 02
+)
+
+fruits = response.parsed_output          # a validated FruitList instance`,
+      caption: "The same guarantee as §03 through `output_config.format`, which is what `output_format` sets. The schema rules are close to OpenAI's — objects closed with `additionalProperties: false`, every property required — so a class written for one usually passes on the other." },
 
     {"kind": "flow", "title": "A forced tool call is structured output with a different name", "caption": "Where a provider has no schema mode, the documented approach is to define a tool whose input schema is the shape you want and force the model to call it — at which point **the arguments the model produces *are* your structured response**, conforming for exactly the reason function-call arguments always do. The pattern generalises: any provider with function calling already has structured output.", "cols": 3, "nodes": [{"id": "n", "label": "No response_format", "sub": "older APIs, local stacks", "tone": "warn"}, {"id": "t", "label": "Define a tool", "sub": "its input schema is your shape", "tone": "good"}, {"id": "f", "label": "Force the call", "sub": "tool_choice names it", "tone": "good"}, {"id": "a", "label": "The arguments are the response", "sub": "schema-conforming by construction", "tone": "violet"}, {"id": "g", "label": "Function calling implies structured output", "sub": "on any provider", "tone": "teal"}], "edges": [["n", "t"], ["t", "f"], ["f", "a"], ["a", "g"]], "t": "diagram", "id": "dg-1_8-04-2"},
 
@@ -290,32 +306,32 @@ class Strict(BaseModel):
 
 
 
-    { t: "p", text: "Anthropic now has structured outputs through `output_config.format`, added in late 2025. Before that, and on any provider without a schema mode, the documented approach is to define a tool whose input schema is the shape you want, and force the model to call it — at which point the arguments the model produces *are* your structured response, and they conform to the schema for the same reason function-calling arguments always do." },
+    { t: "p", text: "Where there is no schema mode — an older API, or a local stack whose server exposes tools but no guided decoding you can reach — the long-standing approach is to define a tool whose input schema is the shape you want, and force the model to call it. The arguments the model produces *are* your structured response, and they conform to the schema for the same reason function-calling arguments always do." },
 
-    { t: "code", lang: "python", title: "anthropic_structured.py", code: `response = anthropic_client.messages.create(
-    model="claude-sonnet-4-20250514",
+    { t: "code", lang: "python", title: "forced_tool.py — an OpenAI-compatible local server", code: `response = local.chat.completions.create(
+    model=MODEL,
     messages=[{"role": "user", "content": "List 3 fruits"}],
-    tools=[{
+    tools=[{"type": "function", "function": {
         "name": "output_fruits",
         "description": "Output fruit data",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "fruits": {"type": "array", "items": {"type": "object", "properties": {
-                    "name":  {"type": "string"},
-                    "color": {"type": "string"},
-                }}}
-            },
-        },
-    }],
-    tool_choice={"type": "tool", "name": "output_fruits"},   # forced, not optional
+        "parameters": FruitList.model_json_schema(),
+    }}],
+    tool_choice={"type": "function", "function": {"name": "output_fruits"}},   # forced
 )
 
-# The "response" is the tool call's input, not the message text.
-data = next(b.input for b in response.content if b.type == "tool_use")`,
+# The "response" is the tool call's arguments, not the message text.
+call = response.choices[0].message.tool_calls[0]
+fruits = FruitList.model_validate_json(call.function.arguments)`,
+      hl: [9],
       caption: "The `tool_choice` is what makes this reliable — without it the model decides whether to call the tool, and the whole point is that it has no choice." },
 
-    { t: "p", text: "The pattern generalises. Any provider with function calling has structured output, because a forced tool call is structured output with a different name. 1.9 is the lesson about what else that machinery does." },
+    { t: "callout", kind: "warn", title: "Forcing is being withdrawn where a schema mode exists",
+      body: [
+        { t: "p", text: "The newest Claude models — Opus 5.5, Sonnet 5.5 and Fable 5.1 — reject a forced call outright: a `tool_choice` of `any`, or one naming a tool, returns a 400. OpenAI's Responses API still accepts a named function, but the direction of travel is the same on every provider, because a model that reasons before it acts is being told how to act before it has reasoned." },
+        { t: "p", text: "So code that obtained JSON by forcing a tool has two replacements. If all you wanted was the JSON, use the schema mode. If you want a real tool call with guaranteed arguments, mark the tool `strict`, leave `tool_choice` at `auto`, say in the prompt which tool to use — and check that a call actually came back, because `auto` does not promise one." }
+      ] },
+
+    { t: "p", text: "The pattern still generalises as a fallback: anything with function calling can produce structured output, because a forced tool call is structured output with a different name. 1.9 is the lesson about what else that machinery does." },
 
     /* ============================================================ 05 */
     { t: "h2", n: "05", id: "still-validate", text: "You still validate",
@@ -447,7 +463,7 @@ at 1,000,000 requests/month, $2.50 per 1M input tokens:
     "`Optional[str]` becomes a nullable union; `Literal[...]` becomes an `enum`. **An enum in the schema is a constraint; the same list in the prompt is a suggestion.**",
     "OpenAI's strict mode requires `additionalProperties: false` **and every property in `required`** — there are no optional fields, only required nullable ones.",
     "That changes your code: the key is always present, so `if \"note\" in data` stops discriminating and `if data[\"note\"] is not None` is what you need.",
-    "A **forced tool call** is structured output on any provider with function calling, which makes it the portable fallback where no schema mode exists.",
+    "A **forced tool call** is the fallback where no schema mode exists — but the newest Claude models reject forcing with a 400, so where a schema mode exists use it, or a `strict` tool under `tool_choice` `auto`.",
     "**The schema constrains shape, not truth.** A banana at 3,000 calories satisfies it. Range checks, cross-field consistency and referential checks all belong in code.",
     "A schema is a prompt: stripping redundant `title` keys saved **28.6%** of a measured schema, worth $2,160/year at a million requests a month — but `description` is the cheapest instruction channel you have and must stay."
   ],
@@ -479,24 +495,24 @@ at 1,000,000 requests/month, $2.50 per 1M input tokens:
 
   interview: {
     title: "In an interview",
-    sub: "This is the Q4 and a standard question, because the ranking of guarantees is exactly the kind of thing production experience teaches and documentation does not.",
+    sub: "This is a standard question, because the ranking of guarantees is exactly the kind of thing production experience teaches and documentation does not.",
     questions: [
       { level: "core",
         q: "How do you get reliable structured output from a model?",
         strong: "A strong answer ranks the approaches by guarantee rather than listing them, and ends with the point that you still validate.",
         answer: [
-          { t: "p", text: "Ranked by what each actually guarantees. Structured output with a schema is strongest — the response is guaranteed to match, because the constraint is enforced by masking the logits during decoding. Function calling with `tool_choice` forced is next and is effectively the same mechanism. JSON mode guarantees valid JSON and nothing about its contents. A prompt saying \"return JSON\" guarantees nothing at all." },
+          { t: "p", text: "Ranked by what each actually guarantees. Structured output with a schema is strongest — the response is guaranteed to match, because the constraint is enforced by masking the logits during decoding. A tool marked `strict` is next and is effectively the same mechanism, applied to the call's arguments. JSON mode guarantees valid JSON and nothing about its contents. A prompt saying \"return JSON\" guarantees nothing at all." },
           { t: "p", text: "The jump worth naming is from JSON mode to a schema, because it is the difference between \"parses\" and \"has the fields you need\". `{}` is valid JSON. I have seen a pipeline with a 99.4% parse rate that was misfiling 2% of its records, because every field was typed `str` and every string is valid." },
           { t: "p", text: "And then: you still validate. The schema constrains shape, not truth. Range checks, cross-field consistency like `end_date >= start_date`, and referential checks against your own data are all things no schema can do — but the schema removes the shape failures so your validation code can be about meaning." }
         ] },
 
       { level: "core",
         q: "A provider has function calling and no schema mode. What do you do?",
-        strong: "Forced tool use. A strong answer knows why the forcing is the load-bearing part.",
+        strong: "Forced tool use. A strong answer knows why the forcing is the load-bearing part, and that the newest hosted models no longer allow it.",
         answer: [
-          { t: "p", text: "Define a tool whose `input_schema` is the shape you want, and set `tool_choice` to force that specific tool. The arguments the model produces are your structured response, and they conform to the schema for the same reason function-calling arguments always do." },
-          { t: "p", text: "The forcing is the part that matters. Without it the model decides whether to call the tool, and sometimes answers in prose instead — which is precisely the failure you were trying to eliminate. `tool_choice: {\"type\": \"tool\", \"name\": ...}` removes the choice." },
-          { t: "p", text: "The general point is that any provider with function calling already has structured output under a different name, so this is a portability pattern rather than a workaround. If you are writing provider-agnostic code, building on forced tool calls gives you one path that works everywhere instead of two." }
+          { t: "p", text: "Define a tool whose input schema is the shape you want, and set `tool_choice` to force that specific tool. The arguments the model produces are your structured response, and they conform to the schema for the same reason function-calling arguments always do." },
+          { t: "p", text: "The forcing is the part that matters. Without it the model decides whether to call the tool, and sometimes answers in prose instead — which is precisely the failure you were trying to eliminate. Naming the tool in `tool_choice` removes the choice." },
+          { t: "p", text: "The caveat I would add is that this is now a fallback rather than a portability layer. Every major hosted API has a real schema mode, and the newest Claude models reject a forced `tool_choice` with a 400 — so provider-agnostic code built on forcing breaks on exactly the models people most want to move to. I would use the schema mode where it exists, a `strict` tool under `auto` where I genuinely want a tool call, and keep forcing for the local stacks that have nothing else." }
         ] },
 
       { level: "advanced",
@@ -515,7 +531,7 @@ at 1,000,000 requests/month, $2.50 per 1M input tokens:
         answer: [
           { t: "p", text: "First, quantify: 2,000 tokens × 50 million × $2.50 per million is $250,000 a month in schema alone. That is a number worth putting on a slide before anyone argues about the engineering." },
           { t: "p", text: "Then edit it like a prompt, because that is what it is. Pydantic emits a `title` for every field that just repeats the property key — on a schema I measured that was 28.6% of the tokens for zero information. Strip those. Keep `description`, because a description sits exactly where the field is generated and is the cheapest instruction channel you have; stripping those to save tokens trades real quality for a small saving." },
-          { t: "p", text: "Then reach for prompt caching. A schema is perfectly static, which makes it the ideal cache prefix — put it at the very front of the request, ahead of anything that varies, and the discount is 50% on OpenAI or 90% on Anthropic. That is 1.13, and on this workload it is worth more than the editing." },
+          { t: "p", text: "Then reach for prompt caching. A schema is perfectly static, which makes it the ideal cache prefix — put it at the very front of the request, ahead of anything that varies, and the discount on a cached prefix is 90% or more on every major provider. That is 1.13, and on this workload it is worth more than the editing." },
           { t: "p", text: "Finally, question the schema itself. A 2,000-token schema is usually several use cases sharing one model. Splitting it per endpoint means each request carries only the fields it can actually receive, which is cheaper and also makes the output easier to validate." }
         ] }
     ]

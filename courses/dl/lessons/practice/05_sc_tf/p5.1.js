@@ -530,7 +530,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** GPT-4 Turbo: 128K tokens. Claude: 200K tokens. Achieved through RoPE scaling and architectural innovations."
+     "text": "**Explanation:** Windows grew from 128K to 200K tokens on the 2024 models to about 1M on the frontier models of 2026, through rotary position scaling, cheaper attention implementations and training on long sequences."
     }
    ],
    "kind": ""

@@ -114,7 +114,7 @@ for q in BEHAVIOUR_TEST:
     { t: "callout", kind: "insight", title: "The fine-tune is the few-shot prompt, paid for once",
       body: [
         { t: "p", text: "The two approaches used **the same eight examples** and reached the same score. The difference is only where the examples live: in the context on every call, or in the weights once." },
-        { t: "p", text: "**136 tokens saved per call.** Over a million calls that is 136 million prompt tokens \u2014 roughly $340 at GPT-4o\u2019s input rate, against 27 seconds of training here. It is also 136 fewer tokens to prefill, which 3.1 measured as the compute-bound half of a request." },
+        { t: "p", text: "**136 tokens saved per call.** Over a million calls that is 136 million prompt tokens \u2014 $272 at a mid-tier input rate of $2 per million, against 27 seconds of training here. It is also 136 fewer tokens to prefill, which 3.1 measured as the compute-bound half of a request." },
         { t: "p", text: "That is the honest case for fine-tuning a behaviour: not that it works better than few-shot prompting, but that it works the same and stops charging you rent." }
       ] },
 
