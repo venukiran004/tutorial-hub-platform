@@ -168,18 +168,82 @@ system instruction the model received:
 
     { t: "exercise", kind: "practice", title: "Watch the contexts in order", difficulty: "core", minutes: 18,
       prompt: "Build an agent with an instruction provider, a before_agent_callback, a before_model_callback and one tool. Have each print its context's class name, the invocation id, and the current value of a state key that the callback increments. Run one turn that uses the tool, and explain the order and the repetition in the output.",
+      requirements: [
+        "Build an agent with an instruction provider, a before_agent and a before_model callback, and one tool",
+        "Have each print its context class, the invocation id and a state key the callback increments",
+        "Run one tool-using turn",
+        "Explain the order and the repetition in the output"
+      ],
       hints: [
         "Print `type(ctx).__name__` as well as the parameter's type hint — they will not agree, and that is the lesson.",
         "The before_model callback runs once per model request, like the instruction provider.",
         "Increment a counter in before_model and watch how many times it fires in one turn."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import asyncio, logging, warnings
+from google.adk.agents import LlmAgent
+from google.adk.models import BaseLlm
+from google.adk.models.llm_response import LlmResponse
+from google.adk.runners import InMemoryRunner
+from google.adk.tools import ToolContext
+from google.genai import types
+warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+
+class OneToolLlm(BaseLlm):                      # scripted: call the tool once, then answer
+    model: str = "one-tool"
+    async def generate_content_async(self, llm_request, stream=False):
+        if llm_request.contents[-1].parts[0].function_response:
+            yield LlmResponse(content=types.Content(role="model", parts=[types.Part(text="done")]))
+        else:
+            yield LlmResponse(content=types.Content(role="model", parts=[types.Part(function_call=types.FunctionCall(name="lookup", args={}))]))
+
+def show(where, ctx):
+    ctx.state["hits"] = ctx.state.get("hits", 0) + 1
+    print(f"{where:<22} {type(ctx).__name__:<16} invocation {ctx.invocation_id[-8:]}  hits={ctx.state['hits']}")
+
+def instruction(ctx):                           # instruction provider: receives a ReadonlyContext
+    print(f"{'instruction provider':<22} {type(ctx).__name__:<16} invocation {ctx.invocation_id[-8:]}  hits={ctx.state.get('hits', 0)} (read-only)")
+    return "Answer briefly."
+
+def before_agent(callback_context): show("before_agent", callback_context)
+def before_model(callback_context, llm_request): show("before_model", callback_context)
+def lookup(tool_context: ToolContext) -> str:
+    """Look something up."""
+    show("tool body", tool_context); return "42"
+
+agent = LlmAgent(name="watch", model=OneToolLlm(), instruction=instruction, tools=[lookup],
+                 before_agent_callback=before_agent, before_model_callback=before_model)
+
+async def main():
+    runner = InMemoryRunner(agent=agent, app_name="watch")
+    sid = (await runner.session_service.create_session(app_name="watch", user_id="u")).id
+    async for _ in runner.run_async(user_id="u", session_id=sid, new_message=types.Content(role="user", parts=[types.Part(text="go")])):
+        pass
+
+asyncio.run(main())
+# One invocation id throughout: one turn. before_agent runs once per agent run; the instruction provider and
+# before_model run once per MODEL CALL, and a tool-using turn makes two calls (request the tool, then answer),
+# so they appear twice, with the tool body between them. The provider only reads state; callbacks and tools write it.`,
+        out: `before_agent           Context          invocation 300a7be3  hits=1
+instruction provider   ReadonlyContext  invocation 300a7be3  hits=1 (read-only)
+before_model           Context          invocation 300a7be3  hits=2
+tool body              Context          invocation 300a7be3  hits=3
+instruction provider   ReadonlyContext  invocation 300a7be3  hits=3 (read-only)
+before_model           Context          invocation 300a7be3  hits=4`,
+       
         notes: [
           { t: "p", text: "The order is before_agent, then for each model request: the instruction provider and before_model, then either a tool call or the final answer. A turn with one tool call therefore shows the agent-level hook once and the per-request hooks twice, which is the shape of every ADK turn and worth being able to draw from memory." },
           { t: "p", text: "`type(ctx).__name__` prints `Context` in all three places, whatever you annotated the parameter as. Keep the descriptive hints — `tool_context: ToolContext` still communicates where the function is used — but never write logic that branches on the class, because it cannot distinguish them." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: an instruction provider that charged a customer twice",
+      body: [
+        { t: "p", text: "**Symptom.** A booking agent's dynamic instruction looked up the user's loyalty balance and logged a 'balance viewed' billing event. Customers on a metered plan were billed several times per message." },
+        { t: "p", text: "**Mechanism.** An instruction provider runs once per model request, not once per turn. A tool-using turn makes several model requests, so the provider — and its side effect — ran several times." },
+        { t: "p", text: "**Fix.** The provider is now side-effect free and reads a value a callback computes once per turn into state. Billing events moved to a plugin hook that fires once per invocation." }
+      ] }
   ],
 
   takeaways: [

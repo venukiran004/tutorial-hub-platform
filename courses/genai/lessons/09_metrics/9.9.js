@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "9.9",
 
-  lede: "Four Ragas metrics, and the reference is explicit that their value is **not the numbers** \u2014 it is that the four **split the blame** between retrieval and generation. The 2\u00d72 that does it is the useful artefact: low faithfulness with high context recall is a generation problem, high faithfulness with low context recall is a retrieval problem. And faithfulness itself is arithmetic \u2014 supported claims over total claims, 4 of 5 giving **0.80** \u2014 where the useful output is *which* claim failed, not the 0.80.",
+  lede: "Four Ragas metrics, and their value is **not the numbers** \u2014 it is that the four **split the blame** between retrieval and generation. The 2\u00d72 that does it is the useful artefact: low faithfulness with high context recall is a generation problem, high faithfulness with low context recall is a retrieval problem. And faithfulness itself is arithmetic \u2014 supported claims over total claims, 4 of 5 giving **0.80** \u2014 where the useful output is *which* claim failed, not the 0.80.",
 
   objectives: [
     "Name the four Ragas metrics and what each needs as input",
@@ -183,6 +183,17 @@ faithfulness HIGH + context recall LOW   -> RETRIEVAL problem
 
   <text x="16" y="284" class="s-mono" style="fill:var(--crit)">faithfulness = supported claims / total claims \u2014 but LOG WHICH CLAIM FAILED, that is the actionable output</text>
 </svg>` },
+
+    { t: "callout", kind: "trap", title: "Reading low faithfulness as a retrieval problem",
+
+      body: [
+
+        { t: "p", text: "A low faithfulness score means the answer contains claims the context does not support. Teams often respond by changing the retriever, which does nothing if the context already held the answer and the generator added unsupported claims." },
+
+        { t: "p", text: "Read faithfulness together with context recall: low faithfulness with high recall is a generation problem, low recall is a retrieval problem." }
+
+      ] },
+
 
     { t: "exercise", kind: "build", title: "Compute the quadrant for your own failures", difficulty: "advanced", minutes: 35,
       body: "For a sample of your failing cases, compute faithfulness with the claims logged individually and context recall against ground truth, then place each case in the 2x2 and report how your failures distribute. State your claim-extraction and derivation policies.",

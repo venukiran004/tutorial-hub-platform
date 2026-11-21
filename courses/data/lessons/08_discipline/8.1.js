@@ -705,7 +705,14 @@ def test_pruning_is_target_free():
           why: "Selection is a fit step that uses the target. Outside the CV it sees the validation labels; inside a Pipeline it is refit per fold on training rows only, and the same pipeline scores 0.49 on the same noise. The shuffled-label control makes the leak unambiguous."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: feature selection that leaked into the score",
+      body: [
+        { t: "p", text: "**Symptom.** A model with fifty selected features from five thousand reported excellent cross-validated accuracy and failed on new data." },
+        { t: "p", text: "**Mechanism.** Features were selected by their association with the target on the whole dataset, then the model was cross-validated. With five thousand candidates, some correlated with the label by chance, and selection had used the validation rows to find them." },
+        { t: "p", text: "**Fix.** Selection is a step inside the pipeline, repeated within each fold, and the final model's performance is measured with nested cross-validation." }
+      ] }
   ],
 
   takeaways: [

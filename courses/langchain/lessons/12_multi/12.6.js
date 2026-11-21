@@ -61,7 +61,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "draw_ascii(), whatever the registry contains",
       code: "+-----------+\n| __start__ |\n+-----------+\n      *\n+------------+\n|  executor  |\n+------------+",
       caption: "One node, three workers." },
-    { t: "callout", kind: "warn", title: "Worse than 8.8's Command problem", body: [
+    { t: "callout", kind: "trap", title: "Worse than 8.8's Command problem", body: [
       { t: "p", text: "8.8 hid the **destinations** inside node bodies, and an annotation could recover them for the renderer. Here the worker set is not in the code at all \u2014 there is nothing to annotate, because the set is a runtime value." },
       { t: "p", text: "So the registry has to **become** the documentation: a listing endpoint, or the registry itself in version control. Without one of those, the only way to know what the system can do is to read a database." }
     ] },

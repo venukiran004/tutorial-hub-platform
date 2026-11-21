@@ -234,6 +234,17 @@ report(pinball_or_crps, coverage_by_h, width_by_h)                     # weekly`
         }
       ] },
 
+    { t: "callout", kind: "trap", title: "Using one-step errors for every horizon's interval",
+
+      body: [
+
+        { t: "p", text: "Uncertainty grows with the forecast horizon. An interval built from one-step residuals is far too narrow for forecasts weeks ahead." },
+
+        { t: "p", text: "Calibrate intervals per horizon from backtest residuals, for example with conformal prediction, and measure coverage." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Pinball by hand, an interval by horizon, and the size of the calibration block",
@@ -277,7 +288,14 @@ report(pinball_or_crps, coverage_by_h, width_by_h)                     # weekly`
           { t: "p", text: "(c) is the practical minimum for the calibration block: enough residuals to estimate the quantile, recent enough to be exchangeable with what comes next." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: intervals that did not widen",
+      body: [
+        { t: "p", text: "**Symptom.** Stock was ordered against a 95% forecast interval, and stock-outs happened far more than 5% of the time at longer horizons." },
+        { t: "p", text: "**Mechanism.** The interval width was the one-step error applied to every horizon. Uncertainty grows with the horizon, so long-range intervals were far too narrow." },
+        { t: "p", text: "**Fix.** Intervals are calibrated per horizon with conformal prediction on backtest residuals, and coverage is measured on every refresh." }
+      ] }
   ],
 
   takeaways: [

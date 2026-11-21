@@ -112,7 +112,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "What teams actually do under pressure, in order",
       code: "1. lower fetch_k      -> 6.7 measured exact-term MRR falling\n                         from 1.000 to 0.875 at fetch 10\n2. drop the reranker  -> that class returns to 0.781\n3. loosen the cache   -> 7.7's wrong-answer rate rises\n4. shorten context    -> 7.3's effective k falls, recall 1.000 -> 0.929",
       caption: "Every one is a quality decision taken for a latency reason." },
-    { t: "callout", kind: "warn", title: "None of these appears on a latency dashboard", body: [
+    { t: "callout", kind: "trap", title: "None of these appears on a latency dashboard", body: [
       { t: "p", text: "Each change does what it was intended to do \u2014 latency improves \u2014 and the cost lands somewhere nothing is watching. The system gets faster and quietly worse, and the regression surfaces weeks later as support tickets rather than as a metric." },
       { t: "p", text: "The cheapest protection is to measure retrieval quality **continuously** against a labelled set, so a capacity decision that costs accuracy shows up as an accuracy change. That also means per query class (5.8), since these cuts do not affect all classes equally \u2014 dropping the reranker cost the exact-term class 0.22 of MRR and *improved* the natural class." }
     ] },

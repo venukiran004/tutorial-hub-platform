@@ -49,11 +49,11 @@ for i in range(3):
  [[5 0 5]
  [0 5 0]
  [5 0 5]]
-  reference says [[4,3,4],[2,4,3],[4,3,4]] -> False
+  commonly published [[4,3,4],[2,4,3],[4,3,4]] -> match False
   position (0,0): 1*1 + 0*0 + 1*1 + 0*0 + 1*1 + 0*0 + 1*1 + 0*0 + 1*1 = 5` },
 
     { t: "callout", kind: "warn", title: "The arithmetic is wrong here",
-      body: [{ t: "p", text: "It is worth spelling the first position out as `1·1 + 0·0 + 1·1 + 0·0 + 1·1 + 0·0 + 1·1 + 0·0 + 1·1` and then writes `= 4`. Those terms are five ones and four zeros, so the sum is **5**. The whole output matrix is wrong for the same reason — with this input and this kernel every position is either 5 or 0, never 4, 3 or 2. The operation the usual description is is correct; only the numbers printed beside it are not, which is exactly the sort of thing that survives in written material until somebody runs it." }] },
+      body: [{ t: "p", text: "A commonly published version of this example spells the first position out as `1·1 + 0·0 + 1·1 + 0·0 + 1·1 + 0·0 + 1·1 + 0·0 + 1·1` and then writes `= 4`. Those terms are five ones and four zeros, so the sum is **5**. The whole output matrix is wrong for the same reason — with this input and this kernel every position is either 5 or 0, never 4, 3 or 2. The operation the usual description is is correct; only the numbers printed beside it are not, which is exactly the sort of thing that survives in written material until somebody runs it." }] },
 
     { t: "diagram", kind: "matrix", title: "What the correct output actually is",
       caption: "The alternating input and the plus-shaped kernel either line up completely (all five ones meet ones) or not at all. There is no middle value available.",
@@ -165,18 +165,82 @@ differ: True` },
 
     { t: "exercise", kind: "practice", title: "Predict every shape in a stack", difficulty: "core", minutes: 22,
       prompt: "Write out a six-layer CNN on 224×224×3 input with a mix of kernel sizes, strides and paddings. Before running anything, compute the spatial size and parameter count of every layer by hand. Then build it in PyTorch and print each layer's output shape and parameter count to check. Deliberately include one layer with an odd input size and stride 2 so you meet the floor. Finally, replace the last convolution with a Linear layer over the flattened map and compare the parameter counts.",
+      requirements: [
+        "Write a six-layer CNN on 224×224×3 with mixed kernels, strides and padding",
+        "Compute every layer's output size and parameter count by hand",
+        "Build it in PyTorch and check each shape and count",
+        "Include one odd-sized stride-2 layer to meet the floor",
+        "Replace the last convolution with a Linear layer and compare parameter counts"
+      ],
       hints: [
         "`(n + 2p - k) // s + 1`, applied layer by layer.",
         "A forward hook, or just printing the shape after each layer, is enough to check.",
         "The Linear comparison is the 454× figure on your own architecture."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+
+def out_size(n, k, s, p):
+    return (n + 2 * p - k) // s + 1          # floor division: the silent crop
+
+# (c_out, kernel, stride, padding) for six layers on 224x224x3
+spec = [(32, 7, 2, 3), (64, 3, 1, 1), (64, 3, 2, 1), (128, 5, 2, 2), (128, 3, 2, 0), (256, 3, 2, 1)]
+
+print("hand calculation")
+n, c_in, layers = 224, 3, []
+for i, (c_out, k, s, p) in enumerate(spec, 1):
+    m = out_size(n, k, s, p)
+    params = c_out * c_in * k * k + c_out
+    odd = "  <- odd input, stride 2: floor drops a row/column" if n % 2 and s == 2 else ""
+    print(f"conv{i}: {c_in:>3}x{n:>3}x{n:<3} k={k} s={s} p={p} -> {c_out:>3}x{m}x{m}  params {params:>7,}{odd}")
+    layers.append(nn.Conv2d(c_in, c_out, k, s, p))
+    n, c_in = m, c_out
+
+print("\\nPyTorch check")
+x = torch.randn(1, 3, 224, 224)
+for i, layer in enumerate(layers, 1):
+    x = layer(x)
+    print(f"conv{i}: {tuple(x.shape)}  params {sum(p.numel() for p in layer.parameters()):>7,}")
+
+# Replace the last convolution with a Linear layer over the flattened map it received.
+c, h = spec[4][0], out_size(out_size(out_size(out_size(out_size(224, 7, 2, 3), 3, 1, 1), 3, 2, 1), 5, 2, 2), 3, 2, 0)
+conv_last = layers[-1]
+linear = nn.Linear(c * h * h, 256 * n * n)
+print(f"\\nlast conv  params {sum(p.numel() for p in conv_last.parameters()):>12,}")
+print(f"linear     params {sum(p.numel() for p in linear.parameters()):>12,}  ({c}x{h}x{h} -> 256x{n}x{n})")`,
+        out: `hand calculation
+conv1:   3x224x224 k=7 s=2 p=3 ->  32x112x112  params   4,736
+conv2:  32x112x112 k=3 s=1 p=1 ->  64x112x112  params  18,496
+conv3:  64x112x112 k=3 s=2 p=1 ->  64x56x56  params  36,928
+conv4:  64x 56x56  k=5 s=2 p=2 -> 128x28x28  params 204,928
+conv5: 128x 28x28  k=3 s=2 p=0 -> 128x13x13  params 147,584
+conv6: 128x 13x13  k=3 s=2 p=1 -> 256x7x7  params 295,168  <- odd input, stride 2: floor drops a row/column
+
+PyTorch check
+conv1: (1, 32, 112, 112)  params   4,736
+conv2: (1, 64, 112, 112)  params  18,496
+conv3: (1, 64, 56, 56)  params  36,928
+conv4: (1, 128, 28, 28)  params 204,928
+conv5: (1, 128, 13, 13)  params 147,584
+conv6: (1, 256, 7, 7)  params 295,168
+
+last conv  params      295,168
+linear     params  271,364,352  (128x13x13 -> 256x7x7)`,
+       
         notes: [
           { t: "p", text: "Doing this by hand once is worth more than reading the formula ten times, because the failure it prevents is concrete: a mismatch deep in a stack shows up as a shape error in a layer that is not the one at fault, and tracing it backwards is tedious. Getting fluent with the arithmetic means you predict it instead." },
           { t: "p", text: "The odd-input case is the one to dwell on. An input of 33 with stride 2 produces 17 and quietly drops the last row and column — no error, no warning. In a network with skip connections that is how you end up with two branches differing by one pixel, and the addition failing several layers later." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a model that crashed on one image size",
+      body: [
+        { t: "p", text: "**Symptom.** A vision service failed with a shape error only for images of particular dimensions." },
+        { t: "p", text: "**Mechanism.** A stride-2 layer on an odd input size floored the output, so a later concatenation or flatten received a size one pixel off what the code expected." },
+        { t: "p", text: "**Fix.** Inputs are resized to a fixed size the network was designed for, and a test runs every layer's shape arithmetic for the allowed sizes." }
+      ] }
   ],
 
   takeaways: [

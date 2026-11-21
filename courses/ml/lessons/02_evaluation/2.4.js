@@ -242,6 +242,17 @@ explained_variance_score(y_true, y_pred)      # 1.00  -- the bias is ignored
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Reporting MAPE when targets can be near zero",
+
+      body: [
+
+        { t: "p", text: "MAPE divides each error by the actual value, so a one-unit miss on a target of one is a 100% error. A handful of small targets dominate the metric." },
+
+        { t: "p", text: "Use MAE or a scaled error such as MASE when targets can be small, and report MAPE only where values are reliably large." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Metrics from scratch and a metric that disagrees",
@@ -314,7 +325,14 @@ print(r_base, adj_r2(yy, base.predict(X), 3), r_noisy, adj_r2(yy, noisy.predict(
           why: "For equal errors the ratio is 1; for Gaussian errors about 1.25. The sixth error of +100 took it from 1.03 to 1.70 in the executed example."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: MAPE that blew up on small orders",
+      body: [
+        { t: "p", text: "**Symptom.** A forecasting model's MAPE jumped to several hundred percent after small orders were included, though its absolute errors were tiny." },
+        { t: "p", text: "**Mechanism.** MAPE divides each error by the actual value. Orders of one or two units produced huge percentage errors from errors of a single unit." },
+        { t: "p", text: "**Fix.** The model is evaluated with MAE and a scaled error (MASE) against a naive forecast, and MAPE is reported only for products whose volumes keep it stable." }
+      ] }
   ],
 
   takeaways: [

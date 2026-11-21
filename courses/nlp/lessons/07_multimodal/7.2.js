@@ -109,6 +109,17 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "What CLIP is good and bad at",
       body: [{ t: "p", text: "It is excellent at recognising photographed objects, scenes and styles, because that is what web alt-text describes. It is weak at **reading text in images**, **counting**, **spatial relations** (*left of*, *above*) and **fine-grained distinctions** within a category — and all four weaknesses trace to the same source: captions rarely state those things. \"A photo of three cats on the left of a sofa\" is not how people caption images, so the training signal for counting and position is thin. That is worth knowing before deploying it: CLIP's failures are not random, they are a shadow of its training distribution." }] },
 
+    { t: "callout", kind: "trap", title: "Trusting zero-shot labels from one prompt wording",
+
+      body: [
+
+        { t: "p", text: "CLIP's zero-shot accuracy changes with the wording of the label prompts, so a single template can mislead." },
+
+        { t: "p", text: "Choose prompts on labelled validation data and average over several templates." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Probe the alignment", difficulty: "core", minutes: 40,
       requirements: [
         "Implement the contrastive loss and verify it approaches 0 on perfectly aligned data and exceeds ln(batch) on random data.",
@@ -212,7 +223,14 @@ red circle above blue square: P(above) 0.631, P(below) 0.369`,
           { t: "p", text: "On these clean images CLIP picked the right count for 3 and 5 circles and the right vertical relation. The confidences were low (0.31–0.63), and lesson 7.8 shows the same model failing most counts when the template changes. Treat a pass on one template as one data point." },
           { t: "p", text: "The images are drawn with PIL so their content is known exactly: counts, colours and positions are ground truth, which makes failures unambiguous. Synthetic flat shapes are easier than photographs in some ways and harder in others, so repeat the probes on your own images." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: zero-shot labels that changed with the wording",
+      body: [
+        { t: "p", text: "**Symptom.** A CLIP-based image tagger's accuracy changed by several points when the label prompts were reworded." },
+        { t: "p", text: "**Mechanism.** Zero-shot classification compares the image with each prompt's embedding, so prompt wording changes the scores." },
+        { t: "p", text: "**Fix.** Prompts are chosen on a labelled validation set and an ensemble of prompt templates is averaged." }
+      ] }
   ],
 
   takeaways: [

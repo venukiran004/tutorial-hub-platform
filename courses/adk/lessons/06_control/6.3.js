@@ -130,6 +130,12 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
 
     { t: "exercise", kind: "practice", title: "Generate, version, retrieve", difficulty: "core", minutes: 22,
       prompt: "Write an async tool that renders a small CSV from data in session state and saves it as an artifact, returning only the filename and version. Run it three times with different data. Then write a second tool that loads a named version and returns a summary of it — not its contents. Confirm the session state never grows, list the versions, and find the artifact_delta entries in the event log.",
+      requirements: [
+        "Write an async tool that saves a CSV artifact and returns only its filename and version",
+        "Run it three times with different data",
+        "Write a tool that loads a named version and returns a summary",
+        "Confirm state never grows and find the artifact_delta entries"
+      ],
       hints: [
         "`types.Part.from_bytes(data=..., mime_type=...)` builds the Part.",
         "Both save_artifact and load_artifact on the context are coroutines — await them.",
@@ -148,8 +154,14 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
           { t: "p", text: "Returning a summary rather than the contents is the discipline the whole lesson turns on. A tool that returns the CSV puts every row into the conversation history, where it is resent on every subsequent turn — so a file the user asked about once is charged for fifty times. Return the shape of the thing and let the model ask for more if it genuinely needs it." },
           { t: "p", text: "Handling the missing version explicitly matters more than it looks: `load_artifact` returns `None` rather than raising, so a tool that goes straight to `part.inline_data` fails with an `AttributeError` that reaches the model as a stack trace instead of as an explanation. A structured error with `retryable: False` tells the model the version does not exist and to stop asking for it." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a conversation that got slower every turn",
+      body: [
+        { t: "p", text: "**Symptom.** A reporting agent became noticeably slower and more expensive each time it generated a chart, and never recovered within a conversation." },
+        { t: "p", text: "**Mechanism.** The chart's PNG bytes were stored in session state as base64. State is loaded and written on every turn, so each image added megabytes to every subsequent request and database write." },
+        { t: "p", text: "**Fix.** Generated files are saved as artifacts and state holds only the filename and version. The runner is constructed with an artifact service in every environment, because without one there are no artifacts at all." }
+      ] }
   ],
 
   takeaways: [

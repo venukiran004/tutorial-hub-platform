@@ -96,29 +96,119 @@ weights = scores.softmax(-1)          # positions after i get exactly 0`,
       body: [{ t: "p", text: "Generating one token requires reading the entire KV cache and every model weight from memory, and doing comparatively little arithmetic with them. That is why single-sequence generation leaves a GPU's compute largely idle, why batching many sequences together improves throughput so much (the weights are read once for the whole batch), and why the cache — 369 MB per sequence at 10,000 tokens for a modest 12-layer model — is what limits how many concurrent conversations a server can hold. Grouped-query and multi-query attention exist specifically to shrink it, by sharing K and V across heads." }] },
 
     { t: "code", lang: "python", title: "Both masks in PyTorch",
-      code: `causal = nn.Transformer.generate_square_subsequent_mask(tgt_len)
+      code: `causal = torch.triu(torch.ones(tgt_len, tgt_len, dtype=torch.bool), diagonal=1)   # True = may not attend
 
 out = decoder(tgt, memory,
               tgt_mask=causal,                      # no looking ahead
               tgt_key_padding_mask=tgt_pad_mask,    # ignore target padding
               memory_key_padding_mask=src_pad_mask) # ignore source padding`,
-      caption: "Two distinct kinds of mask. The causal mask is about time; the padding masks are lesson 3.11's problem. Both are needed and neither substitutes for the other." },
+      caption: "Two distinct kinds of mask. The causal mask is about time; the padding masks are lesson 3.11's problem. Both are needed and neither substitutes for the other. Keep them the same type: `generate_square_subsequent_mask` returns a float mask, and PyTorch deprecates mixing a float mask with boolean padding masks." },
+
+    { t: "callout", kind: "trap", title: "Getting the causal mask's orientation wrong",
+
+      body: [
+
+        { t: "p", text: "A mask that is transposed, or built for the wrong shape, lets every position attend to the future. Training loss falls quickly because the model copies the answer, and generation produces noise." },
+
+        { t: "p", text: "Test causality directly: change a later token and assert that earlier outputs are bit-identical." }
+
+      ] },
+
 
     { t: "exercise", kind: "practice", title: "Build the decoder and prove causality", difficulty: "advanced", minutes: 45,
       prompt: "Build a decoder block with masked self-attention and cross-attention. Verify causality empirically: change a token at position t and confirm the output at every position before t is bit-identical. Then deliberately remove the causal mask, train a small language model, and compare its training loss and its generated output against the masked version. Finally, implement greedy generation with and without a KV cache and measure the time per token as the sequence grows.",
+      requirements: [
+        "Build a decoder block with masked self-attention and cross-attention",
+        "Change a token at position t and confirm earlier outputs are bit-identical",
+        "Remove the causal mask, train, and compare loss and generations",
+        "Measure time per token with and without a KV cache"
+      ],
       hints: [
         "For the causality test, compare outputs element-wise — earlier positions should be exactly unchanged.",
         "The unmasked model's training loss will be implausibly low. Generate from it to see why.",
         "Without a cache, per-token time grows with sequence length; with one it stays roughly flat."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import time
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+torch.manual_seed(0)
+
+class DecoderBlock(nn.Module):
+    def __init__(self, d=64, h=4):
+        super().__init__()
+        self.self_attn = nn.MultiheadAttention(d, h, batch_first=True)
+        self.cross = nn.MultiheadAttention(d, h, batch_first=True)
+        self.ff = nn.Sequential(nn.Linear(d, 4 * d), nn.GELU(), nn.Linear(4 * d, d))
+        self.n1, self.n2, self.n3 = nn.LayerNorm(d), nn.LayerNorm(d), nn.LayerNorm(d)
+    def forward(self, x, mem, causal=True):
+        T = x.shape[1]
+        mask = torch.triu(torch.ones(T, T, dtype=torch.bool), 1) if causal else None
+        h = self.n1(x); x = x + self.self_attn(h, h, h, attn_mask=mask, need_weights=False)[0]
+        h = self.n2(x); x = x + self.cross(h, mem, mem, need_weights=False)[0]
+        return x + self.ff(self.n3(x))
+
+blk = DecoderBlock().eval(); mem = torch.randn(1, 5, 64)
+x = torch.randn(1, 12, 64); x2 = x.clone(); x2[:, 7] += 1.0           # change the token at t = 7
+with torch.no_grad(): a, b = blk(x, mem), blk(x2, mem)
+print("positions 0..6 bit-identical after changing position 7:", torch.equal(a[:, :7], b[:, :7]))
+print(f"position 7 changed by {(a[:, 7] - b[:, 7]).abs().max():.3f}")
+
+# A tiny LM on random tokens, with and without the mask: nothing is learnable, so any loss below uniform is leakage
+V, T = 16, 24
+class LM(nn.Module):
+    def __init__(self):
+        super().__init__(); self.e = nn.Embedding(V, 64); self.p = nn.Embedding(64, 64)
+        self.b = DecoderBlock(); self.o = nn.Linear(64, V)
+    def forward(self, x, causal=True):
+        h = self.e(x) + self.p(torch.arange(x.shape[1]))
+        return self.o(self.b(h, torch.zeros(x.shape[0], 1, 64), causal))
+for causal in [True, False]:
+    torch.manual_seed(0); m = LM(); opt = torch.optim.Adam(m.parameters(), 1e-3)
+    for _ in range(200):
+        s = torch.randint(0, V, (32, T + 1))                             # random tokens: no real structure to learn
+        loss = F.cross_entropy(m(s[:, :-1], causal).reshape(-1, V), s[:, 1:].reshape(-1)); opt.zero_grad(); loss.backward(); opt.step()
+    print(f"{'masked  ' if causal else 'unmasked'} training loss on random tokens: {loss.item():.3f}   (uniform = {torch.log(torch.tensor(V)).item():.3f})")
+
+# KV cache: per-token cost of greedy generation as the sequence grows
+attn = nn.MultiheadAttention(256, 8, batch_first=True).eval()
+def step_no_cache(seq):                       # recompute attention over the whole prefix every step
+    return attn(seq, seq, seq, need_weights=False)[0][:, -1:]
+def step_cache(new, K, V_):                   # only the new query; keys/values appended
+    K = torch.cat([K, new], 1); V_ = torch.cat([V_, new], 1)
+    return attn(new, K, V_, need_weights=False)[0], K, V_
+with torch.no_grad():
+    print("\\nprefix length   ms/token no cache   ms/token with cache")
+    for L in [128, 512, 2048]:
+        seq = torch.randn(1, L, 256); new = torch.randn(1, 1, 256)
+        t0 = time.perf_counter(); [step_no_cache(seq) for _ in range(10)]; a = (time.perf_counter() - t0) * 100
+        t0 = time.perf_counter(); [step_cache(new, seq, seq) for _ in range(10)]; b = (time.perf_counter() - t0) * 100
+        print(f"{L:>13}   {a:17.2f}   {b:19.2f}")`,
+        out: `positions 0..6 bit-identical after changing position 7: True
+position 7 changed by 1.000
+masked   training loss on random tokens: 2.789   (uniform = 2.773)
+unmasked training loss on random tokens: 0.145   (uniform = 2.773)
+
+prefix length   ms/token no cache   ms/token with cache
+          128                0.79                  0.51
+          512                4.30                  1.28
+         2048               56.69                  4.20`,
+       
         notes: [
           { t: "p", text: "The causality test should give exactly zero difference at positions before t — the same hard-zero result as lesson 3.6's unidirectional RNN. A hard zero makes it a proof rather than an observation, and it is the test to write first when implementing any causal architecture, because every other symptom of a broken mask is indirect." },
           { t: "p", text: "The unmasked language model is worth building once. Its training loss drops close to zero almost immediately because each position can read the answer from the next position, and its generated text is incoherent because at inference that next position does not exist. The gap between a spectacular training curve and useless generation is the signature, and recognising it saves a lot of time — it is the same class of error as fitting a scaler before splitting your data." },
           { t: "p", text: "The KV cache measurement shows per-token generation time roughly constant with cache and growing with sequence length without it. The cache is not an optimisation you add later; it is what makes autoregressive generation tractable at all. Its cost is memory — 369 MB per sequence at 10,000 tokens for a 12-layer model — which is what bounds concurrent users on a serving box and why multi-query attention was invented." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: generation that slowed down with every token",
+      body: [
+        { t: "p", text: "**Symptom.** A text generator's time per token grew steadily during long outputs." },
+        { t: "p", text: "**Mechanism.** Each step recomputed attention over the whole sequence from scratch instead of caching past keys and values." },
+        { t: "p", text: "**Fix.** Generation uses a KV cache, and time per token is measured as the output grows." }
+      ] }
   ],
 
   takeaways: [

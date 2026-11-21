@@ -164,6 +164,12 @@ serve: ## run the service locally with reload
 
     { t: "exercise", kind: "practice", title: "Three small things, each on a real system", difficulty: "intro", minutes: 25,
       prompt: "First, run `ss -ltnp` inside a container you operate and record the bind address of your service — if it is 127.0.0.1 you have found a pod that passes its own health check and serves nothing externally. Second, reach something deliberately unexposed through a tunnel: forward a port to a database or dashboard with `ssh -N -L`, or `kubectl port-forward`, and note which side the hostname resolved on. Third, take a shell script in your repository and add `set -euo pipefail`, then find out whether anything breaks — a script that relied on a failing command continuing is a script that was reporting success wrongly. Specifically check for any `| tee` and confirm the exit code now comes from the left side.",
+      requirements: [
+        "Run ss -ltnp inside a container and record the service's bind address",
+        "Reach an unexposed service through an SSH or kubectl port-forward tunnel",
+        "Add set -euo pipefail to a real script and see what breaks",
+        "Check any | tee now reports the left side's exit status"
+      ],
       hints: [
         "In a container, `ss` may not be installed; `cat /proc/net/tcp` or adding the probe's own URL to `curl` from another container both work.",
         "For `-L`, the destination hostname resolves on the remote host — that is what lets you reach a database your own machine cannot resolve.",
@@ -174,8 +180,14 @@ serve: ## run the service locally with reload
           { t: "p", text: "The bind-address check is quick and occasionally finds the whole problem: uvicorn and Flask both default to localhost, which is right for development and wrong in a container, and the resulting pod is Ready while refusing every external connection." },
           { t: "p", text: "Adding `pipefail` to an existing script usually breaks something, and that is the finding rather than a regression — a pipeline that was silently swallowing a failure has been reporting success for however long it has existed." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the training wrapper that always succeeded",
+      body: [
+        { t: "p", text: "**Symptom.** A retraining job reported success every night for three weeks, and the registry's newest model was three weeks old." },
+        { t: "p", text: "**Mechanism.** The wrapper ran `python train.py | tee train.log`. A pipeline's exit status is the last command's, so `tee` succeeded and the shell reported success, while the training script had been failing at import since a dependency change." },
+        { t: "p", text: "**Fix.** The wrapper starts with `set -euo pipefail`, so the training script's failure is the pipeline's failure, and a trap uploads the log on any exit. The registry also alerts when no model has been registered for longer than twice the schedule." }
+      ] }
   ],
 
   takeaways: [

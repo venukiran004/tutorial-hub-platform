@@ -78,7 +78,7 @@ prompt bloat, same volume       1000        18    0.05400      972.00       0.97
     { t: "callout", kind: "warn", title: "And traffic growth passes it too, which is the easy mistake",
       body: [
         { t: "p", text: "Ten times the users at identical per-user behaviour is **$3,960 against a $396 baseline** and every single user is at $0.40, well under the cap. A per-user cap is a fairness and abuse control, not a budget control \u2014 it bounds what one client can do to you, not what your bill can do to you." },
-        { t: "p", text: "That distinction is worth being explicit about, because \u2018we have per-user caps\u2019 is often offered as a budget answer. It is a good answer to \u2018can one abusive client 100x our bill\u2019, which the reference raises, and no answer at all to \u2018is our bill about to triple\u2019." },
+        { t: "p", text: "That distinction is worth being explicit about, because \u2018we have per-user caps\u2019 is often offered as a budget answer. It is a good answer to \u2018can one abusive client 100x our bill\u2019, which the usual advice raises, and no answer at all to \u2018is our bill about to triple\u2019." },
         { t: "p", text: "The global daily ceiling is the control that answers the second question, and it is the one teams add last because it feels crude. It is crude, and it is the one that saves you at 3 a.m." }
       ] },
 
@@ -202,7 +202,7 @@ class CostMeter:
     def over_budget(self, key, limit):
         return self.spend.get(key, 0) > limit
 
-print("THE REFERENCE'S CostMeter, RUN")
+print("THE STANDARD CostMeter, RUN")
 print("=" * 72)
 m = CostMeter()
 USAGE = {"input": 3200, "output": 400}
@@ -302,7 +302,7 @@ print("the WARN tier fires on day 5, because it projects the run-rate forward.")
 print("a single hard cap on cumulative spend fires on day 30, when the only")
 print("remaining option is switching the feature off. the warning tier is what")
 print("turns a budget into a decision you have time to make.")`,
-        out: `THE REFERENCE'S CostMeter, RUN
+        out: `THE STANDARD CostMeter, RUN
 ========================================================================
 one call: {'input': 3200, 'output': 400} = $0.022000
 per-user daily cap: $1.00

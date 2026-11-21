@@ -217,6 +217,17 @@ JOIN dim_customer c USING (customer_key) WHERE f.status = 'paid' GROUP BY 1, 2;`
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Choosing the grain after building the fact table",
+
+      body: [
+
+        { t: "p", text: "A fact table built at a coarse grain — one row per order per day — cannot answer questions about individual items or hours later without a rebuild." },
+
+        { t: "p", text: "Choose the grain first, as fine as the measures exist, and aggregate up in queries or summary tables." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Design",
       title: "A star for the events table",
@@ -283,7 +294,14 @@ GROUP BY c.tier, d.is_weekend ORDER BY c.tier, d.is_weekend;`,
           why: "The executed result was 45.00 under plus (the March order) and 112.50 under standard (January and February). History reports as it was."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: last year's revenue moved to a customer's new region",
+      body: [
+        { t: "p", text: "**Symptom.** A regional sales report changed its historical totals when customers moved between regions." },
+        { t: "p", text: "**Mechanism.** The customer dimension was overwritten in place (type 1), so every past fact joined to the customer's current region. History was being reported in today's geography." },
+        { t: "p", text: "**Fix.** The dimension keeps history with validity dates (type 2) and each fact joins to the version valid at its time. Reports that want current geography say so explicitly." }
+      ] }
   ],
 
   takeaways: [

@@ -451,7 +451,14 @@ print("audit: three kinds planted, three kinds found, honest score", after["time
           why: "A time split orders the rows; it does not rebuild the features. A whole-history aggregate folds the future into every earlier row before the split happens. The truncation test — rebuild on a shortened history and compare — is what detects it, and an as-of construction is what fixes it."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a 0.99 AUC that meant nothing",
+      body: [
+        { t: "p", text: "**Symptom.** A hospital-readmission model reported an AUC of 0.99 in a project review." },
+        { t: "p", text: "**Mechanism.** One feature was the discharge disposition code, which was recorded after the readmission decision for some patients. The model had learned to read a field written by the outcome." },
+        { t: "p", text: "**Fix.** Every feature is checked for availability at prediction time, and any model scoring implausibly well is reviewed for target leakage before anyone reports the number." }
+      ] }
   ],
 
   takeaways: [

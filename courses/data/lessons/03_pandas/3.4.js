@@ -681,7 +681,14 @@ def test_longest_run_helper():
           why: "The default `skipna=True` ignores missing values, and the sum of no values is zero — indistinguishable from a column that genuinely totalled zero. `sum(min_count=1)` returns `nan`, which is the honest answer when nothing was there to sum."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an integer id column that became floats",
+      body: [
+        { t: "p", text: "**Symptom.** Customer ids exported from a cleaned dataset appeared as `10234.0`, and a downstream join on the id matched nothing." },
+        { t: "p", text: "**Mechanism.** One row had a missing id. The column was inferred as float to hold NaN, and every id gained a decimal point when written out." },
+        { t: "p", text: "**Fix.** Id columns are read as `string` or the nullable `Int64` dtype, and the export asserts that id columns have their expected dtype before writing." }
+      ] }
   ],
 
   takeaways: [

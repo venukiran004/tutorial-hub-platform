@@ -230,6 +230,17 @@ SELECT ... FROM (the pre-aggregated query) WHERE placed_at >= DATE_TRUNC('month'
 
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Joining before aggregating",
+
+      body: [
+
+        { t: "p", text: "Joining orders to items and then aggregating per customer pushes every item row through the join and multiplies work by the fan-out, and it invites wrong totals." },
+
+        { t: "p", text: "Aggregate each child table to one row per parent before joining, which reduces rows through the join and makes fan-out impossible." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Design",
       title: "Making a dashboard query survive a year of growth",
@@ -303,14 +314,21 @@ SELECT category, SUM(revenue) FROM daily_summary WHERE day >= CURRENT_DATE - 90 
           options: [
             "Partitioning does not support timestamps",
             "The partition key is inside a function, so the planner cannot compare the predicate with the partition bounds; write a half-open range on the bare column and only April's partition is opened",
-            "The partitions need AnalysE",
+            "The partitions need ANALYZE",
             "DATE_TRUNC forces a sequential scan"
           ],
           answer: 1,
           why: "Pruning is sargability at the partition level: the planner matches a bare-key predicate against each child's bounds. A transformed key hides the bounds, exactly as it hides an index."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a dashboard that recomputed last year every morning",
+      body: [
+        { t: "p", text: "**Symptom.** A revenue dashboard's morning refresh grew from two minutes to forty over a year." },
+        { t: "p", text: "**Mechanism.** The query aggregated every order since launch on each refresh. Past days never changed, but every refresh paid for them again, and the cost grew with the table." },
+        { t: "p", text: "**Fix.** Daily totals are kept in a summary table updated incrementally for recent days, and the dashboard reads the summary. The order table was partitioned by month so recent data is scanned alone." }
+      ] }
   ],
 
   takeaways: [

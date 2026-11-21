@@ -207,6 +207,17 @@ aml.leaderboard.head(10)      # the top entry is usually a stacked ensemble`,
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Letting AutoML choose from leaking features",
+
+      body: [
+
+        { t: "p", text: "AutoML optimises whatever it is given. If a feature leaks the label, it will find it and report an excellent model." },
+
+        { t: "p", text: "Screen features for availability at prediction time before AutoML, and review the winning model's top features." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Investigate",
       title: "Run the harness, test the winner, and audit an AutoML claim",
@@ -267,7 +278,14 @@ aml.leaderboard.head(10)      # the top entry is usually a stacked ensemble`,
           why: "Shared folds turn two noisy means into one precise paired comparison."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: AutoML that selected a leak",
+      body: [
+        { t: "p", text: "**Symptom.** An AutoML run produced a model with excellent cross-validated performance that failed in production." },
+        { t: "p", text: "**Mechanism.** The AutoML system found that a timestamp column predicted the label, because records were updated after the outcome. It optimised what it was given." },
+        { t: "p", text: "**Fix.** Inputs to AutoML are screened for availability at prediction time and the winning model's top features are reviewed before deployment." }
+      ] }
   ],
 
   takeaways: [

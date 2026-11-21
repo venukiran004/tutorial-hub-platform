@@ -183,7 +183,14 @@ print([dict(e.actions.state_delta) for e in s.events])
 async for _ in runner.run_async(user_id="u1", session_id="s1", new_message=msg2): pass
 s2 = await runner.session_service.get_session(app_name="demo", user_id="u1", session_id="s1")
 print(len(s2.events), len({e.invocation_id for e in s2.events}))   # 6 2`,
-        notes: [{ t: "p", text: "Two invocations, six events, one session. The invocation id is the grouping you will want in a trace and in a log line; the session id is the grouping a user would recognise as 'the conversation'." }] } }
+        notes: [{ t: "p", text: "Two invocations, six events, one session. The invocation id is the grouping you will want in a trace and in a log line; the session id is the grouping a user would recognise as 'the conversation'." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: InMemoryRunner in production",
+      body: [
+        { t: "p", text: "**Symptom.** A team's agent worked in testing and lost conversations in production whenever traffic was spread across more than one replica: a user's second message was answered as if it were their first." },
+        { t: "p", text: "**Mechanism.** The service was built on `InMemoryRunner`, which bundles an in-memory session service. Each replica held its own sessions, so the load balancer sent turns of one conversation to processes that had never seen it. Nothing errored, because a missing session is simply created." },
+        { t: "p", text: "**Fix.** The runner is constructed with a database session service shared by every replica, and the app refuses to start in production with an in-memory service. `InMemoryRunner` is kept for tests only." }
+      ] }
   ],
 
   takeaways: [

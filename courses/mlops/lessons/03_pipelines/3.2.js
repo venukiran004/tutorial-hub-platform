@@ -168,18 +168,64 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Find your own noise floor", difficulty: "core", minutes: 30,
       prompt: "Retrain your production model with nothing changed but the random seed, and paired-bootstrap the metric difference against the incumbent on your real holdout. Record the interval's half-width in your metric's units. Then look up the last three models your team promoted and the improvement each one claimed. How many of those improvements were larger than the floor you just measured? Finally, compute the floor at half and twice your current holdout size, and decide whether holding back more data for evaluation would be worth what it costs in training rows.",
+      requirements: [
+        "Retrain with only the seed changed and paired-bootstrap the metric difference on the real holdout",
+        "Record the interval's half-width in your metric's units",
+        "Compare the last three promoted improvements against that floor",
+        "Compute the floor at half and twice the holdout size"
+      ],
       hints: [
         "Pair the bootstrap — resample rows once and score both models on the same resample, or the interval will be far too wide to be useful.",
         "If your holdout is a few hundred rows, expect a floor near a full point and read your recent promotions accordingly.",
         "The last step is a genuine trade: rows moved to the holdout are rows not trained on, and module 1 found more data was worth +0.0004 here."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import numpy as np
+from sklearn.datasets import fetch_covtype
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+
+X, y = fetch_covtype(return_X_y=True); y = (y == 2).astype(int)        # a binary task with a realistic holdout
+Xtr, Xho, ytr, yho = train_test_split(X[:7000], y[:7000], test_size=2000, random_state=0)   # a modest dataset, like most teams have
+
+def fit(seed):
+    return RandomForestClassifier(n_estimators=50, max_features="sqrt", n_jobs=-1, random_state=seed).fit(Xtr, ytr).predict_proba(Xho)[:, 1]
+
+incumbent = fit(0)
+challenger = fit(1)                                               # NOTHING changed but the seed
+rng = np.random.default_rng(0); diffs = []
+for _ in range(1000):                                             # paired bootstrap: the same rows for both models
+    i = rng.integers(0, len(yho), len(yho))
+    diffs.append(roc_auc_score(yho[i], challenger[i]) - roc_auc_score(yho[i], incumbent[i]))
+lo, hi = np.percentile(diffs, [2.5, 97.5])
+point = roc_auc_score(yho, challenger) - roc_auc_score(yho, incumbent)
+print(f"seed-only difference in AUC: {point:+.4f}   95% paired-bootstrap interval [{lo:+.4f}, {hi:+.4f}]   half-width {(hi - lo) / 2:.4f}")
+
+print("\\nseed spread over ten retrains:")
+aucs = [roc_auc_score(yho, fit(s)) for s in range(10)]
+print(f"  AUC min {min(aucs):.4f}  max {max(aucs):.4f}  range {max(aucs) - min(aucs):.4f}")
+claims = [0.002, 0.004, 0.010]                                    # e.g. the last three promotions' claimed gains
+print("  claimed improvements inside the noise floor:", [c for c in claims if c < (hi - lo) / 2], "of", claims)`,
+        out: `seed-only difference in AUC: -0.0006   95% paired-bootstrap interval [-0.0037, +0.0026]   half-width 0.0031
+
+seed spread over ten retrains:
+  AUC min 0.9570  max 0.9611  range 0.0041
+  claimed improvements inside the noise floor: [0.002] of [0.002, 0.004, 0.01]`,
+       
         notes: [
           { t: "p", text: "The usual outcome is uncomfortable: at least one recently promoted improvement sits inside the floor, which means it was a coin flip reported as progress. That is worth knowing without being a scandal — the fix is to publish the interval alongside the point estimate from now on." },
           { t: "p", text: "The holdout-size trade is often easier than expected. Here, doubling the training data bought +0.0004 AUC while doubling the holdout halved the detectable difference, so moving rows from training to evaluation was clearly the better use of them." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: six promotions, no improvement",
+      body: [
+        { t: "p", text: "**Symptom.** A team promoted six challengers in a quarter, each reporting a gain of one or two tenths of an AUC point. Business metrics did not move, and a later audit could not distinguish the sixth model from the first." },
+        { t: "p", text: "**Mechanism.** Retraining the identical model with a different seed moved the metric by about as much as the claimed gains. The gate compared a point estimate against the incumbent and promoted anything positive, so it was promoting seed noise. Each promotion also carried deployment risk for no benefit." },
+        { t: "p", text: "**Fix.** The gate now requires the paired-bootstrap interval on the difference to exclude zero, with the threshold derived from the holdout size. Promotions fell to one in the following quarter, and that one moved the business metric." }
+      ] }
   ],
 
   takeaways: [

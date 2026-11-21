@@ -344,6 +344,17 @@ u.max() * (len(u)+1)/len(u)            # 10.06 -- the corrected version
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Insisting on an unbiased estimator",
+
+      body: [
+
+        { t: "p", text: "An unbiased estimator can have so much variance that a slightly biased one is far closer to the truth on average. Choosing the unbiased one by principle can make estimates worse." },
+
+        { t: "p", text: "Compare estimators by mean squared error on simulated data that resembles yours, and accept a little bias when it buys a large reduction in variance." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Rank items by quality when counts differ wildly",

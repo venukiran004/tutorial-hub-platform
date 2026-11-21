@@ -373,6 +373,17 @@ t_mono[["n", "rate", "woe"]].round(3)
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Binning a continuous feature with sparse bins",
+
+      body: [
+
+        { t: "p", text: "Weight of Evidence on bins with few observations produces extreme values, and a bin with no positives or no negatives gives an infinite WoE." },
+
+        { t: "p", text: "Merge bins until each has enough observations of both classes, and add a small smoothing constant." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A WoE encoder and IV screen, leak-safe, for a scorecard",
@@ -661,7 +672,14 @@ def test_intercept_is_the_prior_log_odds():
           why: "The scale is the point of WoE. A coefficient near 1 means the model trusts the feature's own evidence as-is. One far above means the training encoding predicted the target better than it should — the same in-sample leak as naive target encoding — and the feature is the one to investigate."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an Information Value that ranked a leak first",
+      body: [
+        { t: "p", text: "**Symptom.** A credit-scoring project's feature ranking put 'number of collection calls' at the top by a wide margin." },
+        { t: "p", text: "**Mechanism.** Collection calls happen after an account goes delinquent, so the feature was largely a record of the outcome. Information Value measures separation, and nothing separates better than the label." },
+        { t: "p", text: "**Fix.** Features are screened for availability at decision time before ranking, and any feature with an implausibly high Information Value is investigated for leakage first." }
+      ] }
   ],
 
   takeaways: [

@@ -148,6 +148,13 @@ Environment=OMP_NUM_THREADS=2    # lesson 4.1: limits are not virtualised` },
 
     { t: "exercise", kind: "practice", title: "Prove your service drains", difficulty: "core", minutes: 25,
       prompt: "For a containerised service you run, establish whether it actually handles shutdown. Send SIGTERM to pid 1 inside the container and watch the logs: a server that drains logs its shutdown sequence, one that does not logs nothing and then dies when the grace period expires. If it does not drain, check whether the entrypoint is exec form or shell form. Then check two process-level things: whether anything in the container forks — DataLoader workers, multiprocessing, a subprocess — and therefore needs a reaping init, and whether the grace period exceeds your measured p99 request duration. If you also run a cron job, check it for all four of the fixes in section 5.",
+      requirements: [
+        "Send SIGTERM to pid 1 inside a container and watch whether the service drains",
+        "If not, check whether the entrypoint is exec or shell form",
+        "Check whether anything forks and so needs a reaping init",
+        "Compare the grace period with your measured p99 request duration",
+        "If you run a cron job, check it for all four fixes in section 5"
+      ],
       hints: [
         "`kill -TERM 1` from inside the container is the test; `docker stop` conflates the signal with the timeout.",
         "`ps -ef` inside the container shows whether your process is pid 1 or a child of a shell.",
@@ -158,8 +165,14 @@ Environment=OMP_NUM_THREADS=2    # lesson 4.1: limits are not virtualised` },
           { t: "p", text: "The commonest finding is a shell-form entrypoint, which puts the service in the *no handler* row of the measurement: nothing drains, and the dropped requests on every deploy get blamed on the load balancer. The fix is one line and it is the difference between the one row of four that worked and the three that did not." },
           { t: "p", text: "The cron audit usually finds a bare `python` relying on PATH, which is why the job works by hand and silently does nothing on schedule — and if output is not redirected, the error went to a mail spool nobody reads." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the nightly export that ran twice",
+      body: [
+        { t: "p", text: "**Symptom.** A nightly cron job writing features to a table produced duplicate rows on some days and none on others. The script worked whenever someone ran it by hand." },
+        { t: "p", text: "**Mechanism.** Two causes compounded. Cron runs with a minimal environment, so on days a credential refresh was needed the script failed for want of a variable set only in an interactive shell. On days a run was slow, the next scheduled invocation started while the previous one still held its data, because cron has no overlap protection." },
+        { t: "p", text: "**Fix.** The job runs under a lock with `flock -n`, sets its environment explicitly, writes to a staging location and swaps atomically, and reports its exit status to monitoring. It was later moved to a scheduler with retries and run history (lesson 3.1)." }
+      ] }
   ],
 
   takeaways: [

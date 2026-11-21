@@ -132,18 +132,79 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Map the ceiling", difficulty: "intermediate", minutes: 35,
       prompt: "Build the signal-at-position-0 task from lesson 3.3 and find where a vanilla RNN's accuracy falls to chance, sweeping lag from 5 to 60 in steps of 5. For each lag, also record the gradient norm arriving at position 0 before training. Plot accuracy and gradient on the same axis with a log scale for the gradient, and identify the gradient magnitude below which learning fails.",
+      requirements: [
+        "Build the signal-at-position-0 task and sweep lag from 5 to 60",
+        "Record accuracy and the pre-training gradient at position 0 for each lag",
+        "Plot both on one axis",
+        "Identify the gradient magnitude below which learning fails"
+      ],
       hints: [
         "Keep hidden size, optimiser and step count fixed across lags.",
         "Use `retain_grad()` on the embedding output for per-position gradients.",
         "The accuracy cliff and the gradient threshold should line up."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+def data(n, lag):                                   # the signal-at-position-0 task from lesson 3.3
+    x = torch.zeros(n, lag, 2); x[:, :, 1] = torch.randn(n, lag); y = (torch.rand(n) > 0.5).long()
+    x[:, 0, 0] = y.float() * 2 - 1; return x, y
+
+class Net(nn.Module):
+    def __init__(self):
+        super().__init__(); self.r = nn.RNN(2, 32, batch_first=True); self.o = nn.Linear(32, 2)
+    def forward(self, x): return self.o(self.r(x)[0][:, -1])
+
+def grad_at_0(lag):
+    torch.manual_seed(0); m = Net(); x, y = data(256, lag); x.requires_grad_(True)
+    F.cross_entropy(m(x), y).backward(); return x.grad[:, 0].norm(dim=1).mean().item()
+
+def accuracy(lag, steps=800):
+    torch.manual_seed(0); m = Net(); opt = torch.optim.Adam(m.parameters(), 3e-3)
+    for _ in range(steps):
+        x, y = data(64, lag); loss = F.cross_entropy(m(x), y); opt.zero_grad(); loss.backward(); opt.step()
+    with torch.no_grad(): x, y = data(2000, lag); return (m(x).argmax(1) == y).float().mean().item()
+
+rows = [(lag, grad_at_0(lag), accuracy(lag)) for lag in range(5, 61, 5)]
+print("lag  grad at t=0   accuracy")
+for lag, g, a in rows: print(f"{lag:<4} {g:11.2e}   {a:8.3f}")
+first_fail = next((i for i, (_, _, a) in enumerate(rows) if a < 0.9), len(rows))
+if first_fail < len(rows):
+    lag, g, _ = rows[first_fail - 1]
+    print(f"\\nreliable through lag {lag} (starting gradient {g:.1e}); beyond that single runs succeed or fail by luck,"
+          f" so map the edge with several seeds per lag")
+# To plot: ax.semilogy(lags, grads); ax2 = ax.twinx(); ax2.plot(lags, accs)`,
+        out: `lag  grad at t=0   accuracy
+5       1.26e-05      1.000
+10      1.97e-06      1.000
+15      1.35e-07      1.000
+20      2.00e-08      1.000
+25      2.27e-09      1.000
+30      2.22e-10      1.000
+35      2.19e-11      0.512
+40      2.27e-12      0.495
+45      2.32e-13      1.000
+50      2.38e-14      0.506
+55      2.43e-15      1.000
+60      2.51e-16      0.495
+
+reliable through lag 30 (starting gradient 2.2e-10); beyond that single runs succeed or fail by luck, so map the edge with several seeds per lag`,
+       
         notes: [
           { t: "p", text: "The two curves lining up is the result worth having. Accuracy holds near 100 % while the gradient at position 0 stays above some threshold and collapses to chance below it — which makes the abstract claim about vanishing gradients into a concrete, predictive number for your setup. Once you have it, you can estimate whether a given architecture will work on a given dependency length before training anything." },
           { t: "p", text: "One thing to be careful about: this task is unusually easy for an RNN because it only requires preserving a single bit. In my measurements a vanilla RNN solved it at lags of 20 and 30 where I expected failure, and only broke down at 50. Real tasks require carrying much richer state, so the practical ceiling is lower than a single-bit probe suggests — treat the number you measure as an upper bound rather than a typical case." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: an RNN that silently ignored early input",
+      body: [
+        { t: "p", text: "**Symptom.** A vanilla RNN's accuracy on a long-dependency task was at chance, and the team kept tuning the learning rate." },
+        { t: "p", text: "**Mechanism.** The gradient reaching early positions had decayed by many orders of magnitude, so no learning rate could make the model use them." },
+        { t: "p", text: "**Fix.** The gradient at early positions is measured before training, and an LSTM or GRU is used for long dependencies." }
+      ] }
   ],
 
   takeaways: [

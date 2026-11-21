@@ -322,6 +322,17 @@ cross_val_score(pipe, X_train, y_train, cv=StratifiedKFold(5, shuffle=True), sco
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Starting with the model instead of the framing",
+
+      body: [
+
+        { t: "p", text: "Teams often begin with data and a model and discover at handover that the prediction horizon, the decision it supports or the delivery format does not fit the business. The model is good and unusable." },
+
+        { t: "p", text: "Write the framing first: the decision, the horizon, the metric with a target, the baseline, and how predictions reach the people who act on them." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "The pipeline on a second problem",
@@ -390,7 +401,14 @@ mean_absolute_error(y_test, best.predict(X_test))       # 7.10, reported once
           why: "The churn-by-refund table showed 0.862 against 0.029. Real predictors of churn correlate at 0.1–0.3; 0.83 is a consequence, not a cause."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: twelve weeks on a model nobody could deploy",
+      body: [
+        { t: "p", text: "**Symptom.** A churn model reached a strong offline score after three months of work. At the handover, the retention team said they needed predictions a month ahead, and the model used data only available a week before cancellation." },
+        { t: "p", text: "**Mechanism.** Step one — framing the decision, the prediction horizon and the deployment shape — had been skipped. Every later step was done well against the wrong question." },
+        { t: "p", text: "**Fix.** The project restarted with a one-page framing document: the decision, the horizon, the metric with a number, the baseline and how predictions would be delivered. It is now signed off before any data work begins." }
+      ] }
   ],
 
   takeaways: [

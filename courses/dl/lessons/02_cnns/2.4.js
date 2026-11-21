@@ -69,9 +69,9 @@ EC.receiveLesson({
     { t: "callout", kind: "trap", title: "This ratio is commonly written upside down",
       body: [{ t: "p", text: "a commonly quoted formula gives the saving as `C_out/(k²) + 1`, which would grow with the channel count rather than shrink. The correct ratio is `1/C_out + 1/k²` — and the worked example confirms it: 8,768 / 73,728 = 0.1189, and 1/128 + 1/9 = 0.1189 exactly. Since `C_out` is usually large, the `1/k²` term dominates, which is where the familiar 'about 9× cheaper for a 3×3' comes from." }] },
 
-    { t: "out", text: `  standard  3^2 x 64 x 128          = 73,728   (reference: 73,728)
-  separable 3^2 x 64 + 64 x 128     = 8,768    (reference: 8,768)
-  saving 8.41x  (reference: 8.4x)
+    { t: "out", text: `  standard  3^2 x 64 x 128          = 73,728   (by hand: 73,728)
+  separable 3^2 x 64 + 64 x 128     = 8,768    (by hand: 8,768)
+  saving 8.41x  (by hand: 8.4x)
   ratio formula 1/Cout + 1/k^2 = 1/128 + 1/9 = 0.1189
   measured                                   = 0.1189` },
 
@@ -150,18 +150,81 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Build and measure all four", difficulty: "intermediate", minutes: 30,
       prompt: "Take one convolutional block at 256 channels and produce four variants: plain, bottlenecked with 1×1s, depthwise separable, and with an SE module attached. For each, record parameter count, forward-pass latency on your machine, and output shape. Then verify the `1/C_out + 1/k²` ratio holds across at least four (C_out, k) pairs. Finally, feed a batch through an SE block and inspect the gate values — do different images produce different gates?",
+      requirements: [
+        "Build plain, bottlenecked, depthwise separable and SE variants of one 256-channel block",
+        "Record parameters, latency and output shape for each",
+        "Verify the 1/C_out + 1/k² ratio for four (C_out, k) pairs",
+        "Inspect SE gate values across a batch"
+      ],
       hints: [
         "Use `groups=C_in` for the depthwise step.",
         "Time with `torch.cuda.synchronize()` if you are on a GPU, or the parameter saving will look like a latency saving that isn't there.",
         "Compare gates for two very different images to see whether the block is actually input-dependent."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import time
+import torch
+import torch.nn as nn
+torch.manual_seed(0)
+C = 256
+
+class SE(nn.Module):
+    def __init__(self, c, r=16):
+        super().__init__(); self.fc = nn.Sequential(nn.Linear(c, c // r), nn.ReLU(), nn.Linear(c // r, c), nn.Sigmoid())
+    def forward(self, x):
+        self.gates = self.fc(x.mean((2, 3)))
+        return x * self.gates[:, :, None, None]
+
+variants = {
+    "plain 3x3": nn.Conv2d(C, C, 3, padding=1),
+    "bottleneck 1x1-3x3-1x1": nn.Sequential(nn.Conv2d(C, C // 4, 1), nn.Conv2d(C // 4, C // 4, 3, padding=1), nn.Conv2d(C // 4, C, 1)),
+    "depthwise separable": nn.Sequential(nn.Conv2d(C, C, 3, padding=1, groups=C), nn.Conv2d(C, C, 1)),
+    "plain 3x3 + SE": nn.Sequential(nn.Conv2d(C, C, 3, padding=1), SE(C)),
+}
+x = torch.randn(8, C, 28, 28)
+print(f"{'variant':<24} {'params':>9}  {'ms/batch':>8}  output")
+with torch.no_grad():
+    for name, m in variants.items():
+        m.eval(); m(x)                                    # warm-up
+        t0 = time.perf_counter(); [m(x) for _ in range(10)]; ms = (time.perf_counter() - t0) * 100
+        print(f"{name:<24} {sum(p.numel() for p in m.parameters()):>9,}  {ms:8.1f}  {tuple(m(x).shape)}")
+
+print("\\nC_out  k   separable/standard (weights only)   1/C_out + 1/k^2")
+for c_out, k in [(64, 3), (256, 3), (256, 5), (512, 7)]:
+    std = c_out * c_out * k * k
+    sep = c_out * k * k + c_out * c_out
+    print(f"{c_out:<6} {k}   {sep / std:34.5f}   {1 / c_out + 1 / k ** 2:15.5f}")
+
+se = SE(C); se(torch.randn(16, C, 7, 7))
+g = se.gates
+print(f"\\nSE gates, untrained: min {g.min():.3f}  max {g.max():.3f}  std across images (mean over channels) {g.std(0).mean():.4f}")`,
+        out: `variant                     params  ms/batch  output
+plain 3x3                  590,080      40.0  (8, 256, 28, 28)
+bottleneck 1x1-3x3-1x1      70,016       7.6  (8, 256, 28, 28)
+depthwise separable         68,352       7.2  (8, 256, 28, 28)
+plain 3x3 + SE             598,544      39.0  (8, 256, 28, 28)
+
+C_out  k   separable/standard (weights only)   1/C_out + 1/k^2
+64     3                              0.12674           0.12674
+256    3                              0.11502           0.11502
+256    5                              0.04391           0.04391
+512    7                              0.02236           0.02236
+
+SE gates, untrained: min 0.414  max 0.578  std across images (mean over channels) 0.0072`,
+       
         notes: [
           { t: "p", text: "The parameter counts follow the formulas closely — small discrepancies are biases, which the formulas ignore. The latency comparison is the interesting one: on a GPU the depthwise variant will usually not be anything like 8× faster despite having 8× fewer parameters, because it is memory-bound rather than compute-bound. That gap between FLOPs and wall-clock is the single most common way people mispredict the cost of an architecture." },
           { t: "p", text: "For the gates: an untrained SE block produces gates clustered near 0.5 and barely input-dependent, because the second FC layer is near zero and the sigmoid is near its centre — I measured a range of 0.430 to 0.565. After training the spread widens considerably and becomes genuinely image-dependent, which is the whole point. If you only ever look at an untrained block you might conclude SE does nothing." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a mobile model that was not faster",
+      body: [
+        { t: "p", text: "**Symptom.** A model rebuilt with depthwise separable convolutions had a fraction of the FLOPs and ran no faster on the target phone." },
+        { t: "p", text: "**Mechanism.** Depthwise convolutions have low arithmetic intensity, and the phone's runtime was limited by memory bandwidth. FLOPs did not predict latency." },
+        { t: "p", text: "**Fix.** Architecture choices are made from latency measured on the target device, not from FLOP counts." }
+      ] }
   ],
 
   takeaways: [

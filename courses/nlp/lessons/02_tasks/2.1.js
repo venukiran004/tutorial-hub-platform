@@ -160,21 +160,118 @@ result = classifier(
     { t: "callout", kind: "good", title: "The order to try things in",
       body: [{ t: "p", text: "Majority-class baseline, then TF-IDF with all three classical classifiers, then a fine-tuned transformer — in that order, because each step tells you what the next one has to beat. Here the majority baseline was 0.2583 and Naive Bayes reached 0.8933 in seconds; a transformer would have to clear that to justify its cost. It is a common and expensive mistake to start with fine-tuning, get 0.91, and never discover that a model you could have trained on a laptop reached 0.89." }] },
 
+    { t: "callout", kind: "trap", title: "Reporting accuracy on imbalanced text classes",
+
+      body: [
+
+        { t: "p", text: "With a rare class, a classifier that never predicts it scores high accuracy. Text classification problems are often imbalanced — urgent tickets, spam, rare intents." },
+
+        { t: "p", text: "Report macro-F1 and per-class recall, with a majority-class baseline." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Run the ladder", difficulty: "core", minutes: 40,
       prompt: "On a text classification dataset of your choice, evaluate in order: majority-class baseline, Naive Bayes, logistic regression and LinearSVC over TF-IDF, then a fine-tuned transformer. Report accuracy and macro-F1 for each, and training time. Then deliberately make the dataset imbalanced by downsampling one class to 2 % and repeat, watching what happens to accuracy against macro-F1. Finally, inspect the top-weighted features for the linear models and check they are sensible.",
+      requirements: [
+        "Evaluate a majority baseline, Naive Bayes, logistic regression, LinearSVC and a fine-tuned transformer",
+        "Report accuracy, macro-F1 and training time for each",
+        "Downsample one class to 2% and repeat",
+        "Inspect the top-weighted features of the linear model"
+      ],
       hints: [
         "Wrap the vectoriser in a `Pipeline` so it is refitted inside each CV fold.",
         "Time the training as well as measuring accuracy — the ratio is part of the decision.",
         "Under imbalance, also report per-class recall, not just the averages."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import time
+import numpy as np
+import torch
+import torch.nn.functional as F
+from datasets import load_dataset
+from sklearn.dummy import DummyClassifier
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, f1_score
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.svm import LinearSVC
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, logging as hf_logging
+hf_logging.set_verbosity_error(); hf_logging.disable_progress_bar()
+
+sst = load_dataset("nyu-mll/glue", "sst2")
+Xtr_all, ytr_all = np.array(sst["train"]["sentence"][:8000]), np.array(sst["train"]["label"][:8000])
+Xte, yte = np.array(sst["validation"]["sentence"]), np.array(sst["validation"]["label"])
+
+def finetune(X, y, Xte, steps=250):
+    tok = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+    model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=2)
+    opt = torch.optim.AdamW(model.parameters(), 3e-5); g = torch.Generator().manual_seed(0)
+    for _ in range(steps):
+        i = torch.randint(0, len(X), (32,), generator=g).numpy()
+        enc = tok(list(X[i]), padding=True, truncation=True, max_length=64, return_tensors="pt")
+        loss = F.cross_entropy(model(**enc).logits, torch.tensor(y[i])); opt.zero_grad(); loss.backward(); opt.step()
+    model.eval(); preds = []
+    with torch.no_grad():
+        for j in range(0, len(Xte), 128):
+            enc = tok(list(Xte[j:j + 128]), padding=True, truncation=True, max_length=64, return_tensors="pt")
+            preds.append(model(**enc).logits.argmax(1).numpy())
+    return np.concatenate(preds)
+
+def ladder(X, y, Xte, yte, label, with_transformer=True):
+    print(f"\\n{label}: {len(X):,} training sentences ({y.mean():.1%} positive), {len(Xte):,} test ({yte.mean():.1%} positive)")
+    print(f"{'model':<28} {'accuracy':>8} {'macro-F1':>9} {'train s':>8}")
+    vec = TfidfVectorizer(ngram_range=(1, 2), min_df=2); Xv, Xt = vec.fit_transform(X), vec.transform(Xte)
+    for name, clf in [("majority class", DummyClassifier()), ("Naive Bayes", MultinomialNB()),
+                      ("logistic regression", LogisticRegression(max_iter=3000, C=4)), ("LinearSVC", LinearSVC())]:
+        t0 = time.time(); clf.fit(Xv, y); p = clf.predict(Xt); s = time.time() - t0
+        print(f"{name:<28} {accuracy_score(yte, p):8.3f} {f1_score(yte, p, average='macro'):9.3f} {s:8.1f}")
+        if name == "logistic regression" and with_transformer:
+            feats = np.array(vec.get_feature_names_out()); order = np.argsort(clf.coef_[0])
+            print("   most negative:", ", ".join(feats[order[:8]])); print("   most positive:", ", ".join(feats[order[-8:][::-1]]))
+    if with_transformer:
+        t0 = time.time(); p = finetune(X, y, Xte); s = time.time() - t0
+        print(f"{'DistilBERT, 250 steps':<28} {accuracy_score(yte, p):8.3f} {f1_score(yte, p, average='macro'):9.3f} {s:8.0f}")
+
+ladder(Xtr_all, ytr_all, Xte, yte, "balanced")
+rng = np.random.default_rng(0)
+neg, pos = np.where(ytr_all == 0)[0], np.where(ytr_all == 1)[0]
+keep = np.concatenate([neg, rng.choice(pos, int(len(neg) * 0.02 / 0.98), replace=False)])
+tneg, tpos = np.where(yte == 0)[0], np.where(yte == 1)[0]
+tkeep = np.concatenate([tneg, rng.choice(tpos, max(1, int(len(tneg) * 0.02 / 0.98)), replace=False)])
+ladder(Xtr_all[keep], ytr_all[keep], Xte[tkeep], yte[tkeep], "positives downsampled to 2% in training AND test", with_transformer=False)`,
+        out: `
+balanced: 8,000 training sentences (55.5% positive), 872 test (50.9% positive)
+model                        accuracy  macro-F1  train s
+majority class                  0.509     0.337      0.0
+Naive Bayes                     0.769     0.764      0.0
+logistic regression             0.781     0.780      0.3
+   most negative: too, bad, no, dull, stupid, not, lacks, worst
+   most positive: good, best, entertaining, love, enjoyable, funny, world, solid
+LinearSVC                       0.768     0.768      0.1
+DistilBERT, 250 steps           0.872     0.871     1088
+
+positives downsampled to 2% in training AND test: 3,634 training sentences (2.0% positive), 436 test (1.8% positive)
+model                        accuracy  macro-F1  train s
+majority class                  0.982     0.495      0.0
+Naive Bayes                     0.982     0.495      0.0
+logistic regression             0.982     0.495      0.0
+LinearSVC                       0.979     0.495      0.0`,
+       
         notes: [
           { t: "p", text: "The training-time column changes how the accuracy column reads. I measured Naive Bayes reaching 0.8933 in under a second where a fine-tuned transformer takes minutes on a GPU, and if the gap is two points then the right choice depends entirely on what those two points are worth in your application. Reporting accuracy without cost makes that decision invisible." },
           { t: "p", text: "The imbalance experiment is worth doing deliberately because the effect is so large: at a 2 % positive rate, a model predicting only the majority scores 0.98 accuracy and 0.4949 macro-F1 with zero recall on the class of interest. Once you have seen those two numbers side by side for a model that has learned nothing, a bare accuracy figure never looks the same again." },
           { t: "p", text: "Reading the top features is the fastest sanity check in classical NLP. If they are sensible domain words, the pipeline is sound. If they are stopwords, the idf is not doing enough — and remember from lesson 1.4 that idf downweights but does not remove them. If they are artefacts like document IDs or boilerplate, you have leakage and the accuracy is fictional." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: 98% accuracy that caught no complaints",
+      body: [
+        { t: "p", text: "**Symptom.** A model for routing urgent complaints reported 98% accuracy and routed almost none." },
+        { t: "p", text: "**Mechanism.** Urgent complaints were 2% of tickets, and the model predicted 'not urgent' for nearly everything." },
+        { t: "p", text: "**Fix.** The model is evaluated on recall and precision for the urgent class and macro-F1 overall, with a majority-class baseline in every report." }
+      ] }
   ],
 
   takeaways: [

@@ -123,6 +123,17 @@ LLMRegistry.register(MyLlm)`,
         { label: "Record the model on every answer", desc: "otherwise a silent degradation looks like a model regression", tone: "crit" }
       ] },
 
+    { t: "callout", kind: "trap", title: "Sending the same document as a part on every turn",
+
+      body: [
+
+        { t: "p", text: "A PDF attached to every message is re-read by the model on every turn, so cost grows with each exchange and the conversation slows. It works in a two-turn demo and becomes expensive in real use." },
+
+        { t: "p", text: "Extract what the agent needs once — into state, an artifact or a retrieval index — and attach media only to the turn that introduces it." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Send a document, then decide against it", difficulty: "core", minutes: 15,
       body: [{ t: "p", text: "Write the code to ask an agent a question about a PDF two ways: (a) by sending the document as a Part on every turn; (b) by extracting the answer once in a tool and putting it in session state. Then state which you would ship for each of these: a one-off 'summarise this contract', a support agent that answers questions about the same 200-page manual all day, and an agent that checks whether a scanned form is signed." }],
       requirements: ["Both code paths", "A verdict for each of the three scenarios", "The cost argument stated in terms of what is re-sent"],
@@ -138,7 +149,14 @@ LLMRegistry.register(MyLlm)`,
 (c) is the form signed?       → send the image. The question is about pixels, and no
     text extraction can answer it. Keep the image out of the ongoing context after
     the check, or every later turn re-sends it.`,
-        notes: [{ t: "p", text: "The rule behind all three: send the media when the question is about the media, and pre-process when the same media answers many questions. The failure mode is leaving a large part in the conversation after the turn that needed it, so it is re-sent for the rest of the session — one more argument for compaction (lesson 5.6)." }] } }
+        notes: [{ t: "p", text: "The rule behind all three: send the media when the question is about the media, and pre-process when the same media answers many questions. The failure mode is leaving a large part in the conversation after the turn that needed it, so it is re-sent for the rest of the session — one more argument for compaction (lesson 5.6)." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the 200-page manual sent on every turn",
+      body: [
+        { t: "p", text: "**Symptom.** A support agent answering questions about one product manual was slow and expensive, and got slower as conversations went on." },
+        { t: "p", text: "**Mechanism.** The manual was attached as a file part to every user message so the model could \"always see it\". Each turn re-sent the whole document plus a growing history, so input tokens were dominated by the same 200 pages, re-read on every call." },
+        { t: "p", text: "**Fix.** The manual sits behind a retrieval tool, so the model fetches the relevant section only when it needs one (lesson 7.1). Multimodal input is kept for one-off documents a user uploads." }
+      ] }
   ],
 
   takeaways: [

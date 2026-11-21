@@ -154,6 +154,13 @@ ENTRYPOINT python -m uvicorn src.app:app` },
 
     { t: "exercise", kind: "practice", title: "Rewrite one Dockerfile", difficulty: "core", minutes: 30,
       prompt: "Take a model service Dockerfile you own and make five specific changes, measuring the first two. Split serving requirements from training requirements and sum the site-packages footprint you removed. Move the dependency install above the source copy and copy narrowly. Add a non-root user. Convert the entrypoint to exec form and confirm your server handles SIGTERM — send one and watch whether it drains or is killed. Add a health check that touches the model, with a start period at least as long as your measured import time. Then decide deliberately where your model artifact lives, and write down what rollback means under that choice.",
+      requirements: [
+        "Split serving from training requirements and sum the footprint removed",
+        "Move the dependency install above a narrow source copy",
+        "Add a non-root user and an exec-form entrypoint, and confirm the server drains on SIGTERM",
+        "Add a health check that touches the model, with a start period at least the measured import time",
+        "Decide where the model artifact lives and write down what rollback means"
+      ],
       hints: [
         "Send SIGTERM by hand (`docker stop` or `kill -TERM 1` inside) and watch the logs: a server that drains logs its shutdown, one that is killed logs nothing.",
         "If the base is alpine and anything compiles from source, try slim and compare build times before defending the choice.",
@@ -164,8 +171,14 @@ ENTRYPOINT python -m uvicorn src.app:app` },
           { t: "p", text: "The requirements split and the install ordering are usually the two biggest wins and both are a few minutes of work. The SIGTERM test is the one that surprises people: shell-form entrypoints are common, and the symptom — dropped requests on every deploy — is usually blamed on the load balancer." },
           { t: "p", text: "The artifact question rarely has a wrong answer, but leaving it undecided does: teams end up with a model baked into an image *and* a volume override in one environment, at which point nobody can say what is serving." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: requests dropped on every deploy",
+      body: [
+        { t: "p", text: "**Symptom.** Each rollout of a model service produced a burst of failed requests. The failures stopped once the rollout finished, so they were treated as normal for months." },
+        { t: "p", text: "**Mechanism.** The image used the shell form of `CMD`, so the shell was pid 1 and the server was its child. On shutdown the runtime sent SIGTERM to the shell, which did not forward it. The server never drained; after the grace period it was killed with in-flight requests on it." },
+        { t: "p", text: "**Fix.** The entrypoint uses the exec form so the server is pid 1 and receives the signal, and the server handles SIGTERM by finishing in-flight work. A deploy test now sends traffic through a rollout and fails on any dropped request." }
+      ] }
   ],
 
   takeaways: [

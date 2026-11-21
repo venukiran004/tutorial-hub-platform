@@ -214,7 +214,14 @@ k  alpha   busiest expert share at step 0 / 100 / 400   held-out task MSE
           { t: "p", text: "Top-1 routing behaved the same way but scored worse throughout (0.0308 unbalanced, 0.0343 balanced), because each token gets one expert's opinion instead of a blend of two. An earlier version of this experiment used clusters so far apart that a linear router could not split them. Every α then gave an identical 80% share. If balancing appears to do nothing, check whether the inputs leave the router any choice." },
           { t: "p", text: "The 8×7B-style configuration has 46.7B parameters in total and 12.9B active per token. All 93 GB of fp16 weights must still be in memory, because any token may route to any expert. MoE saves compute per token, not memory." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: an MoE model where one expert did all the work",
+      body: [
+        { t: "p", text: "**Symptom.** A mixture-of-experts model trained to the same loss as a dense model of the same active size, with no benefit from its extra parameters." },
+        { t: "p", text: "**Mechanism.** Without a load-balancing loss the router sent most tokens to one expert. The other experts barely trained." },
+        { t: "p", text: "**Fix.** An auxiliary load-balancing loss was added and expert utilisation is monitored during training." }
+      ] }
   ],
 
   takeaways: [

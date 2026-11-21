@@ -273,6 +273,17 @@ next_x = argmax EI(mu, sd)                                  # or: pull the arm w
         }
       ] },
 
+    { t: "callout", kind: "trap", title: "Trusting narrow intervals far from the data",
+
+      body: [
+
+        { t: "p", text: "Intervals from training residuals are the same width everywhere, so a prediction far from any training example looks as certain as one in the middle of the data." },
+
+        { t: "p", text: "Use models whose uncertainty grows away from the data, such as Gaussian processes, and flag inputs outside the training distribution." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Priors on a coin, a GP posterior by hand, and a harder bandit",
@@ -384,6 +395,13 @@ residual sd where data exists: 0.472  (true noise 0.50)`,
       body: [
         { t: "p", text: "For a **calibrated interval with a guarantee**, use conformal prediction (lesson 10.7): it is distribution-free, wraps any model, and gives finite-sample coverage — and it is the right default. For **deciding what to label next**, you need the epistemic part specifically, so use ensemble disagreement or a GP. For **a trustworthy probability on a classifier**, calibrate it (lesson 2.5) rather than reaching for Bayesian machinery. **Reach for a full posterior when the parameters themselves matter** — when someone will read the coefficient and act on it — which is where sections 01 to 04 earn their place and a bare conformal interval does not." }
       ] },
+
+    { t: "callout", kind: "scenario", title: "Incident: a confident prediction far from any data",
+      body: [
+        { t: "p", text: "**Symptom.** A materials model predicted a property with a narrow confidence interval for a composition unlike anything in the training set, and the prediction was badly wrong." },
+        { t: "p", text: "**Mechanism.** The model was a point estimator with intervals from training residuals, which said nothing about distance from the data." },
+        { t: "p", text: "**Fix.** A Gaussian process provides uncertainty that grows away from the training data, and predictions with high uncertainty are routed to experiments instead." }
+      ] }
   ],
 
   takeaways: [

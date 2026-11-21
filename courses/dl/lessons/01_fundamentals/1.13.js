@@ -213,18 +213,115 @@ for batch in dataloader:
 
     { t: "exercise", kind: "practice", title: "Distil a small network, and calibrate it", difficulty: "advanced", minutes: 32,
       prompt: "Train a wide teacher on a small dataset, then train two students of identical size: one on hard labels alone, one with the distillation loss at T=4, alpha=0.7. Compare test accuracy. Then sweep T over {1, 2, 4, 8, 16} and plot student accuracy against T. Finally, take the best student and retrain it with label_smoothing=0.1, and compare not just accuracy but calibration — bucket predictions by confidence and check how often each bucket is right.",
+      requirements: [
+        "Train a wide teacher and two equal-size students, one on hard labels and one distilled at T = 4, alpha = 0.7",
+        "Compare test accuracy",
+        "Sweep T over 1, 2, 4, 8 and 16 and plot student accuracy",
+        "Retrain the best student with label smoothing 0.1 and compare calibration by confidence bucket"
+      ],
       hints: [
         "Keep the teacher in eval() inside torch.no_grad(), or the targets move underneath you.",
         "Very high T flattens the teacher toward uniform — expect the curve to turn over.",
         "For calibration, ten buckets of predicted probability against observed accuracy is enough to see the gap."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from sklearn.datasets import load_digits
+
+X, y = load_digits(return_X_y=True)
+X = torch.tensor(X / 16.0, dtype=torch.float32); y = torch.tensor(y)
+g = torch.Generator().manual_seed(0); perm = torch.randperm(len(X), generator=g)
+tr, te = perm[:300], perm[300:]                       # a small training set makes the teacher's knowledge matter
+
+def mlp(width): return nn.Sequential(nn.Linear(64, width), nn.ReLU(), nn.Linear(width, 10))
+
+def fit(model, loss_fn, epochs=1500):
+    opt = torch.optim.Adam(model.parameters(), 1e-2)
+    for _ in range(epochs):
+        model.train(); opt.zero_grad(); loss_fn(model, X[tr], y[tr]).backward(); opt.step()
+    model.eval(); return model
+
+def acc(m):
+    with torch.no_grad(): return (m(X[te]).argmax(1) == y[te]).float().mean().item()
+
+torch.manual_seed(0)
+teacher = fit(mlp(1024), lambda m, x, t: F.cross_entropy(m(x), t), epochs=1500)
+with torch.no_grad(): t_logits = teacher(X[tr])
+
+def kd(T, alpha):
+    def loss(m, x, t):
+        s = m(x)
+        soft = F.kl_div(F.log_softmax(s / T, 1), F.softmax(t_logits / T, 1), reduction="batchmean") * T * T
+        return alpha * soft + (1 - alpha) * F.cross_entropy(s, t)
+    return loss
+
+torch.manual_seed(1); hard = fit(mlp(16), lambda m, x, t: F.cross_entropy(m(x), t))
+torch.manual_seed(1); dist = fit(mlp(16), kd(4, 0.7))
+print(f"teacher (1024 wide) {acc(teacher):.3f}   student hard labels {acc(hard):.3f}   student distilled T=4 {acc(dist):.3f}")
+
+print("\\nT     student accuracy (mean of 3 seeds)")
+best_T, best = None, 0
+for T in [1, 2, 4, 8, 16]:
+    a = sum(acc(fit((torch.manual_seed(s), mlp(16))[1], kd(T, 0.7))) for s in range(3)) / 3
+    print(f"{T:<5} {a:.3f}"); best_T, best = (T, a) if a > best else (best_T, best)
+
+def calibration(m, label):
+    with torch.no_grad(): p = F.softmax(m(X[te]), 1)
+    conf, pred = p.max(1); right = (pred == y[te]).float()
+    print(f"{label}: accuracy {right.mean():.3f}")
+    for lo, hi in [(0.0, 0.6), (0.6, 0.8), (0.8, 0.95), (0.95, 1.01)]:
+        sel = (conf >= lo) & (conf < hi)
+        if sel.any(): print(f"   confidence {lo:.2f}-{min(hi, 1):.2f}: n={int(sel.sum()):>4}  mean confidence {conf[sel].mean():.3f}  accuracy {right[sel].mean():.3f}")
+    ece = sum((sel := (conf >= lo) & (conf < lo + 0.1)).float().mean() * (conf[sel].mean() - right[sel].mean()).abs()
+              for lo in [i / 10 for i in range(10)] if ((conf >= lo) & (conf < lo + 0.1)).any())
+    print(f"   expected calibration error {ece:.3f}")
+
+print(f"\\nbest T = {best_T}; retrain that student with and without label smoothing")
+torch.manual_seed(1); plain = fit(mlp(16), kd(best_T, 0.7))
+def kd_smooth(m, x, t):
+    s = m(x)
+    soft = F.kl_div(F.log_softmax(s / best_T, 1), F.softmax(t_logits / best_T, 1), reduction="batchmean") * best_T ** 2
+    return 0.7 * soft + 0.3 * F.cross_entropy(s, t, label_smoothing=0.1)
+torch.manual_seed(1); smooth = fit(mlp(16), kd_smooth)
+calibration(plain, "no smoothing  "); calibration(smooth, "smoothing 0.1 ")`,
+        out: `teacher (1024 wide) 0.941   student hard labels 0.934   student distilled T=4 0.937
+
+T     student accuracy (mean of 3 seeds)
+1     0.933
+2     0.929
+4     0.937
+8     0.935
+16    0.933
+
+best T = 4; retrain that student with and without label smoothing
+no smoothing  : accuracy 0.937
+   confidence 0.00-0.60: n=  27  mean confidence 0.531  accuracy 0.556
+   confidence 0.60-0.80: n=  32  mean confidence 0.715  accuracy 0.312
+   confidence 0.80-0.95: n=  53  mean confidence 0.887  accuracy 0.642
+   confidence 0.95-1.00: n=1385  mean confidence 0.999  accuracy 0.970
+   expected calibration error 0.044
+smoothing 0.1 : accuracy 0.945
+   confidence 0.00-0.60: n=  17  mean confidence 0.507  accuracy 0.412
+   confidence 0.60-0.80: n=  39  mean confidence 0.699  accuracy 0.436
+   confidence 0.80-0.95: n=  48  mean confidence 0.895  accuracy 0.604
+   confidence 0.95-1.00: n=1393  mean confidence 0.999  accuracy 0.977
+   expected calibration error 0.036`,
+       
         notes: [
           { t: "p", text: "The temperature sweep usually shows a hump: too low and the teacher's soft targets are nearly one-hot, so distillation adds nothing over the labels; too high and the distribution approaches uniform, so it carries no information either. The useful range is wide and shallow, which is why 3 to 5 is such a common default — the exact value matters much less than being somewhere in the middle." },
           { t: "p", text: "The calibration comparison is the part worth keeping. An unsmoothed network's 0.99 bucket is typically right well below 99 % of the time, and smoothing closes most of that gap while barely moving accuracy. Once you have seen the two curves side by side, the reason modern training scripts turn smoothing on by default stops being folklore." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a mixed-precision run with gradients that silently vanished",
+      body: [
+        { t: "p", text: "**Symptom.** A model trained in float16 converged to a worse loss than float32, with no error or NaN." },
+        { t: "p", text: "**Mechanism.** Small gradients underflowed to zero in float16 because the code did not use a gradient scaler, so some parameters stopped updating." },
+        { t: "p", text: "**Fix.** Training uses a `GradScaler`, or bfloat16 where the hardware supports it, and the fraction of zero gradients is monitored." }
+      ] }
   ],
 
   takeaways: [

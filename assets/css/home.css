@@ -213,7 +213,9 @@ a.topic:hover .topic-go svg { transform: translateX(3px); }
   .hide-sm { display: none; }
   .home-hero { padding-top: 40px; }
   .home-hero h1 { font-size: 33px; }
-  .home-hero h1 br { display: none; }
-  .hero-cta .cta { flex: 1 1 100%; justify-content: center; }
   .topics { grid-template-columns: 1fr; }
+}
+/* Buttons stack full-width only where two cannot sit side by side. */
+@media (max-width: 480px) {
+  .hero-cta .cta { flex: 1 1 100%; justify-content: center; }
 }

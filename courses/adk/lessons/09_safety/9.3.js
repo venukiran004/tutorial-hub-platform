@@ -169,18 +169,107 @@ async for event in runner.run_async(user_id="u1", session_id=sid, new_message=ap
 
     { t: "exercise", kind: "practice", title: "Build the approval loop", difficulty: "advanced", minutes: 30,
       prompt: "Write a tool that deletes a record, marked require_confirmation with a callable so only deletions of more than ten records need approval. Run a small deletion and confirm it proceeds. Run a large one, capture the adk_request_confirmation call id and the requested_tool_confirmations entry, and print what an approval screen would show. Resume with confirmed False and check the user-facing reply, then with True in a fresh session. Finally, restart your process between the request and the approval and confirm it still works.",
+      requirements: [
+        "Write a delete tool requiring confirmation only above ten records",
+        "Confirm a small deletion proceeds and capture the confirmation request for a large one",
+        "Resume with confirmed False and then True",
+        "Restart the process between request and approval and confirm it still works"
+      ],
       hints: [
         "The callable receives the arguments, so the threshold lives there rather than inside the tool body.",
         "The confirmation call id is what you address the approval to.",
         "Use a database session service for the restart test — an in-memory one cannot survive it."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `"""The approval loop, driven by a scripted model so every run is the same (see lesson 11.3's FakeLlm)."""
+import asyncio, logging, warnings
+from google.adk.agents import LlmAgent
+from google.adk.models import BaseLlm
+from google.adk.models.llm_response import LlmResponse
+from google.adk.runners import InMemoryRunner
+from google.adk.tools import FunctionTool
+from google.genai import types
+warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+
+class ScriptedLlm(BaseLlm):
+    """Calls delete_records with the count in the user's message, then reports the tool's answer."""
+    model: str = "scripted"
+    async def generate_content_async(self, llm_request, stream=False):
+        last = llm_request.contents[-1].parts[0]
+        if last.function_response:
+            yield LlmResponse(content=types.Content(role="model", parts=[types.Part(text=f"Result: {last.function_response.response}")]))
+        else:
+            n = int("".join(c for c in last.text if c.isdigit()))
+            yield LlmResponse(content=types.Content(role="model", parts=[types.Part(
+                function_call=types.FunctionCall(name="delete_records", args={"table": "orders", "count": n}))]))
+
+DELETED = []
+def delete_records(table: str, count: int) -> dict:
+    """Delete \`count\` records from \`table\`."""
+    DELETED.append(count)
+    return {"status": "deleted", "table": table, "count": count}
+
+needs_approval = lambda table, count, **_: count > 10        # only large deletions need a human
+agent = LlmAgent(name="admin", model=ScriptedLlm(), tools=[FunctionTool(delete_records, require_confirmation=needs_approval)])
+
+def say(text): return types.Content(role="user", parts=[types.Part(text=text)])
+
+async def run(runner, sid, msg):
+    return [e async for e in runner.run_async(user_id="u1", session_id=sid, new_message=msg)]
+
+def final_text(events):
+    return next((p.text for e in reversed(events) if e.content for p in e.content.parts if p.text), None)
+
+async def scenario(decision):
+    runner = InMemoryRunner(agent=agent, app_name="admin")
+    sid = (await runner.session_service.create_session(app_name="admin", user_id="u1")).id
+    events = await run(runner, sid, say("delete 250 old orders"))
+    req = next(p.function_call for e in events if e.content for p in e.content.parts
+               if p.function_call and p.function_call.name == "adk_request_confirmation")
+    pending = next(e.actions.requested_tool_confirmations for e in events if e.actions.requested_tool_confirmations)
+    original = req.args["originalFunctionCall"]
+    print(f"  approval screen: {original['name']}({original['args']})  hint: {list(pending.values())[0].hint!r}")
+    print(f"  confirmation call id: {req.id[:12]}...   body has run: {bool(DELETED)}")
+    answer = types.Content(role="user", parts=[types.Part(function_response=types.FunctionResponse(
+        id=req.id, name="adk_request_confirmation", response={"confirmed": decision}))])
+    print(f"  reviewer says {decision} -> {final_text(await run(runner, sid, answer))}")
+
+async def main():
+    runner = InMemoryRunner(agent=agent, app_name="admin")
+    sid = (await runner.session_service.create_session(app_name="admin", user_id="u1")).id
+    print("small deletion (5):", final_text(await run(runner, sid, say("delete 5 old orders"))))
+    for decision in (False, True):                           # each in a fresh session
+        DELETED.clear(); print(f"\\nlarge deletion (250), fresh session:"); await scenario(decision)
+        print(f"  records actually deleted: {DELETED}")
+
+asyncio.run(main())`,
+        out: `small deletion (5): Result: {'status': 'deleted', 'table': 'orders', 'count': 5}
+
+large deletion (250), fresh session:
+  approval screen: delete_records({'table': 'orders', 'count': 250})  hint: 'Please approve or reject the tool call delete_records() by responding with a FunctionResponse with an expected ToolConfirmation payload.'
+  confirmation call id: adk-14319317...   body has run: False
+  reviewer says False -> Result: {'error': 'This tool call is rejected.'}
+  records actually deleted: []
+
+large deletion (250), fresh session:
+  approval screen: delete_records({'table': 'orders', 'count': 250})  hint: 'Please approve or reject the tool call delete_records() by responding with a FunctionResponse with an expected ToolConfirmation payload.'
+  confirmation call id: adk-acfd9044...   body has run: False
+  reviewer says True -> Result: {'status': 'deleted', 'table': 'orders', 'count': 250}
+  records actually deleted: [250]`,
+       
         notes: [
           { t: "p", text: "The declined path is the one people skip and the one users notice. With `confirmed: False` the tool can return a declined result and the model explains that the deletion was not approved — which is a much better experience than a turn that simply stops, and it is only available because the refusal comes back as data rather than as an error." },
           { t: "p", text: "The restart test is the point of the whole exercise. Because the pending request is an event in a persisted session rather than a coroutine in memory, an approval that arrives after a deploy still works. That is what makes this a production mechanism, and it is also a reminder that an in-memory session service quietly removes the property." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: approvals that rubber-stamped the model's own summary",
+      body: [
+        { t: "p", text: "**Symptom.** A finance team approved a bulk refund through a confirmation prompt that read \"Refund 12 duplicate orders\". There were 112 orders, and none were duplicates." },
+        { t: "p", text: "**Mechanism.** The approval screen displayed the model's description of the action rather than the action's arguments. The reviewer approved a sentence the model wrote, not the call that would run." },
+        { t: "p", text: "**Fix.** The approval screen renders the tool name and its actual arguments, with counts and totals computed from them, and approvals above a threshold need two people." }
+      ] }
   ],
 
   takeaways: [

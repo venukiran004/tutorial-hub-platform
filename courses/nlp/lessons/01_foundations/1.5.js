@@ -178,21 +178,102 @@ EC.receiveLesson({
       ["Exponential storage", "The table grows as `|V|^n`, so each extra word of context multiplies the space by the vocabulary size."]
     ] },
 
+    { t: "callout", kind: "trap", title: "Evaluating a language model on text it trained on",
+
+      body: [
+
+        { t: "p", text: "Perplexity on training text says how well the model memorised, not how well it predicts. Unsmoothed models also score infinite perplexity on any unseen n-gram." },
+
+        { t: "p", text: "Report perplexity on held-out text, with smoothing tuned on a separate validation set." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Build the model and find its limits", difficulty: "core", minutes: 35,
       prompt: "Implement a bigram language model with maximum-likelihood and add-one estimation. Train on a corpus of a few thousand sentences and compute held-out perplexity for both — the unsmoothed version should be infinite, and you should be able to say exactly which bigram caused it. Then sweep add-`k` from 1 down to 0.01 and plot held-out perplexity against `k`. Finally, extend to trigrams and measure what fraction of test trigrams were seen in training.",
+      requirements: [
+        "Implement a bigram model with maximum-likelihood and add-one estimation",
+        "Compute held-out perplexity for both and name the bigram that made the unsmoothed one infinite",
+        "Sweep add-k from 1 to 0.01 and plot perplexity against k",
+        "Extend to trigrams and measure the fraction of test trigrams unseen in training"
+      ],
       hints: [
         "Log-space accumulation is essential; a product of thousands of probabilities underflows.",
         "The best `k` is usually far below 1 — often around 0.01 for a reasonable vocabulary.",
         "The seen-trigram fraction is the sparsity wall made concrete."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import math, re
+from collections import Counter
+from sklearn.datasets import fetch_20newsgroups
+
+def sentences(subset, n):
+    out = []
+    for d in fetch_20newsgroups(subset=subset, remove=("headers", "footers", "quotes")).data:
+        for s in re.split(r"(?<=[.!?])\\s+", d):
+            w = re.findall(r"[a-z']+", s.lower())
+            if 3 <= len(w) <= 40: out.append(["<s>"] + w + ["</s>"])
+        if len(out) >= n: break
+    return out[:n]
+
+train, test = sentences("train", 5000), sentences("test", 1000)
+vocab = {w for s in train for w in s} | {"<unk>"}
+unk = lambda s: [w if w in vocab else "<unk>" for w in s]               # map unseen test words to <unk>
+train = [unk(s) for s in train]; test = [unk(s) for s in test]
+uni = Counter(w for s in train for w in s[:-1])                          # history counts
+bi = Counter((a, b) for s in train for a, b in zip(s, s[1:]))
+V = len(vocab)
+
+def perplexity(k):
+    logp, n = 0.0, 0
+    for s in test:
+        for a, b in zip(s, s[1:]):
+            p = (bi[(a, b)] + k) / (uni[a] + k * V)
+            if p == 0: return math.inf, (a, b)
+            logp += math.log(p); n += 1
+    return math.exp(-logp / n), None
+
+pp, culprit = perplexity(0)
+print(f"{len(train):,} training sentences, vocabulary {V:,}")
+print(f"maximum likelihood: perplexity {pp}  - first zero-probability bigram in the test set: {culprit}")
+print("\\nadd-k    held-out perplexity")
+for k in [1, 0.3, 0.1, 0.03, 0.01, 0.003, 0.001, 0.0003]:
+    print(f"{k:<8} {perplexity(k)[0]:12.1f}")
+
+tri_train = {tuple(s[i:i + 3]) for s in train for i in range(len(s) - 2)}
+tri_test = [tuple(s[i:i + 3]) for s in test for i in range(len(s) - 2)]
+bi_test = [(a, b) for s in test for a, b in zip(s, s[1:])]
+print(f"\\nunseen in training: {sum(b not in bi for b in bi_test) / len(bi_test):.1%} of test bigrams, "
+      f"{sum(t not in tri_train for t in tri_test) / len(tri_test):.1%} of test trigrams")`,
+        out: `5,000 training sentences, vocabulary 11,001
+maximum likelihood: perplexity inf  - first zero-probability bigram in the test set: ('little', 'confused')
+
+add-k    held-out perplexity
+1              3976.5
+0.3            2750.9
+0.1            2084.7
+0.03           1730.4
+0.01           1653.9
+0.003          1807.0
+0.001          2208.8
+0.0003         3091.0
+
+unseen in training: 53.5% of test bigrams, 87.1% of test trigrams`,
+       
         notes: [
           { t: "p", text: "The add-`k` sweep has a clear minimum well below 1, which is the empirical version of the over-smoothing result measured in this lesson: at `k = 1` the seen continuations kept only 38.5 % of the mass, and the smaller `k` gets, the more the model trusts what it actually observed. Going too small brings back near-zero probabilities for unseen events, so there is a genuine optimum, and finding it on your own data takes ten minutes." },
           { t: "p", text: "The seen-trigram fraction is the number that ends the discussion about going to higher `n`. On a modest corpus it is often below half, meaning most of what your model does at test time is apply the smoothing rule rather than use any evidence. That is the sparsity wall, and it is why the field moved to models that share strength across similar contexts instead of counting each one separately." },
           { t: "p", text: "Identifying the specific bigram that produced infinite perplexity is worth doing once, because it makes the failure concrete rather than theoretical. It is almost always an ordinary, unremarkable word pair that simply did not occur in your training text — which is the point. The problem is not exotic inputs, it is that language has a very long tail and any finite corpus misses most of it." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: perplexity of infinity on launch day",
+      body: [
+        { t: "p", text: "**Symptom.** A language model used for autocomplete scoring produced infinite perplexity on the first day's real queries." },
+        { t: "p", text: "**Mechanism.** The model was unsmoothed. The first bigram not seen in training received probability zero, which made the whole query's probability zero." },
+        { t: "p", text: "**Fix.** The model uses smoothing tuned on held-out data, and the evaluation includes queries collected after the training period." }
+      ] }
   ],
 
   takeaways: [

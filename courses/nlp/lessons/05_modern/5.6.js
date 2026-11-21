@@ -146,6 +146,12 @@ EC.receiveLesson({
       code: 'from transformers import get_linear_schedule_with_warmup, \\\n                         get_cosine_schedule_with_warmup\nfrom torch.amp import GradScaler, autocast\n\ntotal_steps = len(loader) * epochs\nsched = get_linear_schedule_with_warmup(\n    opt, num_warmup_steps=int(0.1 * total_steps),\n    num_training_steps=total_steps)\n\nscaler = GradScaler()                      # fp16 only; bf16 needs none\nfor batch in loader:\n    with autocast("cuda", dtype=torch.bfloat16):\n        loss = model(**batch).loss\n    scaler.scale(loss).backward()\n    scaler.step(opt); scaler.update(); sched.step()',
       caption: "`warmup_ratio=0.1` above is this: `num_warmup_steps = 0.1 × num_training_steps`." },
     { t: "p", text: "Two things become visible once the loop is explicit. **The schedule needs `num_training_steps` up front, so `warmup_ratio` cannot be honoured without knowing the dataset length** — which is why a streaming dataset breaks it. And **`GradScaler` exists only for fp16: bf16’s dynamic range makes loss scaling unnecessary**, so the `bf16=True` recommendation above also deletes a component, not just a flag." },
+    { t: "callout", kind: "trap", title: "Expecting LoRA to remove the memory problem",
+      body: [
+        { t: "p", text: "LoRA cuts gradient and optimiser memory, but the frozen weights and the activations remain. Long sequences can still exhaust memory." },
+        { t: "p", text: "Profile memory by component, and add gradient checkpointing or shorter sequences where activations dominate." }
+      ] },
+
     { t: "exercise", kind: "Challenge", title: "Measure the savings", difficulty: "core", minutes: 40,
       requirements: [
         "Compute LoRA trainable parameters for your own model at ranks 4, 8, 16 and 64, and plot against downstream accuracy.",
@@ -227,7 +233,14 @@ Could have been better.     0.001  0.037  0.213  0.342`,
           { t: "p", text: "The SST-2 fine-tune's real weight change is not low-rank in the lower layers. Reaching 90% of the update's energy needs 240 of 768 directions for layer 0's queries and 435 for its FFN. Only the top layer is compact (60–99). LoRA works because a low-rank update is enough to reach good task accuracy, not because full fine-tuning produces low-rank changes." },
           { t: "p", text: "At T=1 the teacher is almost certain on hedged inputs such as 'Not bad at all' (0.999) and 'I expected worse' (0.000). At T=5 those become 0.81 and 0.16, which tells a student these are weaker cases than an emphatic review. That graded information is what distillation transfers and hard labels discard. Comparing a LoRA model against a distilled student on latency needs two trained models and is not run here." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: LoRA that did not save the memory expected",
+      body: [
+        { t: "p", text: "**Symptom.** A team switched to LoRA to fit fine-tuning on a smaller GPU and still ran out of memory." },
+        { t: "p", text: "**Mechanism.** LoRA cuts gradients and optimiser state, but the frozen weights and the activations remain. Long sequences made activations the binding constraint." },
+        { t: "p", text: "**Fix.** Memory was profiled by component, and gradient checkpointing and a shorter maximum length were added alongside LoRA." }
+      ] }
   ],
 
   takeaways: [

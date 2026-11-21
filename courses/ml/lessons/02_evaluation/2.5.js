@@ -341,7 +341,14 @@ for name, m in variants.items():
           why: "Calibration and discrimination are separate axes. A calibrator can only fix the values; a better model is needed to fix the ranking."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: probabilities that were used as probabilities",
+      body: [
+        { t: "p", text: "**Symptom.** An expected-loss calculation based on a random forest's scores overstated losses by a third." },
+        { t: "p", text: "**Mechanism.** The forest ranked well but its scores were not calibrated — rows scored 0.5 defaulted far less than half the time. The finance team multiplied those scores by exposure as if they were probabilities." },
+        { t: "p", text: "**Fix.** The model is calibrated with isotonic regression on held-out data, and calibration is checked with a reliability table before any score is used as a probability." }
+      ] }
   ],
 
   takeaways: [

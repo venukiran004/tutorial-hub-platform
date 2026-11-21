@@ -641,7 +641,14 @@ def test_empty_bucket_totals_zero():
           why: "Fancy-index assignment reads into a temporary, applies the operation, and writes back — so repeated indices lose all but the last write. `np.add.at(counts, idx, 1)` is unbuffered and gives 3; `np.bincount` is faster for counting specifically."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: event counts that came out too low",
+      body: [
+        { t: "p", text: "**Symptom.** Per-category event counts computed with fancy-index addition were consistently lower than the counts from a database query." },
+        { t: "p", text: "**Mechanism.** The code ran `counts[category_ids] += 1`. When an index repeats in a fancy-index assignment, each position is written once, so repeated categories were counted once per batch rather than once per event." },
+        { t: "p", text: "**Fix.** The count uses `np.add.at(counts, category_ids, 1)`, which accumulates repeated indices, or `np.bincount`. A test compares the result against a simple Python loop on small data." }
+      ] }
   ],
 
   takeaways: [

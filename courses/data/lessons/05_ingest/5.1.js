@@ -720,7 +720,14 @@ def test_column_order_is_canonical():
           why: "All-digit fields are inferred as integers. The identifier is silently corrupted, and the failure surfaces later as a join that matches nothing because the lookup table kept its zeros. `dtype={\"account_id\": str}` — identifiers are text, always."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: postcodes and account numbers that lost their leading zeros",
+      body: [
+        { t: "p", text: "**Symptom.** Customer accounts beginning with zero could not be matched with the billing system after a CSV import." },
+        { t: "p", text: "**Mechanism.** `read_csv` inferred the account-number column as integer and dropped the leading zeros. The same file with a non-numeric value in the column would have been read as text, so the behaviour depended on the data that day." },
+        { t: "p", text: "**Fix.** Identifier columns are read with an explicit `dtype=str`, and the import checks that every account number has the expected length." }
+      ] }
   ],
 
   takeaways: [

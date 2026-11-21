@@ -89,7 +89,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "Three queries, one of them nonsense",
       code: "0.4630   api-limits            'how many calls can I make before being throt'\n0.4445   api-idempotency       'Retry-After'\n0.1279   api-limits            'what is the airspeed velocity of an unladen '",
       caption: "Row 2 is a **failed** retrieval; row 3 is a correct non-answer. The failure scores higher." },
-    { t: "callout", kind: "warn", title: "A similarity search has no concept of \u201cnothing matched\u201d", body: [
+    { t: "callout", kind: "trap", title: "A similarity search has no concept of \u201cnothing matched\u201d", body: [
       { t: "p", text: "`k=5` is a promise to return five documents, and it is kept regardless of whether anything in the corpus is relevant. The retriever has no output that means *no*, so a question the corpus cannot answer produces five documents and a confident answer grounded in them." },
       { t: "p", text: "And the three scores are not comparable the way they look. 0.4445 for `Retry-After` is a failure \u2014 the relevant document is not in the list at all \u2014 while 0.1279 for nonsense is a correct non-answer wearing a low number. Any threshold that rejects the nonsense accepts the failure. That is the problem 7.1 has to solve, and it cannot be solved with one number." }
     ] },

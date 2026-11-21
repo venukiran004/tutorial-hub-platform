@@ -136,6 +136,17 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "Layer 2 head 0 has entropy 0.0220",
       body: [{ t: "p", text: "Out of a possible 2.64 at 14 tokens, that is essentially a deterministic pointer — it attends to one position and nothing else, with a mean offset of −0.07, meaning roughly to itself. Early layers do this kind of sharp, local, positional work; later layers drift toward the `[SEP]` sink, from 7.6% at layer 0 to 86.4% at layer 11. This echoes what lesson 3.6 measured about sense separation peaking mid-stack: the interesting representational work happens in the middle, and the top layers specialise toward the pretraining objective." }] },
 
+    { t: "callout", kind: "trap", title: "Adding heads to add capacity",
+
+      body: [
+
+        { t: "p", text: "With the model dimension fixed, more heads means smaller heads and the same number of parameters. It changes how attention is divided, not how much the model can store." },
+
+        { t: "p", text: "Change capacity through the model dimension or depth, and compute the parameter count before training." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Probe your own model's heads", difficulty: "stretch", minutes: 50,
       requirements: [
         "Run a sentence through a model with `output_attentions=True` and compute the [SEP] mass for all heads. Rank them.",
@@ -215,7 +226,14 @@ GPT-2 strongest previous-token head L4H11: 0.9998; heads above 0.5: 2`,
           { t: "p", text: "`head_mask` was accepted and silently ignored by this version of the BERT implementation: every head 'ablated' for free, with a total-variation change of exactly zero. Zeroing the head's slice before the output projection is the reliable method, and with it no head is free. The cheapest (L11H2) moved the prediction by 0.005 and the costliest (L9H5) by 0.33. If an ablation shows that everything is free, check that the ablation took effect before concluding anything." },
           { t: "p", text: "GPT-2 also has strong previous-token heads, with L4H11 at 0.9998, but only two heads above 0.5. In a decoder the causal mask already makes the previous token one of few options early in the sequence, so compare position-matched rows rather than the raw average." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: doubling heads to add capacity",
+      body: [
+        { t: "p", text: "**Symptom.** A team increased attention heads from 8 to 16 expecting more capacity, and the model's quality and size did not change." },
+        { t: "p", text: "**Mechanism.** The head dimension is the model dimension divided by the number of heads, so more heads split the same parameters into smaller pieces." },
+        { t: "p", text: "**Fix.** Capacity changes are made through the model dimension or depth, and parameter counts are computed before training." }
+      ] }
   ],
 
   takeaways: [

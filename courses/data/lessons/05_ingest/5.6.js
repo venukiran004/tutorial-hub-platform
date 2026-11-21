@@ -654,7 +654,14 @@ ORDER BY customer_id, order_date, order_id;
           why: "With `ORDER BY` and no frame clause, the window runs from the partition's start to the current row. `LAST_VALUE` of that is the current row. `ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING` makes the frame the whole partition — a surprise everyone meets once."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: 'latest address' that changed between runs",
+      body: [
+        { t: "p", text: "**Symptom.** A customer's 'current address' feature changed between two runs of the same extract." },
+        { t: "p", text: "**Mechanism.** The query picked the latest address with `ROW_NUMBER() OVER (PARTITION BY customer ORDER BY updated_at DESC)`. Two addresses had the same timestamp, so the database broke the tie arbitrarily." },
+        { t: "p", text: "**Fix.** The ordering adds the address id as a tie-breaker, and the extract checks for duplicate timestamps per customer." }
+      ] }
   ],
 
   takeaways: [

@@ -188,19 +188,123 @@ predictions = crf.decode(emissions, mask=mask)   # inference: Viterbi`,
 
     { t: "exercise", kind: "practice", title: "Build and evaluate an NER model properly", difficulty: "core", minutes: 40,
       prompt: "Implement span decoding from BIO tags and a span-level precision, recall and F1. Take a trained NER model and report both token accuracy and span F1 on the same predictions — confirm the gap. Then break the predictions deliberately three ways: shift one boundary, change one type, and split one entity into two, and check that span F1 penalises each correctly. Finally, add a CRF layer to a token classifier and count how many invalid transitions each model emits on the test set.",
+      requirements: [
+        "Implement span decoding from BIO tags and span-level precision, recall and F1",
+        "Report token accuracy and span F1 on the same predictions",
+        "Break predictions three ways — a shifted boundary, a wrong type, a split entity — and check span F1 penalises each",
+        "Add a CRF layer and count invalid transitions before and after"
+      ],
       hints: [
         "A span is a triple of (type, start, end) — all three must match.",
         "The invalid-transition count is the clearest way to show what the CRF bought.",
         "Check subword alignment before anything else if you are using a transformer."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+from datasets import load_dataset
+
+ds = load_dataset("eriktks/conll2003", revision="refs/convert/parquet")   # script-free Parquet copy
+TAGS = ds["train"].features["ner_tags"].feature.names                    # O, B-PER, I-PER, B-ORG, ...
+K = len(TAGS)
+
+def spans(tags):
+    """BIO -> set of (start, end, type). An I- with no matching open span starts a new one (lenient decoding)."""
+    out, start, typ = set(), None, None
+    for i, t in enumerate(list(tags) + ["O"]):
+        if t == "O" or t.startswith("B-") or (t.startswith("I-") and t[2:] != typ):
+            if start is not None: out.add((start, i, typ))
+            start, typ = (i, t[2:]) if t != "O" else (None, None)
+    return out
+
+def span_prf(gold_seqs, pred_seqs):
+    tp = fp = fn = 0
+    for g, p in zip(gold_seqs, pred_seqs):
+        G, P = spans(g), spans(p); tp += len(G & P); fp += len(P - G); fn += len(G - P)
+    prec, rec = tp / max(tp + fp, 1), tp / max(tp + fn, 1)
+    return prec, rec, 2 * prec * rec / max(prec + rec, 1e-9)
+
+def invalid(tags):        # I-X after O or after a different type: impossible in BIO
+    return sum(1 for a, b in zip(["O"] + list(tags), tags) if b.startswith("I-") and (a == "O" or a[2:] != b[2:]))
+
+gold = [["O", "B-PER", "I-PER", "O", "B-LOC", "O"]]
+for name, pred in [("exact", ["O", "B-PER", "I-PER", "O", "B-LOC", "O"]), ("boundary shifted", ["O", "B-PER", "O", "O", "B-LOC", "O"]),
+                   ("type changed", ["O", "B-ORG", "I-ORG", "O", "B-LOC", "O"]), ("entity split", ["O", "B-PER", "B-PER", "O", "B-LOC", "O"])]:
+    acc = sum(a == b for a, b in zip(gold[0], pred)) / len(pred)
+    print(f"{name:<17} token accuracy {acc:.3f}   span P/R/F1 " + " / ".join(f"{v:.2f}" for v in span_prf(gold, [pred])))
+
+# A BiLSTM tagger, trained with a softmax and with a CRF on top
+words = {w for s in ds["train"]["tokens"] for w in s}; w2i = {w: i + 2 for i, w in enumerate(sorted(words))}
+enc = lambda s: torch.tensor([w2i.get(w, 1) for w in s])
+
+class CRF(nn.Module):
+    def __init__(self, k):
+        super().__init__(); self.trans = nn.Parameter(torch.zeros(k, k)); self.start = nn.Parameter(torch.zeros(k))
+    def nll(self, em, y):                                        # em: (T, K) emissions for one sentence
+        gold = self.start[y[0]] + em[0, y[0]] + sum(self.trans[y[t - 1], y[t]] + em[t, y[t]] for t in range(1, len(y)))
+        alpha = self.start + em[0]
+        for t in range(1, len(em)): alpha = torch.logsumexp(alpha[:, None] + self.trans + em[t][None], 0)
+        return torch.logsumexp(alpha, 0) - gold
+    def viterbi(self, em):
+        score, back = self.start + em[0], []
+        for t in range(1, len(em)):
+            s = score[:, None] + self.trans; back.append(s.argmax(0)); score = s.max(0).values + em[t]
+        path = [int(score.argmax())]
+        for b in reversed(back): path.append(int(b[path[-1]]))
+        return path[::-1]
+
+class Tagger(nn.Module):
+    def __init__(self, crf):
+        super().__init__(); self.e = nn.Embedding(len(w2i) + 2, 64); self.r = nn.LSTM(64, 64, bidirectional=True, batch_first=True)
+        self.o = nn.Linear(128, K); self.crf = CRF(K) if crf else None
+    def emissions(self, x): return self.o(self.r(self.e(x)[None])[0][0])
+    def loss(self, x, y):
+        em = self.emissions(x)
+        return self.crf.nll(em, y) if self.crf else nn.functional.cross_entropy(em, y, reduction="sum")
+    def predict(self, x):
+        em = self.emissions(x); return self.crf.viterbi(em) if self.crf else em.argmax(1).tolist()
+
+train = list(zip(ds["train"]["tokens"][:4000], ds["train"]["ner_tags"][:4000]))
+test = list(zip(ds["test"]["tokens"], ds["test"]["ner_tags"]))
+print(f"\\ntraining on {len(train):,} sentences, testing on {len(test):,}")
+for use_crf in [False, True]:
+    torch.manual_seed(0); m = Tagger(use_crf); opt = torch.optim.Adam(m.parameters(), 2e-3)
+    for epoch in range(3):
+        m.train(); order = torch.randperm(len(train)).tolist()
+        for i in range(0, len(order), 16):
+            loss = sum(m.loss(enc(train[j][0]), torch.tensor(train[j][1])) for j in order[i:i + 16])
+            opt.zero_grad(); loss.backward(); opt.step()
+    m.eval(); golds, preds = [], []
+    with torch.no_grad():
+        for toks, tags in test:
+            golds.append([TAGS[t] for t in tags]); preds.append([TAGS[t] for t in m.predict(enc(toks))])
+    tok_acc = sum(a == b for g, p in zip(golds, preds) for a, b in zip(g, p)) / sum(map(len, golds))
+    p, r, f = span_prf(golds, preds)
+    print(f"{'BiLSTM-CRF    ' if use_crf else 'BiLSTM-softmax'}: token accuracy {tok_acc:.3f}   span P {p:.3f} R {r:.3f} F1 {f:.3f}   "
+          f"invalid transitions {sum(invalid(s) for s in preds)}")`,
+        out: `exact             token accuracy 1.000   span P/R/F1 1.00 / 1.00 / 1.00
+boundary shifted  token accuracy 0.833   span P/R/F1 0.50 / 0.50 / 0.50
+type changed      token accuracy 0.667   span P/R/F1 0.50 / 0.50 / 0.50
+entity split      token accuracy 0.833   span P/R/F1 0.33 / 0.50 / 0.40
+
+training on 4,000 sentences, testing on 3,453
+BiLSTM-softmax: token accuracy 0.887   span P 0.513 R 0.405 F1 0.452   invalid transitions 379
+BiLSTM-CRF    : token accuracy 0.892   span P 0.616 R 0.441 F1 0.514   invalid transitions 40`,
+       
         notes: [
           { t: "p", text: "The invalid-transition count is the measurement that makes the CRF's contribution visible. A plain per-token classifier will emit some number of `I-` tags following `O` or following a different type — sequences that cannot exist — and a CRF emits zero, because Viterbi over a learned transition matrix simply never selects them. Counting them before and after is more convincing than a small F1 difference, since it shows the model is now producing well-formed output rather than merely more accurate output." },
           { t: "p", text: "For the three deliberate breakages, the useful thing to notice is that span F1 treats all three identically — a shifted boundary, a wrong type and a split entity each cost one false positive and one false negative. That is deliberate and it is sometimes too harsh: in a retrieval application a boundary that is one token off may be perfectly usable. If that matches your product, a relaxed metric with partial credit is defensible, but it has to be stated explicitly rather than quietly substituted." },
           { t: "p", text: "The token-against-span gap I measured was 83.3 % accuracy against 0.50 F1 on a six-token example, and the gap widens as entities get longer since there are more tokens whose individual correctness no longer implies a correct span. Any NER number quoted without saying which one it is should be assumed to be the flattering one." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: 95% token accuracy and half the names wrong",
+      body: [
+        { t: "p", text: "**Symptom.** A contract-extraction model reported 95% accuracy and still returned wrong company names on a large share of documents." },
+        { t: "p", text: "**Mechanism.** The figure was token accuracy, dominated by the many 'O' tokens. Entities need every boundary and the type right; a single wrong token in a three-token company name made the entity wrong." },
+        { t: "p", text: "**Fix.** The model is evaluated with span-level F1, which counts whole entities, and the reported figure dropped to the honest one." }
+      ] }
   ],
 
   takeaways: [

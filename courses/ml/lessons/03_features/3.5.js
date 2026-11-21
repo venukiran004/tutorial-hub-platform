@@ -240,6 +240,17 @@ cross_val_score(pipe, X_noise, y_noise, cv=cv, scoring="roc_auc").mean()        
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Selecting features on correlation with the target",
+
+      body: [
+
+        { t: "p", text: "Univariate correlation misses non-linear effects and interactions, and selection done on the full dataset leaks. The selected features look strong in cross-validation and disappoint afterwards." },
+
+        { t: "p", text: "Select inside the pipeline on training folds, use methods that see non-linear effects, and confirm with nested cross-validation." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Reproduce the leak and rescue the U-shape",
@@ -318,7 +329,14 @@ for kept in [...]:   # the six columns from each selector
           why: "Filters answer 'related to the target?'; only methods that see the other columns can answer 'needed given the others?'."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: features selected on the whole dataset",
+      body: [
+        { t: "p", text: "**Symptom.** A model built on the 30 most correlated of 2,000 genetic markers reported strong cross-validated accuracy that did not replicate." },
+        { t: "p", text: "**Mechanism.** Selection was done once on all samples before cross-validation. With 2,000 candidates, several correlated with the label by chance, and validation had helped choose them." },
+        { t: "p", text: "**Fix.** Selection runs inside the pipeline on each training fold, and performance is estimated with nested cross-validation." }
+      ] }
   ],
 
   takeaways: [

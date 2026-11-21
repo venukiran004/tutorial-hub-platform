@@ -230,6 +230,17 @@ def min_ship_capacity(weights: list[int], days: int) -> int:
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "An off-by-one that loops forever",
+
+      body: [
+
+        { t: "p", text: "Binary search written with `lo < hi` and `hi = mid` on one branch but `lo = mid` on the other can stop advancing when `hi = lo + 1`, looping for ever on some inputs." },
+
+        { t: "p", text: "Choose one invariant — such as 'the answer is in [lo, hi)' — write both updates to shrink the range, and test the two-element case explicitly." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Challenge",
       title: "Median of two sorted arrays",

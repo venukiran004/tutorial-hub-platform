@@ -95,7 +95,7 @@ EC.receiveLesson({
 
 
     { t: "p", text: "With conditional edges you can draw the graph and see every path. With `Command` the destinations live inside node bodies, so the drawn graph is **incomplete** \u2014 the renderer has no way to know where a node might send execution." },
-    { t: "callout", kind: "warn", title: "That drawing is the only picture anyone looks at", body: [
+    { t: "callout", kind: "trap", title: "That drawing is the only picture anyone looks at", body: [
       { t: "p", text: "8.9 shows a graph drawing itself, and it is the fastest way to understand a graph you did not write \u2014 and the check that catches an unreachable branch or a node never connected to `END`." },
       { t: "p", text: "A graph whose routing is all `Command` renders as a set of disconnected nodes, which is worse than verbose edges. So the cost is paid by whoever reads the graph next, which is the kind of cost that does not show up in the measurement you take while writing it." }
     ] },

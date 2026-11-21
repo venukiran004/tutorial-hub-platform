@@ -231,7 +231,14 @@ cross-attention weights per head: (5, 20), rows sum to 1: True`,
           { t: "p", text: "Through 24 Pre-LN blocks the residual RMS rose from 1.03 to 1.79. Each block's relative update fell steadily from 0.25 to 0.19, so the downward trend does continue past 12. Later blocks change a larger stream by a smaller fraction. That is one reason deep Pre-LN models can have redundant late layers." },
           { t: "p", text: "With a 5-token target and a 20-token source, the cross-attention weights are 5×20 per head and every row sums to 1. Each target position distributes its attention over the whole source, so the output length follows the target, not the source." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a stack missing its final norm",
+      body: [
+        { t: "p", text: "**Symptom.** A pre-LN decoder produced logits with growing magnitude and unstable training late in a run." },
+        { t: "p", text: "**Mechanism.** In a pre-LN stack the residual stream is never normalised after the last block unless a final norm is added. It was missing, so the output head saw an unnormalised stream." },
+        { t: "p", text: "**Fix.** A final LayerNorm was added before the output head, and the architecture test checks for it." }
+      ] }
   ],
 
   takeaways: [

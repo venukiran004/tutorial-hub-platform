@@ -145,6 +145,12 @@ log.info("prediction served", extra={"correlation_id": cid,
 
     { t: "exercise", kind: "practice", title: "Trace one prediction end to end", difficulty: "core", minutes: 30,
       prompt: "Take one prediction request in a service you run and establish whether you could reconstruct it. Does the response carry a correlation id the caller can quote? Given that id, can you find the request's logs, its trace, and its row in the prediction log — and is the id identical in all three, or does each system have its own? Then check two things about the logs: are they structured JSON with the model version and score as fields, and is any raw feature value present at INFO. Finally, check your trace sampling: is it head-based at a flat percentage, and if so, work out what fraction of your last incident's slow requests you would have retained.",
+      requirements: [
+        "Check whether the response carries a correlation id the caller can quote",
+        "Using one id, find the request's logs, trace and prediction-log row, and check the id is identical in all three",
+        "Check logs are structured with model version and score as fields, and that no raw feature value is logged at INFO",
+        "Work out what fraction of the last incident's slow requests your trace sampling would have kept"
+      ],
       hints: [
         "Three different ids in three systems is the common finding, and it means every investigation starts with a timestamp-and-guess join.",
         "Grep your log output for a feature name — if income or a credit score appears at INFO, that is a copy of your sensitive dataset in a log store.",
@@ -155,8 +161,14 @@ log.info("prediction served", extra={"correlation_id": cid,
           { t: "p", text: "The usual finding is that the three signals exist and share no identifier, so investigations proceed by timestamp correlation — which works until two requests arrive in the same second. Adopting one id, generated at the edge and returned to the caller, is a small change that removes a whole class of investigative friction." },
           { t: "p", text: "The feature-logging check is the one worth acting on immediately if it finds something. The fix is not to stop recording features — lesson 16.2 needs them — but to move them to a governed prediction log with its own retention and access control, leaving identifiers and derived values in the operational log." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: an hour to answer one support ticket",
+      body: [
+        { t: "p", text: "**Symptom.** A customer reported one wrong decision with a timestamp. Answering which model version made it, with which inputs, took two engineers most of an afternoon." },
+        { t: "p", text: "**Mechanism.** Each system had its own request identifier: the gateway, the service logs and the prediction log each generated one. Matching them meant correlating by timestamp across three tools, and two requests from the same customer within a second could not be told apart." },
+        { t: "p", text: "**Fix.** One correlation id is generated at the edge, propagated through every hop, written as a field in logs, traces and the prediction log, and returned to the caller in a response header. The same question is now one query." }
+      ] }
   ],
 
   takeaways: [

@@ -715,7 +715,14 @@ def test_bad_timestamp_raises():
           why: "A naive index is binned as-is, and as-is means UTC. In British Summer Time the hour from 23:00 to 00:00 UTC is 00:00 to 01:00 local — the next day. `tz_localize(\"UTC\").tz_convert(\"Europe/London\")` before resampling puts every sale on the day the till thinks it happened."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: daily totals that crossed midnight in the wrong timezone",
+      body: [
+        { t: "p", text: "**Symptom.** A UK retailer's daily sales report disagreed with its till totals by a few percent, always for the late-evening trade during summer." },
+        { t: "p", text: "**Mechanism.** Timestamps were stored in UTC and resampled to days in UTC. During British Summer Time, sales after 11pm local time fell into the next UTC day." },
+        { t: "p", text: "**Fix.** Timestamps are converted with `tz_convert('Europe/London')` before resampling, so a day is a business day. Daylight-saving transitions are tested explicitly." }
+      ] }
   ],
 
   takeaways: [

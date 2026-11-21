@@ -256,6 +256,17 @@ rollout: shadow one week -> 10 % canary with guardrails -> A/B sized at 31k/arm 
         }
       ] },
 
+    { t: "callout", kind: "trap", title: "Computing a feature differently in serving",
+
+      body: [
+
+        { t: "p", text: "Training–serving skew — a feature computed with different code, time zone or defaults in production — degrades a model from day one with nothing failing." },
+
+        { t: "p", text: "Compute features with one shared function used by both training and serving, and test for skew on the same entities." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Investigate",
       title: "Capacity from latency, a categorical drift, and ADWIN's δ",
@@ -296,7 +307,14 @@ rollout: shadow one week -> 10 % canary with guardrails -> A/B sized at 31k/arm 
           { t: "p", text: "(c) is the false-alarm-versus-delay trade-off every detector has, here set by one parameter." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: training–serving skew in a single feature",
+      body: [
+        { t: "p", text: "**Symptom.** A model's accuracy in production was several points below validation from the first day." },
+        { t: "p", text: "**Mechanism.** The training pipeline computed 'days since last purchase' in UTC and the serving code in local time, so one feature was shifted for many customers." },
+        { t: "p", text: "**Fix.** Features are computed by one shared function used in training and serving, and a skew test compares training and serving values for the same entities." }
+      ] }
   ],
 
   takeaways: [

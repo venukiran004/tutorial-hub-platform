@@ -47,7 +47,7 @@ EC.receiveLesson({
     { t: "math", tex: "\\text{bytes} = 2 \\cdot n_{\\text{layers}} \\cdot \\text{seq} \\cdot n_{\\text{kv heads}} \\cdot d_{\\text{head}} \\cdot \\text{bytes per element}" },
 
     { t: "out", text:
-"LLaMA-2-70B: 80 layers, 64 heads, d_head 128, seq 4096, fp16\n\n  MHA   n_kv = 64    10,737,418,240 bytes   10.74 GB\n  GQA8  n_kv = 8      1,342,177,280 bytes    1.34 GB\n  MQA   n_kv = 1        167,772,160 bytes    0.17 GB\n\nreference says 10.7 / 1.34 / 0.17 GB — reproduces exactly" },
+"LLaMA-2-70B: 80 layers, 64 heads, d_head 128, seq 4096, fp16\n\n  MHA   n_kv = 64    10,737,418,240 bytes   10.74 GB\n  GQA8  n_kv = 8      1,342,177,280 bytes    1.34 GB\n  MQA   n_kv = 1        167,772,160 bytes    0.17 GB\n\nby hand: 10.7 / 1.34 / 0.17 GB — reproduces exactly" },
 
     { t: "out", text:
 "the same model with GQA8, scaled by batch and context\n\nseq len    batch 1     batch 8     batch 32     batch 128\n2048        0.7 GB      5.4 GB      21.5 GB       85.9 GB\n8192        2.7 GB     21.5 GB      85.9 GB      343.6 GB\n32768      10.7 GB     85.9 GB     343.6 GB     1374.4 GB\n131072     42.9 GB    343.6 GB    1374.4 GB     5497.6 GB" },
@@ -129,6 +129,17 @@ EC.receiveLesson({
 
     { t: "callout", kind: "tradeoff", title: "Sparse changes the answer; Flash does not",
       body: [{ t: "p", text: "This is the distinction that decides which to reach for. FlashAttention computes exactly the same function, so adopting it costs nothing but engineering. Every sparse method computes a **different** function — Longformer genuinely cannot attend from token 1 to token 4000 unless one of them is global, and Performer approximates the softmax kernel. That means re-evaluating on your task, and it means some capabilities are structurally removed. Given that Flash made exact attention affordable at long context, sparse patterns have become a narrower tool than they looked in 2020: use them when the sequences are genuinely enormous and the access pattern is genuinely local." }] },
+
+    { t: "callout", kind: "trap", title: "Planning serving capacity from the weights",
+
+      body: [
+
+        { t: "p", text: "The KV cache grows with every concurrent request and every token, and often exceeds the weights. A capacity plan based on weights alone runs out of memory under load." },
+
+        { t: "p", text: "Size serving from the KV cache per token, the expected concurrency and the context length." }
+
+      ] },
+
 
     { t: "exercise", kind: "Challenge", title: "Measure the cache and the kernel", difficulty: "stretch", minutes: 50,
       requirements: [
@@ -218,7 +229,14 @@ online softmax max error, block 1/16/128/1000: ['2.2e-16', '1.4e-16', '1.7e-16',
           { t: "p", text: "Online softmax matched standard attention to 2e-16 at every block size, from 1 to 1,000. It is exact, not an approximation, which is why FlashAttention changes memory use and speed but not results. With a 40 GB budget at batch 8 and 32K context, only 2 KV heads fit against 687 GB for full multi-head attention. Whether 2 heads keeps quality has to be measured on your task." },
           { t: "p", text: "On this CPU the fused SDPA kernel beat the naive version at every length, by up to 2.2×. The memory column matters more: at 4,096 tokens the naive score matrix is 537 MB for one sequence and 8 heads, and it grows with the square of the length. That matrix is what runs out first." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a serving cluster sized for the weights",
+      body: [
+        { t: "p", text: "**Symptom.** A model-serving deployment ran out of memory under load, though the model fitted comfortably at startup." },
+        { t: "p", text: "**Mechanism.** The KV cache grows with every concurrent request and token. The capacity plan had counted only the weights." },
+        { t: "p", text: "**Fix.** Capacity is planned from the KV-cache size per token, the expected concurrency and context, and the model was switched to one using grouped-query attention." }
+      ] }
   ],
 
   takeaways: [

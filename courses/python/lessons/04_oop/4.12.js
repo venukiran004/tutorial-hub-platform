@@ -454,6 +454,17 @@ class Paid:
 
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Writing a class where a function would do",
+
+      body: [
+
+        { t: "p", text: "Strategy, Command and Factory classes with a single method are common in Python code written from a design-pattern book. They add a class, a constructor and an indirection to what is a function passed as an argument." },
+
+        { t: "p", text: "Pass functions, use a dict of callables for dispatch, and introduce a class when there is state to hold or several methods that belong together." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Challenge",
       title: "Dissolve three patterns, keep one",

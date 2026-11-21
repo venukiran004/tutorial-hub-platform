@@ -758,7 +758,14 @@ def test_normalisation_makes_case_variants_exact():
           why: "A one-letter change means different things in different positions, and every string measure is blind to that. A multi-field score — name similarity plus email, postcode or date of birth — is the realistic detector, and the threshold is calibrated on labelled pairs with precision as the constraint."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a fuzzy match that merged two customers",
+      body: [
+        { t: "p", text: "**Symptom.** A customer complained of seeing another person's orders in their account after a data-cleaning job." },
+        { t: "p", text: "**Mechanism.** A fuzzy name-and-address match with a similarity threshold of 0.85 judged 'J. Smith, 12 High St' and 'J. Smith, 12 High St, Flat 2' to be the same person. They were neighbours." },
+        { t: "p", text: "**Fix.** Automatic merges require a high threshold and an exact match on a strong identifier; borderline pairs go to manual review. Every merge is recorded so it can be reversed." }
+      ] }
   ],
 
   takeaways: [

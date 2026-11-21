@@ -321,6 +321,12 @@ for dim in (2, 10, 100, 1000):
 
     { t: "exercise", kind: "practice", title: "Make each metric be the one that is right", difficulty: "core", minutes: 26,
       prompt: "Construct, for each of these, a concrete pair of records where the named metric gives the sensible answer and Euclidean does not: (a) cosine, (b) Mahalanobis, (c) Canberra, (d) Haversine, (e) Gower. Compute both numbers in each case. Then take an embedding set you have, index it twice in FAISS — once with IndexFlatIP on normalised vectors and once with IndexFlatL2 on the same normalised vectors — and confirm the top-10 are identical. Finally reproduce the concentration table at dim 2, 10, 100 and 1000 and note the dimension at which the contrast drops below 1.0.",
+      requirements: [
+        "Construct record pairs where cosine, Mahalanobis, Canberra, Haversine and Gower give the sensible answer and Euclidean does not",
+        "Compute both numbers in each case",
+        "Index one embedding set twice in FAISS, with IndexFlatIP and IndexFlatL2 on normalised vectors",
+        "Confirm the two return the same order"
+      ],
       hints: [
         "For (a) the easy construction is one document repeated twice — same direction, double the length.",
         "For (c) you need a coordinate that is 0 in one record and small-but-nonzero in the other.",
@@ -331,8 +337,14 @@ for dim in (2, 10, 100, 1000):
           { t: "p", text: "The two indexes agreeing is the practical payoff of the identity in section 03, and the reason the exercise asks you to confirm it rather than take it: once you have seen that `IndexFlatL2` and `IndexFlatIP` return the same top-10 on normalised vectors, the question *“which metric does my vector database support”* stops being a modelling worry and becomes a normalisation checklist item." },
           { t: "p", text: "Between 10 and 100 dimensions the contrast falls below 1.0 — the farthest point stops being even twice as far as the nearest. That is a long way below the dimension of any real embedding, which is the honest framing of why approximate search is not a shortcut but the only available option." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: cosine search that was not cosine",
+      body: [
+        { t: "p", text: "**Symptom.** Search results ranked long documents above more relevant short ones after a vector index was introduced." },
+        { t: "p", text: "**Mechanism.** The index used inner product, and the embeddings were not normalised, so vectors with larger norms scored higher regardless of direction." },
+        { t: "p", text: "**Fix.** Embeddings are L2-normalised before indexing, so inner product equals cosine, and a test confirms both orderings agree." }
+      ] }
   ],
 
   takeaways: [

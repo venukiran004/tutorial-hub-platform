@@ -559,7 +559,14 @@ def test_rejects_zero_size():
           why: "`vstack` promotes 1-D arrays to shape `(1, 3)` before concatenating on axis 0, so the result gains a dimension. `hstack` on the same input gives `(6,)` — the two wrappers disagree on 1-D and agree on 2-D, which is why explicit `concatenate(axis=)` is safer."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: one-row batches that broke the model input",
+      body: [
+        { t: "p", text: "**Symptom.** A scoring service failed only for requests containing exactly one record, with a shape error deep inside the model." },
+        { t: "p", text: "**Mechanism.** The batch was built with `np.vstack`, which treats a one-dimensional input as a single row. For one record, a different code path produced a 1-D array of features instead of a `(1, n)` matrix, and the model rejected it." },
+        { t: "p", text: "**Fix.** Batches are built with `np.stack(rows)` on explicitly shaped rows, and the service tests a batch of one, which is where shape handling usually breaks." }
+      ] }
   ],
 
   takeaways: [

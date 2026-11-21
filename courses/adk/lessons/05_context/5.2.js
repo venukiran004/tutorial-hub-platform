@@ -143,6 +143,10 @@ pipeline = SequentialAgent(name="review", sub_agents=[summariser, critic])`,
 
     { t: "exercise", kind: "practice", title: "Place eight facts", difficulty: "core", minutes: 18,
       prompt: "For each of these, choose session state, user: state, app: state, temp:, an artifact, or your own database — and say why. (1) The customer's delivery address for this order. (2) That the customer prefers email over SMS. (3) The feature flag enabling a new tool. (4) A 4 MB invoice PDF the agent generated. (5) The id of the order just created. (6) An intermediate score a before-model callback computed for an after-model callback. (7) The customer's saved payment token. (8) How many times any user has triggered the escalation path today.",
+      requirements: [
+        "Place each of the eight facts in session state, user:, app:, temp:, an artifact or your own database",
+        "Justify each placement in one sentence"
+      ],
       hints: [
         "Ask first: must this be true on the next turn, in the next conversation, or for other people?",
         "Two of these should not be in state at all.",
@@ -154,8 +158,14 @@ pipeline = SequentialAgent(name="review", sub_agents=[summariser, critic])`,
           { t: "p", text: "App state: (3) the feature flag, set deliberately and read by everyone. Temp: (6) the intermediate score, which exists only to pass a value between two callbacks in the same invocation and would be noise in the store." },
           { t: "p", text: "Not state at all: (4) the PDF is an artifact, because state is reloaded on every turn and four megabytes of it would be intolerable; (7) the payment token belongs in the credential service or a secrets store, since state is interpolated into prompts and visible to every tool; and (8) the daily escalation count should be a database counter — app: state would race between concurrent conversations and quietly lose increments." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the allergy the agent forgot every morning",
+      body: [
+        { t: "p", text: "**Symptom.** A pharmacy assistant asked users about allergies at the start of every conversation, though they had told it before." },
+        { t: "p", text: "**Mechanism.** The allergy was stored under an unprefixed key, which belongs to one session. Each new conversation started a new session with empty state." },
+        { t: "p", text: "**Fix.** Durable facts about the person use `user:` and follow them into every session. Safety-relevant facts are also confirmed in the conversation rather than relied on silently." }
+      ] }
   ],
 
   takeaways: [

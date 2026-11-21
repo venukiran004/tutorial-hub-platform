@@ -151,6 +151,17 @@ session now holds 4 events` },
       ["Not magic about reliability", "An agent that calls the wrong tool still calls the wrong tool. The framework gives you the hooks — callbacks, evaluation, tracing — with which to find out."]
     ] },
 
+    { t: "callout", kind: "trap", title: "Treating the event stream as a single answer",
+
+      body: [
+
+        { t: "p", text: "Code that reads the first text event from `run_async` as the answer works for a one-step agent and breaks as soon as there are tool calls or sub-agents: the first text may be a transfer message or a partial result." },
+
+        { t: "p", text: "Consume the whole stream for the invocation and take the final response from the agent that owns the reply, using `is_final_response()`." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Read the shape of the package", difficulty: "foundation", minutes: 12,
       body: [{ t: "p", text: "Install ADK and, without reading any documentation, answer these from the package itself: (a) which classes does `google.adk.sessions` export; (b) what is the signature of `Runner.run_async`; (c) how many fields does `LlmAgent` have, and which three sound like they control delegation; (d) what does `google.adk.tools` export whose name contains `mcp`." }],
       requirements: [
@@ -178,7 +189,14 @@ print([f for f in LlmAgent.model_fields if "transfer" in f or f in ("sub_agents"
 # ['parent_agent', 'sub_agents', 'disallow_transfer_to_parent', 'disallow_transfer_to_peers']
 
 print([n for n in tools.__all__ if "cp" in n.lower()])   # ['RemoteMcpServer', 'MCPToolset', 'McpToolset']`,
-        notes: [{ t: "p", text: "Reading a framework this way is a habit worth keeping: the installed package is the only documentation that cannot be out of date. It is also how this course was written — every API claim in it came from an introspection like this one against 2.9.2." }] } }
+        notes: [{ t: "p", text: "Reading a framework this way is a habit worth keeping: the installed package is the only documentation that cannot be out of date. It is also how this course was written — every API claim in it came from an introspection like this one against 2.9.2." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the demo agent that forgot every customer overnight",
+      body: [
+        { t: "p", text: "**Symptom.** A support agent built from a model API and a dictionary of conversations worked through a week of demos. On its first night in production the host restarted, and every open conversation started again from nothing the next morning." },
+        { t: "p", text: "**Mechanism.** The team had written the first fifteen minutes of an agent — the model call and a tool loop — and kept the conversation in process memory. Persisting conversations, replaying them into each request and surviving a restart are the runtime's job, and nobody had built that part. The demo never ran long enough to need it." },
+        { t: "p", text: "**Fix.** The agent was moved onto ADK's runner with a database session service, so a conversation is a stored event log replayed into each turn and survives any number of restarts. The review question for any agent prototype became: where does the conversation live when the process dies?" }
+      ] }
   ],
 
   takeaways: [

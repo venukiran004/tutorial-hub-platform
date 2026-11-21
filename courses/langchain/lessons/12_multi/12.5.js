@@ -69,7 +69,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "One of three fails",
       code: "results: ['ok: a', 'FAILED: b', 'ok: c']\ngathered 3, 1 failed",
       caption: "The other two **succeeded** and their results are kept." },
-    { t: "callout", kind: "warn", title: "Only because the worker caught its own failure", body: [
+    { t: "callout", kind: "trap", title: "Only because the worker caught its own failure", body: [
       { t: "p", text: "If it had **raised**, the whole superstep would have failed and all three results would be lost (10.2). So an orchestrator's workers must return a result-shaped value either way \u2014 the output, or a marker recording the failure." },
       { t: "p", text: "Which makes the worker's error handling a structural requirement rather than a nicety: re-running twenty workers because one raised repeats nineteen successful model calls." }
     ] },

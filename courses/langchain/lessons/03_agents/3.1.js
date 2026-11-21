@@ -190,6 +190,17 @@ def refund(order_id: str,
       caption: "**`content_and_artifact` solves the conflict between what the model needs and what your code needs: a short string for reasoning, the full object for the caller** \u2014 and the artifact never enters the context, so a tool can return four hundred rows without costing four hundred rows of tokens." },
     { t: "p", text: "**`InjectedToolArg` is an authorisation control, not a convenience.** A tool whose `user_id` is an ordinary parameter is a tool that asks the model who it is acting as, and a prompt-injected document can answer. Injected arguments are stripped from the schema the model sees and filled in by your code, which is the only way a refund tool can be safe to expose at all. `InjectedState` does the same for graph state." },
 
+    { t: "callout", kind: "trap", title: "A description that says what the tool does and not when to use it",
+
+      body: [
+
+        { t: "p", text: "'Looks up an order' tells the model what happens inside the function. It does not say that the tool is the way to answer questions about delivery dates, refunds or order status, so the model answers those from its own knowledge and never calls it." },
+
+        { t: "p", text: "Write each description as a trigger: the questions it answers, what it needs, and what to use instead for nearby questions. Then test tool selection with a handful of real phrasings." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Write a tool the model will actually call",
       difficulty: "core", minutes: 24,
       body: "Define a tool with the decorator and inspect everything it sends to the model. Compare three descriptions of the same function and say what each lets the model infer. Build a tool with a Pydantic args_schema including a bounded integer, and confirm the bound is enforced. Then raise a ToolException on a bad argument and explain what an agent does with it.",

@@ -152,7 +152,14 @@ model for a four-verb job. Signatures in the user's vocabulary:
 For 'anything the API can do': generate the full toolset, but put it behind a sub-agent
 exposed as an AgentTool, with an instruction explaining the API's model. The caller then
 sees one tool; the ticketing sub-agent faces the 38 with a prompt written for them.`,
-        notes: [{ t: "p", text: "The general rule: the model's tool list should match the job, not the API. When the job really is 'the whole API', the way to keep tool selection accurate is to give that job its own agent rather than to widen an existing one." }] } }
+        notes: [{ t: "p", text: "The general rule: the model's tool list should match the job, not the API. When the job really is 'the whole API', the way to keep tool selection accurate is to give that job its own agent rather than to widen an existing one." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a sixty-operation API exposed as sixty tools",
+      body: [
+        { t: "p", text: "**Symptom.** After an internal API was connected through `OpenAPIToolset`, the agent's tool choice degraded across the board, and one user caused a bulk delete by asking to \"clean up old tickets\"." },
+        { t: "p", text: "**Mechanism.** The toolset generated one tool per operation, including administrative ones, and every declaration rode on every request. More tools meant worse selection, and a destructive operation was now one sentence away." },
+        { t: "p", text: "**Fix.** The toolset is constructed with an allow-list of four operations the agent actually needs, and destructive operations are not exposed at all. The filter is reviewed like a permission, because it is one." }
+      ] }
   ],
 
   takeaways: [

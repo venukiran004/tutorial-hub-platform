@@ -256,6 +256,13 @@ auc2 = roc_auc_score(yte, m2.predict_proba(Xte)[:, 1])`,
 
     { t: "exercise", kind: "practice", title: "Interrogate your own store", difficulty: "intro", minutes: 25,
       prompt: "Take the most recent model your team put into production and try to answer four questions using only what was recorded at the time, without asking the person who trained it. Which run produced it? What were the exact bytes of its training data? What commit, and was the tree clean? What library versions? For each one you cannot answer, write down the single smallest change that would have made it answerable. Then pick any two runs from your store with suspiciously similar metrics and check whether the library silently overrode a parameter in both.",
+      requirements: [
+        "Identify which run produced the model now in production, from records alone",
+        "Recover the exact bytes of its training data, the commit and whether the tree was clean",
+        "Recover the library versions",
+        "For each unanswerable question, write the smallest change that would have made it answerable",
+        "Check two runs with near-identical metrics for a silently overridden parameter"
+      ],
       hints: [
         "'The data is in the warehouse' is not an answer unless the query and a snapshot or timestamp were recorded.",
         "If the dirty flag was never captured, treat every commit id in the store as unverified.",
@@ -266,8 +273,14 @@ auc2 = roc_auc_score(yte, m2.predict_proba(Xte)[:, 1])`,
           { t: "p", text: "The common outcome is that run id and params are available, the data is identified only by a table name, and the environment is absent. That ordering is not an accident: params are what the tracking library makes easiest to log, and data and environment are what it leaves to you." },
           { t: "p", text: "The smallest useful fix is almost always the data fingerprint, because it is the one that converts *unreproducible* into *a different dataset* — and as the 0.0013 AUC difference above shows, you will otherwise spend the morning looking for a bug that is not there." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the model nobody could rebuild",
+      body: [
+        { t: "p", text: "**Symptom.** An auditor asked a team to reproduce the churn model serving production. The registry named a run; retraining from that run's logged parameters gave a model with visibly different scores on the same customers." },
+        { t: "p", text: "**Mechanism.** Three things recorded at the time were not what had happened. The logged `max_iter` was the requested value, and early stopping had halted well short of it. The commit hash was recorded but the working tree had been dirty. And the data was identified by a path that had since been overwritten by the nightly export, with no content hash to show it." },
+        { t: "p", text: "**Fix.** The store now records realised values read back from the fitted estimator, a `git status` cleanliness flag that fails the run when dirty, and a sha256 of the training bytes. Failed runs are written too. The rebuild is exercised quarterly on the live model, because provenance that has never been used to rebuild anything is a belief." }
+      ] }
   ],
 
   takeaways: [

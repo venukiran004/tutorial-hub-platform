@@ -119,21 +119,151 @@ EC.receiveLesson({
       ["Silent failures outnumber loud ones", "Softmax applied twice, a scaler fitted before splitting, a missing causal mask, `h_n` on padded sequences, `center=True` on a rolling window. None raise. All produce plausible numbers."]
     ] },
 
+    { t: "callout", kind: "trap", title: "Discovering a broken checkpoint when you need it",
+
+      body: [
+
+        { t: "p", text: "A checkpoint that cannot be loaded — written non-atomically, missing optimiser state, saved from the wrong process — is discovered only after a failure, when the run has to resume from it." },
+
+        { t: "p", text: "Write checkpoints atomically and reload the first one as a test early in every run." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Build the harness you will reuse", difficulty: "intermediate", minutes: 45,
       prompt: "Write a reusable training harness containing every item from the checklist: finite-value guards on logits, loss and gradient norm; gradient clipping with a threshold chosen from logged norms; warmup and cosine decay; per-step logging of loss, gradient norm, learning rate and dead-unit fraction; auto-abort after K non-finite steps; and atomic checkpointing with a reload test on the first checkpoint. Then deliberately break a training run four ways and confirm your harness catches each at the right place with a useful message.",
+      requirements: [
+        "Write a harness with finite-value guards, clipping from logged norms, warm-up with cosine decay and per-step logging",
+        "Add auto-abort after K non-finite steps",
+        "Add atomic checkpointing with a reload test",
+        "Break a run four ways and confirm the harness catches each with a useful message"
+      ],
       hints: [
         "Make the guards raise with the tensor's name, not a generic message.",
         "The reload test should compare outputs on a fixed batch, not just load without error.",
         "Four good breakages: unnormalised inputs, LR 100× too high, a NaN injected into one sample, and fp16 without a scaler."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import math, os, tempfile
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from sklearn.datasets import load_digits
+
+class Harness:
+    def __init__(self, make_model, lr=1e-2, warmup=50, total=400, clip=None, max_bad=3, ckpt_dir=None, every=100):
+        self.make = make_model; self.m = make_model()
+        self.base_lr, self.warmup, self.total = lr, warmup, total
+        self.opt = torch.optim.SGD(self.m.parameters(), lr, momentum=0.9)
+        self.clip, self.max_bad, self.bad, self.norms, self.log = clip, max_bad, 0, [], []
+        self.dir, self.every, self.step_n = ckpt_dir or tempfile.mkdtemp(), every, 0
+
+    def lr_at(self, s):                                   # linear warm-up, then cosine decay
+        if s < self.warmup: return self.base_lr * (s + 1) / self.warmup
+        p = (s - self.warmup) / max(1, self.total - self.warmup)
+        return self.base_lr * 0.5 * (1 + math.cos(math.pi * min(p, 1.0)))
+
+    @staticmethod
+    def finite(name, t):
+        if not torch.isfinite(t).all(): raise FloatingPointError(f"{name} has NaN/Inf")
+
+    def dead_fraction(self, x):
+        h, dead = x, []
+        with torch.no_grad():
+            for layer in self.m:
+                h = layer(h)
+                if isinstance(layer, nn.ReLU): dead.append((h <= 0).all(0).float().mean().item())
+        return max(dead) if dead else 0.0
+
+    def step(self, x, y):
+        for g in self.opt.param_groups: g["lr"] = self.lr_at(self.step_n)
+        try:
+            logits = self.m(x); self.finite("logits", logits)
+            loss = F.cross_entropy(logits, y); self.finite("loss", loss)
+            self.opt.zero_grad(); loss.backward()
+            if self.clip is None and len(self.norms) >= 50:        # choose the threshold from logged norms
+                self.clip = float(torch.tensor(self.norms).quantile(0.95))
+            norm = nn.utils.clip_grad_norm_(self.m.parameters(), self.clip or float("inf")); self.finite("grad norm", norm)
+        except FloatingPointError as e:
+            self.bad += 1
+            print(f"  step {self.step_n}: skipped, {e} ({self.bad}/{self.max_bad})")
+            if self.bad >= self.max_bad: raise RuntimeError(f"aborting at step {self.step_n}: {self.bad} consecutive non-finite steps") from e
+            self.step_n += 1; return None
+        recent = [r["loss"] for r in self.log[-50:]]
+        if len(recent) == 50 and loss.item() > 10 * sorted(recent)[25]:
+            raise RuntimeError(f"aborting at step {self.step_n}: loss {loss.item():.3g} is over 10x the recent median {sorted(recent)[25]:.3g}")
+        dead = self.dead_fraction(x)
+        if self.step_n >= 50 and dead > 0.9:
+            raise RuntimeError(f"aborting at step {self.step_n}: {dead:.0%} of a hidden layer's units are dead")
+        self.bad = 0; self.norms.append(norm.item()); self.opt.step()
+        self.log.append(dict(step=self.step_n, loss=loss.item(), grad_norm=norm.item(), lr=self.lr_at(self.step_n), dead=dead))
+        self.step_n += 1
+        if self.step_n % self.every == 0: self.checkpoint(x)
+        return loss.item()
+
+    def checkpoint(self, probe):
+        path = os.path.join(self.dir, f"step{self.step_n}.pt"); tmp = path + ".tmp"
+        torch.save({"model": self.m.state_dict(), "opt": self.opt.state_dict(), "step": self.step_n}, tmp)
+        os.replace(tmp, path)                                   # atomic on the same filesystem
+        if self.step_n == self.every:                           # reload test on the first checkpoint
+            clone = self.make()
+            clone.load_state_dict(torch.load(path)["model"]); clone.eval(); self.m.eval()
+            with torch.no_grad(): same = torch.equal(clone(probe), self.m(probe))
+            self.m.train()
+            if not same: raise RuntimeError("checkpoint reload produced different outputs")
+            print(f"  checkpoint {os.path.basename(path)} written atomically; reload gives identical outputs")
+
+X, y = load_digits(return_X_y=True); X = torch.tensor(X / 16.0, dtype=torch.float32); y = torch.tensor(y)
+def make_model(): return nn.Sequential(nn.Linear(64, 128), nn.ReLU(), nn.Linear(128, 10))
+
+def trial(name, corrupt=lambda step, x, y: (x, y), **kw):
+    print(name); torch.manual_seed(0); h = Harness(make_model, **kw)
+    try:
+        for s in range(400):
+            idx = torch.randint(0, 1500, (64,)); xb, yb = corrupt(s, X[idx].clone(), y[idx]); h.step(xb, yb)
+        last = h.log[-1]
+        print(f"  finished: loss {last['loss']:.3f}, clip threshold {h.clip:.2f} (95th pct of logged norms), max dead fraction {last['dead']:.2f}")
+    except RuntimeError as e:
+        print(f"  {e}")
+
+trial("healthy run")
+trial("break 1: one NaN pixel per batch from step 200", corrupt=lambda s, x, y: (x.index_fill_(1, torch.tensor([5]), float("nan")) if s >= 200 else x, y))
+trial("break 2: inputs scaled by 1e6 from step 200", corrupt=lambda s, x, y: (x * 1e6 if s >= 200 else x, y))
+trial("break 3: learning rate 1e3", lr=1e3)
+trial("break 4: a single bad batch at step 150 (recovers)", corrupt=lambda s, x, y: (x * float("inf") if s == 150 else x, y))`,
+        out: `healthy run
+  checkpoint step100.pt written atomically; reload gives identical outputs
+  finished: loss 0.441, clip threshold 0.52 (95th pct of logged norms), max dead fraction 0.07
+break 1: one NaN pixel per batch from step 200
+  checkpoint step100.pt written atomically; reload gives identical outputs
+  step 200: skipped, logits has NaN/Inf (1/3)
+  step 201: skipped, logits has NaN/Inf (2/3)
+  step 202: skipped, logits has NaN/Inf (3/3)
+  aborting at step 202: 3 consecutive non-finite steps
+break 2: inputs scaled by 1e6 from step 200
+  checkpoint step100.pt written atomically; reload gives identical outputs
+  aborting at step 200: loss 5.44e+04 is over 10x the recent median 0.728
+break 3: learning rate 1e3
+  aborting at step 50: 100% of a hidden layer's units are dead
+break 4: a single bad batch at step 150 (recovers)
+  checkpoint step100.pt written atomically; reload gives identical outputs
+  step 150: skipped, logits has NaN/Inf (1/3)
+  finished: loss 0.443, clip threshold 0.52 (95th pct of logged norms), max dead fraction 0.07`,
+       
         notes: [
           { t: "p", text: "The value of building this once is that every future project starts with it, and the instrumentation is what turns a mysterious failure into a diagnosed one. The specific thing worth getting right is that guards should name what failed — `logits has NaN/Inf` rather than an assertion error — because when this fires at three in the morning on a cluster, the message is all you have to work with." },
           { t: "p", text: "The reload test is the item people skip and should not. Loading without an exception is not the test; producing identical outputs on a fixed batch is. That catches partial writes, missing optimiser state, and the sharded-checkpoint mistake where you saved one rank's fragment. Two minutes at the start of a run, against the possibility of discovering at week three that nothing is recoverable." },
           { t: "p", text: "For the four breakages, note that they surface differently: unnormalised inputs give a growing loss rather than an immediate NaN, the excessive learning rate gives a spike, an injected NaN propagates instantly and should be caught at the logits guard, and fp16 without a scaler gives gradients that silently underflow to zero with no NaN anywhere. That last one is the argument for logging the gradient norm rather than relying on finite checks — a run where half the gradients are exactly zero passes every `isfinite` assertion you have." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a training job that hung for twelve hours",
+      body: [
+        { t: "p", text: "**Symptom.** A distributed training job stopped making progress overnight and kept its eight GPUs reserved until morning." },
+        { t: "p", text: "**Mechanism.** One worker hit an exception and exited while the others waited for it in a collective operation. Nothing timed out." },
+        { t: "p", text: "**Fix.** Collectives have timeouts, a watchdog alerts when steps stop advancing, and every worker logs its step so the stuck one is identifiable." }
+      ] }
   ],
 
   takeaways: [

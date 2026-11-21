@@ -130,7 +130,7 @@ EC.receiveLesson({
       code: "fetch   exact MRR   nat MRR   latency per query\n5       0.875       0.857     0.421 s\n10      0.875       0.845     0.727 s\n20      1.000       0.845     1.479 s\n41      1.000       0.845     2.308 s",
       caption: "Exact-term accuracy rises to a point; latency keeps rising. Natural MRR never recovers." },
     { t: "p", text: "Latency grows roughly linearly with the candidate count, because the cross-encoder scores every pair \u2014 6.1's per-document cost, now with a knob on it. The accuracy gain stops at 20 here, so 41 is pure cost." },
-    { t: "callout", kind: "warn", title: "The natural column does not recover at any depth", body: [
+    { t: "callout", kind: "trap", title: "The natural column does not recover at any depth", body: [
       { t: "p", text: "Every fetch value leaves natural MRR below the 0.964 that dense alone achieved. So the fix for that regression is **not** a bigger candidate set \u2014 it is not reranking those queries at all." },
       { t: "p", text: "Which makes reranking a routing decision rather than a pipeline stage, the same conclusion 6.5 reached about fusion from a different direction. Both techniques help one query class and harm another, and in both cases the remedy is to decide per query rather than to tune a parameter." }
     ] },

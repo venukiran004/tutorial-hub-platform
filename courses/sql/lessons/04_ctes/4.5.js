@@ -207,6 +207,17 @@ SELECT customer_id, o FROM customer_orders, UNNEST(order_ids) AS u(o);        --
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Filtering JSON with an operator the index cannot serve",
+
+      body: [
+
+        { t: "p", text: "A GIN index on a `jsonb` column serves containment (`@>`), not `->>` equality. A filter written with `->>` scans every row even though an index exists." },
+
+        { t: "p", text: "Write filters as containment, or add an expression index on the extracted field, and confirm the plan uses it." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "From a payload to a report, and back to a document",
@@ -286,7 +297,14 @@ CREATE INDEX orders_meta_gin ON orders_meta USING GIN (doc jsonb_path_ops); -- s
           why: "A missing key gives NULL, which casts fine. A present key with the wrong kind of value is the failure — and it is exactly the class of error a typed column with a CHECK constraint would have refused at write time."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a JSON filter that scanned the whole table",
+      body: [
+        { t: "p", text: "**Symptom.** An API endpoint filtering events by a field inside a JSON column slowed to several seconds as the table grew." },
+        { t: "p", text: "**Mechanism.** The filter was `payload->>'type' = 'purchase'`. A GIN index on the column serves containment (`@>`), not `->>` equality, so the planner scanned every row." },
+        { t: "p", text: "**Fix.** The query uses `payload @> '{\"type\": \"purchase\"}'`, which the GIN index serves. Because the field is filtered on constantly, it was later promoted to a real column with its own index." }
+      ] }
   ],
 
   takeaways: [

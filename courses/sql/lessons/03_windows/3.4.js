@@ -210,7 +210,7 @@ FROM   (VALUES (1, 10), (2, NULL), (3, NULL), (4, 40)) AS t(i, x) ORDER BY i;
       ]
     },
 
-    { t: "callout", kind: "warn", title: "LEAD and the full-partition LAST_VALUE are labels, not features", body: [
+    { t: "callout", kind: "trap", title: "LEAD and the full-partition LAST_VALUE are labels, not features", body: [
       { t: "p", text: "`until_next`, `next_order_amount`, `final_status_of_customer` — anything computed with LEAD or a frame that reaches forward is known only after the fact. **They are excellent targets and forbidden inputs.** The test from Data Handling 8.3 applies: truncate the history at a date and any of these that change for earlier rows were reading the future." }
     ]},
 
@@ -301,7 +301,14 @@ ORDER  BY customer_id, occurred_at;
           why: "Value functions read an edge of the frame, and the default frame's right edge is the current row. FIRST_VALUE escapes the trap only because the default frame's left edge is always the partition's first row."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: every customer's 'latest order' was the current one",
+      body: [
+        { t: "p", text: "**Symptom.** A feature for 'value of the customer's most recent order' equalled the current order's value on every row." },
+        { t: "p", text: "**Mechanism.** It used `LAST_VALUE(amount) OVER (PARTITION BY customer ORDER BY placed_at)`. Under the default frame the window ends at the current row, so the last value is always the current row." },
+        { t: "p", text: "**Fix.** The feature uses `LAG(amount)` for the previous order, and anything needing the whole partition writes the full frame explicitly." }
+      ] }
   ],
 
   takeaways: [

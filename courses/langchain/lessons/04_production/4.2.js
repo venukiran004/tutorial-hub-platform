@@ -97,7 +97,7 @@ EC.receiveLesson({
       ["`metadata`", "queryable: `{\"tenant\": \"acme\", \"user_tier\": \"free\"}`"],
       ["a request id in metadata", "ties a trace to your own application logs"]
     ] },
-    { t: "callout", kind: "warn", title: "It cannot be added retrospectively", body: [
+    { t: "callout", kind: "trap", title: "It cannot be added retrospectively", body: [
       { t: "p", text: "2.9 made this point and it is worth repeating where it bites: the moment you want to query traces by tenant is during an incident, and the traffic you need to query **has already happened**. You cannot tag last Tuesday." },
       { t: "p", text: "That asymmetry is why this belongs on the build checklist rather than the operations checklist. It costs one `with_config` per chain, changes no behaviour, and is unrecoverable if skipped." }
     ] },

@@ -56,11 +56,11 @@ EC.receiveLesson({
       caption: "Train by repeating: count pairs, merge the most frequent, record the rule. The **order** of the rules is part of the trained artefact." },
 
     { t: "out", text:
-"initial pair counts\n  (e,r)        9      (l,o)        7      (n,e)        6\n  (r,</w>)     9      (o,w)        7      (w,</w>)     5\n  (w,e)        8      (e,w)        6      (w,i) (i,d) (d,e)  3\n                                          (e,s) (s,t) (t,</w>) 2\n\nreference lists (e,r)=9, (r,</w>)=9 tied for max, (w,e)=8, (l,o)=7, (o,w)=7" },
+"initial pair counts\n  (e,r)        9      (l,o)        7      (n,e)        6\n  (r,</w>)     9      (o,w)        7      (w,</w>)     5\n  (w,e)        8      (e,w)        6      (w,i) (i,d) (d,e)  3\n                                          (e,s) (s,t) (t,</w>) 2\n\ncommonly published trace lists (e,r)=9, (r,</w>)=9 tied for max, (w,e)=8, (l,o)=7, (o,w)=7" },
 
-    { t: "h2", n: "03", text: "Where strict greedy diverges from the reference", id: "divergence" },
+    { t: "h2", n: "03", text: "Where strict greedy diverges from the published trace", id: "divergence" },
 
-    {"kind": "trace", "title": "Strict greedy and the reference take different merges from merge 3 onward", "caption": "Both agree on merges 1 and 2. **Then strict greedy takes `(l,o)` at frequency 7, because 7 > 6; the reference takes `(n,e)` at 6.** Neither is wrong about the counts — **the reference is following a different ordering convention, and the result is a different vocabulary from identical data.** Which is the practical warning: **a BPE vocabulary is not determined by the corpus alone, so two implementations can both be “correct” and produce different tokenisations.**", "left": "merge", "codeW": 130, "vars": ["strict greedy", "freq", "the reference"], "steps": [{"code": "1", "state": ["(e,r) -> er", "9", "same"], "tone": "good"}, {"code": "2", "state": ["(er,</w>) -> er</w>", "9", "same"], "changed": [0], "tone": "good"}, {"code": "3", "state": ["(l,o) -> lo", "7", "(n,e) -> ne  [6]"], "changed": [0, 1, 2], "tone": "crit", "note": "diverges here"}, {"code": "4", "state": ["(lo,w) -> low", "7", "(ne,w) -> new  [6]"], "changed": [0, 2], "tone": "crit"}, {"code": "result", "state": ["a different vocabulary", "-", "from identical data"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-4_8-03-2"},
+    {"kind": "trace", "title": "Strict greedy and the published trace take different merges from merge 3 onward", "caption": "Both agree on merges 1 and 2. **Then strict greedy takes `(l,o)` at frequency 7, because 7 > 6; the published trace takes `(n,e)` at 6.** Neither is wrong about the counts — **the published trace is following a different ordering convention, and the result is a different vocabulary from identical data.** Which is the practical warning: **a BPE vocabulary is not determined by the corpus alone, so two implementations can both be “correct” and produce different tokenisations.**", "left": "merge", "codeW": 130, "vars": ["strict greedy", "freq", "published trace"], "steps": [{"code": "1", "state": ["(e,r) -> er", "9", "same"], "tone": "good"}, {"code": "2", "state": ["(er,</w>) -> er</w>", "9", "same"], "changed": [0], "tone": "good"}, {"code": "3", "state": ["(l,o) -> lo", "7", "(n,e) -> ne  [6]"], "changed": [0, 1, 2], "tone": "crit", "note": "diverges here"}, {"code": "4", "state": ["(lo,w) -> low", "7", "(ne,w) -> new  [6]"], "changed": [0, 2], "tone": "crit"}, {"code": "result", "state": ["a different vocabulary", "-", "from identical data"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-4_8-03-2"},
 
 
 
@@ -72,7 +72,7 @@ EC.receiveLesson({
 "always merging the most frequent pair\n\n  merge 1   (e,r)        -> 'er'          freq 9\n  merge 2   (er,</w>)    -> 'er</w>'     freq 9\n  merge 3   (l,o)        -> 'lo'         freq 7\n  merge 4   (lo,w)       -> 'low'        freq 7\n  merge 5   (e,w)        -> 'ew'         freq 6\n  merge 6   (ew,er</w>)  -> 'ewer</w>'   freq 6\n  merge 7   (n,ewer</w>) -> 'newer</w>'  freq 6\n\nthe order:\n  merge 3   (n,e) -> 'ne'   [6]\n  merge 4   (ne,w) -> 'new' [6]\n  merge 5   (l,o) -> 'lo'   [7]\n  merge 6   (lo,w) -> 'low' [7]" },
 
     { t: "callout", kind: "warn", title: "A commonly published trace applies a frequency-6 merge before two frequency-7 merges",
-      body: [{ t: "p", text: "After merge 2 the counts are `(l,o) = 7`, `(o,w) = 7`, `(n,e) = 6`, `(e,w) = 6`. BPE's rule is to take the **most frequent** pair, so merges 3 and 4 should be the frequency-7 ones. The reference takes `(n,e)` at 6 first. Its own annotations record the frequencies correctly — `[6]`, `[6]`, `[7]`, `[7]` — so the numbers are right and only the ordering is out of sequence. It matters because the rule order *is* the trained tokeniser: change it and you get different tokens for the same input, as the next section shows." }] },
+      body: [{ t: "p", text: "After merge 2 the counts are `(l,o) = 7`, `(o,w) = 7`, `(n,e) = 6`, `(e,w) = 6`. BPE's rule is to take the **most frequent** pair, so merges 3 and 4 should be the frequency-7 ones. The published trace takes `(n,e)` at 6 first. Its own annotations record the frequencies correctly — `[6]`, `[6]`, `[7]`, `[7]` — so the numbers are right and only the ordering is out of sequence. It matters because the rule order *is* the trained tokeniser: change it and you get different tokens for the same input, as the next section shows." }] },
 
     { t: "h2", n: "04", text: "Encoding applies the rules in order", id: "encoding" },
 
@@ -124,7 +124,7 @@ EC.receiveLesson({
 
 
     { t: "out", text:
-"\"I love transformer models!\"\n\nbert-base-uncased   8 ids   ['[CLS]','i','love','transform','##er','models','!','[SEP]']\ngpt2                5 ids   ['I','Ġlove','Ġtransformer','Ġmodels','!']\nroberta-base        7 ids   ['<s>','I','Ġlove','Ġtransformer','Ġmodels','!','</s>']\n\nbert input_ids: [101, 1045, 2293, 10938, 2121, 4275, 999, 102]\nreference says: [101, 1045, 2293, 19081, 4275, 999, 102]" },
+"\"I love transformer models!\"\n\nbert-base-uncased   8 ids   ['[CLS]','i','love','transform','##er','models','!','[SEP]']\ngpt2                5 ids   ['I','Ġlove','Ġtransformer','Ġmodels','!']\nroberta-base        7 ids   ['<s>','I','Ġlove','Ġtransformer','Ġmodels','!','</s>']\n\nbert input_ids: [101, 1045, 2293, 10938, 2121, 4275, 999, 102]\ncommonly published: [101, 1045, 2293, 19081, 4275, 999, 102]" },
 
     { t: "callout", kind: "warn", title: "The id list contradicts its own token list",
       body: [{ t: "p", text: "A commonly published output prints **7** ids but then shows **8** tokens including both `transform` and `##er` — those cannot both be right. Measured, BERT splits *transformer* into `transform` (10938) and `##er` (2121), giving 8 ids total. The id list has a single 19081 where those two belong, which would correspond to *transformer* as one token. Its `convert_ids_to_tokens` line is the correct one. Worth noticing that GPT-2 keeps *transformer* whole in one token while BERT splits it — a direct consequence of vocabulary size, 50,257 against 30,522." }] },
@@ -163,6 +163,17 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Larger vocabulary buys shorter sequences and costs embedding parameters",
       body: [{ t: "p", text: "A bigger vocabulary means fewer tokens per sentence — cheaper inference, more content per context window, better coverage of other languages. It also means a larger embedding matrix at `vocab_size × d_model`, and each token appears less often in training so its embedding is learned from less evidence. At LLaMA 3's 128,000 by 4096, the embedding matrix alone is 524M parameters, and it is typically tied with the output projection to avoid paying twice. The trend is firmly upward — 30k in 2018, 128k now — because context windows grew and multilingual coverage became a priority, and because the embedding cost is a shrinking fraction of a model that is otherwise getting much larger." }] },
 
+    { t: "callout", kind: "trap", title: "Using a tokeniser trained on a different domain",
+
+      body: [
+
+        { t: "p", text: "A general tokeniser splits domain terms — legal, medical, code — into many pieces, increasing sequence length and cost." },
+
+        { t: "p", text: "Measure tokens per document on your own text, and train or choose a tokeniser that suits it." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Train and measure a tokeniser", difficulty: "stretch", minutes: 50,
       requirements: [
         "Implement BPE training and confirm the merge order is strictly by frequency. Encode a word not in the corpus and trace every rule application.",
@@ -177,7 +188,8 @@ EC.receiveLesson({
         code: `import os, collections
 os.environ["HF_HUB_OFFLINE"] = "1"
 from transformers import AutoTokenizer
-from docs import DOCS
+from docs import DOCS   # docs.py is yours: DOCS = [six or more multi-sentence English passages]
+                        # the output shown is from the author's passages, so your figures will differ
 
 # 1. BPE training from scratch, strictly greedy by pair frequency.
 corpus = {"low": 5, "lower": 2, "newest": 6, "widest": 3, "new": 4, "newer": 3}
@@ -266,7 +278,14 @@ GPT-2 tokenizer cost by language (same sentence):
           { t: "p", text: "Swapping two rules changed the encoding of both 'newest' (one token against three) and 'lowest'. The ordered rule list is the model: two tokenisers with the same merges in a different order are different tokenisers." },
           { t: "p", text: "On English text the four tokenisers cost almost the same, 19–21 tokens per 100 characters. Across languages GPT-2's tokeniser is very uneven: the same sentence costs 2.3× in French, 3.3× in Japanese and 7.1× in Hindi. At the illustrative price, Hindi users cost about seven times as much per request. Numbers split irregularly, '1234567' as 123|45|67 and '1000000' as 1|000000, so digit positions are not aligned across numbers. That is one reason arithmetic is hard for such models." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a tokeniser trained on the wrong text",
+      body: [
+        { t: "p", text: "**Symptom.** A domain model for legal documents produced many more tokens per document than expected, raising inference cost." },
+        { t: "p", text: "**Mechanism.** The tokeniser had been trained on general web text, so legal terms split into many pieces." },
+        { t: "p", text: "**Fix.** A tokeniser was trained on domain text and tokens per document compared before and after, and the vocabulary size was chosen from that measurement." }
+      ] }
   ],
 
   takeaways: [

@@ -76,7 +76,7 @@ EC.receiveLesson({
       ["cache inside the retry", "a failure is retried before the cache is consulted, so a cached answer is not used on the retry path"],
       ["cache inside the rate limiter", "**cache hits consume rate-limit tokens**"]
     ] },
-    { t: "callout", kind: "warn", title: "The last one gets worse the better your cache is", body: [
+    { t: "callout", kind: "trap", title: "The last one gets worse the better your cache is", body: [
       { t: "p", text: "If the cache sits inside the limiter, every request acquires a token before the cache is checked \u2014 including the ones that never reach the provider. So a 40% hit rate means 40% of your rate-limit budget is spent on requests that cost the provider nothing." },
       { t: "p", text: "The perverse part is the direction: **improving the cache makes throughput worse**, because more hits means more tokens spent on non-requests. Nothing fails, no error is raised, and the symptom is a service that throttles itself harder the better it performs." }
     ] },

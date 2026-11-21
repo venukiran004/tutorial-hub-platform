@@ -159,18 +159,116 @@ print("  rendered:", repr(pr.messages[0].content.text))`,
 
     { t: "exercise", kind: "practice", title: "Classify, then measure the difference", difficulty: "core", minutes: 24,
       prompt: "Take six capabilities from a system you know — mix read-only lookups, computations and actions with side effects. Classify each as tool, resource or prompt, and write one sentence per decision naming who decides when it is used. Then build a server with the two you classified as resources ALSO exposed as tools, connect a client, and count: how many round trips does the host need to get that data as a resource, and how many as a tool? Finally, write a resource template for something with many instances and confirm it appears in list_resource_templates and not in list_resources.",
+      requirements: [
+        "Classify six capabilities as tool, resource or prompt, with one sentence each naming who decides",
+        "Expose two of the resources as tools as well, and count the round trips for each route",
+        "Write a resource template for something with many instances",
+        "Confirm the template appears in list_resource_templates and not in list_resources"
+      ],
       hints: [
         "The test for a tool is whether the answer depends on arguments the model must work out.",
         "Count round trips, not milliseconds — the model turn is the cost.",
         "Anything that charges money or mutates state is a tool, whatever its shape."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import json, logging, warnings
+from contextlib import asynccontextmanager
+import anyio
+from mcp import ClientSession
+from mcp.server.fastmcp import FastMCP
+from mcp.shared.memory import create_client_server_memory_streams
+warnings.filterwarnings("ignore"); logging.getLogger("mcp").setLevel(logging.CRITICAL)
+
+# Classification for a small support system (who decides when each is used):
+#   lookup_order(order_id)      tool      - the MODEL decides, mid-conversation
+#   refund_order(order_id)      tool      - the model proposes; side effect, so the host should confirm
+#   vat_for(amount, country)    tool      - the model decides; a pure computation
+#   refund policy document      resource  - the APPLICATION/user decides to attach it as context
+#   today's shipping cut-offs   resource  - the application decides; read-only, changes daily
+#   "draft an apology email"    prompt    - the USER picks it from a menu
+mcp = FastMCP("support")
+POLICY = "Refunds within 30 days of delivery; shipping is not refunded."
+CUTOFFS = {"UK": "15:00", "EU": "12:00"}
+
+@mcp.resource("docs://refund-policy")
+def policy_resource() -> str:
+    """The refund policy."""
+    return POLICY
+
+@mcp.resource("shipping://cutoffs")
+def cutoffs_resource() -> str:
+    """Today's shipping cut-off times."""
+    return json.dumps(CUTOFFS)
+
+@mcp.tool()
+def get_refund_policy() -> str:
+    """Return the refund policy."""
+    return POLICY
+
+@mcp.tool()
+def get_shipping_cutoffs() -> dict:
+    """Return today's shipping cut-off times."""
+    return CUTOFFS
+
+@mcp.resource("orders://{order_id}")
+def order(order_id: str) -> str:
+    """One order, addressed by id: many instances, so a template rather than a list."""
+    return json.dumps({"order_id": order_id, "status": "shipped"})
+
+@asynccontextmanager
+async def counted(server):
+    """A client whose outgoing requests are counted (initialize excluded)."""
+    counter = {"n": 0}
+    async with create_client_server_memory_streams() as ((c_read, c_write), (s_read, s_write)):
+        tap_send, tap_recv = anyio.create_memory_object_stream(100)
+        async def forward():
+            async for m in tap_recv:
+                if getattr(m.message.root, "method", "") not in ("initialize", "notifications/initialized"): counter["n"] += 1
+                await c_write.send(m)
+        async with anyio.create_task_group() as tg:
+            tg.start_soon(lambda: server._mcp_server.run(s_read, s_write, server._mcp_server.create_initialization_options()))
+            tg.start_soon(forward)
+            async with ClientSession(c_read, tap_send) as s:
+                await s.initialize(); yield s, counter
+            tg.cancel_scope.cancel()
+
+async def main():
+    async with counted(mcp) as (s, c):
+        # As resources: the host lists once (it would cache this), then reads each one it decides to attach.
+        uris = [str(r.uri) for r in (await s.list_resources()).resources]
+        texts = [(await s.read_resource(u)).contents[0].text for u in uris]
+        print(f"as resources: {c['n']} requests for {len(texts)} items (1 list + {len(texts)} reads), no model turn needed")
+        c["n"] = 0
+        # As tools: the host lists tools (also cached), then the MODEL must decide to call each, one model turn per call.
+        await s.list_tools()
+        for name in ["get_refund_policy", "get_shipping_cutoffs"]: await s.call_tool(name, {})
+        print(f"as tools:     {c['n']} requests (1 list + 2 calls), plus at least one model turn to choose the calls")
+        print("\\nlist_resources          :", [str(r.uri) for r in (await s.list_resources()).resources])
+        print("list_resource_templates :", [t.uriTemplate for t in (await s.list_resource_templates()).resourceTemplates])
+        print("read orders://A-77      :", (await s.read_resource("orders://A-77")).contents[0].text)
+
+anyio.run(main)`,
+        out: `as resources: 3 requests for 2 items (1 list + 2 reads), no model turn needed
+as tools:     3 requests (1 list + 2 calls), plus at least one model turn to choose the calls
+
+list_resources          : ['docs://refund-policy', 'shipping://cutoffs']
+list_resource_templates : ['orders://{order_id}']
+read orders://A-77      : {"order_id": "A-77", "status": "shipped"}`,
+       
         notes: [
           { t: "p", text: "The round-trip count is the point of the exercise: the resource path is one host-initiated read and no model involvement, while the tool path is a declaration sent, a call decided, a result returned and the model invoked again. Having seen that gap once, the classification stops feeling like pedantry." },
           { t: "p", text: "The template confirmation catches a real bug in client code. A client that only calls `list_resources` sees nothing of your templates, so if you expect a host to discover `vat://{country}` you need to check that it asks — and if it does not, the data needs a concrete resource or a tool as well." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the resource that sent an email every time a host looked at it",
+      body: [
+        { t: "p", text: "**Symptom.** Customers of a billing integration began receiving the same statement email several times an hour. Nothing in the agent's conversation logs showed a request to send one." },
+        { t: "p", text: "**Mechanism.** The statement had been modelled as a resource, `statement://{account}`, and the read handler generated the PDF and emailed it as a side effect. A host upgrade started reading resources speculatively — to build a context preview, and again on reconnect. Resources are application-controlled, so the host was entitled to read them whenever it liked, repeatedly and in parallel, and each read sent an email." },
+        { t: "p", text: "**Why it was missed.** With the previous host version a resource was read only when a user attached it, so one read per intent looked like correct behaviour. The side effect had always been there; the host simply had not exercised it." },
+        { t: "p", text: "**Fix.** Reading the statement became a pure resource that returns the document, and sending it became a tool with an explicit argument and an idempotency key. The test suite now reads every resource three times in a row and asserts that nothing outside the process changed. A read that mutates state is a tool with the wrong decorator." }
+      ] }
   ],
 
   takeaways: [

@@ -280,6 +280,17 @@ PrecisionRecallDisplay.from_estimator(clf, X_test, y_test)
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Reporting accuracy on an imbalanced problem",
+
+      body: [
+
+        { t: "p", text: "With 2% positives, predicting the majority class for every row is 98% accurate. An accuracy figure says almost nothing about whether the model finds the cases that matter." },
+
+        { t: "p", text: "Report the confusion matrix and the metric that matches the decision — recall at a fixed precision, or cost — alongside a majority-class baseline." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "A matrix by hand, and a matrix that lies",
@@ -346,7 +357,14 @@ and only (a) shows skill -- kappa 0.333, MCC 0.370 -- despite the lowest accurac
           why: "1 − prevalence was 0.838 and 0.990 respectively. NPV above that shows skill; NPV equal to it is a constant predictor."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: 98% accuracy and no fraud caught",
+      body: [
+        { t: "p", text: "**Symptom.** A fraud model was reported at 98% accuracy. It flagged almost nothing." },
+        { t: "p", text: "**Mechanism.** Fraud was 2% of transactions, so predicting 'not fraud' for every case scored 98% accuracy. The metric rewarded doing nothing." },
+        { t: "p", text: "**Fix.** The model is evaluated on recall at a fixed precision, the figure the investigation team cares about, and every report shows the confusion matrix alongside any summary metric." }
+      ] }
   ],
 
   takeaways: [

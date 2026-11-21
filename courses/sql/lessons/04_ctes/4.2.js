@@ -153,7 +153,7 @@ SELECT * FROM recent WHERE customer_id = 3;                                     
         ["CTE", "One statement", "None, or a temp result if materialised", "No", "Estimates only", "Several steps, reuse within the statement, readability"],
         ["View", "Until dropped", "None — re-executed on each use", "No (indexes on base tables apply)", "Estimates only", "A shared definition many queries use; access control"],
         ["Materialised view (6.6)", "Until dropped; data until refreshed", "Yes", "Yes", "Yes", "An expensive aggregate read often and refreshed on a schedule"],
-        ["Temporary table", "The session", "Yes", "Yes", "Yes, after AnalysE", "A large intermediate reused across statements, or one that needs an index"]
+        ["Temporary table", "The session", "Yes", "Yes", "Yes, after ANALYZE", "A large intermediate reused across statements, or one that needs an index"]
       ]
     },
 
@@ -209,6 +209,17 @@ SELECT ... FROM segmented GROUP BY segment;`,
     },
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
+
+    { t: "callout", kind: "trap", title: "Assuming a CTE is computed once",
+
+      body: [
+
+        { t: "p", text: "Whether a CTE is materialised or inlined depends on the engine, its version and how many times it is referenced. A CTE written to 'compute once' may be recomputed for each reference." },
+
+        { t: "p", text: "Mark it `MATERIALIZED` where the engine supports it, or use a temporary table, when a step is expensive and reused." }
+
+      ] },
+
 
     { t: "exercise",
       kind: "Build",
@@ -294,7 +305,14 @@ SELECT * FROM promoted ORDER BY customer_id;
           why: "Materialisation is an optimisation fence. For a single-reference CTE with a selective outer filter, inlining lets the predicate reach the base table's index. PostgreSQL 12+ inlines by default in this case; older versions did not."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a CTE that ran three times",
+      body: [
+        { t: "p", text: "**Symptom.** A report built from a chain of CTEs took several minutes, though each step ran in seconds on its own." },
+        { t: "p", text: "**Mechanism.** An expensive CTE was referenced three times. Depending on the engine and version, it was inlined at each reference and recomputed three times." },
+        { t: "p", text: "**Fix.** The step is marked `MATERIALIZED` (or written to a temporary table with an index), so it is computed once. Each CTE in the chain is runnable on its own for debugging." }
+      ] }
   ],
 
   takeaways: [
@@ -302,7 +320,7 @@ SELECT * FROM promoted ORDER BY customer_id;
     "**Every CTE should be runnable on its own** — `SELECT * FROM step` is how a pipeline is debugged.",
     "**Referenced once, a CTE is usually inlined; referenced several times, materialised** — PostgreSQL 12+ decides by reference count, and MATERIALIZED / NOT MATERIALIZED overrides.",
     "**Materialisation is an optimisation fence**: the outer WHERE cannot reach inside, and the base table's index goes unused.",
-    "**A materialised CTE has no statistics**; a temporary table with AnalysE does, and can carry an index — the fix for a bad estimate mid-pipeline.",
+    "**A materialised CTE has no statistics**; a temporary table with ANALYZE does, and can carry an index — the fix for a bad estimate mid-pipeline.",
     "**Derived table, CTE, view, temp table** differ by lifetime and by whether the planner knows the intermediate's size.",
     "**A view is a saved query, re-run each time; a materialised view is stored and refreshed.**",
     "**Data-modifying CTEs (PostgreSQL) turn a write into a row source with RETURNING** — archive-and-delete in one atomic statement.",
@@ -361,7 +379,7 @@ SELECT * FROM promoted ORDER BY customer_id;
       {
         level: "core",
         q: "What is the difference between a CTE, a view and a temporary table?",
-        strong: "Lifetime and storage. A CTE lives for one statement and stores nothing unless the engine materialises it for that statement. A view lives in the schema, stores nothing, and is re-executed every time it is used — it is a shared definition, and a place to put access control. A temporary table lives for the session and is real storage: it can be indexed and AnalysEd, which is why it is the fix when a multi-step query's plan goes wrong on a bad estimate for an intermediate. A materialised view is the fourth option: stored, refreshed on a schedule, indexed, for an expensive aggregate read often.",
+        strong: "Lifetime and storage. A CTE lives for one statement and stores nothing unless the engine materialises it for that statement. A view lives in the schema, stores nothing, and is re-executed every time it is used — it is a shared definition, and a place to put access control. A temporary table lives for the session and is real storage: it can be indexed and analysed, which is why it is the fix when a multi-step query's plan goes wrong on a bad estimate for an intermediate. A materialised view is the fourth option: stored, refreshed on a schedule, indexed, for an expensive aggregate read often.",
         answer: [
           { t: "p", text: "The 'statistics and an index' point for temp tables is the practical detail interviewers are listening for." }
         ]

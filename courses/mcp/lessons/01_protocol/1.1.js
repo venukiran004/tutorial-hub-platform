@@ -136,6 +136,12 @@ a second session    : pid 22540, call 1`,
 
     { t: "exercise", kind: "practice", title: "Count your own integrations", difficulty: "intro", minutes: 18,
       prompt: "For a system you actually work on, list the capabilities a language model would need to reach and the frameworks or hosts that would need to reach them. Compute M times N and M plus N. Then, for each capability, answer three questions: who owns it today, would they be willing to publish it, and what does it act as when it runs — a service account, a shared key, or something per user? Finally, pick the one capability where MCP would be the wrong answer and say why.",
+      requirements: [
+        "List the capabilities a model needs to reach and the hosts or frameworks that would reach them",
+        "Compute M times N and M plus N for that list",
+        "For each capability, record who owns it, whether they would publish it, and what identity it runs as",
+        "Name the one capability where MCP is the wrong answer, with the reason"
+      ],
       hints: [
         "Count hosts honestly: a desktop assistant somebody already uses is an N you do not control.",
         "The ownership question matters more than the arithmetic.",
@@ -146,8 +152,15 @@ a second session    : pid 22540, call 1`,
           { t: "p", text: "The third question is the one that changes plans. A capability that runs as a shared service account can be published as a server today; one that must behave differently per user needs the identity work in lesson 4.2 first, and discovering that at the design stage is much cheaper than discovering it after a pilot." },
           { t: "p", text: "The ownership answer is usually where the real obstacle is, and it is organisational rather than technical. A server is a published interface with a support burden, so the team that owns the capability has to agree to own that too — which is why the arithmetic argument alone has never been enough to get one built." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the cache that every user was supposed to share",
+      body: [
+        { t: "p", text: "**Symptom.** A team published a pricing server over stdio with an in-memory cache, expecting the second caller to benefit from the first caller's warm-up. In production every request was as slow as the first, and memory on the agent hosts climbed with the number of open conversations." },
+        { t: "p", text: "**Mechanism.** Each stdio connection is its own subprocess with its own memory — the measured pids in section 02 are different, and the second session's counter starts at 1. So there was never one cache: there was one per connection, each cold, each holding its own copy of the rate table. The host service opened a connection per conversation, which multiplied the process count and the memory by the number of live users." },
+        { t: "p", text: "**Why it was missed.** On a developer's machine there is one host and one connection, so a per-connection cache and a shared one behave identically. Nothing in the server's code is wrong, and nothing in the protocol says where state lives." },
+        { t: "p", text: "**Fix.** The cache moved to an external store keyed on the request, the server became stateless, and the host began holding one long-lived connection per server instead of one per conversation (lesson 5.1). The rule the team wrote down is the one this lesson measured: anything a server holds in memory is per connection, so shared state has to live outside the server." }
+      ] }
   ],
 
   takeaways: [

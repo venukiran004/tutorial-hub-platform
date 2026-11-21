@@ -266,6 +266,17 @@ GradientBoostingClassifier(learning_rate=0.1, max_depth=2).estimators_[0, 0]
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Boosting without early stopping",
+
+      body: [
+
+        { t: "p", text: "Gradient boosting keeps reducing training error by fitting residual noise, so validation error eventually rises. A fixed, large number of trees overfits." },
+
+        { t: "p", text: "Use a lower learning rate with early stopping on a separate validation slice." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "A fourth AdaBoost round, a log-loss stage by hand, and a curve you must read",
@@ -329,7 +340,14 @@ GradientBoostingClassifier(learning_rate=0.1, max_depth=2).estimators_[0, 0]
           why: "The ensemble F = [+0.32, +0.32, +0.32, −0.53, −0.53, −0.53, +0.98, +0.98, +0.98, −0.32] matches every label's sign."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a booster that kept fitting noise",
+      body: [
+        { t: "p", text: "**Symptom.** A gradient-boosted model's validation loss rose steadily after the first few hundred trees, though training loss kept falling." },
+        { t: "p", text: "**Mechanism.** With a high learning rate and no early stopping, later trees fitted the residual noise in the training data." },
+        { t: "p", text: "**Fix.** The learning rate was lowered, early stopping on a separate validation slice chose the number of trees, and subsampling was added." }
+      ] }
   ],
 
   takeaways: [

@@ -123,18 +123,97 @@ triage = LlmAgent(name="triage", model=MODEL, include_contents="none",
 
     { t: "exercise", kind: "practice", title: "Replace a parser with a schema", difficulty: "core", minutes: 24,
       prompt: "Write an agent that asks a model to return JSON in its instruction, with no output_schema, and a parser that json.loads the answer. Run it against several inputs including an ambiguous one and note every way the parse fails. Then convert it to output_schema with a Pydantic model, move the rules into Field descriptions, and confirm what lands in state. Finally, add a Literal field and an optional field, and check both in the generated JSON schema.",
+      requirements: [
+        "Write an agent that returns JSON from an instruction, with a json.loads parser",
+        "Run several inputs and record every parse failure",
+        "Convert it to output_schema with a Pydantic model and confirm what lands in state",
+        "Add a Literal and an optional field and check the generated schema"
+      ],
       hints: [
         "Markdown code fences around the JSON are the most common failure.",
         "`Invoice.model_json_schema()` shows exactly what the model is told.",
         "An Optional field drops out of `required` — verify that in the schema output."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import asyncio, json, logging, os, warnings
+from typing import Literal, Optional
+warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+from pydantic import BaseModel, Field
+from google.adk.agents import LlmAgent
+from google.adk.runners import InMemoryRunner
+from google.genai import types
+
+# Gemini enforces output_schema with constrained decoding; the local model in local_llm.py is only TOLD the schema,
+# so the reference run below is a harsher test of the schema version than Gemini would be.
+MODEL = "gemini-3.8-flash" if os.environ.get("GOOGLE_API_KEY") else __import__("local_llm").LocalLlm(model="local-qwen-3b")
+
+INPUTS = ["Refund order A-77, it arrived broken, I paid 49.99",
+          "Where is my parcel? Order B-12",
+          "Thanks for the help yesterday!",                         # no order at all
+          "Order C-9 or maybe C-90, I want to change the address and also complain about the price"]   # ambiguous
+
+PROMPT = ('Extract the request as JSON with keys "intent" (one of refund, tracking, change, other), "order_id" '
+          '(string or null) and "amount" (number or null). Reply with JSON only.')
+
+class Ticket(BaseModel):
+    intent: Literal["refund", "tracking", "change", "other"] = Field(description="refund, tracking, change of details, or other")
+    order_id: Optional[str] = Field(default=None, description="The order id exactly as written, e.g. A-77; null if none or if ambiguous")
+    amount: Optional[float] = Field(default=None, description="A money amount mentioned by the customer, as a number; null if none")
+
+async def run(agent, text):
+    runner = InMemoryRunner(agent=agent, app_name="x")
+    sid = (await runner.session_service.create_session(app_name="x", user_id="u")).id
+    out = ""
+    try:
+        async for e in runner.run_async(user_id="u", session_id=sid, new_message=types.Content(role="user", parts=[types.Part(text=text)])):
+            for p in (e.content.parts if e.content else []):
+                if p.text: out = p.text
+    except Exception as e:
+        return None, f"{type(e).__name__}: {str(e)[:120]}"
+    state = (await runner.session_service.get_session(app_name="x", user_id="u", session_id=sid)).state
+    return out, state.get("ticket")
+
+async def main():
+    print("=== instruction asks for JSON, application parses it")
+    for t in INPUTS:
+        raw, _ = await run(LlmAgent(name="x", model=MODEL, instruction=PROMPT), t)
+        try:
+            d = json.loads(raw); verdict = "ok" if d.get("intent") in {"refund", "tracking", "change", "other"} else f"invalid intent {d.get('intent')!r}"
+        except (json.JSONDecodeError, TypeError, AttributeError):
+            verdict = f"json.loads failed on {raw[:60]!r}"
+        print(f"  {t[:45]!r:<48} {verdict}")
+    print("\\n=== output_schema=Ticket, rules in Field descriptions, result in state['ticket']")
+    for t in INPUTS:
+        _, ticket = await run(LlmAgent(name="x", model=MODEL, instruction="Extract the customer's request.",
+                                       output_schema=Ticket, output_key="ticket"), t)
+        print(f"  {t[:45]!r:<48} {ticket}")
+
+asyncio.run(main())`,
+        out: `=== instruction asks for JSON, application parses it
+  'Refund order A-77, it arrived broken, I paid '  ok
+  'Where is my parcel? Order B-12'                 ok
+  'Thanks for the help yesterday!'                 ok
+  'Order C-9 or maybe C-90, I want to change the'  ok
+
+=== output_schema=Ticket, rules in Field descriptions, result in state['ticket']
+  'Refund order A-77, it arrived broken, I paid '  {'intent': 'refund', 'order_id': 'A-77', 'amount': 49.99}
+  'Where is my parcel? Order B-12'                 {'intent': 'tracking', 'order_id': 'B-12'}
+  'Thanks for the help yesterday!'                 {'intent': 'other'}
+  'Order C-9 or maybe C-90, I want to change the'  {'intent': 'change', 'order_id': 'C-9,C-90'}`,
+       
         notes: [
-          { t: "p", text: "The instruction-based version fails in at least four ways worth seeing once: fenced JSON, a leading sentence of explanation, a trailing comma, and a number rendered as a string with a currency symbol. Each has a plausible defensive fix, and together they are the argument for not doing it — you end up maintaining a tolerant parser for a problem the provider will solve exactly." },
+          { t: "p", text: "Whether the instruction-based version breaks on four inputs depends on the model: in the reference run a local Qwen2.5-3B returned parseable JSON every time. Over real traffic the failures arrive — fenced JSON, a leading sentence of explanation, a trailing comma, a number rendered as a string with a currency symbol — and each has a plausible defensive fix, which together are the argument for not doing it: you end up maintaining a tolerant parser for a problem the provider will solve exactly. The schema run is the more useful result. The ambiguous message came back with `order_id: 'C-9,C-90'`, although the field description says null if ambiguous: a schema fixes the shape, and a rule about content still needs an evaluation case." },
           { t: "p", text: "With the schema, the interesting exercise is what remains in the instruction. It should end up saying what the task is, not what the format is: the shape, the types, the allowed values and the per-field rules have all moved into the model definition, where they are next to the field they constrain and get sent to the provider as a schema rather than as prose the model may or may not follow." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a valid object with the wrong answer",
+      body: [
+        { t: "p", text: "**Symptom.** After moving to `output_schema`, a ticket classifier never produced invalid JSON again — and kept routing urgent outages to the low-priority queue." },
+        { t: "p", text: "**Mechanism.** A schema guarantees structure, not correctness. The priority field was a free string, so the model wrote \"P1 (urgent)\" sometimes and the downstream code compared it to \"P1\"." },
+        { t: "p", text: "**Fix.** Priority became a `Literal` of four values, the field description states the rule for choosing, and an evaluation set checks the classifications, not just the parse." }
+      ] }
   ],
 
   takeaways: [

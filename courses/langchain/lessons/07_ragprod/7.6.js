@@ -84,7 +84,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "The clean corpus, top 5",
       code: "1. bill-cancel-sub      0.7394\n2. bill-cancel-order    0.5802\n3. bill-cancel-trial    0.5701\n4. ops-cancel-report    0.4575\n5. intg-oauth           0.2934\n\ngaps between adjacent results: 0.1592, 0.0101, 0.1126, 0.1641",
       caption: "The payload's effect of 0.0126 sits inside that spread." },
-    { t: "callout", kind: "warn", title: "And the attacker controls the ratio", body: [
+    { t: "callout", kind: "trap", title: "And the attacker controls the ratio", body: [
       { t: "p", text: "The payload's effect is the same order of magnitude as the ordinary spacing between relevant documents, so any threshold that rejected the injected document would reject legitimate ones too." },
       { t: "p", text: "Worse, the dilution is the attacker's choice. Padding the legitimate prefix keeps the score in the same range — 0.7267, 0.7332 and 0.7001 for one, two and four copies of the real text — so a longer document hides the payload better. The retrieval-side signal is not merely weak; it is under the attacker's control." },
       { t: "p", text: "This is 5.5's point in a new setting: **relevance is not a safety property**, and no amount of retrieval tuning makes it one." }

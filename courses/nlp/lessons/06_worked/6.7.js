@@ -102,7 +102,7 @@ EC.receiveLesson({
       ] },
 
     { t: "callout", kind: "insight", title: "Everything in the right column came from the numbers",
-      body: [{ t: "p", text: "None of the five findings on the right is stated in the reference. The antisymmetry is a provable consequence of LayerNorm and the toy vocabulary. The loss being worse than chance requires computing `ln(5)` and comparing. The absent alignment requires noticing that 0.347, 0.300, 0.353 is approximately uniform. The infinite loop requires actually running inference rather than reading about it. That is the argument for this module: the traces are **correct**, and recomputing them still taught things that reading could not." }] },
+      body: [{ t: "p", text: "None of the five findings on the right is stated in the published worked examples. The antisymmetry is a provable consequence of LayerNorm and the toy vocabulary. The loss being worse than chance requires computing `ln(5)` and comparing. The absent alignment requires noticing that 0.347, 0.300, 0.353 is approximately uniform. The infinite loop requires actually running inference rather than reading about it. That is the argument for this module: the traces are **correct**, and recomputing them still taught things that reading could not." }] },
 
     { t: "callout", kind: "tradeoff", title: "Encoder-decoder against decoder-only, once more",
       body: [{ t: "p", text: "A decoder-only model drops the encoder and cross-attention entirely, concatenates source and target into one stream, and lets masked self-attention do both jobs. It is simpler, it scales, and lesson 5.1 covered why it won the general case. Encoder-decoder still wins where the input and output are genuinely *different* sequences or modalities — translation, speech-to-text, any clean source-to-target transformation — because the source gets a full bidirectional read before output begins, the encoder runs once, and cross-attention gives you an inspectable alignment matrix that a decoder-only model simply does not have." }] },
@@ -192,7 +192,14 @@ repetition penalty 10.0: liebe <eos>
           { t: "p", text: "Repetition penalties of 1.5 and 3 did not break the loop; 'liebe' was still the most likely token after the penalty. At 10 the model produced 'liebe <eos>': it stopped, but it did not translate. A decoding trick can end a loop, but it cannot supply knowledge the weights do not have." },
           { t: "p", text: "A 50-token output runs the encoder once and the decoder 50 times. Caching the memory's key and value projections cuts 300 projections to 6, a 98% saving on that part of the work." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a generation loop that never ended",
+      body: [
+        { t: "p", text: "**Symptom.** A text-generation endpoint occasionally hung until its request timed out." },
+        { t: "p", text: "**Mechanism.** The loop ran until the model produced an end-of-sequence token. Sometimes it never did, repeating a phrase indefinitely." },
+        { t: "p", text: "**Fix.** Generation has a maximum length and a repetition check, and requests report whether they ended naturally or at the cap." }
+      ] }
   ],
 
   takeaways: [
@@ -203,7 +210,7 @@ repetition penalty 10.0: liebe <eos>
     "<eos> is an ordinary token emitted only if the model ranks it first, so max_new_tokens is mandatory rather than a convenience.",
     "Six generated tokens cost 1 encoder pass and 6 decoder passes.",
     "The encoder memory's K and V are constant across steps, and the decoder's earlier K and V are unchanged by appending — both cacheable, taking generation from O(n squared) to O(n).",
-    "Three complete hand-computed transformers from this reference all reproduced correctly.",
+    "Three complete published hand-computed transformer traces all reproduced correctly.",
     "Five findings came only from recomputing: the logit antisymmetry, its confirmation on new weights, the loss being worse than chance, the absent alignment, and the infinite loop."
   ],
 
@@ -235,6 +242,6 @@ repetition penalty 10.0: liebe <eos>
       answer: [{ t: "p", text: "Because validation loss is almost always computed with teacher forcing, which means at every position the model is given the correct prefix and scored on one next token. It is never evaluated on a sequence it actually generated. So a model that produces plausible next tokens given good context can still collapse the moment it has to condition on its own output. I have a clean demonstration: a toy model scored a teacher-forced loss of 2.532, which looked like ordinary mediocrity, and free-running it emitted the same token six times in a row with rising confidence and never reached <eos>. The loss could not see that at all, because the gold prefix kept dragging it back onto a sensible sequence. This is exposure bias in its most extreme form. The fix is to evaluate the way you deploy: generate free-running outputs on a validation set and score those, with task metrics rather than token-level loss. Add cheap degeneracy checks — repeated n-gram rate, output length distribution, fraction of generations that terminate without hitting the cap. And sample and read outputs regularly, because some failures are obvious to a human in seconds and invisible to every automatic metric you have." }] },
     { level: "Senior", q: "What did you get from hand-computing three full transformer traces?",
       strong: "Verification of the source, and five findings the prose does not contain.",
-      answer: [{ t: "p", text: "Two kinds of value. First, verification. I recomputed three complete hand-worked transformers from one reference — a decoder-only trace, a cheatsheet trace with different weights, and a full encoder-decoder translation trace — and all three reproduced exactly, down to a cross-entropy loss of 2.532. That matters because a shorter attention example from the same source had two of three output rows wrong, so the outcome genuinely varies and you can't predict it by reading. Second, and more interesting, recomputing surfaced things the prose never states. The logits came out perfectly antisymmetric, which I derived from LayerNorm forcing the hidden state to sum to zero combined with a vocabulary whose embeddings pair to all-ones — then confirmed the prediction held on completely different weights, which is how you distinguish a derived property from a coincidence. The loss of 2.532 turned out to be 0.92 nats worse than uniform guessing, which you only see by computing ln of the vocabulary size. The cross-attention matrix was within 0.0577 of uniform everywhere, meaning no alignment had been learned at all. And the inference loop never terminated. None of those is in the document, and none would have come from reading it." }] }
+      answer: [{ t: "p", text: "Two kinds of value. First, verification. I recomputed three complete hand-worked transformers from one published source — a decoder-only trace, a cheatsheet trace with different weights, and a full encoder-decoder translation trace — and all three reproduced exactly, down to a cross-entropy loss of 2.532. That matters because a shorter attention example from the same source had two of three output rows wrong, so the outcome genuinely varies and you can't predict it by reading. Second, and more interesting, recomputing surfaced things the prose never states. The logits came out perfectly antisymmetric, which I derived from LayerNorm forcing the hidden state to sum to zero combined with a vocabulary whose embeddings pair to all-ones — then confirmed the prediction held on completely different weights, which is how you distinguish a derived property from a coincidence. The loss of 2.532 turned out to be 0.92 nats worse than uniform guessing, which you only see by computing ln of the vocabulary size. The cross-attention matrix was within 0.0577 of uniform everywhere, meaning no alignment had been learned at all. And the inference loop never terminated. None of those is in the document, and none would have come from reading it." }] }
   ] }
 });

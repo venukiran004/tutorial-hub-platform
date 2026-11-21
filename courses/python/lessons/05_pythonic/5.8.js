@@ -252,7 +252,7 @@ print("execution continues, and nothing was logged")
       out: `execution continues, and nothing was logged`
     },
 
-    { t: "callout", kind: "warn", title: "Suppress narrowly or not at all", body: [
+    { t: "callout", kind: "trap", title: "Suppress narrowly or not at all", body: [
       { t: "p", text: "Returning a bare `True` swallows every exception, including `KeyboardInterrupt` and bugs in your own code. If suppression is genuinely wanted, name the type:" },
       { t: "code", lang: "python", title: "the standard-library form", numbered: false, code: `
 from contextlib import suppress

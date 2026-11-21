@@ -314,7 +314,7 @@ Z_blob = TSNE(perplexity=5, random_state=0).fit_transform(blob)
       caption: "**t-SNE has no `transform`, and UMAP's is a projection onto a plane where distance was never the objective.** Both belong in the notebook that looks at the data, not in the pipeline that scores it."
     },
 
-    { t: "callout", kind: "warn", title: "A t-SNE plot is evidence of neighbourhoods, and of nothing else", body: [
+    { t: "callout", kind: "trap", title: "A t-SNE plot is evidence of neighbourhoods, and of nothing else", body: [
       { t: "p", text: "Before you conclude 'the classes separate' from an embedding, colour the plot by a column you know is meaningless — a random integer — and confirm it does not also 'separate'. And before you trust a cluster, check it survives three perplexities. A structure that appears at one setting and vanishes at the next was made by the setting." }
     ]},
 
@@ -479,7 +479,14 @@ print("report: parallel analysis counts components shared across columns; the qu
           why: "PCA compresses correlation. A flat spectrum after scaling means no direction carries more than its share — every component is one column's worth of unrelated variance, and dropping it drops that column's information. The decision reverts to selection or to keeping everything."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: PCA that threw away the signal",
+      body: [
+        { t: "p", text: "**Symptom.** A fraud model trained on principal components performed worse than one trained on the raw features." },
+        { t: "p", text: "**Mechanism.** PCA kept the components explaining 95% of the variance. The fraud signal lived in a low-variance direction, which the variance rule discarded — PCA never looks at the target." },
+        { t: "p", text: "**Fix.** Dimensionality reduction is evaluated by its effect on the validated metric, not by variance retained, and the raw-feature model was kept." }
+      ] }
   ],
 
   takeaways: [

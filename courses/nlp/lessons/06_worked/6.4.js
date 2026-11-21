@@ -78,7 +78,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "The second trace: Q, K, V", id: "qkv" },
 
-    {"kind": "trace", "title": "W_K is a permutation of W_Q, so Q and K hold the same numbers reordered", "caption": "**Look at the `cat` rows: `Q` is `[1.851, 2.540, 1.841, 2.550]` and `K` is `[1.841, 2.550, 2.540, 1.851]` — the same four numbers in a different order.** That is the minimal way to make queries and keys genuinely different while keeping the arithmetic readable, and it is the same trick as 6.2's swap at larger `d`. **All six rows match the reference exactly**, which is what makes the rest of the trace trustworthy.", "left": "token", "codeW": 130, "vars": ["Q", "K"], "steps": [{"code": "I / the", "state": ["[2.000, 2.000, 2.000, 2.000]", "identical"], "tone": "accent"}, {"code": "cat", "state": ["[1.851, 2.540, 1.841, 2.550]", "[1.841, 2.550, 2.540, 1.851]"], "changed": [0, 1], "tone": "violet", "note": "a permutation"}, {"code": "sat", "state": ["[1.929, 1.584, 2.909, 0.604]", "[2.909, 0.604, 1.584, 1.929]"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-6_4-04-3"},
+    {"kind": "trace", "title": "W_K is a permutation of W_Q, so Q and K hold the same numbers reordered", "caption": "**Look at the `cat` rows: `Q` is `[1.851, 2.540, 1.841, 2.550]` and `K` is `[1.841, 2.550, 2.540, 1.851]` — the same four numbers in a different order.** That is the minimal way to make queries and keys genuinely different while keeping the arithmetic readable, and it is the same trick as 6.2's swap at larger `d`. **All six rows match the hand calculation exactly**, which is what makes the rest of the trace trustworthy.", "left": "token", "codeW": 130, "vars": ["Q", "K"], "steps": [{"code": "I / the", "state": ["[2.000, 2.000, 2.000, 2.000]", "identical"], "tone": "accent"}, {"code": "cat", "state": ["[1.851, 2.540, 1.841, 2.550]", "[1.841, 2.550, 2.540, 1.851]"], "changed": [0, 1], "tone": "violet", "note": "a permutation"}, {"code": "sat", "state": ["[1.929, 1.584, 2.909, 0.604]", "[2.909, 0.604, 1.584, 1.929]"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-6_4-04-3"},
 
 
 
@@ -87,18 +87,18 @@ EC.receiveLesson({
       caption: "Note the mask uses `-1e9` rather than `-inf`. Lesson 4.5 measured that anything below about `-1e4` underflows to exactly zero in float32, so the two are equivalent here." },
 
     { t: "out", text:
-"Q                                    K\n[2.000, 2.000, 2.000, 2.000]        [2.000, 2.000, 2.000, 2.000]\n[1.851, 2.540, 1.841, 2.550]        [1.841, 2.550, 2.540, 1.851]\n[1.929, 1.584, 2.909, 0.604]        [2.909, 0.604, 1.584, 1.929]\n\nall six rows match the reference exactly" },
+"Q                                    K\n[2.000, 2.000, 2.000, 2.000]        [2.000, 2.000, 2.000, 2.000]\n[1.851, 2.540, 1.841, 2.550]        [1.841, 2.550, 2.540, 1.851]\n[1.929, 1.584, 2.909, 0.604]        [2.909, 0.604, 1.584, 1.929]\n\nall six rows match the hand calculation exactly" },
 
     { t: "p", text: "Look at the *cat* rows: `Q` is `[1.851, 2.540, 1.841, 2.550]` and `K` is `[1.841, 2.550, 2.540, 1.851]` — the same four numbers in a different order. `W_K` is a permutation of `W_Q`, which is the minimal way to make queries and keys genuinely different while keeping the arithmetic readable." },
 
     { t: "h2", n: "05", text: "Scores through to attention", id: "scores" },
 
-    {"kind": "trace", "title": "Raw scores near 16, scaled to 8, and the mask forcing row 0 to 1.000", "caption": "**The raw scores are all between 12 and 19 — large, because `d_k = 4` and the vectors are around 2.0 per component — and dividing by `sqrt(4) = 2` halves them**, which is 4.3's scaling doing its job on real numbers. Then the causal mask: **row 0 comes out `[1.000, 0.000, 0.000]`, which is forced rather than chosen** — the first token has one visible position, so its softmax is 1.0 whatever the score was. **Every value matches the reference.**", "left": "stage", "codeW": 150, "vars": ["row 0 (the)", "row 2 (sat)"], "steps": [{"code": "raw QK^T", "state": ["[16.000, 17.567, 14.052]", "[14.052, 16.099, 12.341]"], "tone": "warn"}, {"code": "scaled by sqrt(4)", "state": ["[8.000, 8.783, 7.026]", "[7.026, 8.050, 6.170]"], "changed": [0, 1], "tone": "good"}, {"code": "masked + softmaxed", "state": ["[1.000, 0.000, 0.000]", "[0.238, 0.661, 0.101]"], "changed": [0, 1], "tone": "violet", "note": "row 0 is forced"}], "t": "diagram", "id": "dg-6_4-05-4"},
+    {"kind": "trace", "title": "Raw scores near 16, scaled to 8, and the mask forcing row 0 to 1.000", "caption": "**The raw scores are all between 12 and 19 — large, because `d_k = 4` and the vectors are around 2.0 per component — and dividing by `sqrt(4) = 2` halves them**, which is 4.3's scaling doing its job on real numbers. Then the causal mask: **row 0 comes out `[1.000, 0.000, 0.000]`, which is forced rather than chosen** — the first token has one visible position, so its softmax is 1.0 whatever the score was. **Every value matches the hand calculation.**", "left": "stage", "codeW": 150, "vars": ["row 0 (the)", "row 2 (sat)"], "steps": [{"code": "raw QK^T", "state": ["[16.000, 17.567, 14.052]", "[14.052, 16.099, 12.341]"], "tone": "warn"}, {"code": "scaled by sqrt(4)", "state": ["[8.000, 8.783, 7.026]", "[7.026, 8.050, 6.170]"], "changed": [0, 1], "tone": "good"}, {"code": "masked + softmaxed", "state": ["[1.000, 0.000, 0.000]", "[0.238, 0.661, 0.101]"], "changed": [0, 1], "tone": "violet", "note": "row 0 is forced"}], "t": "diagram", "id": "dg-6_4-05-4"},
 
 
 
     { t: "out", text:
-"raw scores Q K^T\n  [16.000, 17.567, 14.052]\n  [17.567, 19.287, 14.757]\n  [14.052, 16.099, 12.341]\n\nscaled by sqrt(4) = 2\n  [ 8.000,  8.783,  7.026]\n  [ 8.783,  9.644,  7.378]\n  [ 7.026,  8.050,  6.170]\n\nmasked and softmaxed\n  [1.000, 0.000, 0.000]\n  [0.297, 0.703, 0.000]\n  [0.238, 0.661, 0.101]\n\nevery value matches the reference" },
+"raw scores Q K^T\n  [16.000, 17.567, 14.052]\n  [17.567, 19.287, 14.757]\n  [14.052, 16.099, 12.341]\n\nscaled by sqrt(4) = 2\n  [ 8.000,  8.783,  7.026]\n  [ 8.783,  9.644,  7.378]\n  [ 7.026,  8.050,  6.170]\n\nmasked and softmaxed\n  [1.000, 0.000, 0.000]\n  [0.297, 0.703, 0.000]\n  [0.238, 0.661, 0.101]\n\nevery value matches the hand calculation" },
 
     { t: "callout", kind: "insight", title: "Watch the softmax by hand on the last row",
       body: [{ t: "p", text: "Scores `[7.026, 8.050, 6.170]`. Subtract the row maximum, 8.050, to get `[−1.024, 0.000, −1.880]` — this subtraction changes nothing mathematically, since softmax is shift-invariant, and it is what stops `exp` overflowing in a real implementation. Exponentiate to `[0.359, 1.000, 0.153]`, sum to 1.512, divide to get `[0.238, 0.661, 0.101]`. That max-subtraction is the same trick that, generalised to running statistics over blocks, becomes the online softmax behind FlashAttention and ring attention in lessons 5.2 and 5.12." }] },
@@ -110,7 +110,7 @@ EC.receiveLesson({
 
 
     { t: "out", text:
-"Z = A V, the \"sat\" row\n  [0.987, 1.315, 0.908, 1.000]\n\nO = Z W_O     (sat)  [1.895, 2.223, 2.315, 1.987]\nX + O         (sat)  [3.804, 2.807, 2.335, 2.987]\nLayerNorm     (sat)  [1.548, -0.333, -1.222, 0.007]\n\nblock output  (sat)  [1.408, -0.994, -0.894, 0.480]\n\nlogits  [0.514, -1.888, 0.414, -0.414, 1.888, -0.514]\n\n  the    0.1492      reference 0.149\n  cat    0.0135      reference 0.014\n  sat    0.1351      reference 0.135\n  on     0.0590      reference 0.059\n  mat    0.5898      reference 0.590\n  <eos>  0.0534      reference 0.053" },
+"Z = A V, the \"sat\" row\n  [0.987, 1.315, 0.908, 1.000]\n\nO = Z W_O     (sat)  [1.895, 2.223, 2.315, 1.987]\nX + O         (sat)  [3.804, 2.807, 2.335, 2.987]\nLayerNorm     (sat)  [1.548, -0.333, -1.222, 0.007]\n\nblock output  (sat)  [1.408, -0.994, -0.894, 0.480]\n\nlogits  [0.514, -1.888, 0.414, -0.414, 1.888, -0.514]\n\n  the    0.1492      by hand 0.149\n  cat    0.0135      by hand 0.014\n  sat    0.1351      by hand 0.135\n  on     0.0590      by hand 0.059\n  mat    0.5898      by hand 0.590\n  <eos>  0.0534      by hand 0.053" },
 
     { t: "callout", kind: "insight", title: "Every digit, including the final distribution",
       body: [{ t: "p", text: "This second walkthrough — different weight matrices, a different `W_O`, a real 4→8→4 FFN rather than an identity one — reproduces **exactly**, right down to *mat* at 0.590. Combined with lesson 6.1's verification of the first trace, that is two complete independent hand-computed transformers from this reference, both correct. It is worth weighing against lesson 4.3, where a shorter worked example from the same source had two of three output rows wrong. The lesson is not that references are unreliable; it is that verification is cheap and its results are not predictable in advance." }] },
@@ -141,6 +141,17 @@ EC.receiveLesson({
         { id: "h", text: "Final norm, LM head, softmax", tone: "good" }
       ],
       edges: [["t","n1"],["n1","a"],["a","r1"],["r1","n2"],["n2","f"],["f","r2"],["r2","h"]] },
+
+    { t: "callout", kind: "trap", title: "Assuming hand-picked weights behave like trained ones",
+
+      body: [
+
+        { t: "p", text: "Worked examples use small hand-chosen weights to make the arithmetic visible. Conclusions about which token attends where do not transfer to trained models." },
+
+        { t: "p", text: "Use worked examples to understand the mechanism, and inspect trained models to understand behaviour." }
+
+      ] },
+
 
     { t: "exercise", kind: "Challenge", title: "Run both traces", difficulty: "core", minutes: 30,
       requirements: [
@@ -242,7 +253,14 @@ paired logit sums, 'mat' changed:       [0.0, 0.0, -0.61099]`,
           { t: "p", text: "With W_K = W_Q the scores become symmetric and 'sat' moves weight toward itself (0.101 → 0.424). A mask value of −10 instead of −1e9 leaked at most 1e-4 of the weight into the future: small, but a real information leak in training, and it grows with larger score magnitudes." },
           { t: "p", text: "The antisymmetry check uses an identity FFN because the lesson's FFN is unavailable. The property does not depend on the FFN: any network ending in LayerNorm, with tied output weights over a vocabulary whose pairs sum to a constant vector, gives paired logits that cancel. Changing 'mat' moved only its own pair (−0.611)." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a published worked example with wrong rows",
+      body: [
+        { t: "p", text: "**Symptom.** Students following a widely shared worked attention example got different numbers and assumed they had made a mistake." },
+        { t: "p", text: "**Mechanism.** Two of the example's output rows were arithmetically wrong. Nobody had run the example through code." },
+        { t: "p", text: "**Fix.** Every worked example in the course is reproduced in code and checked, and discrepancies with outside sources are stated in the lesson." }
+      ] }
   ],
 
   takeaways: [

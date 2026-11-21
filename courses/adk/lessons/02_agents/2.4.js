@@ -171,6 +171,17 @@ runner = InMemoryRunner(node=wf, app_name="wfapp")      # note: node=, not agent
         [{ text: "no", tone: "crit" }, { text: "the model decides", tone: "warn" }, { text: "one per decision", tone: "crit" }, { text: "needs an evalset", tone: "warn" }]
       ] },
 
+    { t: "callout", kind: "trap", title: "Writing state directly in a custom agent",
+
+      body: [
+
+        { t: "p", text: "Assigning to `ctx.session.state` inside `_run_async_impl` changes the in-memory session and is never persisted, because state changes are recorded only through an event's `state_delta`." },
+
+        { t: "p", text: "Yield an event with `EventActions(state_delta=...)` for every state change, and test by reloading the session after the turn." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Replace a coordinator with code", difficulty: "advanced", minutes: 20,
       body: [{ t: "p", text: "You have an LLM coordinator with three sub-agents that routes on a field already present in session state — `state['plan_tier']` is 'free', 'pro' or 'enterprise'. Replace it with something that makes no model call, two ways: once as a custom BaseAgent, once as a Workflow graph with conditional edges. Then say what you lost." }],
       requirements: ["Both implementations", "The routing decision as a Python expression in each", "One paragraph on what LLM routing was providing that code is not"],
@@ -199,7 +210,14 @@ wf = Workflow(name="support", edges=[
     Edge(from_node=pick_node, to_node=standard, route="standard"),
     Edge(from_node=pick_node, to_node=priority, route="priority"),
 ])`,
-        notes: [{ t: "p", text: "What you lost: nothing, for this branch. The tier is a known value and a dict lookup is strictly better than a model call — cheaper, faster, and it cannot route an enterprise customer to the basic agent on an unlucky sample. LLM routing earns its cost only when the branch depends on something no field captures, such as what the user is actually asking for in free text. The common mistake is using a coordinator agent for both kinds of branch because it is one mechanism." }] } }
+        notes: [{ t: "p", text: "What you lost: nothing, for this branch. The tier is a known value and a dict lookup is strictly better than a model call — cheaper, faster, and it cannot route an enterprise customer to the basic agent on an unlucky sample. LLM routing earns its cost only when the branch depends on something no field captures, such as what the user is actually asking for in free text. The common mistake is using a coordinator agent for both kinds of branch because it is one mechanism." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the custom agent whose state changes disappeared",
+      body: [
+        { t: "p", text: "**Symptom.** A custom routing agent set a flag in state to remember which path it took. The flag was present during the turn and gone in the next." },
+        { t: "p", text: "**Mechanism.** The agent wrote `ctx.session.state['route'] = 'pro'` directly. State persists only through an event's `state_delta`, which the session service applies; a direct write changes the in-memory object and is never recorded." },
+        { t: "p", text: "**Fix.** The agent yields an event with `EventActions(state_delta={'route': 'pro'})`. A test reloads the session after the turn and asserts the key is there." }
+      ] }
   ],
 
   takeaways: [

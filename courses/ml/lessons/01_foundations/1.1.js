@@ -278,6 +278,17 @@ st = SelfTrainingClassifier(LogisticRegression(max_iter=1000), threshold=0.8).fi
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Using the default loss because it is the default",
+
+      body: [
+
+        { t: "p", text: "Squared error is the default for regression, and it treats an overestimate and an underestimate of the same size as equally bad and punishes large errors heavily. When the business cost is asymmetric or outliers are routine, the model optimises the wrong thing." },
+
+        { t: "p", text: "Choose the loss from the cost of each kind of error — quantile, absolute, asymmetric — before choosing the model." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Frame",
       title: "Six problems, three letters each",
@@ -340,7 +351,14 @@ st = SelfTrainingClassifier(LogisticRegression(max_iter=1000), threshold=0.8).fi
           why: "The clusters were not 'plan'; they were the tightest three groups in a two-dimensional space that happens to be organised by plan. On churn — a weaker signal in those columns — the same clusters would tell you little."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a model optimised for the wrong loss",
+      body: [
+        { t: "p", text: "**Symptom.** A delivery-time model had excellent mean squared error and drivers complained it was useless: it was wildly wrong for the late deliveries they cared about." },
+        { t: "p", text: "**Mechanism.** The team minimised squared error because it was the default. The business cost was asymmetric — being late mattered far more than being early — so the loss chose a function that served the average delivery and not the decision." },
+        { t: "p", text: "**Fix.** The model was refitted with a quantile loss at the 90th percentile, which matches the question drivers were asking. Choosing the loss became part of the problem statement, written before any code." }
+      ] }
   ],
 
   takeaways: [

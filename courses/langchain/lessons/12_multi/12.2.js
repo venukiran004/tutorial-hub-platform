@@ -65,7 +65,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "A supervisor naming \u201clegal_team\u201d, with no default",
       code: "RAISED (the routing key is not in the path map)",
       caption: "With the default branch, the same output routes to `fallback`." },
-    { t: "callout", kind: "warn", title: "It compounds with the turn count", body: [
+    { t: "callout", kind: "trap", title: "It compounds with the turn count", body: [
       { t: "p", text: "A router classifies once per request, so the chance of an unmapped category is one draw. A supervisor classifies once per turn, so a five-turn task is five draws from the same distribution." },
       { t: "p", text: "So a supervisor needs 11.2's default branch **more** than a router does, and for the same reason: the set of strings a model can emit is not enumerable, and asking it nicely is 4.7's request rather than a guarantee." }
     ] },

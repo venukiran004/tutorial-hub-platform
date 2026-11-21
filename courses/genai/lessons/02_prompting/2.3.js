@@ -83,7 +83,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "cot.py — the three forms, from the reference", code: `# Zero-shot CoT: one clause, no examples
+    { t: "code", lang: "python", title: "cot.py — the three forms", code: `# Zero-shot CoT: one clause, no examples
 cot_zero = """Q: If a store has 45 apples and sells 3/5 of them, how many are left?
 
 Let's think step by step."""

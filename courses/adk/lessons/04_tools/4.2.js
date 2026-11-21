@@ -151,6 +151,17 @@ async def recall(query: str, tool_context: ToolContext) -> dict:
          tool_context.user_id, {"restaurant_id": restaurant_id, "people": people})`,
       caption: "Arguments are logged explicitly rather than with `**kwargs`, so a tool that later takes a password does not log it by accident (lesson 9.1)." },
 
+    { t: "callout", kind: "trap", title: "Choosing a state scope by convenience",
+
+      body: [
+
+        { t: "p", text: "`app:` state is visible to every user of the application and `user:` state to every session of that user. Using the wider scope because it saves a lookup puts one user's data in front of another." },
+
+        { t: "p", text: "Choose the narrowest scope that serves the need — unprefixed for this conversation, `user:` for this person, `app:` only for genuinely global values — and test with two users." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "One tool, four side effects", difficulty: "core", minutes: 18,
       body: [{ t: "p", text: "Write a `place_order` tool that: records the order id in session state, increments a per-user order count, saves the receipt as an artifact, and returns a small confirmation to the model. Then add a fifth behaviour — if the total is above ₹10,000 it must not complete without a human. Say which context facility you used for each of the five." }],
       requirements: ["The tool with all five behaviours", "The state scopes named and justified", "The mechanism for the human check"],
@@ -176,7 +187,14 @@ async def recall(query: str, tool_context: ToolContext) -> dict:
         filename=f"receipt-{order.id}.pdf",
         artifact=types.Part(inline_data=types.Blob(mime_type="application/pdf", data=order.receipt)))
     return {"status": "ok", "order_id": order.id, "eta_days": order.eta}   # 4. small return value`,
-        notes: [{ t: "p", text: "Note what is not in the return value: the receipt bytes, the full order object, the user's running count. The model needs the order id and the ETA to write a sentence; everything else is either a file or state for later turns. And the approval is a context call, not a return value, because the framework has to pause the invocation — a tool cannot achieve that by returning something (lesson 9.3)." }] } }
+        notes: [{ t: "p", text: "Note what is not in the return value: the receipt bytes, the full order object, the user's running count. The model needs the order id and the ETA to write a sentence; everything else is either a file or state for later turns. And the approval is a context call, not a return value, because the framework has to pause the invocation — a tool cannot achieve that by returning something (lesson 9.3)." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: one customer's address in another's booking",
+      body: [
+        { t: "p", text: "**Symptom.** A booking agent occasionally pre-filled a delivery address belonging to a different customer." },
+        { t: "p", text: "**Mechanism.** A tool stored the address in `app:last_address` to save a lookup on the next call. The `app:` prefix is shared by every user of the application, so the next customer's booking read the previous customer's address." },
+        { t: "p", text: "**Fix.** Per-person facts use `user:`, per-conversation facts use no prefix, and `app:` is reserved for genuinely global values. A test runs two users through the same flow and asserts neither sees the other's data." }
+      ] }
   ],
 
   takeaways: [

@@ -77,7 +77,7 @@ EC.receiveLesson({
 
 
     { t: "p", text: "A chain's `invoke()` returns when it is done. To pause for human approval you must end the chain, serialise whatever state you need, store it keyed by something, start a **different** chain when approval arrives, and reconstruct the state." },
-    { t: "callout", kind: "warn", title: "Steps two, three and five are the actual work", body: [
+    { t: "callout", kind: "trap", title: "Steps two, three and five are the actual work", body: [
       { t: "p", text: "Serialising the state, storing it, and reconstructing it is the entire difficulty of human-in-the-loop, and none of it is in the chain. You have hand-written a checkpointer \u2014 usually a worse one, because it has to be written per workflow rather than once." },
       { t: "p", text: "Which is why 9.x treats persistence and interrupts as the same feature. Pausing is only easy if something already knows how to write the whole state down and read it back." }
     ] },

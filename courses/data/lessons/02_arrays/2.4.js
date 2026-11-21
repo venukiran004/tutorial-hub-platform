@@ -333,6 +333,17 @@ raw_back.max()                        # 4.0 here, but the -999 survives
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Reading a masked array's data directly",
+
+      body: [
+
+        { t: "p", text: "`.data` on a masked array returns the underlying values, including whatever sits under the mask. Passing it to another library turns masked values into real ones." },
+
+        { t: "p", text: "Convert with `.filled(np.nan)` or keep using masked operations until the data leaves NumPy." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Read a binary tick file that will not fit in memory",
@@ -677,7 +688,14 @@ def test_all_records_invalid(tmp="t8.bin"):
       { t: "p", text: "**Use a structured array when the memory layout is the point**: a binary file format, a C extension boundary, a memory-mapped file too large for RAM. In those cases the dtype *is* the specification, and nothing else reads the data as directly." },
       { t: "p", text: "**Use a DataFrame everywhere else.** Adding a column to a structured array copies the whole thing, field access is roughly three times slower than contiguous, there is no missing-value representation, and none of groupby, join, resample or plotting exists." },
       { t: "p", text: "**The usual pattern is both**: read with `np.fromfile` at disk speed, then `pd.DataFrame(arr)` for the analysis. Neither tool has to do the other's job." }
-    ]}
+    ]},
+
+    { t: "callout", kind: "scenario", title: "Incident: a masked value that turned into a real one",
+      body: [
+        { t: "p", text: "**Symptom.** A sensor dashboard showed impossible zero readings during periods when sensors were offline." },
+        { t: "p", text: "**Mechanism.** Missing readings were held in a masked array. A later step called `.data` to pass values to a plotting library, which returned the underlying buffer including the placeholder zeros under the mask." },
+        { t: "p", text: "**Fix.** The pipeline converts with `filled(np.nan)` before leaving NumPy, so missing values remain visibly missing, and the plot treats NaN as a gap." }
+      ] }
   ],
 
   takeaways: [

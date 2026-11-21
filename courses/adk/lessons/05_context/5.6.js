@@ -140,6 +140,12 @@ print({k: (str(v.annotation), v.default) for k, v in ContextCacheConfig.model_fi
 
     { t: "exercise", kind: "practice", title: "Measure the sawtooth yourself", difficulty: "advanced", minutes: 24,
       prompt: "Run ten turns through a scripted model with no compaction and record the contents count per request. Turn on compaction with an interval of 3 and an overlap of 1 and run the same ten turns. Plot both. Then count how many model requests each run made, and explain the difference. Finally, set event_retention_size to 4 and describe what changes about the last few turns.",
+      requirements: [
+        "Run ten turns with no compaction and record the contents count per request",
+        "Turn on compaction with interval 3 and overlap 1 and repeat",
+        "Count model requests in each run and explain the difference",
+        "Set event_retention_size to 4 and describe what changes"
+      ],
       hints: [
         "`FakeLlm.seen` holds every LlmRequest, so `[len(r.contents) for r in llm.seen]` is the whole measurement.",
         "The compacted run makes more requests than turns — find the extras.",
@@ -151,8 +157,14 @@ print({k: (str(v.annotation), v.default) for k, v in ContextCacheConfig.model_fi
           { t: "p", text: "The compacted run makes more model requests than there were turns, because each compaction is itself a model call to write the summary. That is the trade being made: an occasional extra round trip in exchange for every subsequent request being smaller. With a large interval the extra calls are rare and the saving compounds; with a tiny interval you can spend more on summarising than you save." },
           { t: "p", text: "With `event_retention_size=4` the most recent four events are never summarised. This matters more than it sounds: summarised recent history produces an agent that cannot quote what the user said two messages ago, which users read as not listening. Keep the near past exact and compact only the distant past." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the order number compaction summarised away",
+      body: [
+        { t: "p", text: "**Symptom.** Late in a long conversation, an agent asked a customer again for an order number they had given twenty turns earlier." },
+        { t: "p", text: "**Mechanism.** Compaction replaced older events with a model-written summary, and the summary described the issue without keeping the order number. What survives compaction is chosen by a model, so exact identifiers can be lost." },
+        { t: "p", text: "**Fix.** Identifiers the conversation depends on are written to state when first given, so they never depend on the transcript. The compaction prompt also lists values that must be preserved verbatim." }
+      ] }
   ],
 
   takeaways: [

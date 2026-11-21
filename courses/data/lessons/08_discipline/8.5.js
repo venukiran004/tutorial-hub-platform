@@ -412,7 +412,14 @@ print("pipeline: contract verified")`,
           why: "A Pipeline enforces the order of calls, not the contents of a step. A step that computes a statistic in transform is stateful by nature and stateless by implementation. The batch-invariance test — transform(X[:10]) equals transform(X)[:10] — catches it in two lines."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a custom transformer that leaked a median",
+      body: [
+        { t: "p", text: "**Symptom.** A pipeline passed every review and still produced optimistic validation scores." },
+        { t: "p", text: "**Mechanism.** A custom transformer filled missing values with the median inside `transform`, computed from whatever batch it was given. In validation the median came from validation data, and at serving it came from a single request." },
+        { t: "p", text: "**Fix.** The median is learned in `fit` and stored, `transform` only applies it, and a test checks that transforming a batch row by row gives the same result as transforming it whole." }
+      ] }
   ],
 
   takeaways: [

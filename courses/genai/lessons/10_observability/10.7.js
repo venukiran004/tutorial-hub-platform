@@ -148,6 +148,17 @@ class Tracer:
   <text x="16" y="282" class="s-sub">a span has a start and an end &#183; an event has neither &#8212; it is a point inside one</text>
 </svg>` },
 
+    { t: "callout", kind: "trap", title: "Propagating trace context with thread-locals in async code",
+
+      body: [
+
+        { t: "p", text: "A hand-written tracer that keeps the current span in a thread-local works in synchronous code and attaches spans to the wrong parent under asyncio, where many requests share a thread. Costs and latencies are attributed to the wrong requests." },
+
+        { t: "p", text: "Use `contextvars` for the current span, which follows each task, and test the tracer with concurrent requests." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Extend the tracer, and break the rollup", difficulty: "advanced", minutes: 35,
       body: "Take the 25-line tracer and add three things production needs: `contextvars` instead of a list, events, and an error path that attaches the exception to the raising span while letting a parent recover. Then roll up token counts by span kind, and find out what happens when prompt assembly moves to a service.",
       requirements: [

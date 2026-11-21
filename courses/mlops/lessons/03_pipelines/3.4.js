@@ -172,18 +172,67 @@ mu_b, sd_b = Xtr[perm].mean(0), Xtr[perm].std(0)
 
     { t: "exercise", kind: "practice", title: "Find your own hidden inputs", difficulty: "core", minutes: 30,
       prompt: "Run your training twice in separate processes and compare a sha256 of the full prediction vector, not a metric. If they differ, bisect the cause: fix the thread count and retry, set PYTHONHASHSEED and retry, sort the input rows and retry. Then grep your codebase for `list(set(`, `set(` used to build a feature or column list, and dictionary iteration used for ordering — each one is a column order that is not stable across processes. Finally, decide and write down which kind of reproducibility you need, and if it is behavioural, state the tolerance using the noise floor you measured in 3.2.",
+      requirements: [
+        "Run training twice in separate processes and compare a sha256 of the full prediction vector",
+        "If they differ, bisect by fixing thread count, PYTHONHASHSEED and row order in turn",
+        "Find feature or column lists built from sets or dictionary iteration",
+        "State which kind of reproducibility you need, and the tolerance if it is behavioural"
+      ],
       hints: [
         "Compare a hash of all predictions. Two of the torch runs here agreed on AUC to ten decimals and had different predictions.",
         "`sorted(feats)` instead of `list(feats)` is the entire fix for the column-order class, and it costs nothing.",
         "Writing down the tolerance is the part that matters: 'reproducible' with no number attached is unfalsifiable."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `"""Train twice in separate processes and compare a hash of the full prediction vector, then bisect the cause.
+Run as \`python 3.4.py\`; it launches \`python 3.4.py train\` children with different environments."""
+import hashlib, os, subprocess, sys
+
+def train():
+    import numpy as np, pandas as pd
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.ensemble import RandomForestClassifier
+    X, y = load_breast_cancer(return_X_y=True, as_frame=True)
+    # the hidden input: a feature list built from a set, whose order depends on the string hash seed
+    feats = list(set(X.columns))
+    if os.environ.get("SORT_FEATURES"): feats = sorted(feats)
+    model = RandomForestClassifier(n_estimators=50, max_features=5, random_state=0).fit(X[feats], y)
+    p = model.predict_proba(X[feats])[:, 1]
+    print(hashlib.sha256(np.round(p, 12).tobytes()).hexdigest()[:16])
+
+def run(**env):
+    e = {**os.environ, **env}
+    return subprocess.run([sys.executable, __file__, "train"], env=e, capture_output=True, text=True).stdout.strip()
+
+if __name__ == "__main__":
+    if sys.argv[1:2] == ["train"]: train(); sys.exit()
+    print("two runs, default environment       :", run(), run())
+    print("OMP_NUM_THREADS=1                   :", run(OMP_NUM_THREADS="1"), run(OMP_NUM_THREADS="1"))
+    print("PYTHONHASHSEED=0                    :", run(PYTHONHASHSEED="0"), run(PYTHONHASHSEED="0"))
+    print("feature list sorted (hash seed free):", run(SORT_FEATURES="1"), run(SORT_FEATURES="1"))
+    print("\\nthe cause was \`list(set(X.columns))\`: string hashing is randomised per process, so the column order")
+    print("changed between runs, and with max_features the forest's random draws picked different features.")`,
+        out: `two runs, default environment       : 9a7741589e48db58 322ed733be4b9730
+OMP_NUM_THREADS=1                   : 611819289ade5fb9 a369ab89ceda683f
+PYTHONHASHSEED=0                    : bf08757fd88ca0e2 bf08757fd88ca0e2
+feature list sorted (hash seed free): 6447f5d13ac2cb1d 6447f5d13ac2cb1d
+
+the cause was \`list(set(X.columns))\`: string hashing is randomised per process, so the column order
+changed between runs, and with max_features the forest's random draws picked different features.`,
+       
         notes: [
           { t: "p", text: "The `list(set(...))` grep usually finds something, and it is the highest-value fix in the exercise because the failure is structural rather than numerical — a column permutation between training and serving produces garbage predictions with no error anywhere." },
           { t: "p", text: "The tolerance statement is the other durable output. Once 'reproduced' means 'agrees on every decision and matches within 0.17 AUC points', a rebuild that fails is a real signal and one that passes is genuinely reassuring — and the three fingerprints from 1.2 tell you which input moved." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the features that swapped places between training and serving",
+      body: [
+        { t: "p", text: "**Symptom.** A model scored well offline and close to random in production. The same code built the feature matrix in both places, and unit tests on that code passed." },
+        { t: "p", text: "**Mechanism.** The column list was built with `list(set(columns))`. Set ordering depends on `PYTHONHASHSEED`, which differs between processes, so training and serving produced the same columns in different orders. The model received valid numbers in the wrong positions and raised nothing." },
+        { t: "p", text: "**Fix.** Column order is now an explicit sorted list saved with the model, and the service asserts the incoming names against it. The reproducibility check hashes the whole prediction vector across two processes, since two runs can agree on a metric and disagree on predictions." }
+      ] }
   ],
 
   takeaways: [

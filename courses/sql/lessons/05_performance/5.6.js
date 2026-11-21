@@ -52,7 +52,7 @@ ORDER  BY total_exec_time DESC LIMIT 5;
 
     { t: "dl", items: [
       ["`pg_stat_statements`", "PostgreSQL extension that aggregates calls, time, rows and block I/O per normalised statement. The starting point for every performance investigation."],
-      ["`auto_explain`", "Logs the plan — with AnalysE if configured — of any statement slower than a threshold, as the application actually ran it. How you see the prepared-statement plan rather than the console plan."],
+      ["`auto_explain`", "Logs the plan — with ANALYZE if configured — of any statement slower than a threshold, as the application actually ran it. How you see the prepared-statement plan rather than the console plan."],
       ["Reproduce", "Run the statement with the application's real parameter values, on data of the real size, with the cache in the state it will be in. A query that is fast on the developer laptop has been tested against nothing."],
       ["Widest node", "The plan node with the largest actual rows × loops. Where the time is."],
       ["Regression guard", "A recorded baseline — the plan shape, the total time per call — checked after each deploy, so a fix that is undone by a later change is noticed."]
@@ -60,7 +60,7 @@ ORDER  BY total_exec_time DESC LIMIT 5;
 
     { t: "h2", n: "02", text: "The procedure", id: "procedure" },
 
-    {"kind": "steps", "title": "The sequence, every time", "caption": "Diagnosis, not guesswork. Each step narrows what the next one has to consider, and the last step is the only one that changes anything.", "items": [{"label": "Find the query that matters", "desc": "order by total time, not by mean time", "code": "1", "tone": "accent"}, {"label": "Reproduce it as the application runs it", "desc": "same parameters, same types, prepared or not", "code": "2", "tone": "accent"}, {"label": "Read the plan with AnalysE", "desc": "estimates against actuals, not costs alone", "code": "3", "tone": "violet"}, {"label": "Find the widest node", "desc": "actual rows x loops; that is where the time is", "code": "4", "tone": "warn"}, {"label": "Classify it", "desc": "bad estimate, missing index, unsargable predicate, fan-out", "code": "5", "tone": "warn"}, {"label": "Change one thing and measure again", "desc": "two changes at once and you learn nothing", "code": "6", "tone": "good"}], "t": "diagram", "id": "dg-5_6-02-2"},
+    {"kind": "steps", "title": "The sequence, every time", "caption": "Diagnosis, not guesswork. Each step narrows what the next one has to consider, and the last step is the only one that changes anything.", "items": [{"label": "Find the query that matters", "desc": "order by total time, not by mean time", "code": "1", "tone": "accent"}, {"label": "Reproduce it as the application runs it", "desc": "same parameters, same types, prepared or not", "code": "2", "tone": "accent"}, {"label": "Read the plan with ANALYZE", "desc": "estimates against actuals, not costs alone", "code": "3", "tone": "violet"}, {"label": "Find the widest node", "desc": "actual rows x loops; that is where the time is", "code": "4", "tone": "warn"}, {"label": "Classify it", "desc": "bad estimate, missing index, unsargable predicate, fan-out", "code": "5", "tone": "warn"}, {"label": "Change one thing and measure again", "desc": "two changes at once and you learn nothing", "code": "6", "tone": "good"}], "t": "diagram", "id": "dg-5_6-02-2"},
 
 
 
@@ -71,7 +71,7 @@ ORDER  BY total_exec_time DESC LIMIT 5;
 
     { t: "viz",
       title: "Seven steps, in order",
-      caption: "Find by total time; reproduce with real parameters; explain with AnalysE and BUFFERS; read the widest node, the worst estimate and any spill; classify the cause from its signature; apply the one matching fix; measure with the same cache state and record a baseline. Skipping a step is how an index gets added to a query whose problem was a statistic.",
+      caption: "Find by total time; reproduce with real parameters; explain with ANALYZE and BUFFERS; read the widest node, the worst estimate and any spill; classify the cause from its signature; apply the one matching fix; measure with the same cache state and record a baseline. Skipping a step is how an index gets added to a query whose problem was a statistic.",
       svg: `<svg viewBox="0 0 880 250" role="img" aria-label="Seven boxes in a row — find, reproduce, explain, read, classify, fix, measure and guard — connected by arrows, with a one-line note under each.">
   <defs>
     <marker id="sq-ah-56" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -130,18 +130,18 @@ ROLLBACK;
 
     { t: "h2", n: "03", text: "The causes and their signatures", id: "causes" },
 
-    {"kind": "trace", "title": "Same symptom, four signatures, four different fixes", "caption": "**“Slow” is a symptom; the plan carries the signature, and the signature names the fix.** The first two rows look identical from outside the database and have nothing in common inside it: a sequential scan that discarded two million rows wants an index, while a nested loop that ran two million times on an estimate of twelve wants AnalysE — **no index will fix a bad estimate.** And the third is the one that needs no new object at all: an unsargable predicate is a rewrite, and rewriting `date_trunc` as a half-open range took 820 ms to 12 ms with the existing index.", "left": "signature in the plan", "codeW": 230, "vars": ["cause", "fix"], "steps": [{"code": "Seq Scan, rows removed by filter >> rows kept", "state": ["missing index", "CREATE INDEX on the predicate"], "tone": "accent"}, {"code": "Nested Loop, loops = 2,140,000, estimate 12", "state": ["stale statistics", "AnalysE - an index will not help"], "changed": [0, 1], "tone": "crit"}, {"code": "Seq Scan with a function in the Filter", "state": ["unsargable predicate", "rewrite it - 820 ms to 12 ms"], "changed": [0, 1], "tone": "violet"}, {"code": "rows out of a join exceed both inputs", "state": ["fan-out", "pre-aggregate to parent grain"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-5_6-03-0"},
+    {"kind": "trace", "title": "Same symptom, four signatures, four different fixes", "caption": "**“Slow” is a symptom; the plan carries the signature, and the signature names the fix.** The first two rows look identical from outside the database and have nothing in common inside it: a sequential scan that discarded two million rows wants an index, while a nested loop that ran two million times on an estimate of twelve wants ANALYZE — **no index will fix a bad estimate.** And the third is the one that needs no new object at all: an unsargable predicate is a rewrite, and rewriting `date_trunc` as a half-open range took 820 ms to 12 ms with the existing index.", "left": "signature in the plan", "codeW": 230, "vars": ["cause", "fix"], "steps": [{"code": "Seq Scan, rows removed by filter >> rows kept", "state": ["missing index", "CREATE INDEX on the predicate"], "tone": "accent"}, {"code": "Nested Loop, loops = 2,140,000, estimate 12", "state": ["stale statistics", "ANALYZE - an index will not help"], "changed": [0, 1], "tone": "crit"}, {"code": "Seq Scan with a function in the Filter", "state": ["unsargable predicate", "rewrite it - 820 ms to 12 ms"], "changed": [0, 1], "tone": "violet"}, {"code": "rows out of a join exceed both inputs", "state": ["fan-out", "pre-aggregate to parent grain"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-5_6-03-0"},
 
 
 
-    { t: "p", text: "Step five is a lookup. Each cause leaves a recognisable mark in the plan, and each has one fix. **Read the signature, not the symptom**: 'slow' is the symptom; 'Seq Scan with two million rows removed by filter on an equality predicate' is a signature, and its fix is an index — while 'Nested Loop with loops = 2 million on an estimate of 12' has the same symptom, a different signature, and a fix that is AnalysE." },
+    { t: "p", text: "Step five is a lookup. Each cause leaves a recognisable mark in the plan, and each has one fix. **Read the signature, not the symptom**: 'slow' is the symptom; 'Seq Scan with two million rows removed by filter on an equality predicate' is a signature, and its fix is an index — while 'Nested Loop with loops = 2 million on an estimate of 12' has the same symptom, a different signature, and a fix that is ANALYZE." },
 
     { t: "table",
       head: ["Cause", "Signature in the plan", "Fix", "Lesson"],
       rows: [
         ["Missing index", "Seq Scan, `Rows Removed by Filter` ≫ rows kept, selective equality or range predicate", "CREATE INDEX CONCURRENTLY on the predicate's column(s)", "5.3"],
         ["Unsargable predicate", "Seq Scan despite an index; `Filter: (lower(col) = …)` or `((col)::text …)` or `date_trunc(…)`", "Rewrite to a bare-column range; or an expression index", "5.4"],
-        ["Stale statistics", "`rows=12` estimated, `actual rows=2000000`; a Nested Loop chosen for a large outer", "AnalysE the table; raise the statistics target; extended statistics for correlated columns", "5.1"],
+        ["Stale statistics", "`rows=12` estimated, `actual rows=2000000`; a Nested Loop chosen for a large outer", "ANALYZE the table; raise the statistics target; extended statistics for correlated columns", "5.1"],
         ["Fan-out", "Rows out of a join far exceed either input; sums too high; DISTINCT in the query", "Pre-aggregate children to parent grain before joining", "2.2, 5.5"],
         ["Per-row subquery", "SubPlan with `loops=` in the thousands; or a Nested Loop with a Seq Scan inner", "Window function, derived table, or LATERAL with an index", "4.1"],
         ["OFFSET pagination", "Limit over Sort or Index Scan with `actual rows=` in the hundreds of thousands for a 20-row result", "Keyset pagination on (sort key, id)", "5.4"],
@@ -219,6 +219,17 @@ SELECT COUNT(*), state FROM pg_stat_activity GROUP BY state;    -- 480 active on
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Diagnosing with a literal instead of the application's parameters",
+
+      body: [
+
+        { t: "p", text: "A query tested in the console with a literal value can use a different plan from the application's prepared statement, so it looks fast while the application is slow." },
+
+        { t: "p", text: "Reproduce with `PREPARE` and `EXECUTE` using real parameter values, or capture the application's plans with `auto_explain`." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Debug",
       title: "Run the method on three complaints",
@@ -289,13 +300,20 @@ SELECT COUNT(*), state FROM pg_stat_activity GROUP BY state;    -- 480 active on
           why: "Priority is total time, which is what the server spends, not the duration a single user notices. A 30 ms query at two million calls is the load; the 40-second report is a nightly footnote."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: the query that was fast in the console",
+      body: [
+        { t: "p", text: "**Symptom.** An engineer investigating a slow API endpoint ran its query in the console with a literal value. It returned in 20 ms, so the investigation moved elsewhere for a week." },
+        { t: "p", text: "**Mechanism.** The application ran the query as a prepared statement. After several executions the database switched to a generic plan that was poor for the most common parameter values. The console never used that plan." },
+        { t: "p", text: "**Fix.** Slow queries are reproduced with `PREPARE` and `EXECUTE` using the application's parameters, or captured with `auto_explain`. The fix was a plan setting for that statement, verified the same way." }
+      ] }
   ],
 
   takeaways: [
     "**Rank slow queries by total time — calls × mean — not by the worst duration**; a few statements are most of the load.",
     "**Reproduce with the application's parameters and plan** — PREPARE and EXECUTE, or auto_explain — not with a literal in the console.",
-    "**EXPLAIN (AnalysE, BUFFERS) in a transaction you roll back**, twice, to separate disk from cache.",
+    "**EXPLAIN (ANALYZE, BUFFERS) in a transaction you roll back**, twice, to separate disk from cache.",
     "**Read three things: the widest node, the worst estimate, any spill** — then classify the signature.",
     "**Each cause has a signature and one fix**: missing index, unsargable predicate, stale statistics, fan-out, per-row subquery, OFFSET, spill, wide rows, distinct at scale, join order, CTE fence, N+1.",
     "**Apply one fix and measure in the same cache state** — two fixes at once prove nothing.",
@@ -348,7 +366,7 @@ SELECT COUNT(*), state FROM pg_stat_activity GROUP BY state;    -- 480 active on
       {
         level: "core",
         q: "How do you approach a slow query?",
-        strong: "In a fixed order. Find whether it is the query worth fixing — pg_stat_statements ranked by total time, calls times mean, not by the slowest single run. Reproduce it as the application runs it: real parameters, a PREPAREd statement or the auto_explain log, real data size. EXPLAIN with AnalysE and BUFFERS inside a transaction I roll back, twice, to separate cache from disk. Read the widest node, the worst estimate, and any spill. Classify the signature — missing index, unsargable predicate, stale statistics, fan-out, per-row subquery, offset pagination, a spill — and apply the one matching fix. Measure in the same cache state as the baseline. Then guard it: a plan assertion in the tests or a statistics snapshot. And before all that, if the plan already looks fast, check pg_stat_activity for lock waits, because a perfect plan can still wait thirty seconds.",
+        strong: "In a fixed order. Find whether it is the query worth fixing — pg_stat_statements ranked by total time, calls times mean, not by the slowest single run. Reproduce it as the application runs it: real parameters, a PREPAREd statement or the auto_explain log, real data size. EXPLAIN with ANALYZE and BUFFERS inside a transaction I roll back, twice, to separate cache from disk. Read the widest node, the worst estimate, and any spill. Classify the signature — missing index, unsargable predicate, stale statistics, fan-out, per-row subquery, offset pagination, a spill — and apply the one matching fix. Measure in the same cache state as the baseline. Then guard it: a plan assertion in the tests or a statistics snapshot. And before all that, if the plan already looks fast, check pg_stat_activity for lock waits, because a perfect plan can still wait thirty seconds.",
         answer: [
           { t: "p", text: "The order, the one-fix-at-a-time rule, and the lock-wait check are what make this a method rather than a list." }
         ]

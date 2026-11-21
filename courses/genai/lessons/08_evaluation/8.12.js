@@ -87,7 +87,7 @@ Answer:      "Employees get 18 vacation days per year, accrued at 1.5/month [KB-
 
     { t: "callout", kind: "trap", title: "1.5 \u00d7 12 = 18 is correct arithmetic and not a quotation",
       body: [
-        { t: "p", text: "The reference scores faithfulness 1.0 on the grounds that \u201cboth claims (18/yr, 1.5/mo) supported by KB-1\u201d. The arithmetic checks out \u2014 1.5 \u00d7 12 is exactly 18 \u2014 so the claim is *entailed* by the context. It is not *stated* in it." },
+        { t: "p", text: "A commonly published judgement of this example scores faithfulness 1.0 on the grounds that \u201cboth claims (18/yr, 1.5/mo) supported by KB-1\u201d. The arithmetic checks out \u2014 1.5 \u00d7 12 is exactly 18 \u2014 so the claim is *entailed* by the context. It is not *stated* in it." },
         { t: "p", text: "A strict faithfulness judge, asked \u201cis this claim supported by the context?\u201d, can reasonably answer no for the first claim, giving **0.5** rather than 1.0. A lenient judge accepting arithmetic derivation answers yes, giving 1.0. Both are defensible readings of the same answer and context." },
         { t: "p", text: "So this single example produces a faithfulness score of either 1.0 or 0.5 depending on a policy decision nobody wrote down \u2014 which is exactly what 8.8 warned about when it said the denominator is a judgement that has to be reported." }
       ] },

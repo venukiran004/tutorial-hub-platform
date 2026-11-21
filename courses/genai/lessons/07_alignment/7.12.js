@@ -118,6 +118,17 @@ EC.receiveLesson({
         { t: "p", text: "So a constitution is not a substitute for an output filter, and an output filter is not a substitute for alignment. The filter catches what the tendency misses; the tendency means the filter is not constantly firing." }
       ] },
 
+    { t: "callout", kind: "trap", title: "Letting the AI labeller grade itself",
+
+      body: [
+
+        { t: "p", text: "Using the same model family as both policy and labeller rewards whatever that family already prefers, including its own style and verbosity. Preferences that look like quality are partly self-agreement." },
+
+        { t: "p", text: "Use a different model as labeller where possible, validate a sample of AI labels against human labels, and track length and style drift in the trained model." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Audit AI-generated preference labels against human ones", difficulty: "core", minutes: 30,
       body: "Generate preference labels for a sample of pairs with a model judge, have humans label the same sample, and measure agreement — overall and by slice. Then measure whether the AI judge has a length preference, by comparing chosen and rejected token counts in the labels it produced.",
       requirements: [

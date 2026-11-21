@@ -5,8 +5,9 @@
       every question passed this in November 2026, so there is no allowance.
       A softer tell is ratcheted per course: how often the correct option is
       the single longest one. Chance is 1 in 4; the count may only go down.
-   2. Prose that argues with a source the learner never sees ("the common
-      form gives", "the usual output prints"), left by an automated rewrite.
+   2. Prose, output and figure text that argues with a source the learner
+      never sees ("the common form gives", "reference says 5"), left by an
+      automated rewrite.
       Same ratchet.
    3. NumPy APIs removed in 2.x. Any use fails outright.
    4. An exercise with no solution, no hint or no difficulty fails outright.
@@ -23,7 +24,9 @@ const root = path.join(__dirname, "..");
 const BASE = path.join(__dirname, "quality-baseline.json");
 const update = process.argv.includes("--update");
 
-const LEAK = /common form gives|[Uu]sual treatment|usual output|reproduces it exactly|[Tt]he reference('s)? (is unambiguous|states|quotes|calls|says|insists|specifies|recommends|notes|gives|lists|warns|claims)|absent from the reference|\bit is commonly (said|called|stated|written) (it|them|this|so plainly)|it is usually put (it|the|real)|the common name is|the common list has|usual advice is (for|as)|quoted figure is is|(containing|reusing|in) the usual phrasing|does the usual advice/gi;
+const LEAK = /common form gives|[Uu]sual treatment|usual output|reproduces it exactly|[Tt]he reference('s)? (is unambiguous|states|quotes|calls|says|insists|specifies|recommends|notes|gives|lists|warns|claims)|absent from the reference|\bit is commonly (said|called|stated|written) (it|them|this|so plainly)|it is usually put (it|the|real)|the common name is|the common list has|usual advice is (for|as)|quoted figure is is|(containing|reusing|in) the usual phrasing|does the usual advice|(match(es|ed|ing)?|reproduces?) the reference(?! (model|implementation|answer|translation|summar|distribution|policy))|[Tt]he reference (derived|prints|concludes|flags|raises|conflates|is explicit|catches|then walks)|from the reference(?! (model|policy|distribution|checkpoint))/gi;
+// Output and figure text compared against an unseen source ("reference says 5", "reference: [...]")
+const OUT_LEAK = /[Rr]eference says|reference: [\[\d]|THE REFERENCE'S|reference's (version|own|expected)/g;
 const NUMPY_GONE = /\bnp\.(in1d|trapz|row_stack|product|cumproduct|alltrue|sometrue|NaN|Inf|infty|float_|complex_|round_|asfarray|msort)\b(?!\s+(was|is|before|in older))/;
 
 function lessonFiles(dir) {
@@ -92,6 +95,12 @@ for (const course of fs.readdirSync(path.join(root, "courses")).sort()) {
     })(L.blocks);
     const prose = JSON.stringify(L, (k, v) => (k === "code" || k === "svg" || k === "out") ? undefined : v);
     c.unseenSource += (prose.match(LEAK) || []).length;
+    const shown = JSON.stringify(L, (k, v) => (k === "code") ? undefined : v);   // prose plus out and svg text
+    c.unseenSource += (shown.match(OUT_LEAK) || []).length;
+    // A captured traceback or log can carry the author's machine paths into published output.
+    // Teaching examples such as /home/dev/ are fine; these are the signatures of a captured environment.
+    const local = JSON.stringify(L).match(/AppData\\\\+(Local|Roaming)|\\\\+Temp\\\\+claude|site-packages\\\\+[a-z]/);
+    if (local) hard.push(`${path.relative(root, f)}: local filesystem path in lesson content: ${local[0].slice(0, 60)}`);
     for (const code of codeOf(L.blocks, [])) {
       const m = NUMPY_GONE.exec(code);
       if (m) hard.push(`${path.relative(root, f)}: ${m[0]} was removed in NumPy 2.x`);

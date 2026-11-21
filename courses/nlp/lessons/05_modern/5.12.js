@@ -170,6 +170,17 @@ model = FSDP(
       caption: "**`auto_wrap_policy` is the difference between FSDP working and FSDP being slower than it has to be.** Wrapping the model as a single unit gathers every parameter at once, which is the memory problem you started with; wrapping per transformer block keeps one block resident and lets the gather for the next block overlap the compute for the current one." },
     { t: "p", text: "**The strategies are a memory-against-communication dial, and the right setting depends on your interconnect.** `FULL_SHARD` holds the least and communicates the most, so it is right on NVLink and often wrong across a slow network, where `SHARD_GRAD_OP` keeps parameters resident and halves the traffic. `CPUOffload` is the option that makes an impossible model merely slow, with the PCIe link as the new bottleneck." },
 
+    { t: "callout", kind: "trap", title: "Treating the advertised context length as usable",
+
+      body: [
+
+        { t: "p", text: "A model that accepts a million tokens may answer poorly about facts in the middle of that context." },
+
+        { t: "p", text: "Measure retrieval accuracy at each position and length, and chunk documents to the length that performs well." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Size a long-context deployment", difficulty: "core", minutes: 40,
       requirements: [
         "Compute your model's KV cache at your target context, and note whether the figure assumes MHA or GQA.",
@@ -252,7 +263,14 @@ ZeRO-3 (+ weights)           14.0 GB per GPU fits (leaving ~20 GB for activation
           { t: "p", text: "GPT-2 retrieved the code at rank 1 at every depth and length up to its 1,024-token limit, with probability 0.56–0.68. Repeated filler plus a cue that copies the needle's wording is an easy test: the induction pattern 'secret code is → 7342' does all the work. Real effective-context tests use varied filler and a question phrased differently from the needle, and that is where models degrade." },
           { t: "p", text: "Mixed-precision Adam on 7B needs 112 GB before activations, which does not fit an 80 GB GPU. Sharding only the optimiser state (ZeRO-1) across 8 GPUs brings it to 38.5 GB each, which fits with room for activations. ZeRO-2 and ZeRO-3 save more but add communication; use the lowest stage that fits." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: an advertised context window that did not hold",
+      body: [
+        { t: "p", text: "**Symptom.** A model advertised with a long context answered questions about the middle of long documents poorly." },
+        { t: "p", text: "**Mechanism.** Being able to accept a long input is not the same as using it well; accuracy dropped for facts placed in the middle." },
+        { t: "p", text: "**Fix.** Usable context is measured with needle tests at each position and length, and documents are chunked to the length that performs well." }
+      ] }
   ],
 
   takeaways: [

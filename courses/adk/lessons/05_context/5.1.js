@@ -154,6 +154,12 @@ history the 2nd turn saw: 5 contents` },
 
     { t: "exercise", kind: "practice", title: "Read a log, predict the answer", difficulty: "core", minutes: 16,
       prompt: "Build a session, run three turns through a scripted model where the middle turn writes state from a tool, then fetch the session back and print every event with its author, finality and delta. Before you run it, write down on paper how many events you expect and which one carries the delta. Then change the third turn to run in a new session and predict what the agent can no longer answer.",
+      requirements: [
+        "Run three turns where the middle turn writes state from a tool",
+        "Fetch the session and print every event with author, finality and delta",
+        "Predict the event count and the delta-carrying event before running",
+        "Run the third turn in a new session and predict what the agent can no longer answer"
+      ],
       hints: [
         "Every user message is one event; a tool round trip adds two; a final text answer adds one.",
         "The delta rides on the event produced when the tool returns, not on the call event.",
@@ -173,8 +179,14 @@ for i, e in enumerate(back.events):
       } },
 
     { t: "callout", kind: "note", title: "Where the runner gets its session service",
-      body: [{ t: "p", text: "`Runner(app_name=…, agent=…, session_service=…)` takes it explicitly, and `InMemoryRunner` constructs an in-memory one for you. The dev UI and `adk web` do the same thing with whatever `--session_service_uri` you pass. There is no global default and no implicit singleton, which is deliberate: a process that talks to two stores should not have an ambient one." }] }
+      body: [{ t: "p", text: "`Runner(app_name=…, agent=…, session_service=…)` takes it explicitly, and `InMemoryRunner` constructs an in-memory one for you. The dev UI and `adk web` do the same thing with whatever `--session_service_uri` you pass. There is no global default and no implicit singleton, which is deliberate: a process that talks to two stores should not have an ambient one." }] },
 
+    { t: "callout", kind: "scenario", title: "Incident: users reading each other's conversations",
+      body: [
+        { t: "p", text: "**Symptom.** A support agent showed a user part of a stranger's conversation after they pasted a link containing a session id." },
+        { t: "p", text: "**Mechanism.** The API took `user_id` and `session_id` from the request body. ADK uses `user_id` as a storage key and does not authenticate it, so any caller could name any user and any session." },
+        { t: "p", text: "**Fix.** The API derives `user_id` from the authenticated principal and verifies that the session belongs to it before calling the runner. Session ids in URLs are treated as references, never as credentials." }
+      ] }
   ],
 
   takeaways: [

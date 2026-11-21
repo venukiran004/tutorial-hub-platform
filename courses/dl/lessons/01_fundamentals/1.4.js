@@ -240,7 +240,14 @@ yhat = torch.sigmoid(W2 @ torch.relu(W1 @ x + b1) + b2)
 (-torch.log(1 - yhat)).sum().backward()                 # y = 0: the (1-y) log(1-yhat) term
 print(W2.grad, b2.grad)     # [[0., 0.4984]]  [[0.2769]]
 print(W1.grad, b1.grad)     # [[0, 0], [-0.1938, -0.3877]]  [[0], [-0.1938]]`,
-        notes: [{ t: "p", text: "δ² = ŷ − y = 0.2769: positive, because the model predicted 0.277 for a class-0 example and must push the logit down. Every gradient is the y = 1 gradient scaled by 0.2769 / (−0.7231) = −0.383: same directions in weight space, opposite sign, smaller because this prediction was less wrong." }] } }
+        notes: [{ t: "p", text: "δ² = ŷ − y = 0.2769: positive, because the model predicted 0.277 for a class-0 example and must push the logit down. Every gradient is the y = 1 gradient scaled by 0.2769 / (−0.7231) = −0.383: same directions in weight space, opposite sign, smaller because this prediction was less wrong." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a custom layer whose gradients were wrong and still trained",
+      body: [
+        { t: "p", text: "**Symptom.** A hand-written layer trained to a plausible accuracy that was a few points below what the standard layer achieved." },
+        { t: "p", text: "**Mechanism.** One term in the backward pass was missing, so gradients pointed roughly the right way but not exactly. Training still made progress, which hid the bug." },
+        { t: "p", text: "**Fix.** Every custom backward pass is checked against autograd or finite differences on random inputs before it is used." }
+      ] }
   ],
 
   takeaways: [

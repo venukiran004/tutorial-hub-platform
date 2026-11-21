@@ -288,6 +288,17 @@ sm.GLM(days, X, family=sm.families.Tweedie(var_power=1.5)).fit()   # for inferen
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Fitting Poisson to overdispersed counts",
+
+      body: [
+
+        { t: "p", text: "A Poisson model assumes the variance equals the mean. Real count data is usually more variable, so standard errors are too small and intervals too narrow." },
+
+        { t: "p", text: "Check dispersion after fitting, and use a negative binomial or quasi-Poisson model when it exceeds one." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "A rate ratio by hand, an overdispersion you must catch, and an interval that must hold",
@@ -345,7 +356,14 @@ crossings = (hi < lo).sum()                                  # should be 0 or a 
           why: "Overdispersion is the Poisson pitfall: right answer, wrong confidence."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a count model with intervals far too narrow",
+      body: [
+        { t: "p", text: "**Symptom.** A Poisson model for support-call volumes had prediction intervals that the actual counts fell outside of half the time." },
+        { t: "p", text: "**Mechanism.** The data were overdispersed: the variance was much larger than the mean. A Poisson model assumes they are equal, so its intervals were too narrow." },
+        { t: "p", text: "**Fix.** The model was refitted as a negative binomial, and dispersion is checked as part of fitting any count model." }
+      ] }
   ],
 
   takeaways: [

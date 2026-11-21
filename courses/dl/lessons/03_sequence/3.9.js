@@ -128,19 +128,120 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Implement beam search and measure the length bias", difficulty: "advanced", minutes: 40,
       prompt: "Implement beam search with length normalisation as a parameter. On a sequence task with known targets, decode at widths 1, 3, 5, 10 and 20, and record both output quality and mean output length. Then sweep α from 0 to 1.2 at a fixed width and plot mean output length against α. Finally, compare beam search against top-k and nucleus sampling on the same model, looking at both quality and diversity across several runs.",
+      requirements: [
+        "Implement beam search with length normalisation",
+        "Decode at widths 1, 3, 5, 10 and 20 and record quality and length",
+        "Sweep α from 0 to 1.2 at a fixed width",
+        "Compare beam search with top-k and nucleus sampling for quality and diversity"
+      ],
       hints: [
         "Accumulate log-probabilities; multiplying probabilities underflows quickly.",
         "Track finished hypotheses separately from active ones, or a sequence that ends early is lost.",
         "For diversity, decode the same input several times and measure how many distinct outputs you get."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+torch.manual_seed(0)
+
+# A small GRU language model trained on sentences from a toy grammar, so "quality" can be checked:
+# a generated sequence is valid if the grammar can produce it.
+SUBJ, VERB, OBJ, ADV = ["the cat", "a dog", "my friend", "the old man"], ["sees", "likes", "chases", "finds"], ["the ball", "a bird", "the red car"], ["today", "again", "slowly", ""]
+words = sorted({w for p in SUBJ + VERB + OBJ + ADV for w in p.split()}) + ["<s>", "</s>"]
+ix = {w: i for i, w in enumerate(words)}; V = len(words)
+def sentence(): return f"{SUBJ[torch.randint(4, ()).item()]} {VERB[torch.randint(4, ()).item()]} {OBJ[torch.randint(3, ()).item()]} {ADV[torch.randint(4, ()).item()]}".split()
+VALID = {" ".join(f"{s} {v} {o} {a}".split()) for s in SUBJ for v in VERB for o in OBJ for a in ADV}
+
+class LM(nn.Module):
+    def __init__(self):
+        super().__init__(); self.e = nn.Embedding(V, 32); self.r = nn.GRU(32, 64, batch_first=True); self.o = nn.Linear(64, V)
+    def forward(self, x, h=None): out, h = self.r(self.e(x), h); return self.o(out), h
+m = LM(); opt = torch.optim.Adam(m.parameters(), 3e-3)
+for _ in range(600):
+    batch = [[ix["<s>"]] + [ix[w] for w in sentence()] + [ix["</s>"]] for _ in range(32)]
+    L = max(map(len, batch)); x = torch.tensor([b + [ix["</s>"]] * (L - len(b)) for b in batch])
+    loss = F.cross_entropy(m(x[:, :-1])[0].reshape(-1, V), x[:, 1:].reshape(-1)); opt.zero_grad(); loss.backward(); opt.step()
+m.eval()
+
+@torch.no_grad()
+def beam_search(width, alpha=0.0, max_len=10):
+    beams, done = [([ix["<s>"]], 0.0)], []
+    for _ in range(max_len):
+        cand = []
+        for seq, lp in beams:
+            logp = F.log_softmax(m(torch.tensor([seq]))[0][0, -1], -1)
+            top = logp.topk(width)
+            cand += [(seq + [t], lp + v) for v, t in zip(top.values.tolist(), top.indices.tolist())]
+        cand.sort(key=lambda c: c[1], reverse=True); beams = []
+        for seq, lp in cand[:width]:
+            (done if seq[-1] == ix["</s>"] else beams).append((seq, lp))
+        if not beams: break
+    done += beams
+    score = lambda c: c[1] / ((len(c[0]) - 1) ** alpha)            # length normalisation: divide by length^alpha
+    best = max(done, key=score)[0]
+    return [words[t] for t in best[1:] if words[t] not in ("<s>", "</s>")]
+
+print("width  output                                    valid  length")
+for w in [1, 3, 5, 10, 20]:
+    out = beam_search(w); print(f"{w:<6} {' '.join(out):<41} {str(' '.join(out) in VALID):<6} {len(out)}")
+
+print("\\nalpha  mean length over widths 3/5/10")
+for a in [0.0, 0.3, 0.6, 0.9, 1.2]:
+    lens = [len(beam_search(w, a)) for w in (3, 5, 10)]; print(f"{a:<6} {sum(lens) / 3:.2f}  {lens}")
+
+@torch.no_grad()
+def sample(k=None, p=None, max_len=10):
+    seq = [ix["<s>"]]
+    for _ in range(max_len):
+        probs = F.softmax(m(torch.tensor([seq]))[0][0, -1], -1)
+        if k: v, i = probs.topk(k); probs = torch.zeros_like(probs).scatter(0, i, v)
+        if p:
+            sp, si = probs.sort(descending=True); keep = sp.cumsum(0) - sp < p
+            probs = torch.zeros_like(probs).scatter(0, si[keep], sp[keep])
+        t = torch.multinomial(probs / probs.sum(), 1).item()
+        if t == ix["</s>"]: break
+        seq.append(t)
+    return " ".join(words[t] for t in seq[1:])
+
+print("\\nmethod          valid  distinct (of 50 runs)")
+torch.manual_seed(1)
+for name, fn in [("beam, width 5", lambda: " ".join(beam_search(5))), ("top-k, k=5", lambda: sample(k=5)), ("nucleus, p=0.9", lambda: sample(p=0.9))]:
+    outs = [fn() for _ in range(50)]
+    print(f"{name:<15} {sum(o in VALID for o in outs) / 50:5.0%}  {len(set(outs))}")`,
+        out: `width  output                                    valid  length
+1      the cat sees the ball again               True   6
+3      the old man sees the ball again           True   7
+5      the old man sees the ball again           True   7
+10     the cat sees the red car again            True   7
+20     the cat sees the ball again               True   6
+
+alpha  mean length over widths 3/5/10
+0.0    7.00  [7, 7, 7]
+0.3    7.67  [8, 8, 7]
+0.6    8.00  [8, 8, 8]
+0.9    8.00  [8, 8, 8]
+1.2    8.00  [8, 8, 8]
+
+method          valid  distinct (of 50 runs)
+beam, width 5    100%  1
+top-k, k=5       100%  43
+nucleus, p=0.9   100%  44`,
+       
         notes: [
           { t: "p", text: "The α sweep should show mean output length rising monotonically with α, which makes the parameter's job concrete: at α = 0 you get truncation, at α = 1 you get the mean log-probability per token and output that tends to ramble. Tuning α on a validation set is worthwhile because the right value depends on how your data's length distribution interacts with the model's per-token confidence." },
           { t: "p", text: "On width, expect quality to improve sharply from 1 to about 5 and then flatten — I measured widths 3 and 5 finding an identical best sequence. Since cost is linear in width, anything past 5 is usually paying for nothing. Some tasks even show quality *declining* at very large widths, which is the length bias getting worse as the search finds ever-shorter high-probability sequences the model would never have reached otherwise." },
           { t: "p", text: "The sampling comparison is the one that changes how you think about decoding. Beam search will be deterministic and give the same output every time, with better scores on any likelihood-based metric. Nucleus sampling will give varied output that most readers judge more natural. Neither is better in the abstract — they answer different questions, and which you want depends entirely on whether your task has a correct answer or many acceptable ones." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: wider beams, shorter answers",
+      body: [
+        { t: "p", text: "**Symptom.** Increasing the beam width made a summariser's outputs shorter and blander." },
+        { t: "p", text: "**Mechanism.** Beam search scores sequences by summed log-probability, which favours short sequences; a wider beam found more of them." },
+        { t: "p", text: "**Fix.** Scores are length-normalised with a tuned exponent, and output length is tracked as a metric alongside quality." }
+      ] }
   ],
 
   takeaways: [

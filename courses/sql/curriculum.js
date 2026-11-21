@@ -155,10 +155,10 @@
         phase: "Phase 3 · Under the hood",
         title: "Plans, Indexes and Speed",
         blurb: "What the planner does with your text, how to read what it chose, the index structures it can use, and the predicates that stop it using them.",
-        outcome: "You can read EXPLAIN AnalysE, name the node that is slow, and say whether the fix is an index, a rewrite or a schema change.",
+        outcome: "You can read EXPLAIN ANALYZE, name the node that is slow, and say whether the fix is an index, a rewrite or a schema change.",
         lessons: [
           { id: "5.1", title: "How a Query Runs", difficulty: "core", minutes: 32, tier: "must",
-            summary: "Parser, planner, executor; the cost model and the statistics it depends on; why a stale AnalysE makes a good plan bad; prepared statements and plan caching.",
+            summary: "Parser, planner, executor; the cost model and the statistics it depends on; why a stale ANALYZE makes a good plan bad; prepared statements and plan caching.",
             keywords: ["planner", "optimiser", "cost", "statistics", "analyze", "cardinality", "prepared statement"] },
           { id: "5.2", title: "Reading EXPLAIN", difficulty: "advanced", minutes: 38, tier: "must",
             summary: "Seq Scan, Index Scan, Index Only Scan and Bitmap; Hash, Merge and Nested Loop joins; Sort and HashAggregate; estimated versus actual rows — and the one number to look at first.",

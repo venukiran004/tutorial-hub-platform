@@ -64,7 +64,7 @@ EC.receiveLesson({
       ["IVF", "removes from one inverted list", "cheap, the list stays"],
       ["HNSW", "no true delete in faiss", "tombstone and filter at query time"]
     ] },
-    { t: "callout", kind: "warn", title: "Positional alignment is a bug waiting for a delete", body: [
+    { t: "callout", kind: "trap", title: "Positional alignment is a bug waiting for a delete", body: [
       { t: "p", text: "After `remove_ids` on position *i*, faiss shifts everything down: position *j > i* now holds what used to be at *j+1*. Any parallel list mapping positions to document ids \u2014 the `IDS[i]` pattern used throughout modules 5 and 6 \u2014 is now wrong for every position after the deletion." },
       { t: "p", text: "The symptom is citations that point at the wrong document, consistently and only after a delete. The fix is to never rely on positional alignment: wrap the index in `IndexIDMap` so each vector carries an explicit id, and deletes cannot shift the mapping." }
     ] },

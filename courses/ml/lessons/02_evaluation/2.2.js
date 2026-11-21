@@ -255,6 +255,17 @@ average precision 0.794             the no-skill line is the prevalence: 0.50 he
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Choosing ROC-AUC for a rare-positive problem",
+
+      body: [
+
+        { t: "p", text: "ROC-AUC is insensitive to the base rate, so a model can score 0.95 while most of its flagged cases are false positives when positives are rare." },
+
+        { t: "p", text: "Use precision–recall curves and average precision for rare positives, and report how many true cases appear per hundred flagged." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "AUC from scratch, three ways",
@@ -334,7 +345,14 @@ def average_precision(y, s):
           why: "ROC-AUC is prevalence-independent by construction. When the action is per flag and positives are rare, prevalence is the whole problem."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an AUC that hid a useless model",
+      body: [
+        { t: "p", text: "**Symptom.** A rare-disease screening model had a ROC AUC of 0.95, yet among patients it flagged only one in fifty had the disease." },
+        { t: "p", text: "**Mechanism.** ROC curves are insensitive to the base rate. With a prevalence of 0.5%, even a low false-positive rate produced far more false positives than true ones." },
+        { t: "p", text: "**Fix.** The model is reported with precision–recall curves and average precision, which read against the base rate, along with the expected number of true cases per hundred flagged." }
+      ] }
   ],
 
   takeaways: [

@@ -171,6 +171,17 @@ EC.receiveLesson({
   <text x="400" y="295" class="s-sub">checks passes unconditionally</text>
 </svg>` },
 
+    { t: "callout", kind: "trap", title: "Trusting an LLM judge nobody validated",
+
+      body: [
+
+        { t: "p", text: "An automated judge produces a confident number for every run. If nobody has checked it against human labels, a change can pass or fail the pipeline for reasons that have nothing to do with quality." },
+
+        { t: "p", text: "Validate the judge against a human-labelled sample before relying on it, re-validate when the judge model changes, and control for position and length bias." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Run the harness, and find the case that passes for free", difficulty: "core", minutes: 30,
       body: "Implement the deterministic checks and the harness, run them over a small eval set including a case with no deterministic checks at all, and report the pass rate. Then show what the pass rate means and does not mean by adding a case that passes every check with a poor judged score.",
       requirements: [

@@ -10,7 +10,7 @@ Open `index.html` in a browser. It works from `file://` and from any static host
 
 ## What is here
 
-Sixteen courses and 1,405 published lessons. The counts include each course's
+Sixteen courses and 1,407 published lessons. The counts include each course's
 practice and interview tracks, which is why the home page, counting the taught
 track alone, can show a smaller number for the same course.
 
@@ -25,11 +25,11 @@ track alone, can show a smaller number for the same course.
 | **Machine Learning** | 23 | 133 | 67 |
 | **Deep Learning** | 20 | 124 | 68 |
 | **NLP & Transformers** | 10 | 75 | 68 |
-| **GenAI & LLMs** | 13 | 176 | 176 |
+| **GenAI & LLMs** | 13 | 177 | 177 |
 | **LangChain & LangGraph** | 14 | 118 | 118 |
 | **Model Context Protocol** | 5 | 16 | 16 |
 | **MLOps & Deployment** | 19 | 79 | 79 |
-| **System Design** | 15 | 78 | 78 |
+| **System Design** | 15 | 79 | 79 |
 | **Google ADK** | 12 | 52 | 52 |
 | **Interview Experience** | 1 | 2 | 2 |
 

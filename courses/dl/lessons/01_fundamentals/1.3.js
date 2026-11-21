@@ -260,7 +260,14 @@ z2 = W2 @ a1 + b2             # 0.32 - 1.4 + 0.3 = -0.78
 yhat = 1 / (1 + np.exp(-z2))  # 0.3143
 bce = -np.log(yhat)           # 1.1574 for y = 1
 print(z1, a1, z2, yhat, bce)`,
-        notes: [{ t: "p", text: "z¹ = [0.8, 2.0], both units active, z² = −0.78, ŷ = 0.314, predicted class 0, loss −log 0.314 = 1.157. Because both hidden units are active, both receive gradient in the backward pass; for the input only the second did." }] } }
+        notes: [{ t: "p", text: "z¹ = [0.8, 2.0], both units active, z² = −0.78, ŷ = 0.314, predicted class 0, loss −log 0.314 = 1.157. Because both hidden units are active, both receive gradient in the backward pass; for the input only the second did." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a classifier trained with softmax twice",
+      body: [
+        { t: "p", text: "**Symptom.** A multi-class model trained slowly and its predicted probabilities were all close to uniform." },
+        { t: "p", text: "**Mechanism.** The model ended with a softmax layer and was trained with `CrossEntropyLoss`, which applies log-softmax itself. The loss saw probabilities as logits, which compressed the gradients." },
+        { t: "p", text: "**Fix.** The model outputs raw logits during training, softmax is applied only at inference, and a test checks the loss at initialisation against ln(number of classes)." }
+      ] }
   ],
 
   takeaways: [

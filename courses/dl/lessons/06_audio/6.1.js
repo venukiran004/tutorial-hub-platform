@@ -111,6 +111,12 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Hear aliasing happen", difficulty: "intermediate", minutes: 30,
       prompt: "Generate a tone sweeping from 100 Hz to 15 kHz at a 32 kHz sample rate. Downsample to 16 kHz two ways: by naively taking every second sample, and with a proper resampler that low-pass filters first. Plot the spectrogram of each and identify where the naive version's frequencies fold back. Then compute the Nyquist frequency for 8 kHz, 16 kHz, 22.05 kHz and 44.1 kHz, and mark which speech sounds each preserves.",
+      requirements: [
+        "Generate a 100 Hz to 15 kHz sweep at 32 kHz",
+        "Downsample to 16 kHz naively and with a proper resampler",
+        "Plot both spectrograms and identify the aliasing",
+        "Compute Nyquist for 8, 16, 22.05 and 44.1 kHz and the speech sounds each preserves"
+      ],
       hints: [
         "`torchaudio.transforms.Resample` filters correctly; `x[::2]` does not.",
         "The fold-back is a mirror image — frequencies above the new Nyquist reflect downward.",
@@ -121,8 +127,14 @@ EC.receiveLesson({
           { t: "p", text: "The naive version produces a spectrogram where the sweep rises to 8 kHz and then descends again — the reflection is unmistakable once you see it, and it makes clear that aliasing is not noise but a deterministic, structured corruption. The properly resampled version simply stops at 8 kHz, having discarded the content above it. Discarding is correct; folding is not." },
           { t: "p", text: "The point worth carrying forward is that aliasing is irreversible. Once the samples exist, the false 7 kHz component is a real component of your signal and nothing downstream can identify it as spurious. That is why the filter has to come before the decimation, and why this is one of the few audio bugs that genuinely cannot be fixed later in the pipeline." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: telephone audio fed to a wideband model",
+      body: [
+        { t: "p", text: "**Symptom.** A speech recogniser trained on 16 kHz audio performed badly on a call-centre deployment." },
+        { t: "p", text: "**Mechanism.** Telephone audio is sampled at 8 kHz, so frequencies above 4 kHz — where fricatives like /s/ live — do not exist. Upsampling did not restore them." },
+        { t: "p", text: "**Fix.** The model was fine-tuned on 8 kHz audio upsampled the same way, and sample rate is checked at ingestion." }
+      ] }
   ],
 
   takeaways: [

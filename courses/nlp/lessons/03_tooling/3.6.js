@@ -327,7 +327,14 @@ layer 12 frozen features: 4-fold accuracy 0.62`,
           { t: "p", text: "Placed at the same index, layer 0 gave cosine 1.000000 for 'cell' in two sentences with different meanings, so it is a static lookup plus position. That also explains why k-means on layer-0 'bank' vectors still matched the senses 75% of the time: river sentences put 'bank' near the end, so position alone leaks the label. Layer 8 reached 92%." },
           { t: "p", text: "Frozen layer-8 features gave the best sentiment accuracy (0.81), ahead of layer 4 (0.69) and layer 12 (0.62). With 16 sentences these numbers are noisy, but the shape matches the lesson: the last layer is specialised for the pre-training objective, and a middle layer is often the better general feature. GloVe vectors are not available offline here. The same-index layer-0 result is the static baseline the exercise asks for: a static table separates nothing." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: features taken from the wrong layer",
+      body: [
+        { t: "p", text: "**Symptom.** A word-sense classifier built on BERT features performed poorly despite strong published results for the same task." },
+        { t: "p", text: "**Mechanism.** Features came from the embedding layer, which is a static lookup. Contextual information appears only in the layers above." },
+        { t: "p", text: "**Fix.** Features come from middle layers chosen by a probe on validation data, and the probe is rerun when the base model changes." }
+      ] }
   ],
 
   takeaways: [

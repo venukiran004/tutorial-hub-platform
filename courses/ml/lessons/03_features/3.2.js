@@ -290,7 +290,14 @@ cross_val_score(logistic_on(X_leak), ...)          # executed: 0.749 leaked vs 0
           why: "The encoding is a claim about the levels. Linear models believe the claim; trees do not need it."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a city encoded as a number",
+      body: [
+        { t: "p", text: "**Symptom.** A delivery-cost model learned that costs rose steadily from Aberdeen to York." },
+        { t: "p", text: "**Mechanism.** Cities were label-encoded as integers in alphabetical order, so a linear model treated the codes as a quantity. The 'trend' was the alphabet." },
+        { t: "p", text: "**Fix.** Cities are one-hot encoded, or target-encoded out of fold for high cardinality, and `LabelEncoder` is used only for targets." }
+      ] }
   ],
 
   takeaways: [

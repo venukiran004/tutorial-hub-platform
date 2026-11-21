@@ -176,6 +176,12 @@ for frac in (0.02, 0.05, 0.10, 0.20):
           "Choose by the cost of each failure"
         ]
       ] },
+    { t: "callout", kind: "trap", title: "Copying a design without the situation that justified it",
+      body: [
+        { t: "p", text: "Netflix's architecture made sense for Netflix's traffic, team count and failure costs. Adopting its microservices or its chaos engineering at a fraction of the scale brings the operational cost without the problem it solved." },
+        { t: "p", text: "Read each published design for the forcing problem, and adopt a pattern only when you have that problem at a comparable scale." }
+      ] },
+
     { t: "exercise",
       kind: "Challenge",
       title: "Measure the blast radius of shuffle sharding",

@@ -50,7 +50,7 @@ EC.receiveLesson({
     { t: "callout", kind: "trap", title: "The pipeline does not scan the retrieved context",
       body: [
         { t: "p", text: "`scan_input` runs on `user_input` and `redact` runs on `user_input`. The `context` parameter goes straight into the model untouched. So the pipeline that is presented as the complete picture has exactly the **indirect injection** hole that 11.12 identifies as the risk RAG introduces." },
-        { t: "p", text: "That is not an inconsistency in the reference so much as a demonstration of how easy the gap is to leave: the function reads as complete, every check is present, and the untrusted input that bypasses all of them is the parameter nobody thought of as input." },
+        { t: "p", text: "That is not carelessness in the standard design so much as a demonstration of how easy the gap is to leave: the function reads as complete, every check is present, and the untrusted input that bypasses all of them is the parameter nobody thought of as input." },
         { t: "p", text: "The fix is two lines \u2014 scan the context too, and wrap both the user input and the retrieved chunks in delimiters declared as data. But it has to be deliberate, because nothing about the code\u2019s shape suggests anything is missing." }
       ] },
 
@@ -147,7 +147,7 @@ OUTPUT guardrails, fast gate (35 ms, GPU or a small model):
   <text x="28" y="164" class="s-sub">parallelising a stage whose slowest member is 2,957 ms saves 72 ms &#8212; 2% of the stage</text>
 
   <line x1="16" y1="180" x2="744" y2="180" stroke="var(--line)" stroke-width="1"/>
-  <text x="16" y="200" class="s-label">AND TWO GAPS IN THE REFERENCE&#8217;S OWN PIPELINE</text>
+  <text x="16" y="200" class="s-label">AND TWO GAPS IN THE STANDARD PIPELINE</text>
 
   <rect x="16" y="210" width="356" height="52" rx="4" class="s-fill-bg" style="stroke:var(--crit)" stroke-width="1.6"/>
   <text x="28" y="228" class="s-mono" style="font-size:9px;fill:var(--crit)">THE CONTEXT IS NEVER SCANNED</text>
@@ -243,7 +243,7 @@ print("=" * 74)
 print("the usual evaluation is moderate() AND output_safe() before the if,")
 print("so a leaked canary still pays for the moderation call.")
 print()
-for label, order in (("reference order (both, then if)", ["moderation", "canary"]),
+for label, order in (("standard order (both, then if)", ["moderation", "canary"]),
                      ("cheapest first, short-circuit",   ["canary", "moderation"])):
     if order[0] == "canary":
         cost = 0.1
@@ -324,7 +324,7 @@ FAIL FAST: THE OUTPUT STAGE REORDERED
 the usual evaluation is moderate() AND output_safe() before the if,
 so a leaked canary still pays for the moderation call.
 
-  reference order (both, then if)    blocked response costs    42.1 ms
+  standard order (both, then if)    blocked response costs    42.1 ms
   cheapest first, short-circuit      blocked response costs     0.1 ms
                                      saving on a blocked response: 421x
 

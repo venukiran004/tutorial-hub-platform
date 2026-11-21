@@ -191,18 +191,92 @@ events persisted: 6` },
 
     { t: "exercise", kind: "practice", title: "Stream a turn without rendering it twice", difficulty: "core", minutes: 24,
       prompt: "Run a tool-using turn with StreamingMode.SSE and print every event with its partial flag, finality and text. Deliberately write the naive client that appends every text event, and observe the duplicated answer. Fix it by appending only partials and replacing on the final event. Then fetch the session and count the persisted events, and explain the difference between what you rendered and what was stored.",
+      requirements: [
+        "Run a tool-using turn in SSE mode and print every event's partial flag, finality and text",
+        "Write the naive client that appends every text event and observe the duplicate",
+        "Fix it by appending partials and replacing on the final event",
+        "Count persisted events and explain the difference from what you rendered"
+      ],
       hints: [
         "A model that emits fragments is needed — one response per call will not show partials.",
         "Print `event.partial` explicitly; it is None rather than False on the final event.",
         "The session will hold far fewer events than you rendered."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `"""Streaming without double rendering. The scripted model streams like ADK's Gemini adapter: partial text chunks,
+then one final non-partial response carrying the whole text. What ADK does with them is the real behaviour."""
+import asyncio, logging, warnings
+from google.adk.agents import LlmAgent
+from google.adk.agents.run_config import RunConfig, StreamingMode
+from google.adk.models import BaseLlm
+from google.adk.models.llm_response import LlmResponse
+from google.adk.runners import InMemoryRunner
+from google.genai import types
+warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+
+def part_text(t): return types.Content(role="model", parts=[types.Part(text=t)])
+
+class StreamingFake(BaseLlm):
+    model: str = "stream-fake"
+    async def generate_content_async(self, llm_request, stream=False):
+        last = llm_request.contents[-1].parts[0]
+        if not last.function_response:
+            yield LlmResponse(content=types.Content(role="model", parts=[types.Part(function_call=types.FunctionCall(name="weather", args={"city": "Leeds"}))]))
+            return
+        chunks = ["It is ", "14C and ", "raining in Leeds."]
+        if stream:
+            for c in chunks: yield LlmResponse(content=part_text(c), partial=True)
+        yield LlmResponse(content=part_text("".join(chunks)), partial=False)    # the aggregated final
+
+def weather(city: str) -> dict:
+    """Current weather for a city."""
+    return {"city": city, "temp_c": 14, "sky": "rain"}
+
+async def main():
+    runner = InMemoryRunner(agent=LlmAgent(name="w", model=StreamingFake(), tools=[weather]), app_name="w")
+    sid = (await runner.session_service.create_session(app_name="w", user_id="u")).id
+    naive, correct, n = "", "", 0
+    async for e in runner.run_async(user_id="u", session_id=sid, run_config=RunConfig(streaming_mode=StreamingMode.SSE),
+                                    new_message=types.Content(role="user", parts=[types.Part(text="weather in Leeds?")])):
+        n += 1
+        p = e.content.parts[0] if e.content and e.content.parts else None
+        kind = "call" if p and p.function_call else "result" if p and p.function_response else "text"
+        print(f"  event {n}: {kind:<6} partial={str(e.partial):<5} final={str(e.is_final_response()):<5} {(p.text if p and p.text else '')!r}")
+        if p and p.text:
+            naive += p.text                                    # appends partials AND the final: doubled
+            correct = correct + p.text if e.partial else p.text  # append partials, replace on the final
+    print(f"\\nnaive client rendered : {naive!r}")
+    print(f"correct client renders: {correct!r}")
+    stored = (await runner.session_service.get_session(app_name="w", user_id="u", session_id=sid)).events
+    print(f"\\nevents streamed: {n}; events persisted in the session: {len(stored)} "
+          f"(partials are delivered but not stored: {[e.partial for e in stored]})")
+
+asyncio.run(main())`,
+        out: `  event 1: call   partial=None  final=False ''
+  event 2: result partial=None  final=False ''
+  event 3: text   partial=True  final=False 'It is '
+  event 4: text   partial=True  final=False '14C and '
+  event 5: text   partial=True  final=False 'raining in Leeds.'
+  event 6: text   partial=False final=True  'It is 14C and raining in Leeds.'
+
+naive client rendered : 'It is 14C and raining in Leeds.It is 14C and raining in Leeds.'
+correct client renders: 'It is 14C and raining in Leeds.'
+
+events streamed: 6; events persisted in the session: 4 (partials are delivered but not stored: [None, None, None, False])`,
+       
         notes: [
           { t: "p", text: "The duplication is worth producing on purpose, because it is the single most common streaming bug and it looks like a framework problem when you meet it in the wild. The final event is not another delta — it is the complete text, and the client replaces with it. Once you have seen the flags printed side by side it stops being confusing forever." },
           { t: "p", text: "The persisted count is the other half: my run rendered four text events and stored two, the user message and the final answer. Partials are presentation only. If they were persisted, every subsequent turn would replay a transcript full of fragments and the conversation would cost several times more than it does." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: every answer appeared twice",
+      body: [
+        { t: "p", text: "**Symptom.** After streaming was enabled, users saw each answer typed out and then printed again in full underneath." },
+        { t: "p", text: "**Mechanism.** The client appended every event's text. In SSE mode the partial events carry fragments and the final event carries the complete text, so appending both showed the answer twice." },
+        { t: "p", text: "**Fix.** The client appends partial text as it arrives and replaces it with the final event's text, and history is rendered from stored events, which never contain the partials." }
+      ] }
   ],
 
   takeaways: [

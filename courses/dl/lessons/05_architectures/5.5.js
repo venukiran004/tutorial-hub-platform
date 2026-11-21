@@ -131,6 +131,12 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Compare fairly", difficulty: "intermediate", minutes: 40,
       prompt: "Benchmark GRU and LSTM forward-plus-backward time on your own hardware at three shapes, warming up and taking medians — confirm or refute the 1.6–3.1× result. Then compare accuracy two ways on the same task: matched hidden size, and matched parameter count (GRU hidden ≈ LSTM hidden × 2/√3). Run several seeds and report the spread, not just the means.",
+      requirements: [
+        "Benchmark GRU and LSTM forward-plus-backward time at three shapes with warm-up",
+        "Compare accuracy at matched hidden size",
+        "Compare accuracy at matched parameter count",
+        "Run several seeds and report the spread"
+      ],
       hints: [
         "Warm up at least three iterations before timing; use median not mean.",
         "Matched hidden size gives the GRU 25 % fewer parameters — that confounds architecture with capacity.",
@@ -142,8 +148,14 @@ EC.receiveLesson({
           { t: "p", text: "The matched-parameter comparison is the one that makes the accuracy claim meaningful. At equal hidden size the GRU has 25 % fewer parameters, so you are testing architecture and capacity together — and a GRU winning might only mean the LSTM was overfitting, which is a statement about your dataset size. Give the GRU a wider state to equalise and the gap usually closes." },
           { t: "p", text: "Reporting the seed spread is what turns this from an opinion into evidence. Differences between these two architectures are typically within run-to-run variance, which matches what Chung et al. found. If your measured gap is smaller than your spread across seeds, the honest conclusion is that you cannot distinguish them on this task — which is a perfectly good result and saves you from over-claiming." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a GRU chosen by parameter count",
+      body: [
+        { t: "p", text: "**Symptom.** A team compared a GRU and an LSTM with the same hidden size, chose the GRU for being smaller, and later found the LSTM was better at matched size." },
+        { t: "p", text: "**Mechanism.** Matching hidden size gives the GRU fewer parameters. A fair comparison matches parameter count." },
+        { t: "p", text: "**Fix.** Architectures are compared at matched parameter count over several seeds, with the spread reported." }
+      ] }
   ],
 
   takeaways: [

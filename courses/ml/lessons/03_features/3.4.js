@@ -318,7 +318,14 @@ for feats in [num, num + extra]:
           why: "The log is right for quantities spanning orders of magnitude. Measure the skew after, not just before."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: hour 23 and hour 0 treated as far apart",
+      body: [
+        { t: "p", text: "**Symptom.** A demand model under-predicted traffic just after midnight every day." },
+        { t: "p", text: "**Mechanism.** Hour of day was used as a number, so the model treated 23 and 0 as the farthest apart. The late-night pattern was split across the two ends of the scale." },
+        { t: "p", text: "**Fix.** The hour is encoded with sine and cosine components, which places 23 next to 0, and the residuals by hour were checked to confirm the gap closed." }
+      ] }
   ],
 
   takeaways: [

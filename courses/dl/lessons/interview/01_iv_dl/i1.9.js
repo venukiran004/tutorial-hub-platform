@@ -51,7 +51,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "model = torch.quantization.prepare_qat(model)\n# Train with fake quantized weights\nmodel = torch.quantization.convert(model)  # Convert to actual INT8"
+     "code": "# torch 2.10: torch(.ao).quantization is deprecated in favour of torchao; it still runs\nmodel = torch.quantization.prepare_qat(model)\n# Train with fake quantized weights\nmodel = torch.quantization.convert(model)  # Convert to actual INT8"
     },
     {
      "t": "p",

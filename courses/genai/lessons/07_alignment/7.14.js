@@ -129,7 +129,7 @@ Do you have a labelling budget, an RM, GPUs for 4 models, and a team?
         { t: "p", text: "**Merge**, which 7.13 established as the zero-compute fix for the forgetting a domain fine-tune causes \u2014 and with only two models the sign-conflict arithmetic is at its most forgiving." }
       ] },
 
-    { t: "callout", kind: "warn", title: "The eval gate is the stage people skip",
+    { t: "callout", kind: "trap", title: "The eval gate is the stage people skip",
       body: [
         { t: "p", text: "7.15 is about this in detail, and the short version is that the metrics you optimised prove nothing. A DPO reward accuracy of 0.82 says the loss went down, which you already knew." },
         { t: "p", text: "The gate needs a win rate against the *pre-alignment* model on held-out prompts, a capability-regression check, and a length measurement \u2014 because 7.11 showed length is the canonical hack and a 40% creep means you bought length rather than quality." },

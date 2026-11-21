@@ -189,6 +189,13 @@ await server.request_context.session.send_notification(
 
     { t: "exercise", kind: "practice", title: "Write it twice", difficulty: "advanced", minutes: 30,
       prompt: "Take a two-tool server you have written with FastMCP and rewrite it against the low-level Server. Set a version of your own and confirm it appears in the handshake. Declare tools_changed=True. Then make the tool list dynamic: have list_tools return the second tool only when an environment variable is set, and confirm from a client that the list differs between two connections started with different values. Finally register a list_resources handler that returns an empty list, print the capabilities, and explain what you have just advertised.",
+      requirements: [
+        "Rewrite a two-tool FastMCP server against the low-level Server",
+        "Set a version of your own and confirm it appears in the handshake",
+        "Declare tools_changed=True",
+        "Make list_tools return the second tool only when an environment variable is set, and confirm two connections differ",
+        "Register an empty list_resources handler, print the capabilities, and explain what you have advertised"
+      ],
       hints: [
         "types.Tool needs name, description and inputSchema — write the schema as a dict.",
         "call_tool dispatches on name, so the unknown-name branch is yours to write.",
@@ -199,8 +206,15 @@ await server.request_context.session.send_notification(
           { t: "p", text: "The dynamic list is the real reason this API exists, and it is the case the decorators cannot cover: `@mcp.tool()` runs at import time, so the tool set is fixed before any client connects. A `list_tools` function is called per request, which means it can consult configuration, a feature flag or the connection's own context." },
           { t: "p", text: "The empty-resource-handler step is the one worth writing down: you have advertised the resources capability to every client, each of which may now call `resources/list` and get nothing. That is a worse outcome than not advertising it, because a client that read your flags built a UI for resources you do not have — the same mistake as `listChanged=True` with no notifications, in a different field." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the capability a monitoring dashboard said was healthy",
+      body: [
+        { t: "p", text: "**Symptom.** A platform team's dashboard showed a document server as offering resources, and three consuming teams built features on that. Every `resources/read` they attempted failed. The server team insisted they had never shipped resources." },
+        { t: "p", text: "**Mechanism.** Someone had registered a `list_resources` handler as a placeholder, returning an empty list, intending to fill it in later. `get_capabilities` reports what is registered, not what works, so the handshake advertised the resources capability from that moment. The dashboard read the handshake and reported the claim." },
+        { t: "p", text: "**Why it was missed.** A placeholder handler is an ordinary way to stage work, and nothing fails when it is added: the server starts, the tools work, and the empty list is a valid response. The advertisement is a side effect of registration that the decorator API normally hides." },
+        { t: "p", text: "**Fix.** The placeholder was removed until the feature existed, and the server's test suite now asserts the exact capability set in the handshake, so adding a handler is a visible, reviewed change. On the low-level API nothing is decided for you — including what you are claiming." }
+      ] }
   ],
 
   takeaways: [

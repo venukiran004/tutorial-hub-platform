@@ -180,18 +180,111 @@ euler_out = odeint(f, h0, torch.linspace(0, 8, 9), method="euler")[-1]` },
 
     { t: "exercise", kind: "practice", title: "Make depth adaptive, then watch it grow", difficulty: "advanced", minutes: 34,
       prompt: "Build the NeuralODEClassifier on a small dataset. Log NFE per batch throughout training and plot it. Then: (a) compare final accuracy against a ResNet with the same parameter count in f, (b) train once with odeint and once with odeint_adjoint, recording peak memory and wall-clock time, (c) tighten rtol from 1e-3 to 1e-7 and see what happens to both NFE and accuracy.",
+      requirements: [
+        "Build the NeuralODEClassifier and log NFE per batch throughout training",
+        "Compare accuracy against a ResNet with the same parameter count",
+        "Train with odeint and with odeint_adjoint and record peak memory and time",
+        "Tighten rtol from 1e-3 to 1e-7 and record NFE and accuracy"
+      ],
       hints: [
         "Reset the NFE counter at the start of each forward pass, not each epoch.",
         "Expect NFE to climb as training progresses — that is the phenomenon, not a bug.",
         "Peak memory is the point of the adjoint; measure it with torch.cuda.max_memory_allocated if you have a GPU, or count stored tensors if not."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import time
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torchdiffeq import odeint, odeint_adjoint
+from sklearn.datasets import load_digits
+
+X, y = load_digits(return_X_y=True)
+X = torch.tensor(X / 16.0, dtype=torch.float32); y = torch.tensor(y)
+Xtr, ytr, Xte, yte = X[:1400], y[:1400], X[1400:], y[1400:]
+
+class ODEFunc(nn.Module):                         # forward(t, h): time first
+    def __init__(self, d=32):
+        super().__init__(); self.net = nn.Sequential(nn.Linear(d, 64), nn.Tanh(), nn.Linear(64, d)); self.nfe = 0
+    def forward(self, t, h): self.nfe += 1; return self.net(h)
+
+class NeuralODEClassifier(nn.Module):
+    def __init__(self, adjoint=False, rtol=1e-3, atol=1e-4):
+        super().__init__(); self.inp, self.f, self.out = nn.Linear(64, 32), ODEFunc(), nn.Linear(32, 10)
+        self.solve, self.rtol, self.atol = (odeint_adjoint if adjoint else odeint), rtol, atol
+    def forward(self, x):
+        h = self.solve(self.f, self.inp(x), torch.tensor([0.0, 1.0]), rtol=self.rtol, atol=self.atol, method="dopri5")[-1]
+        return self.out(h)
+
+class ResNet(nn.Module):                          # one residual block with exactly f's parameter count
+    def __init__(self):
+        super().__init__(); self.inp, self.f, self.out = nn.Linear(64, 32), ODEFunc(), nn.Linear(32, 10)
+    def forward(self, x): h = self.inp(x); return self.out(h + self.f(0, h))
+
+def saved_bytes(model, x):
+    """bytes autograd keeps for the backward pass: the activation memory the adjoint method avoids"""
+    total = 0
+    def pack(t):
+        nonlocal total; total += t.numel() * t.element_size(); return t
+    with torch.autograd.graph.saved_tensors_hooks(pack, lambda t: t):
+        loss = F.cross_entropy(model(x), ytr[:len(x)])          # forward only: what is held until backward
+    return total
+
+def train(model, epochs=15):
+    torch.manual_seed(0); opt = torch.optim.Adam(model.parameters(), 3e-3); nfes = []; t0 = time.perf_counter()
+    for ep in range(epochs):
+        perm = torch.randperm(1400)
+        for i in range(0, 1400, 100):
+            idx = perm[i:i + 100]; model.f.nfe = 0
+            loss = F.cross_entropy(model(Xtr[idx]), ytr[idx]); fwd = model.f.nfe
+            opt.zero_grad(); loss.backward(); opt.step(); nfes.append(fwd)
+    with torch.no_grad(): acc = (model(Xte).argmax(1) == yte).float().mean().item()
+    return acc, nfes, time.perf_counter() - t0
+
+torch.manual_seed(0); ode = NeuralODEClassifier(); acc, nfes, sec = train(ode)
+per_epoch = [sum(nfes[i:i + 14]) / 14 for i in range(0, len(nfes), 14)]
+print("forward NFE per batch, mean by epoch:", " ".join(f"{v:.0f}" for v in per_epoch))
+torch.manual_seed(0); res = ResNet(); racc, _, rsec = train(res)
+print(f"Neural ODE  accuracy {acc:.3f}  ({sec:.1f}s)   f has {sum(p.numel() for p in ode.f.parameters()):,} parameters")
+print(f"ResNet      accuracy {racc:.3f}  ({rsec:.1f}s)   block has {sum(p.numel() for p in res.f.parameters()):,} parameters")
+
+print("\\nactivation memory held after the forward pass (batch of 100), and time for 5 epochs")
+for adj in [False, True]:
+    torch.manual_seed(0); m = NeuralODEClassifier(adjoint=adj)
+    b = saved_bytes(m, Xtr[:100]); a, _, s = train(m, epochs=5)
+    print(f"{'odeint_adjoint' if adj else 'odeint        '}: {b / 1024:8.1f} KiB saved   {s:5.1f}s   accuracy {a:.3f}")
+
+print("\\nevaluation tolerance on the trained model: NFE and accuracy")
+for rtol in [1e-3, 1e-5, 1e-7]:
+    ode.rtol, ode.atol = rtol, rtol / 10; ode.f.nfe = 0
+    with torch.no_grad(): a = (ode(Xte).argmax(1) == yte).float().mean().item()
+    print(f"rtol {rtol:.0e}: NFE {ode.f.nfe:>4}   accuracy {a:.3f}")`,
+        out: `forward NFE per batch, mean by epoch: 14 20 20 20 20 20 25 26 26 26 26 26 26 26 26
+Neural ODE  accuracy 0.882  (4.6s)   f has 4,192 parameters
+ResNet      accuracy 0.897  (0.2s)   block has 4,192 parameters
+
+activation memory held after the forward pass (batch of 100), and time for 5 epochs
+odeint        :   2297.0 KiB saved     1.4s   accuracy 0.844
+odeint_adjoint:     88.7 KiB saved     3.0s   accuracy 0.844
+
+evaluation tolerance on the trained model: NFE and accuracy
+rtol 1e-03: NFE   26   accuracy 0.882
+rtol 1e-05: NFE   44   accuracy 0.882
+rtol 1e-07: NFE   98   accuracy 0.882`,
+       
         notes: [
           { t: "p", text: "The NFE curve is the thing to keep. It typically starts low and climbs steadily, because the network is free to learn faster-varying dynamics and nothing in the loss discourages it. That is why regularising the dynamics — penalising the norm of `f` or of its Jacobian — is standard practice in papers that train these seriously: it is a speed regulariser more than an accuracy one." },
           { t: "p", text: "The tolerance sweep usually surprises people. Going from 1e-3 to 1e-7 multiplies NFE substantially and moves accuracy very little, because the model was never sensitive to that many digits of the trajectory. Loose tolerances during training and a tight one at evaluation is a reasonable default, and it is the same instinct as mixed precision in lesson 1.13 — spend numerical accuracy only where it changes the answer." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a Neural ODE that got slower every epoch",
+      body: [
+        { t: "p", text: "**Symptom.** Training a Neural ODE took longer each epoch until a run that should have finished overnight was still going days later." },
+        { t: "p", text: "**Mechanism.** The adaptive solver's number of function evaluations grew as the learned dynamics became stiffer. Nothing limited it." },
+        { t: "p", text: "**Fix.** NFE is logged per batch, the dynamics are regularised, and the solver tolerance was chosen from a sweep of accuracy against cost." }
+      ] }
   ],
 
   takeaways: [

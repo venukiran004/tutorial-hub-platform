@@ -76,7 +76,7 @@ EC.receiveLesson({
         { t: "p", text: "So if you add exactly two alerts to a RAG system, add those. Every other metric in this table needs either a judge, a labelled set, or a nightly job \u2014 these two need a `set_attribute` call." }
       ] },
 
-    { t: "callout", kind: "warn", title: "A threshold that excludes everything looks identical to a corpus that contains nothing",
+    { t: "callout", kind: "trap", title: "A threshold that excludes everything looks identical to a corpus that contains nothing",
       body: [
         { t: "p", text: "Empty-retrieval rate is the signal, but it has two very different causes with the same reading. Either the corpus genuinely does not contain the answer \u2014 an ingestion gap \u2014 or the similarity cut-off and metadata filters are excluding content that is there." },
         { t: "p", text: "The attribute that separates them is the number the search returned *before* filtering. If the search returned twenty and zero cleared the threshold, that is a threshold or embedding problem. If the search returned twenty and all twenty come from the wrong source, that is an ingestion gap. 10.6 puts both counts on the span for exactly this reason." },

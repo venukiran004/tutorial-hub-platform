@@ -21,7 +21,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The pipeline", id: "pipeline" },
 
-    {"kind": "trace", "title": "The emoji is where this pipeline and the reference part", "caption": "One input, two outputs, and **`match: False`** — the reference's expected string drops the emoji and this pipeline keeps it. Which is worth stopping on rather than fixing silently: **nothing in the stage list says what to do with an emoji, so the answer depends on whether your punctuation class happens to include it.** For sentiment that is a real decision, because 🎉 carries more signal than most of the words around it.", "left": "stage", "codeW": 170, "vars": ["text"], "steps": [{"code": "input", "state": ["<p>Check out https://example.com! It's AMAZING... 🎉🎉🎉</p>"], "tone": "accent"}, {"code": "this pipeline", "state": ["check out its amazing 🎉🎉🎉"], "changed": [0], "tone": "good"}, {"code": "the reference", "state": ["check out its amazing"], "changed": [0], "tone": "warn", "note": "match: False"}], "t": "diagram", "id": "dg-1_2-01-0"},
+    {"kind": "trace", "title": "The emoji is where this pipeline and the commonly stated output part", "caption": "One input, two outputs, and **`match: False`** — the commonly stated output drops the emoji and this pipeline keeps it. Which is worth stopping on rather than fixing silently: **nothing in the stage list says what to do with an emoji, so the answer depends on whether your punctuation class happens to include it.** For sentiment that is a real decision, because 🎉 carries more signal than most of the words around it.", "left": "stage", "codeW": 170, "vars": ["text"], "steps": [{"code": "input", "state": ["<p>Check out https://example.com! It's AMAZING... 🎉🎉🎉</p>"], "tone": "accent"}, {"code": "this pipeline", "state": ["check out its amazing 🎉🎉🎉"], "changed": [0], "tone": "good"}, {"code": "commonly stated", "state": ["check out its amazing"], "changed": [0], "tone": "warn", "note": "match: False"}], "t": "diagram", "id": "dg-1_2-01-0"},
 
 
 
@@ -57,7 +57,7 @@ EC.receiveLesson({
 
     { t: "out", text: `  input    : "<p>Check out https://example.com! It's AMAZING... 🎉🎉🎉</p>"
   output   : 'check out its amazing 🎉🎉🎉'
-  reference says: 'check out its amazing'
+  commonly stated: 'check out its amazing'
   match    : False` },
 
     { t: "callout", kind: "trap", title: "`string.punctuation` is ASCII-only, so the emoji survive",
@@ -235,19 +235,102 @@ EC.receiveLesson({
     { t: "p", text: "That one difference in the signatures is the whole case for Snowball as the default. It is the same author’s revision of Porter, it handles more edge cases — the `was` row above — and **it supports fifteen languages where Porter is English only**, which the constructor makes visible: a stemmer you cannot pass a language to is a stemmer you will replace the first time your corpus is not English." },
     { t: "exercise", kind: "practice", title: "Break your own cleaner", difficulty: "foundation", minutes: 30,
       prompt: "Take the preprocessing function and run it over a corpus containing emoji, prices, dates, URLs with `@` in them, and elongated words. For each, record what came out and decide whether it is what you wanted. Then fix the three problems this lesson names: make punctuation removal Unicode-aware, protect numeric punctuation, and change the elongation regex to collapse to two characters. Re-run and compare vocabulary sizes.",
+      requirements: [
+        "Run the cleaner over text with emoji, prices, dates, URLs and elongated words",
+        "Record each output and whether it is what you wanted",
+        "Make punctuation removal Unicode-aware, protect numeric punctuation and collapse elongations to two characters",
+        "Re-run and compare vocabulary sizes"
+      ],
       hints: [
         "`unicodedata.category(c)[0] == 'P'` identifies punctuation across Unicode.",
         "Substitute a placeholder like `<NUM>` before stripping punctuation, or exclude `.` and `,`.",
         "`re.sub(r\"(.)\\1{2,}\", r\"\\1\\1\", text)` keeps doubled letters."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import re, string, unicodedata
+
+def preprocess_text(text):                                  # the lesson's function, default flags
+    text = unicodedata.normalize("NFKD", text)              # NFKD splits é into e + a combining accent
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = re.sub(r"https?://\\S+|www\\.\\S+", " ", text)
+    text = re.sub(r"\\S+@\\S+\\.\\S+", " ", text)
+    text = text.lower()
+    text = text.translate(str.maketrans("", "", string.punctuation))
+    text = re.sub(r"(.)\\1{2,}", r"\\1", text)                # elongation rule from the lesson's social-media cleaner
+    return re.sub(r"\\s+", " ", text).strip()
+
+def preprocess_fixed(text):
+    text = unicodedata.normalize("NFKC", text)              # NFKC keeps composed characters such as 'é'
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = re.sub(r"https?://\\S+|www\\.\\S+", " URL ", text)
+    text = re.sub(r"\\S+@\\S+\\.\\S+", " EMAIL ", text)
+    text = text.lower()
+    # 1. Unicode-aware punctuation and symbol removal: every category starting with P (punctuation) or S (symbol)
+    #    except inside numbers, which step 2 protects
+    text = re.sub(r"(?<=\\d)[.,:/](?=\\d)", lambda m: {"." : "DOT", ",": "", ":": "COLON", "/": "SLASH"}[m.group()], text)
+    text = "".join(" " if unicodedata.category(c)[0] in "PS" and c not in "$%£€" else c for c in text)
+    text = text.replace("DOT", ".").replace("COLON", ":").replace("SLASH", "/")
+    # 3. collapse runs of three or more to two: 'cooool' -> 'cool', 'soooo' -> 'soo'
+    text = re.sub(r"(.)\\1{2,}", r"\\1\\1", text)
+    return re.sub(r"\\s+", " ", text).strip()
+
+samples = [
+    "Loved it 🎉🎉🎉 — best café in town!!!",
+    "Tickets cost $30.50, or £25 for members.",
+    "Meeting moved to 03/04/2025 at 14:30.",
+    "Email me at jo.smith@example.com or see https://x.com/@nlp_news",
+    "This is sooooo cooool, heyyyy",
+    "Prices rose 3.5% after the 1,250-unit order «finally» shipped…",
+]
+for s in samples:
+    print(f"in   : {s}\\nold  : {preprocess_text(s)}\\nfixed: {preprocess_fixed(s)}\\n")
+
+corpus = samples * 1 + ["Great 👍 product, would buy again 👍👍", "Terrible 😡 — refund please!!!", "ok… not bad 🙂 for €9.99"]
+vocab_old = {w for s in corpus for w in preprocess_text(s).split()}
+vocab_new = {w for s in corpus for w in preprocess_fixed(s).split()}
+print(f"vocabulary: lesson's cleaner {len(vocab_old)} types, fixed cleaner {len(vocab_new)} types")
+print("types only the lesson's cleaner produces:", sorted(vocab_old - vocab_new)[:14])`,
+        out: `in   : Loved it 🎉🎉🎉 — best café in town!!!
+old  : loved it 🎉 — best café in town
+fixed: loved it best café in town
+
+in   : Tickets cost $30.50, or £25 for members.
+old  : tickets cost 3050 or £25 for members
+fixed: tickets cost $30.50 or £25 for members
+
+in   : Meeting moved to 03/04/2025 at 14:30.
+old  : meeting moved to 03042025 at 1430
+fixed: meeting moved to 03/04/2025 at 14:30
+
+in   : Email me at jo.smith@example.com or see https://x.com/@nlp_news
+old  : email me at or see
+fixed: email me at email or see url
+
+in   : This is sooooo cooool, heyyyy
+old  : this is so col hey
+fixed: this is soo cool heyy
+
+in   : Prices rose 3.5% after the 1,250-unit order «finally» shipped…
+old  : prices rose 35 after the 1250unit order «finally» shipped
+fixed: prices rose 3.5% after the 1250 unit order finally shipped
+
+vocabulary: lesson's cleaner 54 types, fixed cleaner 50 types
+types only the lesson's cleaner produces: ['03042025', '1250unit', '1430', '3050', '35', 'café', 'col', 'hey', 'so', '«finally»', '—', '€9', '🎉', '👍']`,
+       
         notes: [
           { t: "p", text: "The Unicode fix usually shrinks the vocabulary noticeably on any corpus with emoji or non-English punctuation, because every distinct emoji was previously its own type. That is a real saving and also a real decision — for sentiment on social media, emoji are among the strongest signals available, so removing them may cost you more than the vocabulary reduction gains." },
           { t: "p", text: "The numeric fix is the one that matters most for correctness rather than size. `$30.50` becoming `3050` is not noise, it is a wrong value that looks like a right one, and the same applies to dates and version numbers. Replacing numbers with a `<NUM>` placeholder before stripping is usually better than protecting the punctuation, because most models do not benefit from the specific value anyway." },
           { t: "p", text: "For elongation, collapsing to two rather than one is a single character in the replacement string and fixes `cooool → col` without breaking `sooooo → soo`. Worth checking your own data for how common the pattern is before deciding it matters at all — on formal text it never fires, and on social media it fires constantly." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: prices cleaned into nonsense",
+      body: [
+        { t: "p", text: "**Symptom.** A product-search index returned no results for '£19.99', and searches for '19 99' matched unrelated products." },
+        { t: "p", text: "**Mechanism.** The cleaner stripped all punctuation, including the decimal point and currency sign, so '£19.99' became '1999' in the index while queries were cleaned differently by the front end." },
+        { t: "p", text: "**Fix.** Numeric punctuation is protected before punctuation removal, the same cleaning function is applied to documents and queries, and a test suite of awkward inputs runs on every change." }
+      ] }
   ],
 
   takeaways: [

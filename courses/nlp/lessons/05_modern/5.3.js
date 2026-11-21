@@ -100,7 +100,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", text: "Quantisation", id: "quantisation" },
 
-    {"kind": "trace", "title": "Four bytes to half a byte, and 280 GB to 35", "caption": "The arithmetic is simply bytes per parameter, and it reproduces the reference exactly — **but the row that changes what is possible is INT4: a 70B model at 35 GB fits on one 40GB card, where at FP16 it needs 140.** The four named methods differ in how they protect accuracy: **GPTQ uses second-order information one-shot, AWQ protects the small fraction of weights that matter most to activations, GGUF targets CPU and Apple Silicon, and QLoRA quantises the frozen base to 4-bit and trains adapters above it.**", "left": "precision", "codeW": 160, "vars": ["bytes/param", "7B", "70B"], "steps": [{"code": "FP32", "state": ["4.0", "28.0 GB", "280.0 GB"], "tone": "crit"}, {"code": "FP16 / BF16", "state": ["2.0", "14.0 GB", "140.0 GB"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "INT8", "state": ["1.0", "7.0 GB", "70.0 GB"], "changed": [0, 1, 2], "tone": "good"}, {"code": "INT4", "state": ["0.5", "3.5 GB", "35.0 GB"], "changed": [0, 1, 2], "tone": "violet", "note": "70B on one card"}], "t": "diagram", "id": "dg-5_3-05-3"},
+    {"kind": "trace", "title": "Four bytes to half a byte, and 280 GB to 35", "caption": "The arithmetic is simply bytes per parameter, and it reproduces the hand calculation exactly — **but the row that changes what is possible is INT4: a 70B model at 35 GB fits on one 40GB card, where at FP16 it needs 140.** The four named methods differ in how they protect accuracy: **GPTQ uses second-order information one-shot, AWQ protects the small fraction of weights that matter most to activations, GGUF targets CPU and Apple Silicon, and QLoRA quantises the frozen base to 4-bit and trains adapters above it.**", "left": "precision", "codeW": 160, "vars": ["bytes/param", "7B", "70B"], "steps": [{"code": "FP32", "state": ["4.0", "28.0 GB", "280.0 GB"], "tone": "crit"}, {"code": "FP16 / BF16", "state": ["2.0", "14.0 GB", "140.0 GB"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "INT8", "state": ["1.0", "7.0 GB", "70.0 GB"], "changed": [0, 1, 2], "tone": "good"}, {"code": "INT4", "state": ["0.5", "3.5 GB", "35.0 GB"], "changed": [0, 1, 2], "tone": "violet", "note": "70B on one card"}], "t": "diagram", "id": "dg-5_3-05-3"},
 
 
 
@@ -108,7 +108,7 @@ EC.receiveLesson({
 
 
     { t: "out", text:
-"precision     bytes/param    7B model     70B model\nFP32              4.0          28.0 GB      280.0 GB\nFP16 / BF16       2.0          14.0 GB      140.0 GB\nINT8              1.0           7.0 GB       70.0 GB\nINT4              0.5           3.5 GB       35.0 GB\n\nreference's 7B figures reproduce exactly" },
+"precision     bytes/param    7B model     70B model\nFP32              4.0          28.0 GB      280.0 GB\nFP16 / BF16       2.0          14.0 GB      140.0 GB\nINT8              1.0           7.0 GB       70.0 GB\nINT4              0.5           3.5 GB       35.0 GB\n\nthe hand-computed 7B figures reproduce exactly" },
 
     { t: "dl", items: [
       ["GPTQ", "One-shot post-training quantisation using second-order information. Fast to apply, no retraining, widely supported."],
@@ -143,6 +143,17 @@ EC.receiveLesson({
 
     { t: "callout", kind: "tradeoff", title: "Take the lossless wins first",
       body: [{ t: "p", text: "Five of the seven are lossless, and most teams have not taken all of them. Caching, Flash, continuous batching and paged memory are engineering changes with no evaluation burden — adopt them before touching anything that changes outputs. Then quantisation, which is lossy but usually the biggest single lever. Speculative decoding last, because as this lesson measured it can be **negative** if the draft model is not dramatically cheaper, and it is the only one here whose payoff depends on a property of your specific model pair rather than on your infrastructure." }] },
+
+    { t: "callout", kind: "trap", title: "Adopting speculative decoding without measuring",
+
+      body: [
+
+        { t: "p", text: "Speculative decoding helps only when the draft model is much cheaper than the target and its guesses are accepted often. Otherwise it is slower than plain decoding." },
+
+        { t: "p", text: "Measure acceptance rate and end-to-end latency with your draft and target before enabling it." }
+
+      ] },
+
 
     { t: "exercise", kind: "Challenge", title: "Measure before adopting", difficulty: "stretch", minutes: 55,
       requirements: [
@@ -233,7 +244,14 @@ static batching: 2648 decode steps; continuous (ideal refill): 1060 steps -> 2.5
           { t: "p", text: "Dynamic INT8 quantisation took GPT-2 medium's perplexity from 43.8 to 2,678. GPT-2's attention and MLP layers are `Conv1D` modules, not `nn.Linear`, so the only layer quantised was the output head, whose weights are tied to the embeddings. Always run an evaluation after quantising; the call succeeding tells you nothing." },
           { t: "p", text: "On a log-normal mix of output lengths (median 95, max 525), reserving 1,024 tokens of cache per request used 12.9% of the reservation, which is why paged attention exists. Static batching ran 2.5× as many decode steps as ideal continuous batching, because each batch waits for its longest member." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: speculative decoding that made generation slower",
+      body: [
+        { t: "p", text: "**Symptom.** Enabling speculative decoding increased latency instead of reducing it." },
+        { t: "p", text: "**Mechanism.** The draft model was too close in size to the target, so drafting cost almost as much as the target's own passes, and acceptance was modest." },
+        { t: "p", text: "**Fix.** Speculative decoding is adopted only after measuring acceptance rate and end-to-end latency with the actual draft and target models." }
+      ] }
   ],
 
   takeaways: [

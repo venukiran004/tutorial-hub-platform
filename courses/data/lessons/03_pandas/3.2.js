@@ -584,7 +584,14 @@ def test_empty_after_filter():
       { t: "p", text: "**Turn `SettingWithCopyWarning` into an error in CI**: `pd.options.mode.chained_assignment = \"raise\"`. It is the only warning in pandas that reliably indicates a real defect, and it costs nothing to enforce." },
       { t: "p", text: "**Prefer functions that return new frames over functions that mutate.** A mutating helper is correct or incorrect depending on what its caller passed, which unit tests with clean fixtures will not reveal." },
       { t: "p", text: "**Assert the effect, not the call.** A test that checks `clean()` ran is useless here; a test that checks no negative amounts remain is the one that catches a write going nowhere." }
-    ]}
+    ]},
+
+    { t: "callout", kind: "scenario", title: "Incident: a price correction that silently did nothing",
+      body: [
+        { t: "p", text: "**Symptom.** A data-cleaning job meant to cap prices at 10,000 left every outlier in place, and logged a warning that nobody read." },
+        { t: "p", text: "**Mechanism.** The code was `df[df.price > 10000]['price'] = 10000`. The first indexing step returned a copy, so the assignment wrote into a temporary that was discarded, and pandas raised `SettingWithCopyWarning`." },
+        { t: "p", text: "**Fix.** The assignment uses one `.loc` call — `df.loc[df.price > 10000, 'price'] = 10000` — and the job runs with copy-on-write enabled and warnings treated as errors in tests." }
+      ] }
   ],
 
   takeaways: [

@@ -62,7 +62,7 @@ EC.receiveLesson({
       "**Latency** rises with input tokens, gradually.",
       "The **context window** is a cliff \u2014 it works, then it fails."
     ] },
-    { t: "callout", kind: "warn", title: "Forced by the third, decided because of the first", body: [
+    { t: "callout", kind: "trap", title: "Forced by the third, decided because of the first", body: [
       { t: "p", text: "A team that waits for the context error has been paying the quadratic cost for however long it took to get there \u2014 and the error arrives at the worst moment, on the longest and most valuable conversations." },
       { t: "p", text: "And 7.3's finding sits in between: the model attends less reliably to the middle of a long context, so **quality degrades before the window is reached**. There are three reasons to manage context and only one of them tells you about itself." }
     ] },

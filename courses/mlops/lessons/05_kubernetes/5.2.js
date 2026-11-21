@@ -147,6 +147,12 @@ spec:
 
     { t: "exercise", kind: "practice", title: "Audit the four things a deploy needs", difficulty: "core", minutes: 30,
       prompt: "For a model service you run on Kubernetes, check five specifics. Does the readiness probe touch the model, or does it return 200 from a handler that never loads it? Are liveness and readiness the same endpoint — and if so, what happens to every replica at once when the database is briefly slow? Is `maxUnavailable` set, or is it the 25% default? Does the entrypoint use exec form, and does the server log a graceful shutdown when you send it SIGTERM? Is there a `preStop` sleep? Then run `kubectl get endpoints` for the Service and confirm the count matches your ready replicas.",
+      requirements: [
+        "Check whether the readiness probe touches the model",
+        "Check whether liveness and readiness share an endpoint, and what a slow dependency would do",
+        "Check maxUnavailable, the entrypoint form, SIGTERM handling and a preStop sleep",
+        "Confirm the Service's endpoint count matches ready replicas"
+      ],
       hints: [
         "A readiness endpoint that returns the model version can only answer once the model is loaded, which is what makes it a real gate.",
         "Shared liveness/readiness plus a dependency is the restart-storm setup: the failure is correlated across every replica by construction.",
@@ -157,8 +163,14 @@ spec:
           { t: "p", text: "The two findings that recur are a readiness probe that does not touch the model and a shared liveness endpoint that depends on a database. The first delivers lesson 2.1's twelvefold cold start to real users on every rollout; the second converts a dependency blip into a cluster-wide restart storm." },
           { t: "p", text: "The `preStop` sleep is the cheapest fix on the list and the one that removes the 502s everyone has learned to ignore during deploys. Five seconds, and the asynchrony between SIGTERM and endpoint removal stops mattering." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the training job that never finished",
+      body: [
+        { t: "p", text: "**Symptom.** A cluster's GPU bill tripled over a weekend. One training job had run, successfully, more than two hundred times." },
+        { t: "p", text: "**Mechanism.** The training run was deployed as a Deployment. A Deployment's contract is that its pods never terminate, so when the script exited with status 0 the controller saw a missing pod and started another. Each run overwrote the previous model and logged success." },
+        { t: "p", text: "**Fix.** Training runs are Jobs, with `backoffLimit`, `activeDeadlineSeconds` and `ttlSecondsAfterFinished` set. An admission policy rejects Deployments whose image is tagged as a training image." }
+      ] }
   ],
 
   takeaways: [

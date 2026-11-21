@@ -147,6 +147,17 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "What scaling laws do not tell you",
       body: [{ t: "p", text: "They predict **loss**, not capability, and the relationship between the two is not one you can assume. They are fitted within an architecture and data distribution, so they extrapolate only while those hold — a change of tokeniser, data mix or architecture invalidates the fit. And they say nothing about data *quality*: the token counts in every table above treat all tokens as equal, which is plainly false, and much of the recent progress in small models has come from better data rather than more of it. Treat a scaling law as a well-calibrated instrument with a narrow operating range, not a law of nature." }] },
 
+    { t: "callout", kind: "trap", title: "Reading emergence from an all-or-nothing metric",
+
+      body: [
+
+        { t: "p", text: "Exact-match scoring on long answers turns a smoothly improving capability into an apparent sudden jump, which is easy to mistake for a capability switching on." },
+
+        { t: "p", text: "Measure capabilities with continuous metrics alongside exact match." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Fit and test", difficulty: "stretch", minutes: 50,
       requirements: [
         "Compute the Chinchilla-optimal N and D for a compute budget you could actually afford, using C ≈ 6ND.",
@@ -225,7 +236,14 @@ fit loss = 6.06 * N^-0.094; predicted at 419,915 params 1.788, measured 1.853`,
           { t: "p", text: "The emergence table comes from one smooth logistic. Exact match over 20 tokens reads 0.0000 until 10¹² parameters and then 'jumps', because it raises the per-token accuracy to the 20th power. The more tokens a task needs, the later and sharper the apparent jump. Report the per-token or continuous metric alongside the exact-match one." },
           { t: "p", text: "Three tiny character models (9.5K–112K parameters, 300 steps each) gave loss = 6.06·N^−0.094. The fit predicted 1.788 at 420K parameters and the measured loss was 1.853, 3.5% off. At this scale and with a fixed step count the bigger model is under-trained, so it lands above the line. That is the same compute-allocation effect Chinchilla measured. Step 4, checking a published paper, is a reading task and has no code." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a capability that seemed to appear from nowhere",
+      body: [
+        { t: "p", text: "**Symptom.** A research team announced that a model had suddenly acquired a reasoning ability at a certain size." },
+        { t: "p", text: "**Mechanism.** The ability was scored by exact match on a long answer. A smoothly improving per-token accuracy produces a sharp jump on an all-or-nothing metric." },
+        { t: "p", text: "**Fix.** Capabilities are measured with continuous metrics alongside exact match, which showed steady improvement rather than a jump." }
+      ] }
   ],
 
   takeaways: [

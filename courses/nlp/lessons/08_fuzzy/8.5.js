@@ -46,7 +46,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Sorting normalises both strings to the same thing, so the score is exactly 100", "caption": "**`token_sort_ratio` sorts the words alphabetically before comparing, so `\"New York Mets\"` and `\"Mets New York\"` both become `\"mets new york\"` — and the score is 100.0, not approximately.** Which solves 8.1's reordering failure completely for this pair. Note the plain `ratio` disagrees with the reference: **61.5 measured against ~54 quoted** — a tokenisation or normalisation difference in the library version, **and the kind of discrepancy worth checking before trusting a threshold copied from a blog post.**", "left": "scorer", "codeW": 170, "vars": ["score", "reference"], "steps": [{"code": "ratio", "state": ["61.5", "~54"], "tone": "warn", "note": "does not match"}, {"code": "token_sort_ratio", "state": ["100.0", "100"], "changed": [0, 1], "tone": "good"}, {"code": "because both become", "state": ["'mets new york'", "-"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-8_5-02-1"},
 
     { t: "out", text:
-"\"New York Mets\" / \"Mets New York\"\n\n  ratio              61.5      reference says ~54\n  token_sort_ratio  100.0      reference says 100\n\n  because sorting normalises both to \"mets new york\"" },
+"\"New York Mets\" / \"Mets New York\"\n\n  ratio              61.5      commonly quoted ~54\n  token_sort_ratio  100.0      commonly quoted 100\n\n  because sorting normalises both to \"mets new york\"" },
 
     { t: "callout", kind: "warn", title: "`ratio` gives 61.5 where ~54 is commonly quoted",
       body: [{ t: "p", text: "A genuine implementation difference rather than an error. FuzzyWuzzy's `ratio` was built on Python's `difflib.SequenceMatcher`, which uses a longest-matching-block algorithm; RapidFuzz's uses **indel distance** — Levenshtein without substitutions. They give different numbers on the same input. The `~` acknowledges approximation, but the gap matters if you are migrating: **a threshold tuned on FuzzyWuzzy will not transfer to RapidFuzz unchanged**. Re-calibrate after switching libraries, exactly as you would after switching models." }] },
@@ -133,6 +133,12 @@ EC.receiveLesson({
       code: 'from rapidfuzz import fuzz, process, utils\n\nfuzz.WRatio("New York Mets", "the Mets of New York")\n\nprocess.extractOne(query, choices,\n                   scorer=fuzz.token_sort_ratio,\n                   processor=utils.default_process,\n                   score_cutoff=80)\n\nprocess.cdist(queries, choices, scorer=fuzz.ratio,\n              score_cutoff=80, workers=-1)   # the whole matrix, in parallel',
       caption: "`score_cutoff` abandons a comparison that cannot reach the threshold; `workers=-1` uses every core." },
     { t: "p", text: "Both arguments attack §04’s arithmetic rather than the algorithm. **`score_cutoff` lets the distance computation stop as soon as the best achievable score falls below the threshold**, which on dissimilar pairs — most pairs — is most of the work avoided. **`process.cdist` with `workers=-1` computes the whole matrix across cores**, and `utils.default_process` is the normalisation step applied consistently to both sides: **lowercase, strip non-alphanumerics, collapse whitespace** — which is 8.4’s normalisation argument as a default rather than a decision." },
+    { t: "callout", kind: "trap", title: "Relying on one scorer",
+      body: [
+        { t: "p", text: "Each RapidFuzz scorer fixes one failure and introduces another: token_set_ratio scores 'Smith' against 'Smith Smith Smith' at 100, partial_ratio scores 'cat' against 'category' at 100." },
+        { t: "p", text: "Combine scorers with blocking and thresholds chosen on labelled pairs, and route borderline cases to review." }
+      ] },
+
     { t: "exercise", kind: "Challenge", title: "Build the system", difficulty: "stretch", minutes: 45,
       requirements: [
         "Run all five scorers on 20 pairs from your data and find one where each is wrong.",
@@ -218,7 +224,14 @@ combined         best accuracy 18/30 at threshold 95
           { t: "p", text: "Averaging three scores did not beat the best single scorer (18 against 19 correct of 30). Averages blur the one scorer that is right about a given pair. A learned combination on labelled pairs, or rules that route each pair type to the right scorer, is the usual fix. 'Mark Johnson' ~ 'Mark Jonson' (96) and 'Mark Jonson' ~ 'Mack Jonson' (91) both pass a 90 threshold, yet the two ends of the chain score 87. Clustering by transitive closure would merge all three, so cluster with a rule that checks every member against every other." },
           { t: "p", text: "The 30 labelled pairs stand in for 'your data'. They were written to include each failure family, so treat the accuracies as a demonstration of the method, not as a benchmark." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: token_set_ratio matched a name to a list",
+      body: [
+        { t: "p", text: "**Symptom.** An entity-resolution job matched 'Smith' with 'Smith Smith Smith', and 'cat' with 'category'." },
+        { t: "p", text: "**Mechanism.** token_set_ratio and partial_ratio each fix one failure and introduce another; used alone they return 100 for these pairs." },
+        { t: "p", text: "**Fix.** Several scorers are combined with blocking and thresholds chosen on labelled pairs, and borderline matches go to review." }
+      ] }
   ],
 
   takeaways: [

@@ -147,6 +147,17 @@ judge sample rate       judge $/day    gen $/day   overhead
   <text x="400" y="303" class="s-sub">2% random + every flagged trace &#8212; scales with problems</text>
 </svg>` },
 
+    { t: "callout", kind: "trap", title: "Judging every request online",
+
+      body: [
+
+        { t: "p", text: "A judge call costs about as much as the generation it scores, so judging every request roughly doubles model spend. Teams that start this way usually switch it off within a month and lose online evaluation entirely." },
+
+        { t: "p", text: "Sample a small share of traffic for judging, stratified so that requests with negative feedback or errors are always included." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Price an online-eval pipeline and check what it can resolve", difficulty: "advanced", minutes: 35,
       body: "Price a judge call against the generation it scores, compare flat sampling rates, then design the stratified sample and compute its overhead. Finish by computing what precision the judged metric achieves, headline and sliced \u2014 and compare it against the offline suite's margin.",
       requirements: [

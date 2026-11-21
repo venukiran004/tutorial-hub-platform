@@ -124,6 +124,12 @@ X_test  = scaler.transform(X_test)          # transform only on TEST`,
 
     { t: "exercise", kind: "practice", title: "Beat the baseline honestly", difficulty: "intermediate", minutes: 45,
       prompt: "Reproduce the comparison, then try to close the gap between the ANN and gradient boosting. Try: early stopping on a validation split; feature engineering (rooms per household, population per household, and a distance-to-coast proxy from latitude and longitude); a wider or deeper network; and target transformation. Record what each change buys. Then deliberately fit the scaler on the full dataset before splitting and measure how much the test metric improves — that is the size of the leak.",
+      requirements: [
+        "Reproduce the ANN and gradient-boosting comparison",
+        "Try early stopping, feature engineering, a larger network and a target transform, and record each gain",
+        "Fit the scaler on the full dataset before splitting",
+        "Measure how much the test metric improves, which is the size of the leak"
+      ],
       hints: [
         "Hold out a validation split from the training data; do not tune against the test set.",
         "Ratio features often help a lot here, because the raw averages hide household structure.",
@@ -135,8 +141,14 @@ X_test  = scaler.transform(X_test)          # transform only on TEST`,
           { t: "p", text: "Early stopping should recover the epoch-40 performance, about 1.8 % better than the final epoch. That is small here but free, and on longer runs with more capacity the gap between best and final grows considerably." },
           { t: "p", text: "The leakage measurement is worth doing precisely because the effect is small. Fitting the scaler before splitting improves the test metric slightly — enough to matter when you are comparing two models a percent apart, not enough to look suspicious. That is the profile of the dangerous kind of leak: big leaks announce themselves with impossible scores, and small ones just quietly make every comparison unreliable." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a neural network deployed where boosting was better",
+      body: [
+        { t: "p", text: "**Symptom.** A house-price service used a neural network that its team had tuned for weeks. A gradient-boosted model built in an afternoon was more accurate." },
+        { t: "p", text: "**Mechanism.** On tabular data with mixed features, gradient boosting is a strong default; the comparison had never been run." },
+        { t: "p", text: "**Fix.** Tabular projects begin with a gradient-boosting baseline, and a neural network must beat it to be deployed." }
+      ] }
   ],
 
   takeaways: [

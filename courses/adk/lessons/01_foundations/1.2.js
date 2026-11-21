@@ -123,6 +123,17 @@ agent = LlmAgent(
     { t: "callout", kind: "note", title: "A word on version drift",
       body: [{ t: "p", text: "This lesson describes google-adk **2.9.2**, the version the whole course was written against. All four projects move quickly, and comparisons age badly — the *layer* argument in section 01 is stable, but any specific feature gap should be re-checked against current releases before you quote it in a design document." }] },
 
+    { t: "callout", kind: "trap", title: "Choosing a hosting product to answer a framework question",
+
+      body: [
+
+        { t: "p", text: "Questions such as 'can the agent resume an approval tomorrow' or 'can it remember preferences across sessions' are about the framework's state model. A managed runtime runs whatever framework you bring, so moving there does not answer them." },
+
+        { t: "p", text: "Classify each requirement as framework or runtime before choosing, and pick the framework for the first kind and the hosting for the second." }
+
+      ] },
+
+
     { t: "exercise", kind: "design", title: "Place four requirements", difficulty: "foundation", minutes: 12,
       body: [{ t: "p", text: "For each requirement, say whether it is a framework question or a runtime question, and which option you would reach for: (a) the agent must resume an approval that was requested yesterday; (b) it must autoscale to zero overnight; (c) it must remember a user's preferences across separate conversations; (d) it must ingest 40,000 PDFs into a vector store." }],
       requirements: ["Framework or runtime, for each", "The concrete option", "One sentence of justification each"],
@@ -132,7 +143,14 @@ agent = LlmAgent(
 (b) runtime   — Cloud Run scales to zero; Agent Engine's scaling model is managed for you
 (c) framework + runtime — a memory service (ADK) backed by Vertex AI Memory Bank, or your own store
 (d) neither   — that is an ingestion pipeline; it runs on a schedule and the agent only queries the result`,
-        notes: [{ t: "p", text: "Sorting requirements this way before comparing frameworks prevents the common failure: choosing a framework for a property that belongs to the runtime, or building an ingestion pipeline inside an agent because the framework has a document loader." }] } }
+        notes: [{ t: "p", text: "Sorting requirements this way before comparing frameworks prevents the common failure: choosing a framework for a property that belongs to the runtime, or building an ingestion pipeline inside an agent because the framework has a document loader." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: choosing a hosting product to fix a framework problem",
+      body: [
+        { t: "p", text: "**Symptom.** A team moved its agent to a managed hosting product to solve a requirement that approvals must resume the next day. After the migration, approvals still could not resume." },
+        { t: "p", text: "**Mechanism.** The requirement was a framework question — persisting a paused invocation and resuming it from a stored event log — and the hosting product only runs whatever framework you bring. The agent's own code still held the pending approval in memory, so moving where it ran changed nothing." },
+        { t: "p", text: "**Fix.** The approval became a confirmation-gated tool whose pause is recorded in the session (lesson 9.3), backed by a durable session service. The team now asks of each requirement whether it is about how the agent works or where it runs, before choosing anything." }
+      ] }
   ],
 
   takeaways: [

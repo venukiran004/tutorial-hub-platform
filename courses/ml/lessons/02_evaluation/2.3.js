@@ -314,7 +314,14 @@ print(cal.groupby("bin").agg(mean_p=("p", "mean"), rate=("y", "mean"), n=("y", "
           why: "The same model at 0.15 cost £3,895. A threshold is a decision rule, and 0.5 encodes the decision that both errors cost the same."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a threshold of 0.5 that cost more than calling everyone",
+      body: [
+        { t: "p", text: "**Symptom.** A churn campaign contacting customers above a 0.5 probability saved less money than contacting every customer would have." },
+        { t: "p", text: "**Mechanism.** A retention call was cheap and a lost customer expensive, so the cost-minimising threshold was far below 0.5. The default threshold encoded equal costs that did not exist." },
+        { t: "p", text: "**Fix.** The threshold is set from the cost matrix on validation data and revisited when costs change, and the campaign's results are compared with the expected savings." }
+      ] }
   ],
 
   takeaways: [

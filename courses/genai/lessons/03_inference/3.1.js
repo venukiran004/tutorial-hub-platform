@@ -201,6 +201,17 @@ memory_kv = 2 * n_layers * n_heads * head_dim * seq_len * 2
         { t: "p", text: "All three are the same observation from different angles: decode wastes compute, so anything that gets more work out of the same memory traffic is nearly free." }
       ] },
 
+    { t: "callout", kind: "trap", title: "Optimising decode when the service is prefill-bound",
+
+      body: [
+
+        { t: "p", text: "Quantisation and speculative decoding make decode faster. A RAG service with long prompts and short answers spends most of its time in prefill, so those optimisations barely move its latency." },
+
+        { t: "p", text: "Measure time to first token against time per output token before choosing an optimisation; a prefill-bound service needs prefix caching, shorter prompts or more compute, not faster decode." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Find where prefill stops dominating",
       difficulty: "core", minutes: 25,
       body: [

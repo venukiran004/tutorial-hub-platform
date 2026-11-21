@@ -169,19 +169,107 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Build U-Net and prove the skips matter", difficulty: "advanced", minutes: 45,
       prompt: "Implement a U-Net with four encoder and four decoder levels and confirm the shapes match at every concatenation. Then build the identical network with the skip connections removed and train both on a segmentation task with thin structures — hand-drawn shapes with 1–2 pixel outlines will do. Compare not just overall accuracy but boundary accuracy specifically: the fraction of pixels within two of a true boundary that are correctly labelled. Then replace the transposed convolutions with `interpolate` plus a 3×3 convolution and check whether any checkerboard pattern in the output disappears.",
+      requirements: [
+        "Implement a four-level U-Net and confirm shapes at every concatenation",
+        "Build the same network without skips and train both on thin structures",
+        "Compare overall and boundary accuracy",
+        "Replace transposed convolutions with interpolate plus a 3×3 convolution and check for checkerboard artefacts"
+      ],
       hints: [
         "A shape mismatch at concatenation means your upsample and skip are at different levels — print both before every `torch.cat`.",
         "Overall pixel accuracy can be high while boundaries are terrible, because interiors dominate the pixel count.",
         "To see checkerboarding, look at the raw logits on a uniform input rather than the final mask."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+torch.manual_seed(0)
+
+def conv(i, o): return nn.Sequential(nn.Conv2d(i, o, 3, padding=1), nn.BatchNorm2d(o), nn.ReLU(), nn.Conv2d(o, o, 3, padding=1), nn.BatchNorm2d(o), nn.ReLU())
+
+class UNet(nn.Module):
+    def __init__(self, skips=True, upsample="transpose", c=16):
+        super().__init__(); self.skips = skips
+        ch = [c, 2 * c, 4 * c, 8 * c, 16 * c]
+        self.down = nn.ModuleList([conv(1, ch[0])] + [conv(ch[i], ch[i + 1]) for i in range(4)])
+        def up(i, o): return nn.ConvTranspose2d(i, o, 2, stride=2) if upsample == "transpose" else \\
+                             nn.Sequential(nn.Upsample(scale_factor=2, mode="bilinear"), nn.Conv2d(i, o, 3, padding=1))
+        self.up = nn.ModuleList([up(ch[i + 1], ch[i]) for i in reversed(range(4))])
+        self.dec = nn.ModuleList([conv(ch[i] * (2 if skips else 1), ch[i]) for i in reversed(range(4))])
+        self.head = nn.Conv2d(ch[0], 1, 1)
+    def forward(self, x, trace=False):
+        feats = []
+        for i, d in enumerate(self.down):
+            x = d(x if i == 0 else F.max_pool2d(x, 2))
+            if i < 4: feats.append(x)
+        for up, dec, f in zip(self.up, self.dec, reversed(feats)):
+            x = up(x)
+            if trace: print(f"  concat: upsampled {tuple(x.shape[1:])} + skip {tuple(f.shape[1:])}")
+            x = dec(torch.cat([x, f], 1) if self.skips else x)
+        return self.head(x)
+
+print("shapes at every concatenation (input 1x64x64):")
+UNet()(torch.randn(1, 1, 64, 64), trace=True)
+
+def shapes(n):
+    """64x64 images of thin (1-2 px) rectangle and line outlines; the mask is the outline itself"""
+    img = torch.zeros(n, 1, 64, 64)
+    for k in range(n):
+        for _ in range(3):
+            x0, y0 = torch.randint(2, 40, (2,)).tolist(); w, h = torch.randint(8, 22, (2,)).tolist(); t = torch.randint(1, 3, ()).item()
+            img[k, 0, y0:y0 + h, x0:x0 + t] = 1; img[k, 0, y0:y0 + h, x0 + w - t:x0 + w] = 1
+            img[k, 0, y0:y0 + t, x0:x0 + w] = 1; img[k, 0, y0 + h - t:y0 + h, x0:x0 + w] = 1
+    noisy = img + 0.5 * torch.randn_like(img)
+    return noisy, img
+
+def boundary_band(mask):                                  # pixels within 2 of a true boundary pixel
+    return F.max_pool2d(mask, 5, stride=1, padding=2) > 0
+
+def train_eval(**kw):
+    torch.manual_seed(0); m = UNet(**kw); opt = torch.optim.Adam(m.parameters(), 2e-3)
+    pos_weight = torch.tensor(8.0)                        # outlines are ~10% of pixels
+    for _ in range(300):
+        x, y = shapes(16); loss = F.binary_cross_entropy_with_logits(m(x), y, pos_weight=pos_weight); opt.zero_grad(); loss.backward(); opt.step()
+    m.eval(); torch.manual_seed(99); x, y = shapes(64)
+    with torch.no_grad(): logits = m(x)
+    pred = (logits > 0).float(); band = boundary_band(y)
+    overall = (pred == y).float().mean().item(); boundary = (pred == y)[band].float().mean().item()
+    iou = ((pred * y).sum() / ((pred + y) > 0).sum()).item()
+    # checkerboard: energy at the period-2 frequency of the predicted probability map, in flat background
+    p = logits.sigmoid()[:, 0]; flat = ~band[:, 0]
+    alt = (p[:, :, :-1] - p[:, :, 1:]).abs()[flat[:, :, :-1]].mean().item()
+    return overall, boundary, iou, alt
+
+print("\\nmodel                         pixel acc  boundary acc  outline IoU  neighbour diff in background")
+for name, kw in [("U-Net, transposed conv", dict()), ("no skips, transposed conv", dict(skips=False)),
+                 ("U-Net, interpolate + 3x3", dict(upsample="interp"))]:
+    o, b, i, a = train_eval(**kw); print(f"{name:<29} {o:9.3f}  {b:12.3f}  {i:11.3f}  {a:.4f}")`,
+        out: `shapes at every concatenation (input 1x64x64):
+  concat: upsampled (128, 8, 8) + skip (128, 8, 8)
+  concat: upsampled (64, 16, 16) + skip (64, 16, 16)
+  concat: upsampled (32, 32, 32) + skip (32, 32, 32)
+  concat: upsampled (16, 64, 64) + skip (16, 64, 64)
+
+model                         pixel acc  boundary acc  outline IoU  neighbour diff in background
+U-Net, transposed conv            0.997         0.987        0.955  0.0019
+no skips, transposed conv         0.875         0.468        0.287  0.0116
+U-Net, interpolate + 3x3          0.997         0.985        0.946  0.0019`,
+       
         notes: [
           { t: "p", text: "The two networks will look close on overall pixel accuracy and far apart on boundary accuracy, which is the point. Interiors are the overwhelming majority of pixels and are easy, so a global metric hides exactly the failure segmentation models are judged on. This is the reason segmentation work reports IoU per class and boundary F-scores rather than pixel accuracy — on an image that is 90 % background, predicting all background scores 90 %." },
           { t: "p", text: "For the skipless network, the ceiling is set by what survives the bottleneck. In the measurement above only 12.5 % of a thin-line image was recoverable after four poolings, and the decoder cannot reconstruct information that is no longer present. No amount of extra decoder capacity fixes that — it is an information-theoretic limit, not a capacity limit, and recognising which of the two you are facing is a generally useful diagnostic habit." },
           { t: "p", text: "The checkerboard comparison is clearest on raw logits. With `k=3, s=2` a uniform input produced output values of 1, 2 and 4 in my measurement; with interpolate plus a 3×3, the output is uniform. Modern architectures have largely abandoned transposed convolution for this reason." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: segmentations that blurred every edge",
+      body: [
+        { t: "p", text: "**Symptom.** A medical-image segmentation model found the right regions but its boundaries were consistently too smooth, missing thin structures." },
+        { t: "p", text: "**Mechanism.** The decoder upsampled without skip connections, so fine spatial detail lost in the encoder never came back." },
+        { t: "p", text: "**Fix.** The model uses U-Net skip connections, and evaluation reports boundary accuracy alongside overall overlap." }
+      ] }
   ],
 
   takeaways: [

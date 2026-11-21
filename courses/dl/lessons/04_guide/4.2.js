@@ -98,21 +98,84 @@ out = A @ V                              # (T, d) — contextualised`,
 
     { t: "p", text: "Every row sums to 1 and every entry is a genuine comparison between two positions — which is what gives the O(1) path length. Lesson 3.13 measured what that costs: **34.36 GB for a single 32,768-token sequence at 8 heads in fp32**. Power and cost are the same fact." },
 
+    { t: "callout", kind: "trap", title: "Using one projection for queries and keys",
+
+      body: [
+
+        { t: "p", text: "Sharing a projection between queries and keys makes each token's query most similar to its own key, so attention collapses onto the diagonal." },
+
+        { t: "p", text: "Keep separate query, key and value projections, and inspect attention maps on a known input." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Implement and probe self-attention", difficulty: "intermediate", minutes: 35,
       prompt: "Implement scaled dot-product self-attention and verify against `F.scaled_dot_product_attention`. Confirm the rows of the attention matrix sum to 1 and that the output lies within the convex hull of V on every dimension. Then set `W_Q = W_K = I` and feed in orthogonal one-hot-like embeddings — what do the attention weights become, and why? Finally, scale the embeddings up by a factor of 10 and observe what happens to the attention distribution.",
+      requirements: [
+        "Implement self-attention and verify against F.scaled_dot_product_attention",
+        "Confirm rows sum to 1 and outputs lie in the convex hull of V",
+        "Set W_Q = W_K = I with orthogonal embeddings and explain the weights",
+        "Scale embeddings by 10 and observe the distribution"
+      ],
       hints: [
         "For the hull check, compare element-wise against V's per-dimension min and max.",
         "With identity projections and orthogonal inputs, each token's best match is itself.",
         "Scaling the embeddings scales the scores, which is the same effect as removing the √d_k division."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import math
+import torch
+import torch.nn.functional as F
+torch.manual_seed(0)
+
+def self_attention(x, Wq, Wk, Wv):
+    q, k, v = x @ Wq, x @ Wk, x @ Wv
+    w = (q @ k.transpose(-2, -1) / math.sqrt(q.shape[-1])).softmax(-1)
+    return w @ v, w, v
+
+d = 16
+x = torch.randn(1, 8, d); Wq, Wk, Wv = (torch.randn(d, d) / math.sqrt(d) for _ in range(3))
+out, w, v = self_attention(x, Wq, Wk, Wv)
+ref = F.scaled_dot_product_attention(x @ Wq, x @ Wk, x @ Wv)
+print(f"max diff vs F.scaled_dot_product_attention: {(out - ref).abs().max():.1e}")
+print(f"rows sum to 1: max |sum - 1| = {(w.sum(-1) - 1).abs().max():.1e}")
+inside = ((out >= v.min(1, keepdim=True).values - 1e-6) & (out <= v.max(1, keepdim=True).values + 1e-6)).all()
+print("every output inside the per-dimension range of V:", bool(inside))
+
+# W_Q = W_K = I with orthogonal (one-hot) embeddings: scores are x_i . x_j = 1 on the diagonal, 0 elsewhere
+I = torch.eye(d); x = torch.eye(d)[:5][None]
+_, w, _ = self_attention(x, I, I, I)
+print(f"\\nidentity projections, one-hot inputs: diagonal weight {w[0, 0, 0]:.3f}, off-diagonal {w[0, 0, 1]:.3f}")
+print(f"  = e^(1/4) / (e^(1/4) + 4)  = {math.exp(0.25) / (math.exp(0.25) + 4):.3f}   (score 1 / sqrt(16) on the diagonal)")
+
+x = torch.randn(1, 8, d)
+for scale in [1, 10]:
+    _, w, _ = self_attention(x * scale, Wq, Wk, Wv)
+    ent = -(w * w.clamp_min(1e-12).log()).sum(-1).mean()
+    print(f"embeddings x{scale:<2}: mean max weight {w.max(-1).values.mean():.3f}, mean entropy {ent:.3f} (uniform {math.log(8):.3f})")`,
+        out: `max diff vs F.scaled_dot_product_attention: 0.0e+00
+rows sum to 1: max |sum - 1| = 1.2e-07
+every output inside the per-dimension range of V: True
+
+identity projections, one-hot inputs: diagonal weight 0.243, off-diagonal 0.189
+  = e^(1/4) / (e^(1/4) + 4)  = 0.243   (score 1 / sqrt(16) on the diagonal)
+embeddings x1 : mean max weight 0.447, mean entropy 1.559 (uniform 2.079)
+embeddings x10: mean max weight 1.000, mean entropy 0.000 (uniform 2.079)`,
+       
         notes: [
           { t: "p", text: "The hull check should pass on every dimension, because softmax weights are non-negative and sum to one by construction. It is worth doing because it changes how you read the architecture: an attention layer cannot create a representation that is not already a blend of its inputs, so the position-wise feed-forward network is not an optional extra for capacity — it is the only part of the block that can move a representation somewhere new." },
           { t: "p", text: "The scaling experiment reproduces the saturation problem from lesson 3.8 from the other direction. Multiplying embeddings by 10 multiplies the scores by 100, and the softmax collapses to nearly one-hot with almost no gradient. This is why input embeddings in the original transformer are multiplied by √d_model before positional encoding is added, and why LayerNorm at the block boundary matters — both keep the magnitudes entering attention in a range where the softmax stays soft." },
           { t: "p", text: "With identity projections and orthogonal inputs each token matches itself most strongly and everything else equally, which makes concrete that attention is a similarity computation in the projected space. The learned projections exist to make similarity mean something task-relevant rather than raw embedding overlap — two tokens can be far apart as embeddings and close as query and key." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: attention that did nothing but look at itself",
+      body: [
+        { t: "p", text: "**Symptom.** A simplified self-attention layer made each token attend almost entirely to itself." },
+        { t: "p", text: "**Mechanism.** Queries and keys used the same projection, so each token's query matched its own key best." },
+        { t: "p", text: "**Fix.** Queries, keys and values have separate projections, and a test inspects attention patterns on a known input." }
+      ] }
   ],
 
   takeaways: [

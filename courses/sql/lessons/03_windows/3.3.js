@@ -300,7 +300,14 @@ FROM   employees WHERE salary IN (120000, 125000, 131000) ORDER BY salary, emplo
           why: "RANGE frames are defined by the sort value, so peers share a frame. ROWS frames are positional and give each tied row its own frame — which then needs a tie-breaker in the ORDER BY to be deterministic."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a model that knew the future from a moving average",
+      body: [
+        { t: "p", text: "**Symptom.** A demand-forecasting model scored much better offline than in production." },
+        { t: "p", text: "**Mechanism.** A rolling-average feature was written `AVG(units) OVER (ORDER BY day ROWS BETWEEN 3 PRECEDING AND 3 FOLLOWING)`. The FOLLOWING rows included days after the prediction date, so training features contained the future." },
+        { t: "p", text: "**Fix.** Features use frames that end at the previous row — `ROWS BETWEEN 7 PRECEDING AND 1 PRECEDING` — and a review rule rejects FOLLOWING in any feature query." }
+      ] }
   ],
 
   takeaways: [

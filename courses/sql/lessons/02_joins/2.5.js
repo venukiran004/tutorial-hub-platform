@@ -217,6 +217,17 @@ SELECT ROUND(CORR(salary, DATE '2025-04-05' - hired_on), 3) AS corr_salary_tenur
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Treating a ROLLUP NULL as missing data",
+
+      body: [
+
+        { t: "p", text: "Subtotal rows from ROLLUP and CUBE carry NULL in the rolled-up columns. Filtering out NULLs as bad data deletes the subtotals, and a genuine NULL in the data becomes indistinguishable from a subtotal." },
+
+        { t: "p", text: "Select `GROUPING(col)` alongside each rolled-up column and label subtotal rows explicitly." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A revenue cube, labelled honestly",
@@ -300,7 +311,14 @@ GROUP  BY 1 ORDER BY 1;
           why: "ROLLUP writes NULL into a rolled-up column, which collides with genuine NULLs in the data. GROUPING() exists precisely to disambiguate, and drives the CASE that labels subtotal rows 'all'."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a subtotal row read as missing data",
+      body: [
+        { t: "p", text: "**Symptom.** An analyst exported a ROLLUP report and filtered out rows with a NULL country as bad data, removing every subtotal." },
+        { t: "p", text: "**Mechanism.** On subtotal rows the rolled-up columns are NULL, indistinguishable from a genuine NULL country without `GROUPING()`. The report did not label them." },
+        { t: "p", text: "**Fix.** The query adds `GROUPING(country)` and replaces subtotal NULLs with an explicit label such as 'All countries', so a data NULL and a subtotal can never be confused." }
+      ] }
   ],
 
   takeaways: [

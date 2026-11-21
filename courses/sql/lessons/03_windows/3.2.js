@@ -298,7 +298,14 @@ WHERE  rn = 1 AND status <> 'paid';
           why: "The tie sits exactly at the cut. ROW_NUMBER numbers the tied rows 3 and 4 and keeps only one; both rank functions give them 3 and keep both. The functions differ from each other only in what comes after: RANK 5, DENSE_RANK 4."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a top-three list that changed on every refresh",
+      body: [
+        { t: "p", text: "**Symptom.** A sales leaderboard showed a different third-place salesperson each time the page refreshed." },
+        { t: "p", text: "**Mechanism.** Two people were tied on revenue, and the ranking used `ROW_NUMBER() OVER (ORDER BY revenue DESC)` with no tie-breaker. The engine broke the tie arbitrarily, and differently on each execution." },
+        { t: "p", text: "**Fix.** The team decided on a tie policy — ties share a place — and switched to `DENSE_RANK`. Where exactly n rows are required, the primary key is added as the last ORDER BY column." }
+      ] }
   ],
 
   takeaways: [

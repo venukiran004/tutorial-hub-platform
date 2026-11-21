@@ -708,7 +708,14 @@ def test_mean_imputation_without_indicator_still_loses():
           why: "MCAR is the only testable hypothesis. Rejecting it tells you missingness has a cause; it does not tell you whether the cause is something observed or the missing value itself. That distinction comes from knowing how the data was collected — a voluntary sensitive field defaults to MNAR — and from evidence like a truncated observed tail."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: dropping missing incomes biased a credit model",
+      body: [
+        { t: "p", text: "**Symptom.** A credit model performed well on validation and approved too many risky applicants in production." },
+        { t: "p", text: "**Mechanism.** Rows with missing income were dropped during training. Applicants with irregular income were the ones most likely to leave the field blank, and also the riskiest, so the training data under-represented them." },
+        { t: "p", text: "**Fix.** Missingness is kept as an informative indicator feature, the imputation is fitted on training data only, and the model is evaluated separately on applicants with missing income." }
+      ] }
   ],
 
   takeaways: [

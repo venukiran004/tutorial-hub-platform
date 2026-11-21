@@ -131,6 +131,17 @@ EC.receiveLesson({
   <text x="16" y="280" class="s-sub">and family 1 needs the model's internals, so it is unavailable for a hosted API and meaningless about a pipeline</text>
 </svg>` },
 
+    { t: "callout", kind: "trap", title: "Computing the right metric for the wrong question",
+
+      body: [
+
+        { t: "p", text: "Each family of metrics answers a different question: a reference-overlap score says how close an answer is to a reference, not whether it is true; a judge score says what a model thinks, not what users experience. Reporting one as if it answered another is the common evaluation-design mistake." },
+
+        { t: "p", text: "Write down the question first — is it correct, is it faithful, do users prefer it — and choose the family that answers that question." }
+
+      ] },
+
+
     { t: "exercise", kind: "analysis", title: "Classify every metric on your dashboard", difficulty: "foundation", minutes: 20,
       body: "List every metric your team currently reports. Assign each to one of the four families, state what it needs as input and what it is blind to, and flag any family-3 metric that has never been validated against human labels.",
       requirements: [

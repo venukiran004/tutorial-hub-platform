@@ -43,7 +43,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "What fits, on this corpus",
       code: "corpus: 41 documents\ntokens per document: min 20  mean 31.1  max 46\n\nbudget   reserve   available   chunks that fit (at mean)\n4096     1000      3096        99\n8192     1000      7192        231\n32768    1000      31768       1020\n128000   1000      127000      4080",
       caption: "These are 158-character support documents. A corpus of PDF pages runs 500\u20131500 tokens each." },
-    { t: "callout", kind: "warn", title: "Reserve room for the answer", body: [
+    { t: "callout", kind: "trap", title: "Reserve room for the answer", body: [
       { t: "p", text: "The budget must cover the system prompt, the retrieved context, the question, the conversation history **and the output**. A budget computed without reserving output space fails at generation time \u2014 after you have paid for every input token." },
       { t: "p", text: "That failure is particularly annoying because it is load-dependent: it appears only when the model wants to produce a long answer, which correlates with the questions that most need one. So it passes testing and fails on the hard queries." }
     ] },

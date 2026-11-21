@@ -217,7 +217,14 @@ print(f"default weights, zero biases:      {net(x).std():.2e}")     # 1.76e-12
 for m in net:
     if isinstance(m, nn.Linear): nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
 print(f"He weights, zero biases:           {net(x).std():.3f}")     # 0.695`,
-        notes: [{ t: "p", text: "With the default weights and no biases, each ReLU layer multiplies the variance by about n·Var(w)·½ = 256 · 1/(3·256) · ½ = 1/6, and thirty layers shrink the standard deviation to 10⁻¹²: the input is gone. The default's random biases prop the output up to 0.023, but that 0.023 is bias noise, not signal — the output barely depends on the input. He weights hold the scale at 0.7. Batch normalisation re-standardises every layer's pre-activations, so the weight scale is corrected on every forward pass and none of the three numbers would differ much." }] } }
+        notes: [{ t: "p", text: "With the default weights and no biases, each ReLU layer multiplies the variance by about n·Var(w)·½ = 256 · 1/(3·256) · ½ = 1/6, and thirty layers shrink the standard deviation to 10⁻¹²: the input is gone. The default's random biases prop the output up to 0.023, but that 0.023 is bias noise, not signal — the output barely depends on the input. He weights hold the scale at 0.7. Batch normalisation re-standardises every layer's pre-activations, so the weight scale is corrected on every forward pass and none of the three numbers would differ much." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a deep network whose outputs were all zero",
+      body: [
+        { t: "p", text: "**Symptom.** A 30-layer network produced nearly constant outputs and its loss did not move." },
+        { t: "p", text: "**Mechanism.** Weights were initialised from a standard normal scaled too small, so activations shrank at every layer and were effectively zero at the output; no gradient reached the early layers." },
+        { t: "p", text: "**Fix.** Layers are initialised with He initialisation for ReLU, and a check prints the activation standard deviation at each layer before training." }
+      ] }
   ],
 
   takeaways: [

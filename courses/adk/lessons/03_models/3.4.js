@@ -136,23 +136,259 @@ agent = LlmAgent(name="a", model="echo-1", instruction="x")` },
         { label: "capabilities", sub: "what the runtime may assume about it", tone: "warn" }
       ] },
 
-    { t: "callout", kind: "warn", title: "Registering is a global side effect",
+    { t: "callout", kind: "trap", title: "Registering is a global side effect",
       body: [{ t: "p", text: "`LLMRegistry.register` mutates process-wide state, so a pattern like `r\".*\"` — or an overly broad one such as `r\"gpt-.*\"` when something else already claims it — changes resolution for every agent in the process, including ones you did not write. Keep patterns specific, register at import time in one place rather than scattered through modules, and in tests prefer passing the model instance directly, which skips the registry entirely." }] },
+
+    { t: "h2", n: "05", text: "A real one: an open model behind BaseLlm", id: "local" },
+
+    { t: "p", text: "The echo model proves the interface; this one earns its keep. `local_llm.py` puts a small open model — Qwen2.5-Instruct, run on CPU with Hugging Face `transformers` — behind `BaseLlm`, so any agent in this course can run without an API key. Several exercise solutions use it for their reference runs, which is why their outputs say *local Qwen2.5-3B*. The adapter has three jobs, and each is a translation between ADK's request shape and what the model's chat template expects." },
+
+    { t: "table", head: ["ADK gives you", "The model needs", "local_llm.py does"],
+      rows: [
+        ["`config.system_instruction`", "A system message", "Flattens it to text and puts it first"],
+        ["`contents` with text, `function_call` and `function_response` parts", "user / assistant / tool messages", "Maps each part to the chat-template role, keeping tool calls and results in order"],
+        ["`config.tools` as `FunctionDeclaration`s", "JSON-schema tool definitions", "Converts each schema and passes them to `apply_chat_template(tools=...)`"],
+        ["`config.response_schema`", "Nothing — it cannot be constrained", "Appends the schema to the system prompt and asks for JSON"],
+        ["An `LlmResponse` back", "Raw generated text", "Parses `<tool_call>{json}</tool_call>` blocks into `function_call` parts, else returns text"]
+      ] },
+
+    { t: "code", lang: "python", title: "local_llm.py",
+      code: `"""local_llm.py - run ADK agents on a small local model (Qwen2.5-Instruct) instead of Gemini.
+Use: LlmAgent(model=LocalLlm(model="local-qwen-3b"), ...), or register it and pass the string "local-qwen-3b".
+A 3B model's judgement is weaker than a production model's; the mechanisms each exercise measures are the same."""
+import json, re, threading
+import torch
+from google.adk.models import BaseLlm
+from google.adk.models.llm_response import LlmResponse
+from google.genai import types
+from transformers import AutoModelForCausalLM, AutoTokenizer, logging as hf_logging
+hf_logging.set_verbosity_error(); hf_logging.disable_progress_bar()
+
+REPOS = {"local-qwen-3b": "Qwen/Qwen2.5-3B-Instruct", "local-qwen-1.5b": "Qwen/Qwen2.5-1.5B-Instruct", "local-qwen-0.5b": "Qwen/Qwen2.5-0.5B-Instruct"}
+_cache, _lock = {}, threading.Lock()
+
+def _load(name):
+    with _lock:
+        if name not in _cache:
+            tok = AutoTokenizer.from_pretrained(REPOS[name])
+            dtype = torch.bfloat16 if name == "local-qwen-3b" else torch.float32          # 3B in bf16 fits in 8 GB of RAM
+            mdl = AutoModelForCausalLM.from_pretrained(REPOS[name], torch_dtype=dtype).eval()
+            _cache[name] = (tok, mdl)
+    return _cache[name]
+
+def _schema(s):
+    """google.genai Schema -> plain JSON schema dict."""
+    if s is None: return {"type": "object", "properties": {}}
+    d = s.model_dump(exclude_none=True) if hasattr(s, "model_dump") else dict(s)
+    def fix(x):
+        if isinstance(x, dict):
+            return {k: (v.lower() if k == "type" and isinstance(v, str) else fix(v)) for k, v in x.items()}
+        if isinstance(x, list): return [fix(v) for v in x]
+        return x
+    return fix(d)
+
+class LocalLlm(BaseLlm):
+    model: str = "local-qwen-3b"
+    max_new_tokens: int = 256
+    calls: int = 0
+    prompt_tokens: int = 0
+    output_tokens: int = 0
+
+    @staticmethod
+    def supported_models():
+        return [r"local-qwen-.*"]
+
+    def _messages(self, req):
+        msgs = []
+        sys_text = req.config.system_instruction if req.config and req.config.system_instruction else ""
+        if isinstance(sys_text, types.Content): sys_text = "".join(p.text or "" for p in sys_text.parts)
+        schema = req.config.response_schema if req.config else None
+        if schema is not None:     # Gemini enforces this by constrained decoding; a local model can only be told
+            js = schema.model_json_schema() if hasattr(schema, "model_json_schema") else _schema(schema)
+            sys_text = f"{sys_text}\\n\\nReply with a single JSON object matching this JSON schema, and nothing else:\\n{json.dumps(js)}"
+        if sys_text: msgs.append({"role": "system", "content": str(sys_text)})
+        for c in req.contents or []:
+            for p in c.parts or []:
+                if p.function_call:
+                    msgs.append({"role": "assistant", "content": "", "tool_calls": [
+                        {"type": "function", "function": {"name": p.function_call.name, "arguments": dict(p.function_call.args or {})}}]})
+                elif p.function_response:
+                    msgs.append({"role": "tool", "name": p.function_response.name,
+                                 "content": json.dumps(p.function_response.response, default=str)})
+                elif p.text:
+                    msgs.append({"role": "assistant" if c.role == "model" else "user", "content": p.text})
+        return msgs
+
+    def _tools(self, req):
+        out = []
+        for t in (req.config.tools or []) if req.config else []:
+            for fd in getattr(t, "function_declarations", None) or []:
+                params = _schema(fd.parameters) if fd.parameters else (fd.parameters_json_schema or {"type": "object", "properties": {}})
+                out.append({"type": "function", "function": {"name": fd.name, "description": fd.description or "", "parameters": params}})
+        return out or None
+
+    async def generate_content_async(self, llm_request, stream=False):
+        tok, mdl = _load(self.model)
+        msgs, tools = self._messages(llm_request), self._tools(llm_request)
+        ids = tok.apply_chat_template(msgs, tools=tools, add_generation_prompt=True, return_tensors="pt", return_dict=True)["input_ids"]
+        with torch.no_grad():
+            out = mdl.generate(ids, max_new_tokens=self.max_new_tokens, do_sample=False)
+        text = tok.decode(out[0, ids.shape[1]:], skip_special_tokens=True)
+        self.calls += 1; self.prompt_tokens += ids.shape[1]; self.output_tokens += out.shape[1] - ids.shape[1]
+        parts = []
+        for m in re.finditer(r"<tool_call>\\s*(\\{.*?\\})\\s*</tool_call>", text, re.S):
+            try:
+                call = json.loads(m.group(1))
+                parts.append(types.Part(function_call=types.FunctionCall(name=call["name"], args=call.get("arguments", {}))))
+            except (json.JSONDecodeError, KeyError):
+                pass
+        if not parts:
+            parts = [types.Part(text=re.sub(r"<tool_call>.*?(</tool_call>|$)", "", text, flags=re.S).strip() or text.strip())]
+        yield LlmResponse(content=types.Content(role="model", parts=parts),
+                          usage_metadata=types.GenerateContentResponseUsageMetadata(
+                              prompt_token_count=ids.shape[1], candidates_token_count=out.shape[1] - ids.shape[1]))` },
+
+    { t: "code", lang: "python", title: "smoke_3_4.py — register, resolve by string, run one tool-using turn",
+      code: `"""Smoke test for local_llm.py: register, resolve by string, and run one tool-using turn on CPU."""
+import asyncio, logging, time, warnings
+warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+from google.adk.agents import LlmAgent
+from google.adk.models.registry import LLMRegistry
+from google.adk.runners import InMemoryRunner
+from google.genai import types
+from local_llm import LocalLlm
+
+def get_order(order_id: str) -> dict:
+    """Look up one order by its id (for example A-77): status and carrier."""
+    return {"order_id": order_id, "status": "shipped", "carrier": "DPD"}
+
+LLMRegistry.register(LocalLlm)
+print("resolve('local-qwen-3b') ->", LLMRegistry.resolve("local-qwen-3b").__name__)
+agent = LlmAgent(name="desk", model="local-qwen-3b", instruction="Answer order questions using the tools.", tools=[get_order])
+llm = agent.canonical_model
+print("canonical_model ->", type(llm).__name__, llm.model)
+
+async def main():
+    runner = InMemoryRunner(agent=agent, app_name="d")
+    sid = (await runner.session_service.create_session(app_name="d", user_id="u")).id
+    t0 = time.perf_counter()
+    async for e in runner.run_async(user_id="u", session_id=sid,
+                                    new_message=types.Content(role="user", parts=[types.Part(text="Where is order A-77?")])):
+        for p in (e.content.parts if e.content else []):
+            if p.function_call: print(f"  [{e.author}] function_call     {p.function_call.name}({dict(p.function_call.args)})")
+            elif p.function_response: print(f"  [{e.author}] function_response {p.function_response.response}")
+            elif p.text: print(f"  [{e.author}] text              {p.text.strip()}")
+    print(f"model calls {llm.calls}, prompt tokens {llm.prompt_tokens}, output tokens {llm.output_tokens}, "
+          f"{time.perf_counter() - t0:.0f}s on CPU")
+asyncio.run(main())`,
+      out: `resolve('local-qwen-3b') -> LocalLlm
+canonical_model -> LocalLlm local-qwen-3b
+  [desk] function_call     get_order({'order_id': 'A-77'})
+  [desk] function_response {'order_id': 'A-77', 'status': 'shipped', 'carrier': 'DPD'}
+  [desk] text              The order A-77 has been shipped and the carrier used is DPD.
+model calls 2, prompt tokens 469, output tokens 42, 182s on CPU`,
+      caption: "Two model calls for one turn: the first produced the tool call, ADK ran the tool, and the second turned the result into the answer. That loop is ADK's, not the adapter's — the adapter only translated in both directions. The time includes loading a 3B model on a laptop CPU; it is the reason course solutions accept a Gemini model name when a key is set." },
+
+    { t: "callout", kind: "trap", title: "Told is not enforced",
+      body: [{ t: "p", text: "Gemini honours `output_schema` with constrained decoding, so the reply comes back in the schema's shape. This adapter can only put the schema in the prompt, and a small model can add a sentence before the JSON or invent a field. Any agent you move to an adapter like this needs the schema validated after the call — the failure Lesson 6.4 measures with this adapter — and the same goes for tool calls: a malformed `<tool_call>` block is dropped and comes back as text, so a tool-use evaluation (Lesson 11.2) is how you find out how often it happens." }] },
 
     { t: "exercise", kind: "practice", title: "Write, register, resolve, run", difficulty: "advanced", minutes: 26,
       prompt: "Write a BaseLlm subclass that answers with the number of characters in the last user message, register it under a pattern of your choosing, and run an agent on it by model string. Confirm resolve() returns your class and that an unregistered name raises. Then subclass it to add a counter of how many times it was called, and check the count after a tool-using turn. Finally, pass an instance directly instead of a string and confirm the registry is not involved.",
+      requirements: [
+        "Write a BaseLlm subclass that answers with the character count of the last user message",
+        "Register it, run an agent on it by model string, and confirm resolve() returns your class",
+        "Confirm an unregistered name raises",
+        "Add a call counter and check it after a tool-using turn",
+        "Pass an instance directly and confirm the registry is not used"
+      ],
       hints: [
         "`supported_models` is a static method returning regex strings.",
         "Count the calls to prove a tool-using turn makes more than one.",
         "Passing the instance is what every test in this course does."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import asyncio, logging, warnings
+from google.adk.agents import LlmAgent
+from google.adk.models import BaseLlm
+from google.adk.models.llm_response import LlmResponse
+from google.adk.models.registry import LLMRegistry
+from google.adk.runners import InMemoryRunner
+from google.genai import types
+warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+
+class CharCountLlm(BaseLlm):
+    """Answers with the number of characters in the last user message; asks for a tool when the user says 'clock'."""
+    model: str = "charcount-v1"
+
+    async def generate_content_async(self, llm_request, stream=False):
+        last = llm_request.contents[-1]
+        if any(p.function_response for p in last.parts):          # a tool result came back: finish the turn
+            yield LlmResponse(content=types.Content(role="model", parts=[types.Part(text="The tool answered.")]))
+            return
+        text = "".join(p.text or "" for p in last.parts)
+        if "clock" in text:
+            yield LlmResponse(content=types.Content(role="model", parts=[
+                types.Part(function_call=types.FunctionCall(name="now", args={}))]))
+        else:
+            yield LlmResponse(content=types.Content(role="model", parts=[types.Part(text=f"{len(text)} characters")]))
+
+    @staticmethod
+    def supported_models() -> list[str]:
+        return [r"charcount-.*"]
+
+class CountingLlm(CharCountLlm):
+    calls: int = 0
+    async def generate_content_async(self, llm_request, stream=False):
+        self.calls += 1
+        async for r in super().generate_content_async(llm_request, stream):
+            yield r
+
+LLMRegistry.register(CharCountLlm)
+print("resolve('charcount-v1') ->", LLMRegistry.resolve("charcount-v1").__name__)
+try:
+    LLMRegistry.resolve("nothing-registered-1")
+except ValueError as e:
+    print("resolve('nothing-registered-1') ->", type(e).__name__, str(e)[:70])
+
+def now() -> str:
+    """The current time."""
+    return "12:00"
+
+async def ask(agent, msg):
+    runner = InMemoryRunner(agent=agent, app_name="demo")
+    s = await runner.session_service.create_session(app_name="demo", user_id="u")
+    out = []
+    async for e in runner.run_async(user_id="u", session_id=s.id, new_message=types.Content(role="user", parts=[types.Part(text=msg)])):
+        if e.content and e.content.parts and e.content.parts[0].text: out.append(e.content.parts[0].text)
+    return out
+
+async def main():
+    print("\\nby model string :", await ask(LlmAgent(name="a", model="charcount-v1"), "hello there"))
+    counting = CountingLlm(model="charcount-counting")
+    print("by instance     :", await ask(LlmAgent(name="b", model=counting, tools=[now]), "what does the clock say?"))
+    print("model calls in that tool-using turn:", counting.calls, "(one to request the tool, one after its result)")
+
+asyncio.run(main())`,
+        out: `resolve('charcount-v1') -> CharCountLlm
+resolve('nothing-registered-1') -> ValueError Model nothing-registered-1 not found.
+
+by model string : ['11 characters']
+by instance     : ['The tool answered.']
+model calls in that tool-using turn: 2 (one to request the tool, one after its result)`,
+       
         notes: [
           { t: "p", text: "The call counter is the part worth doing, because it makes a fact from lesson 10.1 concrete: a turn with one tool call invokes the model twice — once to choose the tool, once to answer with its result. People reason about agents as though a turn is one model call, and a counter in a fifteen-line model class disproves that in seconds." },
           { t: "p", text: "Passing the instance directly is also the answer to the global-state problem. Registration is process-wide, so tests that register patterns can interfere with each other; handing the agent a model object needs no registry entry at all and keeps each test self-contained." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a test model registered for every agent in the process",
+      body: [
+        { t: "p", text: "**Symptom.** After a test helper was imported into an application module, a production agent started answering with canned test responses." },
+        { t: "p", text: "**Mechanism.** The helper registered a fake model class with the pattern `r\".*\"` at import time. The registry is process-wide, so every model string in the process resolved to the fake." },
+        { t: "p", text: "**Fix.** Test models are passed as instances, which bypasses the registry, and registration happens in one module with specific patterns. A startup check resolves each configured model id and logs the class it got." }
+      ] }
   ],
 
   takeaways: [
@@ -161,7 +397,9 @@ agent = LlmAgent(name="a", model="echo-1", instruction="x")` },
     "`BaseLlm` requires two methods: `generate_content_async` and `supported_models`.",
     "A working custom model is about fifteen lines, and that is what every executed trace in this course runs on.",
     "Subclass a provider's class to wrap it; use a callback instead when you need the agent's context.",
-    "`connect()` returning a `BaseLlmConnection` is what enables `run_live`; registration is process-wide, so keep patterns narrow."
+    "`connect()` returning a `BaseLlmConnection` is what enables `run_live`; registration is process-wide, so keep patterns narrow.",
+    "An adapter for an open model translates three things — messages, tool declarations and tool calls — and ADK's tool loop does the rest.",
+    "A model that cannot constrain its output is only told the schema, so validate replies and evaluate tool calls after switching to it."
   ],
 
   quiz: { title: "Check your understanding", questions: [

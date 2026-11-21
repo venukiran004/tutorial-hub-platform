@@ -285,6 +285,17 @@ final = search.fit(X, y).best_estimator_                                        
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Random folds for grouped or time-ordered data",
+
+      body: [
+
+        { t: "p", text: "Random k-fold puts rows from the same customer, machine or week into both training and validation, so the score measures memory rather than generalisation." },
+
+        { t: "p", text: "Choose folds that match deployment: grouped folds for unseen entities, time-ordered folds for the future, stratified folds for rare classes." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Find the leak in a 0.98",
@@ -355,7 +366,14 @@ np.round(scores, 3)          # 0.852  0.740  0.413  0.545  0.624
           why: "The unit the model must generalise across is the customer, so the customer is the group. Repeated measurements plus random folds is a lookup, not a model."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a cross-validated score that did not survive launch",
+      body: [
+        { t: "p", text: "**Symptom.** A model predicting equipment failure scored 0.91 in cross-validation and 0.74 on new machines." },
+        { t: "p", text: "**Mechanism.** Readings from the same machine appeared in both training and validation folds. The model learned each machine's characteristics, and random folds rewarded it." },
+        { t: "p", text: "**Fix.** Folds are grouped by machine with `GroupKFold`, matching deployment, where the model scores machines it has never seen. The honest score was 0.76." }
+      ] }
   ],
 
   takeaways: [

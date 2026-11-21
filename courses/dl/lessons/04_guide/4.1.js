@@ -90,11 +90,28 @@ EC.receiveLesson({
         { label: "4.4 The encoder block", sub: "attention, FFN, residual, LayerNorm", tone: "teal" },
         { label: "4.5 Decoder and causal masking", sub: "generation without looking ahead", tone: "teal" },
         { label: "4.6–4.7 In PyTorch, and compared", sub: "assembled and costed", tone: "violet" },
-        { label: "4.8–4.10 Four projects", sub: "ANN, all-four comparison, forecasting, translation", tone: "good" }
+        { label: "4.8–4.10 Three projects", sub: "ANN, all-four comparison, forecasting", tone: "good" }
       ] },
+
+    { t: "callout", kind: "trap", title: "Expecting a transformer to be faster everywhere",
+
+      body: [
+
+        { t: "p", text: "The transformer's speed comes from parallelism across positions and batch. At batch size one with short sequences on a CPU there is little to parallelise, and a recurrent model may be just as fast." },
+
+        { t: "p", text: "Measure at your serving batch size, sequence length and hardware before switching architecture for speed." }
+
+      ] },
+
 
     { t: "exercise", kind: "practice", title: "Measure the parallelism gap", difficulty: "intermediate", minutes: 25,
       prompt: "Time an LSTM and a transformer encoder layer of comparable parameter count on the same batch at sequence lengths 32, 128, 512 and 2048, recording forward-plus-backward time and peak memory. Plot both against length. Identify where each architecture's curve bends and explain which resource binds in each case. Then repeat with batch size 1 and batch size 64, and note how the two architectures respond differently to batching.",
+      requirements: [
+        "Time an LSTM and a transformer layer at lengths 32 to 2,048 for time and memory",
+        "Plot both against length",
+        "Identify where each curve bends and which resource binds",
+        "Repeat at batch sizes 1 and 64"
+      ],
       hints: [
         "Warm up before timing, and take a median rather than a mean.",
         "The LSTM's time should be roughly linear in T; the transformer's memory roughly quadratic.",
@@ -105,8 +122,14 @@ EC.receiveLesson({
           { t: "p", text: "The LSTM's time grows linearly with sequence length and barely improves with batching at small batch sizes, because its bottleneck is the sequential dependency rather than arithmetic — a GPU cannot fill its cores when each step waits for the previous. The transformer's time grows more slowly at first but its memory grows quadratically, so it hits a wall rather than a slope. Those are different kinds of limit: one is a latency floor you cannot remove by adding hardware, the other a capacity ceiling you can push back with FlashAttention or more memory." },
           { t: "p", text: "The batching result is the one that explains history. Batching gives the transformer a lot because it is already compute-bound and more work per kernel launch is pure gain. It gives the LSTM much less, because the sequential chain is unchanged — you are running more chains in parallel but each is still T steps deep. That difference in how the two architectures absorb hardware is why one scaled to models with hundreds of billions of parameters and the other did not." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a transformer chosen for speed at batch size one",
+      body: [
+        { t: "p", text: "**Symptom.** A real-time service replaced an LSTM with a transformer for speed and saw no improvement." },
+        { t: "p", text: "**Mechanism.** The transformer's advantage is parallelism across positions and batches. At batch size one with short sequences on CPU there was little to parallelise." },
+        { t: "p", text: "**Fix.** Architecture decisions are benchmarked at the serving batch size and sequence length." }
+      ] }
   ],
 
   takeaways: [

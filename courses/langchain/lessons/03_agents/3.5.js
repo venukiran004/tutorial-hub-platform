@@ -95,7 +95,7 @@ EC.receiveLesson({
 
 
     { t: "p", text: "Cost degrades gracefully: it gets expensive, someone notices, you fix it. The context window does not. Once the buffer exceeds it the request fails outright, and it fails **on the longest conversations first** \u2014 which are, by definition, the ones belonging to users who are getting the most value from the product." },
-    { t: "callout", kind: "warn", title: "A deferred outage, not a default", body: [
+    { t: "callout", kind: "trap", title: "A deferred outage, not a default", body: [
       { t: "p", text: "The failure is adversarially distributed. It never happens in testing, because test conversations are short. It never happens to casual users. It happens to the power user demonstrating the product in a meeting, twenty turns in, and it is unrecoverable from their side \u2014 every subsequent message is also too long." },
       { t: "p", text: "That last part is the detail people miss: once a conversation exceeds the window, it stays broken. There is no retry that helps. The user has to start again and lose everything, which is why this is worth fixing before it happens rather than after." }
     ] },

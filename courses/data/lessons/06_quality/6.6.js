@@ -811,7 +811,14 @@ def test_ranking_changes_with_mechanism():
           why: "SE scales with 1/√n, and n rose from 3,500 to 5,000 — but 1,500 of those values are copies of one number. The data did not become more informative; every downstream calculation just thinks it did. Multiple imputation is the method that carries the real uncertainty through."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: confidence intervals that were too narrow",
+      body: [
+        { t: "p", text: "**Symptom.** A study reported a significant effect that did not replicate." },
+        { t: "p", text: "**Mechanism.** Missing values were filled with the column mean, which shrank the variance and made the standard errors too small. The analysis treated invented values as observed." },
+        { t: "p", text: "**Fix.** The analysis uses multiple imputation and pools the results, so the uncertainty from missing data is carried into the intervals." }
+      ] }
   ],
 
   takeaways: [

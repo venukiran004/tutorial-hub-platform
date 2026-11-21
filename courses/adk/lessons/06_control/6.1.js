@@ -167,6 +167,12 @@ agent = LlmAgent(name="b", model=llm, tools=[weather2], before_tool_callback=blo
 
     { t: "exercise", kind: "practice", title: "Instrument a turn, then intervene", difficulty: "core", minutes: 22,
       prompt: "Attach all six ordinary hooks to a tool-using agent and print the firing order, with the tool body printing too. Confirm you get nine lines for one tool call. Then (a) make before_tool return a dict for one particular argument value and confirm the tool body does not print, and (b) make after_tool wrap every result in {\"data\": …, \"checked_at\": …} and confirm the model sees your version.",
+      requirements: [
+        "Attach all six ordinary hooks to a tool-using agent and print the firing order",
+        "Confirm nine lines for one tool call",
+        "Make before_tool return a dict for one argument value and confirm the tool body does not run",
+        "Make after_tool wrap every result and confirm the model sees your version"
+      ],
       hints: [
         "Append to a module-level list rather than printing, so the order is readable at the end.",
         "The tool body printing is the only proof that a block really blocked.",
@@ -179,8 +185,14 @@ agent = LlmAgent(name="b", model=llm, tools=[weather2], before_tool_callback=blo
           { t: "p", text: "Nine lines: the agent pair once, the model pair twice, the tool pair once around the body. If you see the model pair three times, the model made a second tool call — which is a useful way to notice loops you did not intend." },
           { t: "p", text: "Wrapping in `after_tool` is how you add provenance without touching a single tool, and it is worth doing deliberately rather than reflexively: every key you add is tokens in the next request, on every call, for the whole conversation. Add the timestamp when something downstream reads it, not because it looks tidy." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the guardrail that a synonym walked past",
+      body: [
+        { t: "p", text: "**Symptom.** A before-tool callback blocked refunds when the user's message contained the word \"refund\". A user asked for their \"money back\" and the agent issued one." },
+        { t: "p", text: "**Mechanism.** The check tested words in a message rather than the action about to happen. The model translated the request into the same tool call regardless of phrasing, and the callback had already let it through." },
+        { t: "p", text: "**Fix.** The callback now inspects the tool name and arguments — a refund above a limit is blocked whatever the wording — and the rule lives in the tool's own checks as well. Guardrails act on the action, not on the prose." }
+      ] }
   ],
 
   takeaways: [

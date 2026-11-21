@@ -154,6 +154,17 @@ assistant = LlmAgent(
         { label: "Otherwise: keep one agent", desc: "every split adds a model call, a failure mode and an evaluation surface", tone: "violet" }
       ] },
 
+    { t: "callout", kind: "trap", title: "Adding agents to fix a prompt problem",
+
+      body: [
+
+        { t: "p", text: "Splitting one agent into five can make each decision smaller, and it adds coordination calls, routing errors and places for context to be lost. Teams sometimes split because one agent behaved badly, when the problem was a vague tool description." },
+
+        { t: "p", text: "Split only when an agent's tool list or context is genuinely too large for good decisions, and measure routing accuracy after the split." }
+
+      ] },
+
+
     { t: "exercise", kind: "design", title: "Design a system, then defend the count", difficulty: "advanced", minutes: 25,
       body: [{ t: "p", text: "Design the agent architecture for an internal engineering assistant that can: search the wiki and the code, open and update tickets, check CI status, summarise an incident, and draft a postmortem. Some of those need write permissions; two of them are slow. Give the wiring — which agents exist, which mechanism connects each pair, which tools each holds — and then defend the number of agents against someone who says one agent with eleven tools would do." }],
       requirements: [
@@ -187,7 +198,14 @@ assistant = LlmAgent(name="assistant", model=M,
                 "Transfer ticket work to the tickets agent.",
     tools=[AgentTool(agent=knowledge), AgentTool(agent=ci)],     # capabilities
     sub_agents=[tickets, writer])                                # conversations`,
-        notes: [{ t: "p", text: "The defence: eleven tools in one list is past the accuracy cliff and mixes read with write, so a single mis-selected tool creates a ticket nobody asked for. The knowledge and CI agents are capabilities the assistant uses without handing over the conversation, so they are AgentTools; ticket work and postmortem drafting are conversations with their own rules, so they are sub-agents. The writer gets the strong model and no tools; the two lookup agents get the fast one. And the write-capable agent is the only place that needs elevated credentials, which is a security boundary as much as an architectural one (lesson 9.1)." }] } }
+        notes: [{ t: "p", text: "The defence: eleven tools in one list is past the accuracy cliff and mixes read with write, so a single mis-selected tool creates a ticket nobody asked for. The knowledge and CI agents are capabilities the assistant uses without handing over the conversation, so they are AgentTools; ticket work and postmortem drafting are conversations with their own rules, so they are sub-agents. The writer gets the strong model and no tools; the two lookup agents get the fast one. And the write-capable agent is the only place that needs elevated credentials, which is a security boundary as much as an architectural one (lesson 9.1)." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: eleven tools, and the wrong ticket closed",
+      body: [
+        { t: "p", text: "**Symptom.** An engineering assistant with one agent and eleven tools closed a ticket when asked to summarise it." },
+        { t: "p", text: "**Mechanism.** Tool choice is made from the declaration list on every call, and accuracy falls as the list grows and descriptions overlap. `close_ticket` and `summarise_ticket` both described themselves as operating on a ticket, and the model picked the wrong one." },
+        { t: "p", text: "**Fix.** Write tools moved behind a specialist reached through a transfer, and destructive actions require confirmation (lesson 9.3). Each agent now holds four or fewer tools with descriptions that say when not to use them." }
+      ] }
   ],
 
   takeaways: [

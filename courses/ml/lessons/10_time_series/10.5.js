@@ -312,7 +312,14 @@ np.exp(m.forecast(28, exog=X_future) + m.params["sigma2"] / 2); forecast[closed]
           { t: "p", text: "(c) is the executed version of the warning: the in-sample coefficient is real and the out-of-sample value is negative." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a SARIMAX forecast built on a regressor nobody knew",
+      body: [
+        { t: "p", text: "**Symptom.** A footfall forecast with temperature as a regressor was excellent in backtesting and poor in use." },
+        { t: "p", text: "**Mechanism.** Backtests used actual temperatures, but the future forecast needed predicted temperatures, which were much less accurate. The model had been tested on information it would never have." },
+        { t: "p", text: "**Fix.** Backtests use the weather forecast available at the time, and the value of the regressor was re-assessed on that basis." }
+      ] }
   ],
 
   takeaways: [

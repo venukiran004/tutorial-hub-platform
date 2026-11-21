@@ -142,6 +142,12 @@ print(RunConfig().max_llm_calls)`,
 
     { t: "exercise", kind: "practice", title: "Make a failing agent behave well", difficulty: "advanced", minutes: 28,
       prompt: "Build an agent with three tools: one that raises ConnectionError, one that raises KeyError (a bug), and one that works. Run it with no error callback and record what the user experiences for each. Add an on_tool_error_callback that converts only connection errors and re-raises the rest, and compare. Then add in-tool retry with backoff to the flaky tool, make it succeed on the third attempt, and confirm the model never sees the failures. Finally, set max_llm_calls to 5 and write a scripted model that loops, to see the bound fire.",
+      requirements: [
+        "Build an agent with a tool raising ConnectionError, one raising KeyError and one that works",
+        "Record the user's experience for each with no error callback",
+        "Add an on_tool_error_callback converting only connection errors",
+        "Add in-tool retry that succeeds on the third attempt, then set max_llm_calls to 5 against a looping model"
+      ],
       hints: [
         "Re-raise from the callback by not returning a value for types you do not handle.",
         "Count model calls to prove the in-tool retry costs none.",
@@ -160,8 +166,14 @@ print(RunConfig().max_llm_calls)`,
           { t: "p", text: "Returning `None` for unexpected types is what lets the fault through, which is the whole design of the callback: a value replaces the failure, nothing continues it. Reporting to the tracker before returning None means you find out about the bug even in the case where something further up decides to swallow it." },
           { t: "p", text: "The in-tool retry is the part that changes the numbers. Three attempts inside one tool call cost zero extra model calls, while returning `retryable: True` three times costs three model round trips and fills the transcript with failures the user does not need to know about. Retry where the failure is, and tell the model only about the outcome." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a bug the agent politely explained away for a month",
+      body: [
+        { t: "p", text: "**Symptom.** A tool had been failing with a `KeyError` for every customer on one plan for a month. The agent told them the service was temporarily unavailable, and nobody noticed." },
+        { t: "p", text: "**Mechanism.** A catch-all error callback converted every exception into a polite 'try again later' result, including programming errors. The bug never reached the error logs as an exception." },
+        { t: "p", text: "**Fix.** The callback converts only known upstream failures and re-raises the rest, and every converted error is logged with the invocation id and counted on a dashboard." }
+      ] }
   ],
 
   takeaways: [

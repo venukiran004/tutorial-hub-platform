@@ -129,21 +129,103 @@ EC.receiveLesson({
 
     { t: "p", text: "The distinction people get wrong is that truncation cuts the *gradient*, not the state. `h` is detached at each chunk boundary and passed forward, so the network's memory of step 1 is still present at step 1000 — it simply cannot be *trained* to use it. Given that the gradient had already vanished by step 20, truncating at 35 costs remarkably little in practice while turning `O(T)` memory into `O(k)`." },
 
+    { t: "callout", kind: "trap", title: "Expecting gradient clipping to fix vanishing gradients",
+
+      body: [
+
+        { t: "p", text: "Clipping limits gradients that are too large. It does nothing for gradients that are too small, so an RNN that cannot learn long dependencies is not helped by clipping." },
+
+        { t: "p", text: "Use clipping for explosion and gated architectures or residual paths for vanishing gradients." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Measure the decay curve", difficulty: "advanced", minutes: 35,
       prompt: "Build an RNN and measure `||∂L/∂x_t||` for every t in a sequence, at lengths 10, 25, 50 and 100. Plot the norm against position on a log scale for each length. Then rescale `W_hh` to put its largest eigenvalue at 0.9, 1.0 and 1.1, and repeat — confirming which regime each produces. Finally implement truncated BPTT with `h.detach()` at chunk boundaries and verify that the forward states are identical to the untruncated run while the gradients differ.",
+      requirements: [
+        "Measure the gradient norm at every position for lengths 10, 25, 50 and 100",
+        "Plot it on a log scale",
+        "Rescale W_hh to spectral radius 0.9, 1.0 and 1.1 and repeat",
+        "Implement truncated BPTT and confirm forward states match while gradients differ"
+      ],
       hints: [
         "Use `requires_grad_()` on the input to get per-position gradients.",
         "Compute the eigenvalue with `torch.linalg.eigvals(W).abs().max()` and rescale by dividing.",
         "For the truncation check, compare the forward hidden states element-wise — they should match exactly."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+torch.manual_seed(0)
+
+def grad_per_position(rnn, T):
+    x = torch.randn(1, T, 8, requires_grad=True)
+    out, _ = rnn(x)
+    out[:, -1].sum().backward()                      # loss depends on the last step only
+    return x.grad[0].norm(dim=1)                     # ||dL/dx_t|| for every t
+
+rnn = nn.RNN(8, 32, batch_first=True)
+print("T    first/last ratio   grad at t=0")
+for T in [10, 25, 50, 100]:
+    g = grad_per_position(rnn, T)
+    print(f"{T:<4} {g[-1] / g[0]:>16.2e}   {g[0]:.3e}")      # plot g.log10() against t for the straight line
+
+print("\\nspectral radius   grad at t=0 / grad at t=49   (T=50)")
+for rho in [0.9, 1.0, 1.1, 1.3, 1.5]:
+    torch.manual_seed(0)
+    r = nn.RNN(8, 32, batch_first=True, nonlinearity="tanh")
+    with torch.no_grad():
+        W = r.weight_hh_l0
+        W.mul_(rho / torch.linalg.eigvals(W).abs().max())
+        r.weight_ih_l0.mul_(0.1)                   # small inputs keep tanh near its linear region
+    g = grad_per_position(r, 50)
+    print(f"{rho:<17} {g[0] / g[-1]:.3e}")
+
+# Truncated BPTT: detach at chunk boundaries. Forward states identical, gradients differ.
+torch.manual_seed(0)
+x = torch.randn(1, 40, 8)
+def run(chunk):
+    rnn.zero_grad(); h = None; outs = []
+    for s in range(0, 40, chunk):
+        o, h = rnn(x[:, s:s + chunk], h)
+        outs.append(o)
+        if chunk < 40: h = h.detach()
+    out = torch.cat(outs, 1); out[:, -1].sum().backward()
+    return out.detach(), rnn.weight_hh_l0.grad.clone()
+full_out, full_g = run(40)
+tb_out, tb_g = run(10)
+print(f"\\nforward states max diff: {(full_out - tb_out).abs().max():.1e}")
+print(f"weight_hh grad: full-norm {full_g.norm():.4f}  truncated-norm {tb_g.norm():.4f}  diff {(full_g - tb_g).norm():.4f}")`,
+        out: `T    first/last ratio   grad at t=0
+10           6.95e+02   2.900e-03
+25           4.49e+06   4.164e-07
+50           3.61e+13   5.322e-14
+100               inf   0.000e+00
+
+spectral radius   grad at t=0 / grad at t=49   (T=50)
+0.9               2.266e-04
+1.0               9.322e-03
+1.1               6.014e-02
+1.3               2.582e+00
+1.5               3.437e+00
+
+forward states max diff: 0.0e+00
+weight_hh grad: full-norm 10.5740  truncated-norm 10.5666  diff 0.0284`,
+       
         notes: [
           { t: "p", text: "On a log scale the decay is a straight line, which is the signature of exponential behaviour — each step multiplies by a roughly constant factor. My measurements gave a first-to-last ratio of 3.47e+02 at T=10, 3.69e+06 at T=20 and 3.51e+15 at T=50, and at T=100 the earliest gradient was exactly 0.000e+00 after underflowing float32. Watching that line hit the floor makes the 10–20 step rule of thumb concrete." },
-          { t: "p", text: "The eigenvalue sweep shows the knife edge. At 0.9 the gradient vanishes, at 1.1 it explodes, and at exactly 1.0 it is marginally stable but only because the tanh derivative is also pulling it down — I measured 3.2e-03 over 50 steps at an eigenvalue of 0.957. There is no setting that keeps gradients healthy over long sequences, which is the argument for gated architectures rather than better initialisation." },
+          { t: "p", text: "The spectral-radius sweep is less symmetrical than the linear theory suggests, and the reason is worth seeing. In the reference run the 50-step ratio was 2.3e-04 at 0.9, 9.3e-03 at 1.0 and still only 6.0e-02 at 1.1 — vanishing, not exploding — because the tanh derivative is at most 1 and multiplies into every step. Growth appeared only from about 1.3 (2.6×). So there is no setting that keeps gradients healthy over long sequences: below the threshold they vanish, and above it the hidden state saturates and the behaviour depends on how hard the inputs drive it. That is the argument for gated architectures rather than better initialisation." },
           { t: "p", text: "The truncation check is worth doing because the state-versus-gradient distinction is so commonly misunderstood. The forward hidden states should be bit-identical to the untruncated run, since `detach()` only removes the node from the autograd graph and does not alter its value. The network's *memory* of distant history is fully intact; what is lost is the ability to train on it." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: training that exploded on long sequences",
+      body: [
+        { t: "p", text: "**Symptom.** An RNN language model trained well on short documents and produced NaN as soon as longer documents were added." },
+        { t: "p", text: "**Mechanism.** Gradients through many time steps grew exponentially because the recurrent weight matrix had a largest eigenvalue above one." },
+        { t: "p", text: "**Fix.** Gradients are clipped by norm, sequences are trained with truncated BPTT, and the gradient norm is logged." }
+      ] }
   ],
 
   takeaways: [

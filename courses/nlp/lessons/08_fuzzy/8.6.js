@@ -218,6 +218,13 @@ def key(r):
 
     { t: "exercise", kind: "practice", title: "Build the pipeline end to end", difficulty: "advanced", minutes: 34,
       prompt: "Generate 5,000 synthetic person records with a known 5% duplicate rate, corrupting duplicates with realistic damage: typos, a changed surname, a transposed date of birth, a missing postcode. Then (1) compute all pairs and record the time; (2) block on postcode and measure both the speedup and the true matches lost; (3) run three blocking passes and union them, and measure recall again; (4) score the candidate pairs with Fellegi-Sunter weights; (5) plot the score distribution and set two thresholds, reporting how many pairs land in the middle band; (6) write survivorship rules and produce golden records. Report precision and recall at each stage.",
+      requirements: [
+        "Generate 5,000 synthetic records with a known 5% duplicate rate and realistic corruption",
+        "Compute all pairs and record the time",
+        "Block on postcode and measure the speedup and the true matches lost",
+        "Union three blocking passes and measure recall again",
+        "Score candidate pairs with Fellegi–Sunter weights and two thresholds"
+      ],
       hints: [
         "Corrupt the blocking key specifically in some duplicates — that is the failure you are trying to measure.",
         "The score distribution should be visibly bimodal, and the middle band is the overlap.",
@@ -229,8 +236,14 @@ def key(r):
           { t: "p", text: "Step 3 is where the multi-pass argument stops being theory: unioning three passes typically recovers most of what any single pass lost, because a record has to be corrupted in all three keys to vanish. The candidate count rises, and that is the trade — blocking recall is bought with comparison budget." },
           { t: "p", text: "In step 5 the bimodality is the thing to look at. Two clear peaks with a thin middle means the fields are discriminating and the thresholds can be close together; a broad overlap means the middle band will be large and someone has to staff it. That shape is the honest input to the question of whether this pipeline can run with the review capacity you actually have." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: blocking that lost a fifth of the duplicates",
+      body: [
+        { t: "p", text: "**Symptom.** A record-linkage pipeline ran quickly after blocking on postcode, and an audit found it missed about a fifth of known duplicates." },
+        { t: "p", text: "**Mechanism.** Duplicates with a missing or mistyped postcode fell into different blocks and were never compared." },
+        { t: "p", text: "**Fix.** Several blocking passes on different keys are unioned, and recall against a labelled sample is measured whenever blocking changes." }
+      ] }
   ],
 
   takeaways: [

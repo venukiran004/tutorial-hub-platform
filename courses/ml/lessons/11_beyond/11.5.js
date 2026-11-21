@@ -161,7 +161,7 @@ dominant topic by true class:      topic 0   topic 1   topic 2   topic 3
     { t: "ladder",
       title: "A text classifier for a support-ticket queue",
       rungs: [
-        { level: "bad", label: "A fine-tuned transformer as the first move", code: `model = AutoModelForSequenceClassification.from_pretrained("bert-base"); trainer.train(...)`,
+        { level: "bad", label: "A fine-tuned transformer as the first move", code: `model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased"); trainer.train(...)`,
           note: "**Hours of GPU time and a model nobody can inspect, before anyone knows whether the labels are consistent or whether 88 % is already enough.**" },
         { level: "ok", label: "TF-IDF + linear SVM in a pipeline, cross-validated", code: `make_pipeline(TfidfVectorizer(sublinear_tf=True), LinearSVC()); cross_val_score(...)      # 0.884 in 0.5 s`,
           note: "The right baseline, honest about leakage, with readable weights that reveal label problems ('clinton' as the politics signal says the classifier is learning the era). Missing the retrieval side and the check of what the model has actually learned." },
@@ -221,6 +221,17 @@ BM25 index for 'similar tickets'; a transformer trial only if the gap on the bus
         }
       ] },
 
+    { t: "callout", kind: "trap", title: "Skipping a linear baseline for text",
+
+      body: [
+
+        { t: "p", text: "A transformer is often the first choice for text classification. A linear model on TF-IDF frequently comes close, trains in seconds and is easy to inspect." },
+
+        { t: "p", text: "Train a TF-IDF linear baseline first, and adopt a heavier model only when it beats the baseline on your data." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "TF-IDF by hand, Naive Bayes by hand, and the vocabulary dial",
@@ -267,7 +278,14 @@ BM25 index for 'similar tickets'; a transformer trial only if the gap on the bus
           { t: "p", text: "(c) is the vocabulary as a memory-versus-accuracy dial, with the surprise that rare words matter more than frequent ones here." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a text classifier fitted on the test vocabulary",
+      body: [
+        { t: "p", text: "**Symptom.** A support-ticket classifier's accuracy fell when it was retrained in a correct pipeline." },
+        { t: "p", text: "**Mechanism.** The TF-IDF vectoriser had been fitted on all tickets, including test ones, so test-only words had weights during training." },
+        { t: "p", text: "**Fix.** The vectoriser is fitted inside the pipeline on training folds only, and the lower score became the baseline." }
+      ] }
   ],
 
   takeaways: [

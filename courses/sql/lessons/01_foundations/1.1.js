@@ -381,6 +381,17 @@ SELECT name, salary FROM employees ORDER BY salary DESC FETCH FIRST 4 ROWS WITH 
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "LIMIT without ORDER BY",
+
+      body: [
+
+        { t: "p", text: "`SELECT ... LIMIT 10` returns ten rows, and which ten is unspecified. It often looks stable in development because the engine happens to read the table in insertion order, and it changes after a vacuum, a parallel plan or an index." },
+
+        { t: "p", text: "Every LIMIT gets an ORDER BY with a unique tie-breaker, usually the primary key, so the same query returns the same rows." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Predict",
       title: "Six queries, six row counts, before running them",
@@ -458,7 +469,14 @@ SELECT DISTINCT e.department FROM employees e ORDER BY e.department DESC LIMIT 2
           why: "The logical order is FROM, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, LIMIT. Aliases are created at the SELECT step and are visible to ORDER BY, which runs later — and not to WHERE, which runs earlier."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: the alias that WHERE could not see",
+      body: [
+        { t: "p", text: "**Symptom.** A report query with `SELECT amount * 1.2 AS gross ... WHERE gross > 100` failed on PostgreSQL. A colleague 'fixed' it by moving the filter into a subquery with a different threshold, and the totals stopped matching finance." },
+        { t: "p", text: "**Mechanism.** WHERE is evaluated before SELECT, so the alias does not exist when the filter runs. The rewrite was right in shape but copied the threshold from a different version of the report, and nobody compared row counts before and after." },
+        { t: "p", text: "**Fix.** The filter repeats the expression — `WHERE amount * 1.2 > 100` — or uses a CTE that names it first. Every rewrite of a report now records the row count and total before and after, which catches a changed meaning immediately." }
+      ] }
   ],
 
   takeaways: [

@@ -367,7 +367,14 @@ for frac in [0.5, 0.75, 1.0]:
           why: "Training AUC fell from 0.822 to 0.761 (the bias cost) while validation rose 0.12 (the variance saving). Regularisation is the bias–variance trade made with a dial."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: early stopping that chose its own test score",
+      body: [
+        { t: "p", text: "**Symptom.** A boosted model's reported validation score was a few points higher than its performance on a later holdout." },
+        { t: "p", text: "**Mechanism.** Early stopping monitored the same validation fold that was then used to report performance. The fold had chosen the number of trees, so it was no longer an unbiased estimate." },
+        { t: "p", text: "**Fix.** Early stopping uses a separate slice of the training data, and the reported score comes from a holdout that played no part in fitting or stopping." }
+      ] }
   ],
 
   takeaways: [

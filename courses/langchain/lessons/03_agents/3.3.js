@@ -97,7 +97,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "The input grows by two each call",
       code: 'call 1: 1 messages -> Human\ncall 2: 3 messages -> Human, AI, Tool\ncall 3: 5 messages -> Human, AI, Tool, AI, Tool',
       caption: "Each call re-sends everything before it." },
-    { t: "callout", kind: "warn", title: "This is the quadratic again", body: [
+    { t: "callout", kind: "trap", title: "This is the quadratic again", body: [
       { t: "p", text: "3.5 shows the same shape for conversation history and 13.1 prices it properly. The mechanism here is identical: every model call re-sends the whole transcript, so a run with *n* tool rounds pays for the accumulated list *n + 1* times." },
       { t: "p", text: "The practical consequence is that **a tool returning a lot of text is expensive out of proportion to its usefulness**, because the result rides in every subsequent call. A tool that returns a 40 KB document and is used on step one is paid for again on steps two, three and four." }
     ] },

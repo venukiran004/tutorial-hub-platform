@@ -126,21 +126,115 @@ def train_step(model, batch, optimizer, clip=1.0):
     { t: "callout", kind: "mental", title: "A healthy run has a stable band; the shape of the deviation names the problem",
       body: [{ t: "p", text: "Watch the gradient norm and the diagnosis usually reads itself. A steady band over orders of magnitude means healthy training. A sharp rise — 1e3 to 1e6 over a few steps — is explosion, and the cure is clipping and a lower learning rate. A steady decay towards 1e-7 is vanishing, and the cure is architectural: better initialisation, normalisation, residual connections. An occasional spike on particular batches points at the data rather than the model. It is one scalar per step, costs nothing if you are already clipping, and it is the single most informative thing you can log." }] },
 
+    { t: "callout", kind: "trap", title: "Finding a NaN only when the loss shows it",
+
+      body: [
+
+        { t: "p", text: "A NaN or infinity often appears in logits or gradients many steps before the loss becomes NaN, and by then the cause is hard to locate." },
+
+        { t: "p", text: "Check logits, loss and gradient norm for finite values every step, and stop at the first failure with its location." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Induce and detect each failure", difficulty: "intermediate", minutes: 40,
       prompt: "Build a 30-layer network and initialise it at gains of 0.5, 1.0, √2 and 2.5, recording the activation norm at the output and the gradient norm at the first layer for each. Confirm the near-unity regime is where both are sane. Then deliberately cause a NaN four ways — unnormalised inputs, `log` of a model output that can reach zero, a learning rate ten times too high, and a division by a batch statistic that can be zero — and verify your `assert_finite` guard catches each at the right place. Finally, turn on anomaly detection for one of them and confirm it names the operation.",
+      requirements: [
+        "Initialise a 30-layer network at gains 0.5, 1, √2 and 2.5 and record activation and gradient norms",
+        "Cause NaN four ways: unnormalised inputs, log of zero, a learning rate too high, division by a zero statistic",
+        "Verify a finite-value guard catches each at the right place",
+        "Use anomaly detection to name the operation for one of them"
+      ],
       hints: [
         "For the gain sweep, `nn.init.normal_(w, 0, gain/sqrt(fan_in))`.",
         "`log` of a softmax output is the classic — add an epsilon and see the difference.",
         "Anomaly detection is slow; use a small model for that part."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import math, warnings
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+warnings.filterwarnings("ignore", category=UserWarning)     # anomaly mode warns on entry
+
+def assert_finite(name, t):
+    if not torch.isfinite(t).all():
+        raise FloatingPointError(f"{name} has NaN/Inf")
+
+print("gain   output activation norm   first-layer grad norm   (30 ReLU layers)")
+for gain in [0.5, 1.0, math.sqrt(2), 2.5]:
+    torch.manual_seed(0)
+    layers = [nn.Linear(256, 256) for _ in range(30)]
+    for l in layers: nn.init.normal_(l.weight, std=gain / math.sqrt(256)); nn.init.zeros_(l.bias)
+    net = nn.Sequential(*[m for l in layers for m in (l, nn.ReLU())])
+    x = torch.randn(64, 256); out = net(x); out.pow(2).mean().backward()
+    print(f"{gain:<6.3f} {out.norm(dim=1).mean():24.3e}   {layers[0].weight.grad.norm():21.3e}")
+
+def guarded_step(model, x, y, opt, transform):
+    out = model(x); assert_finite("logits", out)
+    loss = F.nll_loss(transform(out), y); assert_finite("loss", loss)
+    opt.zero_grad(); loss.backward()
+    gn = torch.nn.utils.clip_grad_norm_(model.parameters(), float("inf")); assert_finite("grad norm", gn)
+    opt.step(); return loss.item()
+
+def scenario(name, x_scale=1.0, lr=1e-2, transform=None, standardise=False, steps=60):
+    torch.manual_seed(0)
+    model = nn.Sequential(nn.Linear(20, 64), nn.ReLU(), nn.Linear(64, 5))
+    opt = torch.optim.SGD(model.parameters(), lr)
+    tf = transform or (lambda o: o.log_softmax(1))
+    try:
+        for step in range(steps):
+            x = torch.randn(32, 20) * x_scale; y = torch.randint(0, 5, (32,))
+            if standardise:                       # per-batch standardisation, and feature 3 is constant
+                x[:, 3] = 1.0; x = (x - x.mean(0)) / x.std(0)
+            loss = guarded_step(model, x, y, opt, tf)
+        print(f"{name:<34} no failure; final loss {loss:.3g}")
+    except FloatingPointError as e:
+        print(f"{name:<34} caught at step {step}: {e}")
+
+print()
+scenario("unnormalised inputs (x * 1e4)", x_scale=1e4)
+scenario("log of an output that reaches 0", transform=lambda o: torch.log(F.relu(o)))
+scenario("learning rate 10x too high", lr=50.0)
+scenario("division by a zero batch std", standardise=True)
+
+print("\\nanomaly detection on the log(0) case:")
+torch.manual_seed(0)
+model = nn.Sequential(nn.Linear(20, 64), nn.ReLU(), nn.Linear(64, 5))
+x, y = torch.randn(32, 20), torch.randint(0, 5, (32,))
+with torch.autograd.detect_anomaly():
+    try:
+        F.nll_loss(torch.log(F.relu(model(x))), y).backward()
+    except RuntimeError as e:
+        print(" ", str(e).split("\\n")[0])`,
+        out: `gain   output activation norm   first-layer grad norm   (30 ReLU layers)
+0.500                 5.002e-13               0.000e+00
+1.000                 5.370e-04               1.942e-09
+1.414                 1.760e+01               1.474e+00
+2.500                 4.658e+08               5.843e+14
+
+unnormalised inputs (x * 1e4)      caught at step 10: grad norm has NaN/Inf
+log of an output that reaches 0    caught at step 0: loss has NaN/Inf
+learning rate 10x too high         caught at step 19: logits has NaN/Inf
+division by a zero batch std       caught at step 0: logits has NaN/Inf
+
+anomaly detection on the log(0) case:
+  Function 'LogBackward0' returned nan values in its 0th output.`,
+       
         notes: [
           { t: "p", text: "The gain sweep should show the output activation norm spanning many orders of magnitude — I measured 1.5e-09 at gain 0.7 against 5.6e+07 at gain 2.5, across the same 30 layers. Seeing sixteen orders of magnitude appear from an initialisation constant makes the case for He and Xavier initialisation far better than the derivation does, and it explains why a model can produce `inf` before a single gradient step." },
           { t: "p", text: "The four NaN sources are worth doing separately because they surface in different places. Unnormalised inputs show up as a loss that grows rather than a NaN directly — I measured eleven orders of magnitude in eight steps. `log(0)` gives `-inf` first and a NaN only when that infinity meets a subtraction, which is why checking `isfinite` rather than `isnan` matters for catching it at the source. The division by a zero batch statistic is the subtlest, since it only triggers on batches where the statistic happens to vanish." },
           { t: "p", text: "Anomaly detection is worth using once so you know what it gives you: a stack trace pointing at the forward operation whose backward produced the first non-finite value. The slowdown is real, so it belongs in a debugging run rather than in your training loop, but it converts an unlocatable NaN into a line number." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a NaN found four hours after it began",
+      body: [
+        { t: "p", text: "**Symptom.** A training run produced NaN loss after four hours, and the logs did not show where it started." },
+        { t: "p", text: "**Mechanism.** A log of a model output that could reach zero produced -inf in one batch; the infinity spread through later steps before the loss became NaN." },
+        { t: "p", text: "**Fix.** Finite-value checks run on logits, loss and gradient norm every step, and the run stops at the first non-finite value with the location." }
+      ] }
   ],
 
   takeaways: [

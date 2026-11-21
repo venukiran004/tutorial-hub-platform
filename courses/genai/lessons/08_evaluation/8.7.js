@@ -90,7 +90,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Attack suites measure the percentage of refusals that hold under attack. 6.7 covered the RAG-specific case \u2014 injection arriving through a retrieved document, where the corpus is the one input the pipeline trusts by construction." },
 
-    { t: "callout", kind: "warn", title: "Measure over-refusal too, or the optimum is useless",
+    { t: "callout", kind: "trap", title: "Measure over-refusal too, or the optimum is useless",
       body: [
         { t: "p", text: "7.15 made this point and it is worth repeating here because it is the single most common evaluation gap in safety work: if you only measure whether the model does things it should not, the trivially optimal model refuses everything. It scores perfectly and ships to nobody." },
         { t: "p", text: "7.11 catalogued hedging as the reward hack evaluation misses, and over-refusal is its safety-flavoured sibling \u2014 a refusal is never *wrong* the way an incorrect answer is, so any one-directional evaluation makes refusing the risk-free strategy." },

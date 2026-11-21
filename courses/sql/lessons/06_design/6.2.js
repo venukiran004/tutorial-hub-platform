@@ -245,7 +245,14 @@ INSERT INTO bookings ... ;   -- only if the update hit`,
           why: "The anomaly lives in the gap between the application's read and its write. Remove the gap and there is nothing to lose."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: stock that went negative",
+      body: [
+        { t: "p", text: "**Symptom.** An inventory count reached minus three during a sale, though the code checked stock before every purchase." },
+        { t: "p", text: "**Mechanism.** Two checkouts read a stock of one at the same time, both saw enough stock, and both wrote a decrement. At READ COMMITTED, the default, each read-modify-write was correct alone and the pair lost an update." },
+        { t: "p", text: "**Fix.** The decrement is a single conditional statement — `UPDATE stock SET qty = qty - 1 WHERE id = ? AND qty > 0` — and the application checks that one row was affected. No isolation-level change was needed." }
+      ] }
   ],
 
   takeaways: [

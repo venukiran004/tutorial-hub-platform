@@ -103,19 +103,111 @@ encoder = nn.TransformerEncoder(layer, num_layers=6)`,
 
     { t: "exercise", kind: "practice", title: "Dissect and stress the block", difficulty: "advanced", minutes: 40,
       prompt: "Build an encoder block from `nn.MultiheadAttention` and two `nn.Linear` layers, and verify it matches `nn.TransformerEncoderLayer` given identical weights. Compute the parameter split between attention and FFN at `d_ff` = 2×, 4× and 8× `d_model`. Then stack 12 blocks and record activation mean, std and max through the stack for post-norm and pre-norm, with and without learning-rate warmup, and compare training stability. Finally, remove the residual connections and observe what happens.",
+      requirements: [
+        "Build an encoder block and verify it against nn.TransformerEncoderLayer",
+        "Compute the attention/FFN parameter split at d_ff 2×, 4× and 8×",
+        "Stack 12 blocks and compare post-norm and pre-norm with and without warm-up",
+        "Remove the residual connections and observe the result"
+      ],
       hints: [
         "PyTorch defaults to post-norm; `norm_first=True` gives pre-norm.",
         "Track gradient norms at the first and last block, as in lesson 2.3.",
         "Without residuals a deep stack will not train at all — that is the expected result."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+torch.manual_seed(0)
+d, h, dff = 64, 4, 256
+
+class Block(nn.Module):
+    def __init__(self, norm_first=True, residual=True):
+        super().__init__(); self.nf, self.res = norm_first, residual
+        self.attn = nn.MultiheadAttention(d, h, batch_first=True, dropout=0.0)
+        self.l1, self.l2 = nn.Linear(d, dff), nn.Linear(dff, d)
+        self.n1, self.n2 = nn.LayerNorm(d), nn.LayerNorm(d)
+    def sa(self, x): return self.attn(x, x, x, need_weights=False)[0]
+    def ff(self, x): return self.l2(F.relu(self.l1(x)))
+    def forward(self, x):
+        r = 1 if self.res else 0
+        if self.nf:
+            x = r * x + self.sa(self.n1(x)); return r * x + self.ff(self.n2(x))
+        x = self.n1(r * x + self.sa(x)); return self.n2(r * x + self.ff(x))
+
+# 1. Same weights as nn.TransformerEncoderLayer (post-norm, the default)
+ref = nn.TransformerEncoderLayer(d, h, dff, dropout=0.0, batch_first=True).eval()
+mine = Block(norm_first=False).eval()
+mine.attn.load_state_dict(ref.self_attn.state_dict())
+for a, b in [(mine.l1, ref.linear1), (mine.l2, ref.linear2), (mine.n1, ref.norm1), (mine.n2, ref.norm2)]: a.load_state_dict(b.state_dict())
+x = torch.randn(2, 10, d)
+with torch.no_grad(): print(f"max diff vs nn.TransformerEncoderLayer: {(mine(x) - ref(x)).abs().max():.1e}")
+
+# 2. Parameter split
+for mult in [2, 4, 8]:
+    attn_p = 4 * d * d + 4 * d; ffn_p = 2 * d * mult * d + mult * d + d
+    print(f"d_ff = {mult}x d_model: attention {attn_p:,}  FFN {ffn_p:,}  FFN share {ffn_p / (attn_p + ffn_p):.0%}")
+
+# 3. 12 blocks: activations through the stack, then training stability
+def stack(norm_first, residual=True): return nn.Sequential(*[Block(norm_first, residual) for _ in range(12)])
+x = torch.randn(8, 16, d)
+print("\\nactivation std at blocks 1, 6, 12 (untrained)")
+for nf in [False, True]:
+    torch.manual_seed(0); s = stack(nf); h_ = x; stds = []
+    with torch.no_grad():
+        for b in s: h_ = b(h_); stds.append(h_.std().item())
+    print(f"  {'pre-norm ' if nf else 'post-norm'}: " + " ".join(f"{stds[i]:.2f}" for i in [0, 5, 11]))
+
+V = 32
+def train(norm_first, warmup, residual=True, lr=3e-3, steps=300):
+    torch.manual_seed(0)
+    emb, body, out = nn.Embedding(V, d), stack(norm_first, residual), nn.Linear(d, V)
+    params = [*emb.parameters(), *body.parameters(), *out.parameters()]
+    opt = torch.optim.Adam(params, lr)
+    sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / 100) if warmup else 1.0)
+    losses = []
+    for _ in range(steps):
+        x = torch.randint(0, V, (32, 16)); y = x.flip(1)              # reverse a sequence: needs attention
+        loss = F.cross_entropy(out(body(emb(x))).reshape(-1, V), y.reshape(-1))
+        opt.zero_grad(); loss.backward(); opt.step(); sched.step(); losses.append(loss.item())
+    return losses
+print("\\ntraining loss at steps 50 / 150 / 300 (Adam, lr 3e-3)")
+for nf in [False, True]:
+    for wu in [False, True]:
+        L = train(nf, wu)
+        print(f"  {'pre-norm ' if nf else 'post-norm'} {'warm-up   ' if wu else 'no warm-up'}: {L[49]:.3f} / {L[149]:.3f} / {L[-1]:.3f}")
+L = train(True, True, residual=False)
+print(f"  pre-norm, no residuals : {L[49]:.3f} / {L[149]:.3f} / {L[-1]:.3f}   (uniform = {torch.log(torch.tensor(float(V))):.3f})")`,
+        out: `max diff vs nn.TransformerEncoderLayer: 0.0e+00
+d_ff = 2x d_model: attention 16,640  FFN 16,576  FFN share 50%
+d_ff = 4x d_model: attention 16,640  FFN 33,088  FFN share 67%
+d_ff = 8x d_model: attention 16,640  FFN 66,112  FFN share 80%
+
+activation std at blocks 1, 6, 12 (untrained)
+  post-norm: 1.00 1.00 1.00
+  pre-norm : 1.03 1.24 1.50
+
+training loss at steps 50 / 150 / 300 (Adam, lr 3e-3)
+  post-norm no warm-up: 3.484 / 3.471 / 3.478
+  post-norm warm-up   : 3.133 / 2.951 / 2.724
+  pre-norm  no warm-up: 3.041 / 2.660 / 2.630
+  pre-norm  warm-up   : 3.073 / 2.775 / 2.676
+  pre-norm, no residuals : 3.454 / 3.468 / 3.466   (uniform = 3.466)`,
+       
         notes: [
           { t: "p", text: "The post-norm versus pre-norm comparison is the practically valuable one. Post-norm without warmup typically diverges within a few hundred steps at any reasonable learning rate, because the residual path is normalised at every block so gradients reaching early layers are attenuated; pre-norm trains stably from step one. This is exactly why the original paper's schedule includes a warmup term that looks arbitrary until you know it is compensating for the normalisation placement." },
           { t: "p", text: "Removing the residuals breaks a deep stack completely, for the reason lesson 2.3 measured on ResNet: the gradient has no path with derivative 1 and decays through depth. Six blocks might limp along; twelve will not train. The residual is not an optimisation nicety here, it is what makes depth possible at all." },
           { t: "p", text: "On the `d_ff` sweep, the FFN's share rises from 50 % at 2× to 80 % at 8×, with 67 % at the standard 4×. Worth knowing when you are budgeting a model: widening the FFN is the cheapest way to add parameters, and widening `d_model` is the expensive way because attention scales with its square." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a twelve-layer model that only trained with warm-up",
+      body: [
+        { t: "p", text: "**Symptom.** A 12-layer encoder diverged at the start of training unless the learning rate was ramped up slowly." },
+        { t: "p", text: "**Mechanism.** It used post-norm blocks, where activations and gradients are poorly scaled early in training." },
+        { t: "p", text: "**Fix.** The blocks were changed to pre-norm with a final LayerNorm, which trained stably with a short warm-up." }
+      ] }
   ],
 
   takeaways: [

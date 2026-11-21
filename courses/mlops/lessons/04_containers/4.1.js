@@ -111,6 +111,13 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Find your own three", difficulty: "intro", minutes: 20,
       prompt: "For a containerised ML workload you have access to, check the three shared-kernel consequences. Inside the container, print `os.cpu_count()` and the memory your runtime believes it has, then compare both against the container's actual limits — if they differ, find which libraries sized their thread pools from the wrong number. Check what `/dev/shm` is set to and whether any training job uses DataLoader workers. And if there is a GPU, record the host driver version and the CUDA userland version in the image, then say which node images would fail on. Write down the one-line fix for each one you find.",
+      requirements: [
+        "Print os.cpu_count() and the runtime's view of memory inside the container, and compare with the container's limits",
+        "Find which libraries sized thread pools from the wrong number",
+        "Check the size of /dev/shm and whether any job uses DataLoader workers",
+        "Record the host driver and image CUDA versions and say which nodes would fail",
+        "Write the one-line fix for each problem found"
+      ],
       hints: [
         "`nproc` and `os.cpu_count()` will both report the node unless something sets the thread counts explicitly.",
         "`df -h /dev/shm` inside the container tells you immediately whether the 64 MB default is still in place.",
@@ -121,8 +128,14 @@ EC.receiveLesson({
           { t: "p", text: "The thread-count mismatch is nearly universal and the cheapest to fix. Setting `OMP_NUM_THREADS` to the CPU limit typically improves tail latency measurably, because the contention it removes was never buying any parallelism." },
           { t: "p", text: "The `/dev/shm` check only matters if DataLoader workers are in use, but when it does matter the failure is so cryptic — a bus error naming a worker pid — that recognising it is worth more than most container knowledge." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: sixty-four threads on two CPUs",
+      body: [
+        { t: "p", text: "**Symptom.** A model service ran at several times its expected latency in Kubernetes while using its full CPU allocation. The same image was fast on a laptop." },
+        { t: "p", text: "**Mechanism.** The container was limited to two CPUs on a 64-core node. `os.cpu_count()` reads the node's count because the kernel is shared, so the numerical libraries started 64 threads each. They contended for two cores' worth of quota and spent most of their time being throttled." },
+        { t: "p", text: "**Fix.** Thread pools are sized from the cgroup limit, set explicitly through the libraries' environment variables in the image. The CPU-throttling metric is on the service dashboard, since throttling does not appear in a usage graph." }
+      ] }
   ],
 
   takeaways: [

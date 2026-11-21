@@ -76,7 +76,7 @@ EC.receiveLesson({
         { t: "p", text: "So write the thresholds down, version them with the code, and treat lowering one as a change requiring the same review as the code it guards. 6.1 argued the same for retrieval: deterministic metrics turn a quality regression into a failed build, and only if the build actually fails." }
       ] },
 
-    { t: "callout", kind: "warn", title: "Report per slice, because an aggregate hides a critical failure",
+    { t: "callout", kind: "trap", title: "Report per slice, because an aggregate hides a critical failure",
       body: [
         { t: "p", text: "This is the fifth appearance of the same lesson. 6.5 measured an aggregate Hit@5 of 0.76 concealing an image row of **0.00**. 7.10 measured self-consistency improving an aggregate while degrading a sub-50% slice. 8.7 required toxicity disaggregated by group." },
         { t: "p", text: "For a golden set the slices are query type, language and document source. A regression confined to one language is invisible in a mean weighted by your traffic distribution, and the traffic distribution is exactly why that language is a small share." },

@@ -141,6 +141,12 @@ credential services: ['base_credential_service', 'in_memory_credential_service',
 
     { t: "exercise", kind: "practice", title: "Attack your own agent", difficulty: "advanced", minutes: 26,
       prompt: "Take an agent with a tool that reads records. Write down, then test: (1) can a caller read another user's data by changing the request body? (2) does any tool take a user id, account id or tenant id as a parameter? (3) what can the database credential do beyond what the tools need? (4) if the model were fully compromised and could call any tool with any arguments, what is the worst outcome? Write the four answers as a short threat note and fix whichever you cannot answer well.",
+      requirements: [
+        "Test whether a caller can read another user's data by changing the request body",
+        "List tools that take a user, account or tenant id as a parameter",
+        "List what the database credential can do beyond what the tools need",
+        "Describe the worst outcome if the model could call any tool with any arguments, and fix what you cannot answer"
+      ],
       hints: [
         "Actually send the modified request rather than reading the code and concluding it is fine.",
         "Question 4 is the one that decides whether prompt engineering is a control or a comfort.",
@@ -151,8 +157,14 @@ credential services: ['base_credential_service', 'in_memory_credential_service',
           { t: "p", text: "The usual finding on question 1 is that the `user_id` is taken from the client, because that is what every quickstart does and nothing goes wrong until there are two users. Question 2 usually turns up at least one identifier in a signature that should have come from the context — and it always looks harmless, because the model has no reason to lie until somebody gives it one." },
           { t: "p", text: "Question 4 is the one worth writing down and keeping. Assume the model does exactly the worst thing available to it, because that is the situation a successful prompt injection creates. If the answer is 'it reads some public prices', the design is sound and the instruction is a nicety. If the answer is 'it empties the orders table', no amount of prompting fixes that, and the work is in the credential and the tool signature." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: an account id from a support ticket",
+      body: [
+        { t: "p", text: "**Symptom.** An agent showed one customer the invoices of another after the first customer pasted a forwarded email containing the other's account number." },
+        { t: "p", text: "**Mechanism.** The invoice tool took `account_id` as a parameter and ran with a database credential that could read every account. The model filled the parameter from the conversation, which now contained someone else's id." },
+        { t: "p", text: "**Fix.** The tool derives the account from the authenticated user in its context and takes no id, and the database role is restricted to the rows that user owns. Two of the three layers would each have stopped this alone." }
+      ] }
   ],
 
   takeaways: [

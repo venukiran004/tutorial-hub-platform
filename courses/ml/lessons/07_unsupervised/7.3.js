@@ -220,6 +220,17 @@ sanity checks (executed):  relabel the clusters 1<->2: ARI 0.125 (labels are nom
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Choosing k by the silhouette score alone",
+
+      body: [
+
+        { t: "p", text: "Silhouette rewards compact, separated clusters, and real segments are often neither. The k it picks may be stable mathematically and useless for the business." },
+
+        { t: "p", text: "Combine internal indices with stability under resampling and a check that the segments differ in ways people can act on." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Indices by hand, a degenerate case, and a stability run",
@@ -280,7 +291,14 @@ sanity checks (executed):  relabel the clusters 1<->2: ARI 0.125 (labels are nom
           why: "DBSCAN's correct answer scored exactly the truth's 0.328 — the index is consistent, and consistently blind to shape."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: clusters that changed every week",
+      body: [
+        { t: "p", text: "**Symptom.** A marketing team found that 'segment 3' described different customers each week, making campaigns impossible to compare." },
+        { t: "p", text: "**Mechanism.** The clustering was refitted weekly from a random start, and the segments were not stable — small data changes moved the boundaries and the labels were reassigned arbitrarily." },
+        { t: "p", text: "**Fix.** Stability is measured by re-clustering bootstrap samples before segments are used, and new data is assigned to the existing centroids rather than refitted weekly." }
+      ] }
   ],
 
   takeaways: [

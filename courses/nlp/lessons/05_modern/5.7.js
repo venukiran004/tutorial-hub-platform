@@ -155,6 +155,17 @@ EC.receiveLesson({
     { t: "callout", kind: "note", title: "The positional encoding is a small scandal",
       body: [{ t: "p", text: "ViT flattens a 14×14 grid into a 196-length sequence and applies **1-D** learned positional embeddings — the model is told patch 13 comes before patch 14, but nothing tells it that patch 14 sits directly below patch 0. It has to infer two-dimensional structure from the data. That it works at all is evidence for how much a transformer can learn from scale, and it is exactly the kind of thing later architectures fixed: 2-D positional encodings and relative position biases, which Swin uses, do measurably better." }] },
 
+    { t: "callout", kind: "trap", title: "Raising resolution without counting patches",
+
+      body: [
+
+        { t: "p", text: "Doubling image resolution quadruples the number of patches, and attention cost grows with the square of that, so latency rises far more than expected." },
+
+        { t: "p", text: "Choose resolution from measured latency, and use hierarchical or windowed attention for high-resolution inputs." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Take a ViT apart", difficulty: "core", minutes: 40,
       requirements: [
         "Load a ViT and confirm the patch embedding is a Conv2d with kernel equal to stride.",
@@ -215,7 +226,14 @@ top-5 overlap between the two: 0 of 5`,
           { t: "p", text: "Layer 1 learned locality without any convolutional prior. Its most local head attends on average 0.3 patches away, and the median head 3.5. By layer 12 every head attends 8–10 patches away, close to the image-wide average. Early layers behave like small convolutions; late layers mix globally." },
           { t: "p", text: "Running the 384 px version with interpolated position embeddings changed the top prediction and kept none of the top-5 classes. The input here is a synthetic gradient with no real class, so the confidences are low (about 0.03). That is exactly the regime where the shift is most visible. Measure accuracy on labelled images at both resolutions before deploying at a size the model was not trained on. A ViT-against-ResNet fine-tuning comparison needs a labelled image set and training runs, and is not executed here." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a ViT that slowed to a crawl at high resolution",
+      body: [
+        { t: "p", text: "**Symptom.** An inspection model became too slow for the line after its input resolution was doubled." },
+        { t: "p", text: "**Mechanism.** Doubling resolution quadruples the number of patches, and attention cost grows with the square of that." },
+        { t: "p", text: "**Fix.** Resolution is chosen from measured latency, and a hierarchical model with local attention was used where fine detail mattered." }
+      ] }
   ],
 
   takeaways: [

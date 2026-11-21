@@ -316,7 +316,14 @@ CREATE VIEW customers_legacy AS SELECT *, concat_ws(' ', first_name, last_name) 
           why: "The rename itself is instant. The problem is the contract with every consumer, and the database only knows about the ones inside it."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a column rename that took the application down",
+      body: [
+        { t: "p", text: "**Symptom.** A migration renamed `fullname` to `full_name`, and the application failed until the deploy that followed it finished several minutes later." },
+        { t: "p", text: "**Mechanism.** The schema changed before the code that read it. During the gap, running application instances queried a column that no longer existed." },
+        { t: "p", text: "**Fix.** Schema changes follow expand–contract: add the new column, write both, backfill, switch reads, and drop the old column in a later release. Each step is compatible with the code on either side of it." }
+      ] }
   ],
 
   takeaways: [

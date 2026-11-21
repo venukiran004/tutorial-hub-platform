@@ -158,18 +158,87 @@ exit $fail`,
 
     { t: "exercise", kind: "practice", title: "Run all three recoveries once", difficulty: "core", minutes: 30,
       prompt: "In a throwaway repository, do each of the three measured things so they are familiar before you need them. Create a history of a dozen commits where one breaks a scripted check, then find it with `git bisect run` and count the steps. Commit twice on a branch, destroy it with `reset --hard HEAD~2`, and recover it from the reflog. Write the pre-commit hook from section 4 and confirm it rejects a large file and an `AKIA…` string while passing ordinary source. Then, in a repository you actually use, check two things: is there a server-side equivalent of that hook in CI, and if a secret were committed today, who would rotate it and how long would that take?",
+      requirements: [
+        "Create a dozen-commit history where one commit breaks a scripted check, and find it with git bisect run",
+        "Destroy a branch with reset --hard and recover it from the reflog",
+        "Write the pre-commit hook and confirm it rejects a large file and an AKIA string",
+        "Check for a server-side equivalent in CI, and who would rotate a committed secret"
+      ],
       hints: [
         "Make the bisect check script deterministic — a flaky test breaks bisect's monotonicity assumption and converges on an innocent commit.",
         "`git reflog` before and after the reset makes it obvious that nothing was ever deleted.",
         "The rotation question is the one worth escalating: if the answer is 'nobody knows', that is the finding."
       ],
       solution: {
+        lang: "bash", title: "8.5.sh",
+        code: `set -e
+cd "$(mktemp -d)" && git init -q -b main && git config user.email you@example.com && git config user.name You && git config core.autocrlf false
+
+echo "== 1. bisect: twelve commits, one of which breaks a scripted check"
+printf 'def accuracy():\\n    return 0.91\\n' > model.py; git add model.py; git commit -qm "c1"
+for i in $(seq 2 12); do
+  if [ "$i" = 8 ]; then sed -i 's/0.91/0.62/' model.py; fi        # the regression lands in commit 8
+  echo "# change $i" >> model.py; git commit -qam "c$i"
+done
+CHECK=$(mktemp)                                  # the check lives outside the repo, so bisect cannot change it
+echo 'python -c "import model, sys; sys.exit(0 if model.accuracy() > 0.9 else 1)"' > "$CHECK"
+git bisect start HEAD "$(git rev-list --max-parents=0 HEAD)" >/dev/null
+out=$(git bisect run sh "$CHECK" 2>&1)
+bad=$(echo "$out" | grep -o '^[0-9a-f]\\{40\\} is the first bad commit' | cut -c1-40)
+echo "  first bad commit: $(git log -1 --format='%h %s' "$bad")"
+echo "  checks run by bisect: $(echo "$out" | grep -c '^running')  (a linear search could need up to 11)"
+git bisect reset >/dev/null 2>&1
+
+echo "== 2. reflog: destroy two commits, then recover them"
+git switch -qc experiment
+echo a > a.txt; git add a.txt; git commit -qm "exp-1"; echo b > b.txt; git add b.txt; git commit -qm "exp-2"
+git reset -q --hard HEAD~2
+echo "  after reset --hard: $(git log --oneline -1)"
+lost=$(git reflog | grep -m1 "commit: exp-2" | cut -d' ' -f1)
+git reset -q --hard "$lost"
+echo "  recovered from reflog entry $lost: $(git log --oneline -2 | tr '\\n' ' ')"
+
+echo "== 3. a pre-commit hook that refuses large files and credentials"
+cat > .git/hooks/pre-commit <<'EOF'
+#!/bin/sh
+MAX=1048576
+fail=0
+for f in $(git diff --cached --name-only --diff-filter=AM); do
+  [ -f "$f" ] || continue
+  size=$(wc -c < "$f")
+  if [ "$size" -gt "$MAX" ]; then echo "REJECT $f: \${size} bytes exceeds \${MAX}"; fail=1; fi
+  if git show ":$f" | grep -qE 'AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY'; then echo "REJECT $f: looks like a credential"; fail=1; fi
+done
+exit $fail
+EOF
+chmod +x .git/hooks/pre-commit
+try() { git add "$1"; if msg=$(git commit -qm "add $1" 2>&1); then echo "  $1: COMMITTED"; else echo "  $1: $msg"; git reset -q "$1"; fi; }
+printf 'print("hello")\\n' > small.py; try small.py
+head -c 2097152 /dev/zero > data.npy; try data.npy
+echo 'KEY = "AKIAABCDEFGHIJKLMNOP"' > conf.py; try conf.py`,
+        out: `== 1. bisect: twelve commits, one of which breaks a scripted check
+  first bad commit: 0e34a21 c8
+  checks run by bisect: 4  (a linear search could need up to 11)
+== 2. reflog: destroy two commits, then recover them
+  after reset --hard: 21c0cfb c12
+  recovered from reflog entry 02d8929: 02d8929 exp-2 e74d0ee exp-1 
+== 3. a pre-commit hook that refuses large files and credentials
+  small.py: COMMITTED
+  data.npy: REJECT data.npy: 2097152 bytes exceeds 1048576
+  conf.py: REJECT conf.py: looks like a credential`,
+       
         notes: [
           { t: "p", text: "Bisect is the one most people have read about and never run, and `bisect run` is what makes it practical — three minutes unattended against an afternoon of reading diffs, and it finds causes that are not visible in a diff at all, like a dependency bump moving a metric." },
           { t: "p", text: "The rotation question usually has no owner, which matters more than the history rewriting. A committed key is live until somebody revokes it, and rewriting history does not revoke anything — every existing clone still has the object." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: bisect blamed an innocent commit",
+      body: [
+        { t: "p", text: "**Symptom.** A team used `git bisect run` to find which commit had dropped a model's AUC. It named a commit that only changed documentation. Reverting it changed nothing." },
+        { t: "p", text: "**Mechanism.** The bisect script retrained and compared AUC against a fixed threshold that sat within the run-to-run noise. Each step's verdict was partly seed noise, so bisect followed a random walk. Bisect assumes a monotone good-then-bad history, and a noisy test breaks that assumption without any error." },
+        { t: "p", text: "**Fix.** The bisect script fixes the seed and uses a threshold outside the measured noise floor (lesson 3.2), and it exits 125 to skip commits that cannot be built. Re-run, it found the commit that changed a feature's default fill value." }
+      ] }
   ],
 
   takeaways: [

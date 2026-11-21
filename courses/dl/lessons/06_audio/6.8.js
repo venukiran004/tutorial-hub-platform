@@ -113,19 +113,120 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Build the evaluation you would actually ship", difficulty: "intermediate", minutes: 40,
       prompt: "Implement WER with a full substitution/deletion/insertion breakdown and verify it against the five reference cases. Then build a normaliser — lowercase, strip punctuation, expand numbers — and measure how much WER moves on a real transcript set with and without it. Implement entity error rate over a chosen entity type such as numbers or proper nouns, and compare the ranking of two systems under WER against their ranking under entity error rate. Finally, measure RTF and time-to-first-token for a model and show they can disagree.",
+      requirements: [
+        "Implement WER with a substitution, deletion and insertion breakdown and verify it",
+        "Build a normaliser and measure how much WER moves",
+        "Implement entity error rate and compare two systems' rankings",
+        "Measure RTF and time-to-first-token and show they can disagree"
+      ],
       hints: [
         "Backtrace through the edit-distance matrix to get the S/D/I breakdown.",
         "Try to construct a pair of systems where WER and entity error rate rank them oppositely.",
         "For the RTF/latency point, add artificial buffering and watch RTF stay flat while latency rises."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import re
+
+def align(ref, hyp):
+    """Levenshtein over words with a backtrace; returns (S, D, I)."""
+    R, H = len(ref), len(hyp)
+    d = [[(0, 0, 0, 0)] * (H + 1) for _ in range(R + 1)]        # (cost, S, D, I)
+    for i in range(1, R + 1): d[i][0] = (i, 0, i, 0)
+    for j in range(1, H + 1): d[0][j] = (j, 0, 0, j)
+    for i in range(1, R + 1):
+        for j in range(1, H + 1):
+            if ref[i - 1] == hyp[j - 1]: d[i][j] = d[i - 1][j - 1]; continue
+            s, de, ins = d[i - 1][j - 1], d[i - 1][j], d[i][j - 1]
+            d[i][j] = min((s[0] + 1, s[1] + 1, s[2], s[3]), (de[0] + 1, de[1], de[2] + 1, de[3]), (ins[0] + 1, ins[1], ins[2], ins[3] + 1))
+    return d[R][H][1:]
+
+def wer(ref, hyp):
+    r, h = ref.split(), hyp.split()
+    S, D, I = align(r, h)
+    return (S + D + I) / max(len(r), 1), S, D, I
+
+cases = [("the cat sat", "the cat sat", 0.0), ("the cat sat", "the bat sat", 1/3), ("the cat sat", "the sat", 1/3),
+         ("the cat sat", "the cat sat down", 1/3), ("a b", "x y z w", 2.0)]
+for ref, hyp, want in cases:
+    w, S, D, I = wer(ref, hyp)
+    print(f"{ref!r:>14} -> {hyp!r:<20} WER {w:.3f} (S{S} D{D} I{I})  expected {want:.3f}  {'ok' if abs(w - want) < 1e-9 else 'MISMATCH'}")
+
+ONES = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
+TENS = "_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()
+def say(n):
+    if n < 20: return ONES[n]
+    if n < 100: return TENS[n // 10] + ("" if n % 10 == 0 else " " + ONES[n % 10])
+    return ONES[n // 100] + " hundred" + ("" if n % 100 == 0 else " " + say(n % 100))
+def normalise(s):
+    s = s.lower().replace("%", " percent")
+    s = re.sub(r"\\d+", lambda m: say(int(m.group())) if int(m.group()) < 1000 else m.group(), s)
+    return re.sub(r"\\s+", " ", re.sub(r"[^\\w\\s']", " ", s)).strip()
+
+refs = ["Send 25 dollars to Priya, please.", "The meeting is at 3 o'clock.", "Call Mr. Okafor on Tuesday!", "Rates rose 5% in May."]
+# A: sloppy on filler words, right on names.  B: clean everywhere except the names.
+sysA = ["send twenty five dollar to priya please", "the meeting is at three", "call mister okafor tuesday", "rates rose five percent in may"]
+sysB = ["Send 25 dollars to Maria, please.", "The meeting is at 3 o'clock.", "Call Mr. Okoro on Tuesday!", "Rates rose 5% in May."]
+def corpus_wer(R, H, norm):
+    f = normalise if norm else (lambda s: s)
+    errs = sum(sum(align(f(r).split(), f(h).split())) for r, h in zip(R, H)); return errs / sum(len(f(r).split()) for r in R)
+print("\\n          raw WER   normalised WER")
+for name, H in [("system A", sysA), ("system B", sysB)]:
+    print(f"{name}  {corpus_wer(refs, H, False):8.3f}   {corpus_wer(refs, H, True):14.3f}")
+
+ENTITIES = {"priya", "okafor", "maria", "okoro"}                # proper nouns we care about
+def entity_error(R, H):
+    tot = err = 0
+    for r, h in zip(R, H):
+        rset, hset = set(normalise(r).split()), set(normalise(h).split())
+        for e in rset & ENTITIES: tot += 1; err += e not in hset
+    return err / tot
+print("\\nentity error rate:  A", f"{entity_error(refs, sysA):.2f}", "  B", f"{entity_error(refs, sysB):.2f}")
+
+# RTF and time to first token measured on two decoders over the same 10 s of audio.
+# The "model" is a fixed amount of matrix work per 20 ms frame; what differs is when output is released.
+import time, numpy as np
+W = np.random.default_rng(0).standard_normal((512, 512)).astype(np.float32)
+def frame_work(): v = np.ones(512, np.float32); [v := np.tanh(W @ v) for _ in range(4)]
+def run(chunk_frames, lookahead_frames):
+    t0, first = time.perf_counter(), None
+    for i in range(500):                              # 500 frames = 10 s
+        frame_work()
+        if chunk_frames and (i + 1) % chunk_frames == 0 and first is None:
+            for _ in range(lookahead_frames): frame_work()  # streaming pays extra right-context work per chunk
+            first = time.perf_counter() - t0
+    total = time.perf_counter() - t0
+    return total / 10.0, first if first is not None else total   # offline releases text only at the end
+for name, cf, la in [("offline (whole clip, one pass)", 0, 0), ("streaming (16-frame chunks)", 16, 8)]:
+    rtf, ttft = run(cf, la)
+    print(f"{name:<32} RTF {rtf:.4f}   time to first token {ttft * 1000:7.1f} ms")`,
+        out: ` 'the cat sat' -> 'the cat sat'        WER 0.000 (S0 D0 I0)  expected 0.000  ok
+ 'the cat sat' -> 'the bat sat'        WER 0.333 (S1 D0 I0)  expected 0.333  ok
+ 'the cat sat' -> 'the sat'            WER 0.333 (S0 D1 I0)  expected 0.333  ok
+ 'the cat sat' -> 'the cat sat down'   WER 0.333 (S0 D0 I1)  expected 0.333  ok
+         'a b' -> 'x y z w'            WER 2.000 (S2 D0 I2)  expected 2.000  ok
+
+          raw WER   normalised WER
+system A     0.818            0.167
+system B     0.091            0.083
+
+entity error rate:  A 0.00   B 1.00
+offline (whole clip, one pass)   RTF 0.0039   time to first token    39.2 ms
+streaming (16-frame chunks)      RTF 0.0048   time to first token     2.6 ms`,
+       
         notes: [
           { t: "p", text: "The case where WER and entity error rate disagree is the one worth constructing, because it is common in practice and it changes decisions. A system that is slightly worse on filler words and noticeably better on names and numbers will lose on WER and win with users. Once you have seen the two metrics rank systems oppositely on your own data, reporting WER alone stops feeling sufficient." },
           { t: "p", text: "The normaliser experiment usually moves WER by several points, which is more than the difference between many competing systems. That is the practical reason to publish the normaliser alongside any number: a WER without one is not comparable to anyone else's, and the temptation to pick the normalisation that flatters your system is real and largely invisible to readers." },
           { t: "p", text: "For RTF against latency, adding a buffer that accumulates five seconds of audio before processing leaves RTF unchanged — the same total work over the same duration — while time to first token rises by five seconds. A system can therefore report an excellent RTF and feel unusable. Report both, and for interactive applications report time to first token first." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a model that won on WER and lost on account numbers",
+      body: [
+        { t: "p", text: "**Symptom.** A team switched speech vendors because the new one had lower WER, and errors in spoken account numbers rose." },
+        { t: "p", text: "**Mechanism.** WER weights every word equally. The new system was better on common words and worse on numbers, which mattered most to the business." },
+        { t: "p", text: "**Fix.** Evaluation reports error rates for the entity types that matter alongside WER, with a fixed normaliser." }
+      ] }
   ],
 
   takeaways: [

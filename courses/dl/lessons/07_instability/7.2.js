@@ -96,21 +96,102 @@ def lr_at(step, base_lr, warmup, total):
     { t: "callout", kind: "mental", title: "GELU is the transformer's answer to the same problem",
       body: [{ t: "p", text: "GELU is smooth and has a small negative response rather than a hard zero, so it shares LeakyReLU's property that gradient never vanishes exactly. That is part of why it became standard in transformers, alongside being a better empirical fit. The general principle is worth holding: **an activation with an exactly-zero derivative region has an absorbing state**, and any unit that enters it is lost. Whether that matters depends on how often units enter it, which is governed by the learning rate and the initialisation — which is why dead ReLUs are a symptom rather than a root cause." }] },
 
+    { t: "callout", kind: "trap", title: "Training without warm-up at a high learning rate",
+
+      body: [
+
+        { t: "p", text: "The first gradients are the least reliable, and a full learning rate from step one can push weights into a region the model never recovers from — a spike, or units that die permanently." },
+
+        { t: "p", text: "Ramp the learning rate up over the first few hundred to few thousand steps, and log the dead-unit fraction early in training." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Kill a network, then prevent it", difficulty: "intermediate", minutes: 35,
       prompt: "Train a ReLU network and log the dead fraction per layer every epoch at three learning rates — one healthy, one aggressive, one clearly too high. Plot dead fraction against step for each. Then repeat the aggressive setting with LeakyReLU and with BatchNorm added, and see which prevents the deaths. Separately, train with and without warmup at a learning rate that spikes without it, and compare the loss curves over the first 500 steps.",
+      requirements: [
+        "Train a ReLU network at a healthy, an aggressive and a too-high learning rate",
+        "Log and plot the dead fraction per layer",
+        "Repeat the aggressive setting with LeakyReLU and with BatchNorm",
+        "Compare the first 500 steps with and without warm-up"
+      ],
       hints: [
         "Compute the dead fraction on a fixed validation batch so it is comparable across steps.",
         "The aggressive learning rate should kill units early and then plateau — the survivors are stable.",
         "For the warmup comparison, use a transformer or a deep stack, where the effect is largest."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from sklearn.datasets import load_digits
+
+X, y = load_digits(return_X_y=True)
+X = torch.tensor(X / 16.0, dtype=torch.float32); y = torch.tensor(y)
+
+def net(act="relu", bn=False):
+    layers = []
+    for i, o in [(64, 256), (256, 256), (256, 256)]:
+        layers += [nn.Linear(i, o)] + ([nn.BatchNorm1d(o)] if bn else []) + [nn.ReLU() if act == "relu" else nn.LeakyReLU(0.01)]
+    return nn.Sequential(*layers, nn.Linear(256, 10))
+
+def dead_fraction(m):
+    """share of units in each hidden layer that output <= 0 for every training example
+    (for LeakyReLU such a unit still has gradient 0.01, so it can recover)"""
+    out, h = [], X
+    with torch.no_grad():
+        for layer in m:
+            h = layer(h)
+            if isinstance(layer, (nn.ReLU, nn.LeakyReLU)): out.append((h <= 0).all(0).float().mean().item())
+    return out
+
+def run(lr, act="relu", bn=False, warmup=0, steps=600, log=(0, 50, 200, 600)):
+    torch.manual_seed(0); m = net(act, bn); opt = torch.optim.SGD(m.parameters(), lr, momentum=0.9)
+    rows, losses = [], []
+    for step in range(1, steps + 1):
+        for g in opt.param_groups: g["lr"] = lr * min(1.0, step / warmup) if warmup else lr
+        idx = torch.randint(0, len(X), (64,))
+        m.train(); loss = F.cross_entropy(m(X[idx]), y[idx]); opt.zero_grad(); loss.backward(); opt.step()
+        losses.append(loss.item())
+        if step in log: m.eval(); rows.append((step, dead_fraction(m)))
+    return rows, losses
+
+for name, kw in [("healthy lr 0.01", dict(lr=0.01)), ("aggressive lr 0.3", dict(lr=0.3)), ("too high lr 1.0", dict(lr=1.0)),
+                 ("aggressive + LeakyReLU", dict(lr=0.3, act="leaky")), ("aggressive + BatchNorm", dict(lr=0.3, bn=True))]:
+    rows, losses = run(**kw)
+    if losses[-1] != losses[-1]:
+        print(f"{name:<24} diverged to NaN at step {next(i for i, l in enumerate(losses, 1) if l != l)}; dead fraction at step 50: " + "/".join(f"{v:.2f}" for v in rows[0][1])); continue
+    print(f"{name:<24} dead fraction per layer at steps 50 / 200 / 600: " +
+          "  ".join("/".join(f"{v:.2f}" for v in d) for s, d in rows if s in (50, 200, 600)) + f"   final loss {sum(losses[-50:]) / 50:.3f}")
+
+print("\\nfirst 500 steps at lr 0.3: max loss / mean loss over steps 400-500")
+for wu in [0, 200]:
+    _, losses = run(0.3, warmup=wu, steps=500, log=())
+    print(f"  {'warm-up 200 steps' if wu else 'no warm-up       '}: {max(losses):10.3g} / {sum(losses[400:]) / 100:.3f}")`,
+        out: `healthy lr 0.01          dead fraction per layer at steps 50 / 200 / 600: 0.02/0.08/0.14  0.02/0.12/0.14  0.02/0.09/0.10   final loss 0.093
+aggressive lr 0.3        dead fraction per layer at steps 50 / 200 / 600: 0.26/0.16/0.08  0.68/0.26/0.36  0.91/0.75/0.95   final loss 1.980
+too high lr 1.0          diverged to NaN at step 35; dead fraction at step 50: 0.93/0.00/0.00
+aggressive + LeakyReLU   dead fraction per layer at steps 50 / 200 / 600: 0.32/0.11/0.08  0.69/0.04/0.23  0.75/0.01/0.35   final loss 0.330
+aggressive + BatchNorm   dead fraction per layer at steps 50 / 200 / 600: 0.00/0.00/0.00  0.00/0.00/0.00  0.00/0.00/0.00   final loss 0.004
+
+first 500 steps at lr 0.3: max loss / mean loss over steps 400-500
+  no warm-up       :       43.3 / 2.002
+  warm-up 200 steps:        2.3 / 0.215`,
+       
         notes: [
           { t: "p", text: "The dead-fraction curve typically rises sharply in the first few hundred steps and then flattens, which tells you something useful: the deaths happen early, while gradients are large and uninformed, and the units that survive that phase mostly keep surviving. That is exactly the window warmup protects, so the two fixes are addressing the same moment in training from different angles." },
           { t: "p", text: "LeakyReLU should prevent permanent death entirely — units can be driven negative and still recover, because the gradient is small rather than zero. BatchNorm helps differently, by re-centring pre-activations each batch so a unit cannot drift permanently into the negative region. Seeing which one your setup needs is informative: if BatchNorm fixes it, the problem was drift; if only LeakyReLU does, individual large steps were killing units outright." },
           { t: "p", text: "The warmup comparison is starkest on a deep transformer, where without it the loss frequently spikes within the first few hundred steps and does not recover. With warmup the same configuration trains smoothly. It is worth doing once because warmup looks like a minor scheduling detail until you have watched a run die without it, and then it becomes obvious why it is standard for anything deep or large-batch." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a loss spike that ended a week-long run",
+      body: [
+        { t: "p", text: "**Symptom.** A large training run diverged on day five after a sudden loss spike, and the last checkpoint was days old." },
+        { t: "p", text: "**Mechanism.** A batch with unusual data produced a large gradient, and with no warm-up or clipping the update pushed the model into a bad region it never left." },
+        { t: "p", text: "**Fix.** The run uses learning-rate warm-up, gradient clipping chosen from logged norms, and frequent checkpoints, with automatic rollback when the loss jumps." }
+      ] }
   ],
 
   takeaways: [

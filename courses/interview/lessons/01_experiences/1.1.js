@@ -285,7 +285,8 @@ top_p over the T=1.0 distribution (cumulative 0.887, 0.960, 0.977, 0.990, ...):
     { t: "callout", kind: "trap", title: "The interaction people get wrong",
       body: [
         { t: "p", text: "Measured on the same distribution: **at T=1.0, top_p=0.9 keeps 2 tokens; at T=2.0, top_p=0.9 keeps 4.** Temperature reshapes the distribution that top_p then measures, so raising temperature widens the nucleus as well — the two are not independent dials." },
-        { t: "p", text: "Which is why the usual advice is to **tune one and leave the other**. For anything calling tools or extracting fields, temperature at or near 0 and top_p at 1; tool-choice accuracy and instruction-following both degrade as temperature rises, and determinism is worth more than variety there." }
+        { t: "p", text: "Which is why the usual advice is to **tune one and leave the other**. For anything calling tools or extracting fields, temperature at or near 0 and top_p at 1; tool-choice accuracy and instruction-following both degrade as temperature rises, and determinism is worth more than variety there." },
+        { t: "p", text: "Then the sentence that dates the answer correctly, because an interviewer may be testing whether you know it: **on the newest hosted models the dial is gone.** As of late 2026 current Claude models reject `temperature` with a 400 and Gemini 3.6 and later ignore it, so the advice above applies to open-weight serving and to APIs that still expose sampling — and on the others, consistency comes from the instruction, a schema and the reasoning-effort setting instead (GenAI lesson 1.15)." }
       ] },
 
     { t: "h2", n: "10", text: "Catastrophic forgetting, and prompt compression", id: "forgetting" },
@@ -459,6 +460,12 @@ timing, n = 20,000:
 
     { t: "exercise", kind: "practice", title: "Run the chain out loud, with a timer", difficulty: "core", minutes: 30,
       prompt: "Answer these aloud in order, ninety seconds each: RAG against agentic RAG; reranking; cross-encoder against bi-encoder; rerank without a cross-encoder; accuracy dropped to 60%; KV cache memory; temperature and top_p; errors across millions of users; 50k documents; guardrails; RBAC; OAuth. Then go back and attach one number to each — a cost multiple, a latency band, a memory figure, a measured speed-up — and mark the answers where you could not. Finally, write out trapping rain water in one pass without running it, then run it against the five edge cases.",
+      requirements: [
+        "Answer the twelve questions aloud in order, ninety seconds each, with a timer",
+        "Record each answer and mark where you gave a definition rather than a mechanism",
+        "For each, add one number or one failure you have seen",
+        "Re-record the three weakest answers"
+      ],
       hints: [
         "Ninety seconds is the real constraint: a four-minute answer gets interrupted.",
         "The 'cannot be precomputed' clause is the whole cross-encoder answer.",
@@ -469,8 +476,14 @@ timing, n = 20,000:
           { t: "p", text: "The answers you cannot attach a number to are the ones you have read rather than built — which is exactly the distinction this interviewer said they were checking. The fix is not to invent a number; it is to say the order of magnitude and that you have not measured it, which is both true and much harder to catch out." },
           { t: "p", text: "Writing the rain-water solution without running it, then testing the five edge cases, reproduces the actual pressure: in a live round you cannot iterate against a test runner. The empty list and the single bar are the two that catch people who typed it from memory." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the candidate who knew every pattern and had run none",
+      body: [
+        { t: "p", text: "**Symptom.** A candidate for a senior agentic-systems role described advanced RAG, reranking and agent evaluation fluently in the first round and was rejected after the second." },
+        { t: "p", text: "**Mechanism.** Every answer was correct and general. When the interviewer asked one level deeper — what latency the reranker added, what the accuracy was before and after, what broke in production — there was nothing underneath. The interviewer's stated test was whether an answer was theoretical or lived, and fluency without numbers read as theoretical." },
+        { t: "p", text: "**Fix.** The candidate rebuilt preparation around measurements: one small RAG system run end to end, with a number for each claim — retrieval recall, reranker latency, the cost per query — and a failure they had seen and fixed. The next interview's follow-up questions became the strongest part." }
+      ] }
   ],
 
   takeaways: [

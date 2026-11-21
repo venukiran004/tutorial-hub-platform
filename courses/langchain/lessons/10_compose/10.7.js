@@ -136,6 +136,12 @@ EC.receiveLesson({
       code: "accepted -> ['model=x tone=<default>']",
       caption: "Not rejected." },
     { t: "p", text: "So like 8.4's input schema, the declaration documents and shapes rather than rejects. The value is discoverability and types at the read site, not enforcement at the boundary \u2014 and if you want enforcement, that is a Pydantic context schema or a check in the caller." },
+    { t: "callout", kind: "trap", title: "Reading config with a dictionary lookup and a silent default",
+      body: [
+        { t: "p", text: "`config[\"configurable\"].get(\"model\", \"default\")` returns the default when a caller misspells the key, so a request for the careful model silently runs on the cheap one. Nothing fails; quality drops for that caller." },
+        { t: "p", text: "Use a typed `context_schema` so the field is declared once with its default and a misspelt key is visible, and log which model actually ran on each request." }
+      ] },
+
     { t: "exercise", kind: "build", title: "Configure a graph at runtime",
       difficulty: "core", minutes: 28,
       body: "Read per-invocation configuration from a node using the dict form, and note the deprecation on config_schema. Then rewrite it with a dataclass context_schema and a typed Runtime, listing what changed. Say what else Runtime exposes. Draw the line between context and state. Then determine what happens when context is omitted entirely, as against passed empty, and show how a node reading an attribute behaves in each case. Finally check whether an undeclared context key is rejected.",

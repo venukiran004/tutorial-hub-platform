@@ -200,6 +200,17 @@ naw.BackTranslationAug(from_model_name="facebook/wmt19-en-de",
       caption: "**Character-level augmentation is label-safe and word-level is not** — a WordNet synonym substituted into \u201carrived two days late\u201d can soften the very word the sentiment label depends on, and the augmented row keeps the original label regardless. Back-translation is the safest of the word-level family because it rewrites the whole sentence under a meaning-preserving objective instead of swapping individual tokens." },
     { t: "p", text: "**Two rules make augmentation safe rather than merely plausible: augment the training split only, and inspect a sample before trusting the pipeline.** Augmenting before the split puts near-duplicates of the same sentence on both sides of it, which inflates the validation score exactly as a duplicate row would — and reading twenty augmented examples takes a minute and catches the inverted labels no metric will show you." },
 
+    { t: "callout", kind: "trap", title: "Augmenting with unchecked synonym replacement",
+
+      body: [
+
+        { t: "p", text: "WordNet synonyms include unrelated senses, so augmented sentences can change meaning and still carry the original label, adding noise to training." },
+
+        { t: "p", text: "Keep augmented sentences only when an NLI model judges them entailed by the original." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Build a verified augmentation pipeline", difficulty: "stretch", minutes: 50,
       requirements: [
         "Run synonym replacement over 100 of your own sentences and count how many survive an entailment filter.",
@@ -217,7 +228,8 @@ import torch
 from nltk.corpus import wordnet as wn
 from nltk import pos_tag, word_tokenize
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, MarianMTModel, MarianTokenizer
-from docs import DOCS
+from docs import DOCS   # docs.py is yours: DOCS = [six or more multi-sentence English passages]
+                        # the output shown is from the author's passages, so your figures will differ
 random.seed(0)
 
 nli_tok = AutoTokenizer.from_pretrained("roberta-large-mnli")
@@ -293,7 +305,14 @@ summary sentences by label: {'entailment': 2, 'contradiction': 1, 'neutral': 1}`
           { t: "p", text: "No threshold catches everything. 'The restored ceiling of the main dorm' passed at 0.928. The NLI model tolerates a plausible noun swap, so sample and read the survivors as well as the rejects." },
           { t: "p", text: "Back-translation changed 25 of 30 sentences and 29 survived the strict filter. That is a far better survival rate than WordNet synonyms, because the translation model chooses words in context. As a faithfulness check, NLI separated all four summary sentences correctly: two entailed, a wrong date as contradiction (0.994), and an invented speed claim as neutral (0.997). The 10x augmentation scaling experiment needs a training set and several fine-tuning runs, so it is not run here." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: augmented training data that taught nonsense",
+      body: [
+        { t: "p", text: "**Symptom.** Adding synonym-augmented reviews to training lowered the sentiment model's accuracy." },
+        { t: "p", text: "**Mechanism.** WordNet synonym replacement produced sentences such as 'The Robert William Service at this restaurant was fantabulous'. Many augmented examples no longer meant what their labels said." },
+        { t: "p", text: "**Fix.** Augmented sentences are kept only if an NLI model judges them to be entailed by the original, and the model is evaluated with and without augmentation." }
+      ] }
   ],
 
   takeaways: [

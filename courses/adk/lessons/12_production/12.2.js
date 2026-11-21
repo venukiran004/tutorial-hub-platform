@@ -159,6 +159,12 @@ remote.delete(force=True)                                   # force also removes
 
     { t: "exercise", kind: "practice", title: "Build the deployment before you deploy it", difficulty: "advanced", minutes: 26,
       prompt: "Take an agent with at least one tool that imports a third-party library. Wrap it in AdkApp locally and print register_operations(). Then write the agent_engines.create call you would run: list every requirement by walking your imports, decide which configuration values are env_vars and which must be SecretRefs, name the service account and the roles it needs, and choose min_instances with a reason. Finally, write down what breaks if each of those is wrong.",
+      requirements: [
+        "Wrap an agent in AdkApp and print register_operations()",
+        "Write the agent_engines.create call with every requirement found by walking imports",
+        "Decide which values are env_vars and which are SecretRefs",
+        "Name the service account, its roles and min_instances, and what breaks if each is wrong"
+      ],
       hints: [
         "AdkApp constructs without any deploy, so you can check the operations list in a second.",
         "Walk imports transitively — your tool's library has dependencies too, though pip resolves those.",
@@ -169,8 +175,14 @@ remote.delete(force=True)                                   # force also removes
           { t: "p", text: "The operations list is the same for every ADK agent, which is the point of checking it: your application's interface to the deployment does not depend on what your agent does. Sessions, memory and a streaming query — that is all a caller gets, and it is all a caller needs." },
           { t: "p", text: "The failure modes are usefully different from each other. A missing requirement fails at runtime, inside the deployed container, on the first turn that touches that import — so it can survive a smoke test and break on a real question. A secret in `env_vars` as a plain string does not fail at all; it just sits readable in the engine's spec. An under-privileged service account fails loudly and immediately, which is the best of the three. And `min_instances=0` fails only in the way users notice: the first request after a quiet period waits for a cold start." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: an engine that failed on its first request",
+      body: [
+        { t: "p", text: "**Symptom.** A newly deployed engine returned an import error on its first query, though the agent ran perfectly locally." },
+        { t: "p", text: "**Mechanism.** The deployment's requirements list was written by hand and omitted a library one tool imported lazily. Requirements are not inferred from the local environment." },
+        { t: "p", text: "**Fix.** Requirements are generated from the project's lock file and a local `AdkApp` smoke test imports every tool module before deploying." }
+      ] }
   ],
 
   takeaways: [

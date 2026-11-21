@@ -198,7 +198,7 @@ EC.receiveLesson({
 
 
     { t: "code", lang: "python", title: "The standard fine-tuning loop", code:
-"from transformers import (AutoTokenizer, AutoModelForSequenceClassification,\n                          TrainingArguments, Trainer)\nfrom datasets import load_dataset\nimport evaluate, numpy as np\n\ndataset = load_dataset(\"imdb\")\nname = \"distilbert-base-uncased\"\ntokenizer = AutoTokenizer.from_pretrained(name)\nmodel = AutoModelForSequenceClassification.from_pretrained(name, num_labels=2)\n\ndef tokenize(batch):\n    return tokenizer(batch[\"text\"], padding=\"max_length\",\n                     truncation=True, max_length=256)\n\ntokenized = dataset.map(tokenize, batched=True)     # cached on disk\n\nmetric = evaluate.load(\"accuracy\")\ndef compute_metrics(eval_pred):\n    logits, labels = eval_pred\n    return metric.compute(predictions=np.argmax(logits, -1), references=labels)\n\nargs = TrainingArguments(output_dir=\"./results\", eval_strategy=\"epoch\",\n                         learning_rate=2e-5, per_device_train_batch_size=16,\n                         num_train_epochs=3, weight_decay=0.01)\n\nTrainer(model=model, args=args, compute_metrics=compute_metrics,\n        train_dataset=tokenized[\"train\"].shuffle(seed=42).select(range(5000)),\n        eval_dataset=tokenized[\"test\"].shuffle(seed=42).select(range(1000))).train()",
+"from transformers import (AutoTokenizer, AutoModelForSequenceClassification,\n                          TrainingArguments, Trainer)\nfrom datasets import load_dataset\nimport evaluate, numpy as np\n\ndataset = load_dataset(\"stanfordnlp/imdb\")   # current datasets releases need the namespaced id\nname = \"distilbert-base-uncased\"\ntokenizer = AutoTokenizer.from_pretrained(name)\nmodel = AutoModelForSequenceClassification.from_pretrained(name, num_labels=2)\n\ndef tokenize(batch):\n    return tokenizer(batch[\"text\"], padding=\"max_length\",\n                     truncation=True, max_length=256)\n\ntokenized = dataset.map(tokenize, batched=True)     # cached on disk\n\nmetric = evaluate.load(\"accuracy\")\ndef compute_metrics(eval_pred):\n    logits, labels = eval_pred\n    return metric.compute(predictions=np.argmax(logits, -1), references=labels)\n\nargs = TrainingArguments(output_dir=\"./results\", eval_strategy=\"epoch\",\n                         learning_rate=2e-5, per_device_train_batch_size=16,\n                         num_train_epochs=3, weight_decay=0.01)\n\nTrainer(model=model, args=args, compute_metrics=compute_metrics,\n        train_dataset=tokenized[\"train\"].shuffle(seed=42).select(range(5000)),\n        eval_dataset=tokenized[\"test\"].shuffle(seed=42).select(range(1000))).train()",
       caption: "`eval_strategy` was `evaluation_strategy` before transformers 4.41 — one of the more commonly hit renames." },
 
     { t: "dl", items: [
@@ -278,7 +278,14 @@ surgeon      P(she)=0.267 P(he)=0.609  ratio=  2.3x`,
           { t: "p", text: "RoBERTa accepted BERT's token ids and returned a correctly shaped tensor. Decoded with RoBERTa's own vocabulary, the input was 'like asking newspaper statements clearly changing Pl violations TVa', so the model processed nonsense without complaint. Load the tokeniser and the model from the same checkpoint name, and assert it in code." },
           { t: "p", text: "The untrained three-label head gave 0.485 to one class on meaningless input. Softmax always sums to one, so probabilities from a random head look like an opinion. For the bias probes, write the ratios as assertions, for example P(he) / P(she) for 'engineer' must stay below a bound you choose. Re-run them on every model update. Here 'engineer' gave a 15.6× ratio and 'receptionist' 10.9× the other way." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: embeddings that changed with batch size",
+      body: [
+        { t: "p", text: "**Symptom.** A semantic-search index returned different neighbours for the same document depending on whether it was embedded alone or in a batch." },
+        { t: "p", text: "**Mechanism.** The code dropped the attention mask when calling the model. Padding tokens were attended to, so a short document's vector depended on how much padding its batch needed." },
+        { t: "p", text: "**Fix.** The attention mask is always passed, pooling ignores padding positions, and a test embeds one text alone and in a padded batch and asserts the vectors match." }
+      ] }
   ],
 
   takeaways: [

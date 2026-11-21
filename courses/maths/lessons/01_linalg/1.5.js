@@ -313,6 +313,17 @@ np.linalg.pinv(A) @ b                 # default rcond is scaled sensibly
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Reading small singular values as unimportant noise everywhere",
+
+      body: [
+
+        { t: "p", text: "Truncating an SVD keeps the directions with the most variance, which is right for compression and can be wrong for prediction: a direction with little variance can carry the signal a model needs." },
+
+        { t: "p", text: "Choose the rank by its effect on the task you care about — reconstruction error for compression, validation error for prediction — not by variance retained alone." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Challenge",
       title: "Size an embedding compression, honestly",

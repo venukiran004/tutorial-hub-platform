@@ -108,19 +108,99 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Build seq2seq and measure exposure bias", difficulty: "advanced", minutes: 45,
       prompt: "Build an encoder-decoder for a toy task — reversing a sequence, or copying it. Train with full teacher forcing and evaluate two ways: teacher-forced loss, and true free-running generation accuracy. Compare the two at source lengths 5, 10, 20 and 40. Then add scheduled sampling with a linear decay and see whether the gap narrows. Finally, log where in the output the first error occurs during free running and what happens after it.",
+      requirements: [
+        "Train an encoder–decoder with full teacher forcing on reversal or copying",
+        "Evaluate teacher-forced loss and free-running accuracy at lengths 5, 10, 20 and 40",
+        "Add scheduled sampling and compare",
+        "Log where the first free-running error occurs and what follows"
+      ],
       hints: [
         "Evaluate generation by actually generating — feed the model's own argmax back in.",
         "Plot both metrics against sequence length on the same axes.",
         "For the error analysis, record the position of the first mismatch and the edit distance of the remainder."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+V, BOS = 12, 0                                        # tokens 1..11, BOS = 0; task: reverse the source
+
+class Seq2Seq(nn.Module):
+    def __init__(self):
+        super().__init__(); self.e = nn.Embedding(V, 32)
+        self.enc = nn.GRU(32, 128, batch_first=True); self.dec = nn.GRU(32, 128, batch_first=True); self.o = nn.Linear(128, V)
+    def forward(self, src, tgt_in):                   # teacher forcing: the decoder sees the true previous token
+        _, h = self.enc(self.e(src)); return self.o(self.dec(self.e(tgt_in), h)[0])
+    @torch.no_grad()
+    def generate(self, src):                          # free running: the decoder sees its own previous output
+        _, h = self.enc(self.e(src)); tok = torch.full((src.shape[0], 1), BOS); out = []
+        for _ in range(src.shape[1]):
+            o, h = self.dec(self.e(tok), h); tok = self.o(o).argmax(-1); out.append(tok)
+        return torch.cat(out, 1)
+
+def batch(n, L): s = torch.randint(1, V, (n, L)); return s, s.flip(1)
+
+def train(L, scheduled=False, steps=1500):
+    torch.manual_seed(0); m = Seq2Seq(); opt = torch.optim.Adam(m.parameters(), 2e-3)
+    for step in range(steps):
+        src, tgt = batch(64, L); tin = torch.cat([torch.full((64, 1), BOS), tgt[:, :-1]], 1)
+        if scheduled:                                 # linear decay of teacher forcing from 1.0 to 0.5
+            p_teacher = 1.0 - 0.5 * step / steps
+            with torch.no_grad(): pred = m(src, tin).argmax(-1)
+            use_model = torch.rand(tin.shape) > p_teacher; use_model[:, 0] = False
+            tin = torch.where(use_model, torch.cat([torch.full((64, 1), BOS), pred[:, :-1]], 1), tin)
+        loss = F.cross_entropy(m(src, tin).reshape(-1, V), tgt.reshape(-1)); opt.zero_grad(); loss.backward(); opt.step()
+    return m
+
+def evaluate(m, L):
+    src, tgt = batch(1000, L); tin = torch.cat([torch.full((1000, 1), BOS), tgt[:, :-1]], 1)
+    with torch.no_grad():
+        tf_loss = F.cross_entropy(m(src, tin).reshape(-1, V), tgt.reshape(-1)).item()
+        tf_acc = (m(src, tin).argmax(-1) == tgt).float().mean().item()
+    gen = m.generate(src); free_tok = (gen == tgt).float().mean().item(); exact = (gen == tgt).all(1).float().mean().item()
+    return tf_loss, tf_acc, free_tok, exact, gen, tgt
+
+print("length  schedule   TF loss  TF token acc  free-running token acc  exact match")
+keep = {}
+for L in [5, 10, 20, 40]:
+    for sched in [False, True]:
+        m = train(L, sched); tl, ta, ft, ex, gen, tgt = evaluate(m, L)
+        print(f"{L:<7} {'scheduled' if sched else 'teacher  '}  {tl:7.3f}  {ta:12.3f}  {ft:22.3f}  {ex:11.3f}")
+        if L == 20 and not sched: keep = dict(gen=gen, tgt=tgt)
+
+# Where does the first free-running error happen, and what follows it? (length 20, teacher forcing)
+wrong = keep["gen"] != keep["tgt"]; has = wrong.any(1)
+first = wrong.float().argmax(1)[has]
+after = torch.stack([wrong[i, f + 1:].float().mean() if f + 1 < 20 else torch.tensor(0.) for i, f in zip(has.nonzero().flatten(), first)])
+before = torch.stack([wrong[i, :f].float().mean() if f > 0 else torch.tensor(0.) for i, f in zip(has.nonzero().flatten(), first)])
+print(f"\\nlength 20: {has.float().mean():.0%} of outputs contain an error; first error at position "
+      f"{first.float().mean():.1f} on average; error rate after it {after.mean():.0%} (before it, by definition, 0%)")`,
+        out: `length  schedule   TF loss  TF token acc  free-running token acc  exact match
+5       teacher      0.029         0.992                   0.987        0.960
+5       scheduled    0.067         0.976                   0.959        0.884
+10      teacher      0.120         0.961                   0.916        0.666
+10      scheduled    0.111         0.973                   0.941        0.758
+20      teacher      0.451         0.831                   0.589        0.016
+20      scheduled    0.410         0.862                   0.672        0.036
+40      teacher      1.098         0.574                   0.261        0.000
+40      scheduled    1.164         0.557                   0.394        0.000
+
+length 20: 98% of outputs contain an error; first error at position 6.0 on average; error rate after it 56% (before it, by definition, 0%)`,
+       
         notes: [
           { t: "p", text: "The two evaluation curves should diverge sharply with length. Teacher-forced loss degrades gently because every step gets a correct prefix regardless; free-running accuracy falls off a cliff, because the probability of getting *every* step right is the product of per-step probabilities and that product collapses. This is why a teacher-forced validation loss is close to useless as a proxy for generation quality — it is measuring a task the model will never perform." },
           { t: "p", text: "The error-position analysis makes compounding concrete. You will typically see output that is correct up to some position and then degrades rapidly rather than making isolated independent mistakes, because after the first error the decoder is conditioning on a prefix unlike anything in training. Repetition loops are the common failure mode, and they arise for exactly this reason." },
           { t: "p", text: "Scheduled sampling should narrow the gap but may also make training noisier, and it is worth noticing that the training loss gets *worse* as the schedule advances — the task genuinely is harder when the model must condition on its own errors. That is not a bug. It is the point, and it is also why the technique is theoretically awkward: the objective changes shape during training rather than staying fixed." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a translation model that collapsed when left to itself",
+      body: [
+        { t: "p", text: "**Symptom.** A seq2seq model's validation loss was low, and its free-running translations fell apart after the first mistake." },
+        { t: "p", text: "**Mechanism.** It was trained only with teacher forcing, so it had never seen its own errors as input. One wrong token led to a sequence it did not know how to continue." },
+        { t: "p", text: "**Fix.** Evaluation measures free-running generation, and scheduled sampling exposes the model to its own predictions during training." }
+      ] }
   ],
 
   takeaways: [

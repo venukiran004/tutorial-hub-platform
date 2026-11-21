@@ -47,7 +47,7 @@ EC.receiveLesson({
   GRU :   296,448
   LSTM:   395,264
   Transformer encoder layer (d=256, ff=1024):   789,760
-  reference formula LSTM 4h(h+d) = 393,216` },
+  textbook formula LSTM 4h(h+d) = 393,216` },
 
     { t: "p", text: "At `input=128, hidden=256` the ratios are the ones module 3 established: GRU is exactly 3× an RNN, LSTM exactly 4×. The `4h(h+d) = 393,216` differs from PyTorch's 395,264 by 2,048, which is the two redundant bias vectors PyTorch keeps for CuDNN compatibility. **A single transformer layer costs about twice an LSTM** — and models use six or more of them, so the comparison is not really per-layer." },
 
@@ -107,19 +107,103 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Compare all four on one problem", difficulty: "intermediate", minutes: 45,
       prompt: "Take one sequence classification task and implement four models with matched parameter budgets: a dense network on pooled embeddings, a CNN with 1-D convolutions, an LSTM, and a small transformer encoder. Train each on 500, 5,000 and 50,000 examples and plot accuracy against dataset size for all four. Then add a fifth: a pretrained transformer, fine-tuned. Record training time as well as accuracy.",
+      requirements: [
+        "Implement dense, 1-D CNN, LSTM and transformer models with matched parameters",
+        "Train each on 500, 5,000 and 50,000 examples",
+        "Plot accuracy against dataset size",
+        "Add a fine-tuned pretrained transformer and record training time"
+      ],
       hints: [
         "Match parameter counts, not layer counts, or you are comparing capacity.",
         "The curves' relative order should change as data grows — that is the point.",
         "Include the pretrained model's accuracy at 500 examples specifically."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import time
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)          # nested-tensor notice from TransformerEncoder
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from datasets import load_dataset
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, logging as hf_logging
+hf_logging.set_verbosity_error(); hf_logging.disable_progress_bar()
+
+ds = load_dataset("nyu-mll/glue", "sst2")                    # sentence sentiment, 67k training sentences
+tok = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+def encode(split, n, L=48):
+    e = tok(ds[split]["sentence"][:n], padding="max_length", truncation=True, max_length=L, return_tensors="pt")
+    return e.input_ids, e.attention_mask, torch.tensor(ds[split]["label"][:n])
+Xva, Mva, yva = encode("validation", 872)
+V, D = tok.vocab_size, 64                                     # every model shares a 64-d embedding (1.95M parameters)
+
+class Dense(nn.Module):
+    def __init__(self): super().__init__(); self.e = nn.Embedding(V, D); self.f = nn.Sequential(nn.Linear(D, 320), nn.ReLU(), nn.Linear(320, 2))
+    def forward(self, x, m): m = m[..., None].float(); return self.f((self.e(x) * m).sum(1) / m.sum(1))
+class CNN(nn.Module):
+    def __init__(self): super().__init__(); self.e = nn.Embedding(V, D); self.c = nn.Conv1d(D, 96, 3, padding=1); self.o = nn.Linear(96, 2)
+    def forward(self, x, m): h = F.relu(self.c(self.e(x).transpose(1, 2))); return self.o(h.masked_fill(~m[:, None].bool(), -1e4).max(2).values)
+class LSTM(nn.Module):
+    def __init__(self): super().__init__(); self.e = nn.Embedding(V, D); self.r = nn.LSTM(D, 40, batch_first=True); self.o = nn.Linear(40, 2)
+    def forward(self, x, m):
+        p = nn.utils.rnn.pack_padded_sequence(self.e(x), m.sum(1).clamp(min=1), batch_first=True, enforce_sorted=False)
+        return self.o(self.r(p)[1][0][-1])
+class Transformer(nn.Module):
+    def __init__(self):
+        super().__init__(); self.e = nn.Embedding(V, D); self.p = nn.Embedding(48, D)
+        self.t = nn.TransformerEncoder(nn.TransformerEncoderLayer(D, 4, 32, batch_first=True, dropout=0.1), 1); self.o = nn.Linear(D, 2)
+    def forward(self, x, m):
+        h = self.t(self.e(x) + self.p(torch.arange(x.shape[1])), src_key_padding_mask=~m.bool()); mf = m[..., None].float()
+        return self.o((h * mf).sum(1) / mf.sum(1).clamp(min=1))
+
+class Pretrained(nn.Module):
+    def __init__(self): super().__init__(); self.m = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=2)
+    def forward(self, x, m): return self.m(input_ids=x, attention_mask=m).logits
+
+def non_embedding(m): return sum(p.numel() for n, p in m.named_parameters() if not n.startswith(("e.", "p.")))
+print("parameters beyond the shared embedding: " + ", ".join(f"{c.__name__} {non_embedding(c()):,}" for c in (Dense, CNN, LSTM, Transformer)))
+
+def train(model, X, M, y, steps, lr=2e-3, bs=64):
+    opt = torch.optim.AdamW(model.parameters(), lr); t0 = time.time()
+    for _ in range(steps):
+        model.train(); i = torch.randint(0, len(X), (bs,))
+        loss = F.cross_entropy(model(X[i], M[i]), y[i]); opt.zero_grad(); loss.backward(); opt.step()
+    model.eval()
+    with torch.no_grad():
+        out = torch.cat([model(Xva[j:j + 128], Mva[j:j + 128]) for j in range(0, 872, 128)])
+    return (out.argmax(1) == yva).float().mean().item(), time.time() - t0
+
+print("\\ntraining examples   " + "".join(f"{c.__name__:>13}" for c in (Dense, CNN, LSTM, Transformer)) + "   DistilBERT fine-tuned")
+for n in [500, 5000, 50000]:
+    X, M, y = encode("train", n); row = []
+    for cls in (Dense, CNN, LSTM, Transformer):
+        torch.manual_seed(0); row.append(train(cls(), X, M, y, steps=max(300, 3 * n // 64)))
+    cell = "   not run: over an hour on CPU"
+    if n <= 5000:
+        torch.manual_seed(0); a, s = train(Pretrained(), X, M, y, steps=max(60, n // 32), lr=3e-5, bs=32)
+        cell = f"{a:12.3f} ({s:.0f}s)"
+    print(f"{n:<19} " + "".join(f"{a:7.3f} ({s:3.0f}s)" for a, s in row) + "  " + cell)`,
+        out: `parameters beyond the shared embedding: Dense 21,442, CNN 18,722, LSTM 17,042, Transformer 21,218
+
+training examples           Dense          CNN         LSTM  Transformer   DistilBERT fine-tuned
+500                   0.609 ( 11s)  0.608 ( 17s)  0.576 ( 74s)  0.558 ( 48s)         0.797 (476s)
+5000                  0.704 ( 10s)  0.714 ( 17s)  0.696 ( 31s)  0.680 ( 30s)         0.864 (538s)
+50000                 0.790 ( 22s)  0.775 ( 31s)  0.798 ( 60s)  0.775 ( 72s)     not run: over an hour on CPU`,
+       
         notes: [
-          { t: "p", text: "The expected pattern is that the from-scratch transformer is worst at 500 examples and best at 50,000, because it has the least built-in structure and the most to learn. The LSTM and CNN, which encode sequential and local assumptions respectively, do better when data is scarce. Seeing the curves cross is the clearest demonstration of inductive bias as a data budget that I know of — it turns an abstract idea into a picture." },
-          { t: "p", text: "The pretrained model is the result that reframes everything. It will likely beat all four from-scratch models at 500 examples by a wide margin, and possibly at 50,000 too, while taking less time to fine-tune than any of them took to train. Lesson 2.5 measured the vision equivalent at +32.8 points. Running this once is worth more than any amount of being told that transfer learning dominates architecture choice." },
+          { t: "p", text: "The textbook expectation is that the from-scratch transformer is worst at small data and catches up as data grows, because it has the least built-in structure and the most to learn. Run it rather than assume it. In the reference run on SST-2, with every model at about 17,000–21,000 parameters beyond a shared embedding, the transformer was last at 500 examples (0.558) and still behind at 50,000 (0.775 against the LSTM's 0.798): at this size and data budget the curves converge but do not cross. Short single sentences are also a task where word order adds little over a bag of words, which is why the dense model keeps pace. The crossover the theory predicts needs more data, longer inputs or a bigger model, and finding where it happens on your own task is the useful measurement." },
+          { t: "p", text: "The pretrained model is the result that reframes everything. In the reference run a fine-tuned DistilBERT scored 0.797 at 500 examples — level with the best from-scratch model trained on a hundred times as much data (0.798 at 50,000) — and 0.864 at 5,000. It was also by far the slowest on a CPU (about eight minutes against seconds), so on a GPU it is cheap and on a laptop it is the expensive option. Lesson 2.5 measured the vision equivalent at +32.8 points. Running this once is worth more than any amount of being told that transfer learning dominates architecture choice." },
           { t: "p", text: "Record wall-clock alongside accuracy, because it changes the practical conclusion. The transformer trains faster per epoch than the LSTM at any real sequence length due to parallelism, so even where their accuracies are comparable the iteration speed differs — and iteration speed is usually what determines how good your final model is, since it sets how many ideas you can try." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a transformer chosen for a small dataset",
+      body: [
+        { t: "p", text: "**Symptom.** A team chose a transformer for a classification task with a few thousand examples, and an LSTM beat it." },
+        { t: "p", text: "**Mechanism.** Transformers have weak inductive bias and need more data or pretraining. At small data sizes, models with more built-in structure did better." },
+        { t: "p", text: "**Fix.** Model choice is made from a learning curve across dataset sizes, and a pretrained model is the default when data is small." }
+      ] }
   ],
 
   takeaways: [

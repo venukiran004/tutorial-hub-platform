@@ -142,6 +142,17 @@ EC.receiveLesson({
         { t: "p", text: "The same applies to the technique list. A plan assembled on a prototype quietly assumes a network, a model provider and a shallow playout buffer \u2014 and two of the five deployment targets have none of the three. Checking the toolbox against the target is as important as checking the budget against it, and it is the step people skip." }
       ] },
 
+    { t: "callout", kind: "trap", title: "Budgeting latency on a headset and shipping on a phone line",
+
+      body: [
+
+        { t: "p", text: "A voice pipeline tuned on a developer's headset meets codecs, network jitter and echo on a phone line or in a car, which add hundreds of milliseconds. A design that felt responsive in development starts outside the usable band in production." },
+
+        { t: "p", text: "Measure the pipeline through the target channel early, and budget for its added latency before tuning anything else." }
+
+      ] },
+
+
     { t: "exercise", kind: "analysis", title: "Budget the pipeline across five deployment targets",
       difficulty: "core", minutes: 24,
       body: "Take the 1,650 ms cascaded budget and apply per-target deltas for telephony, speakerphone, connected in-car and offline in-car. Report each target's latency and perception band, as built and after the optimisations that target still supports. Then build an availability matrix of this module's eight techniques against the five targets, and work out the telephony barge-in budget with a carrier-depth playout buffer.",

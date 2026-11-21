@@ -297,7 +297,14 @@ def fetch_orders(conn, *, customer_ids=None, statuses=None, since=None, sort="pl
           why: "Escaping tries to make data safe inside code; parameters keep data out of the code. Only the second is complete."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a search box that dropped a table",
+      body: [
+        { t: "p", text: "**Symptom.** A search endpoint in an internal tool deleted a table after a tester typed a crafted string into it." },
+        { t: "p", text: "**Mechanism.** The query was built with an f-string from the search text. The input closed the string literal and added a second statement, which the driver executed." },
+        { t: "p", text: "**Fix.** Values are passed as parameters, identifiers come from an allow-list, and the database role used by the tool has no DROP privilege. A test sends injection strings to every endpoint that queries the database." }
+      ] }
   ],
 
   takeaways: [

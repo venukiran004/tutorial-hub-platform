@@ -111,7 +111,7 @@ EC.receiveLesson({
 
     { t: "code", lang: "python", title: "dynamic quantisation", code:
 "import torch\n\nquantized = torch.quantization.quantize_dynamic(\n    model, {torch.nn.Linear}, dtype=torch.qint8)\nquantized.eval()",
-      caption: "Dynamic quantisation stores Linear weights as int8 and quantises activations on the fly. One line, no calibration data, CPU only." },
+      caption: "Dynamic quantisation stores Linear weights as int8 and quantises activations on the fly. One line, no calibration data, CPU only. On torch 2.10 `torch.ao.quantization` (and its `torch.quantization` alias) emits a deprecation warning pointing to `torchao`; the call still works." },
 
     { t: "out", text:
 "        latency (mean)   P95        size\nfp32    23.81 ms         26.41 ms   267.9 MB\nint8    13.29 ms         16.09 ms   138.7 MB\n\n1.79x faster, 48% smaller\n\nlogits fp32  [0.1527, 0.0397]\nlogits int8  [0.1527, 0.0635]\nmax abs difference 0.0238" },
@@ -272,7 +272,14 @@ skew test: 4 of 8 probes tokenise differently: ['Café au lait', 'NAÏVE', 'Ün�
           { t: "p", text: "One 150-token document in a batch of 31 two-token reviews took the batch to 3.1 s. Splitting by length took 0.24 s, 12.9 times faster for the same work. Sort or bucket by length before batching, especially on CPU." },
           { t: "p", text: "Dynamic int8 quantisation halved the batch time and kept every label on this 16-sentence set. Sixteen sentences is too few to show a small accuracy loss. Run the full evaluation set, per class, before shipping. The skew test caught four of eight probes where a serving-side ASCII strip changed the token ids. Keep that test in the suite; it costs milliseconds and catches a bug that otherwise only shows as accuracy drift." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: one long document slowed every request",
+      body: [
+        { t: "p", text: "**Symptom.** A classification service's p99 latency jumped from tens of milliseconds to seconds at random." },
+        { t: "p", text: "**Mechanism.** Requests were batched, and padding is per batch. A single long document forced every row in its batch to its length, so thirty-one short requests waited for one long one." },
+        { t: "p", text: "**Fix.** Requests are bucketed by length before batching, inputs are truncated to a set maximum, and latency is monitored as a distribution." }
+      ] }
   ],
 
   takeaways: [

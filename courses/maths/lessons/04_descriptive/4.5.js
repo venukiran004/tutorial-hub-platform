@@ -385,6 +385,17 @@ confounder_strength_needed(5.0)     # 9.47
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Trusting a correlation coefficient without the plot",
+
+      body: [
+
+        { t: "p", text: "Anscombe's quartet has four datasets with the same correlation and very different shapes, including one driven entirely by a single point. A reported correlation alone can describe none of them correctly." },
+
+        { t: "p", text: "Plot the data before reporting a correlation, and report Spearman alongside Pearson when outliers or non-linearity are possible." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Challenge",
       title: "Referee a causal claim from observational data",

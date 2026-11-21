@@ -67,12 +67,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", text: "The loss", id: "loss" },
 
-    {"kind": "trace", "title": "The model predicts “liebe” at all three positions, and the loss is 2.532", "caption": "**Mean cross-entropy 2.532, matching the reference exactly** — and the per-position probabilities show why: **p(target) is 0.014, 0.436 and 0.081.** Position 1 scores well **by accident**, because the target there happens to be `liebe`. Which is the classic untrained signature: **mode collapse — one output token dominates regardless of input, at 0.762, 0.436 and 0.774** — and it is what the first few hundred training steps typically fix, **before the model learns anything about the task.**", "left": "position", "codeW": 140, "vars": ["predicted", "target", "p(target)"], "steps": [{"code": "0", "state": ["liebe (0.762)", "ich", "0.014"], "tone": "crit"}, {"code": "1", "state": ["liebe (0.436)", "liebe", "0.436"], "changed": [0, 1, 2], "tone": "warn", "note": "right by accident"}, {"code": "2", "state": ["liebe (0.774)", "KI", "0.081"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "mean loss", "state": ["-", "-", "2.532"], "changed": [2], "tone": "violet", "note": "mode collapse"}], "t": "diagram", "id": "dg-6_6-05-4"},
+    {"kind": "trace", "title": "The model predicts “liebe” at all three positions, and the loss is 2.532", "caption": "**Mean cross-entropy 2.532, matching the hand calculation exactly** — and the per-position probabilities show why: **p(target) is 0.014, 0.436 and 0.081.** Position 1 scores well **by accident**, because the target there happens to be `liebe`. Which is the classic untrained signature: **mode collapse — one output token dominates regardless of input, at 0.762, 0.436 and 0.774** — and it is what the first few hundred training steps typically fix, **before the model learns anything about the task.**", "left": "position", "codeW": 140, "vars": ["predicted", "target", "p(target)"], "steps": [{"code": "0", "state": ["liebe (0.762)", "ich", "0.014"], "tone": "crit"}, {"code": "1", "state": ["liebe (0.436)", "liebe", "0.436"], "changed": [0, 1, 2], "tone": "warn", "note": "right by accident"}, {"code": "2", "state": ["liebe (0.774)", "KI", "0.081"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "mean loss", "state": ["-", "-", "2.532"], "changed": [2], "tone": "violet", "note": "mode collapse"}], "t": "diagram", "id": "dg-6_6-05-4"},
 
 
 
     { t: "out", text:
-"                 <bos>   <eos>   ich     liebe   KI\n  -> ich        0.093   0.093   0.014   0.762   0.038\n  -> liebe      0.035   0.035   0.143   0.436   0.351\n  -> KI         0.058   0.058   0.030   0.774   0.081\n\n  pos 0: predict 'liebe'   target 'ich'     p(target) = 0.014\n  pos 1: predict 'liebe'   target 'liebe'   p(target) = 0.436\n  pos 2: predict 'liebe'   target 'KI'      p(target) = 0.081\n\n  mean cross-entropy loss = 2.532        reference 2.532" },
+"                 <bos>   <eos>   ich     liebe   KI\n  -> ich        0.093   0.093   0.014   0.762   0.038\n  -> liebe      0.035   0.035   0.143   0.436   0.351\n  -> KI         0.058   0.058   0.030   0.774   0.081\n\n  pos 0: predict 'liebe'   target 'ich'     p(target) = 0.014\n  pos 1: predict 'liebe'   target 'liebe'   p(target) = 0.436\n  pos 2: predict 'liebe'   target 'KI'      p(target) = 0.081\n\n  mean cross-entropy loss = 2.532        by hand 2.532" },
 
     { t: "math", tex: "\\mathcal{L} = -\\frac{1}{T}\\sum_{t=1}^{T} \\log p_\\theta\\!\\left(y_t \\mid y_{<t}, \\text{source}\\right)" },
 
@@ -93,6 +93,17 @@ EC.receiveLesson({
 
     { t: "callout", kind: "insight", title: "One loss updates both stacks",
       body: [{ t: "p", text: "The encoder has no loss of its own. It is trained entirely by gradient flowing backwards through **cross-attention** — the decoder's queries meeting the encoder's keys and values is the only path connecting the two. So the encoder learns to produce representations that happen to be useful for the decoder's cross-attention, which is a purely indirect signal. That is worth appreciating: nothing ever tells the encoder what a good source representation is, only whether the decoder managed to translate from it." }] },
+
+    { t: "callout", kind: "trap", title: "Comparing initial loss with the uniform baseline",
+
+      body: [
+
+        { t: "p", text: "Random initial weights produce confident, arbitrary predictions, so an untrained model's loss can exceed the uniform-guess baseline. That is expected, not a bug." },
+
+        { t: "p", text: "Check initial loss against what your initialisation should give, and initialise the output layer small if near-uniform predictions are wanted." }
+
+      ] },
+
 
     { t: "exercise", kind: "Challenge", title: "Compute and compare", difficulty: "core", minutes: 30,
       requirements: [
@@ -182,7 +193,14 @@ add 0.5 x h0 to the row  p(ich) at position 0 0.016 -> 0.107; loss 2.8685 -> 2.4
           { t: "p", text: "The cross-attention matrix has no diagonal structure: <bos> attends most to 'love', 'ich' to 'AI'. Before training, alignment between source and target is arbitrary. A clean diagonal only appears after training." },
           { t: "p", text: "Doubling the 'ich' output row lowered p(ich) from 0.016 to 0.002, because its logit at position 0 was negative (−2.07), and doubling made it more negative. Moving the row toward the decoder state (adding 0.5 × h₀) raised p(ich) to 0.107 and cut the loss to 2.43. That is a single gradient-descent step on that row, done by hand." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: an untrained baseline that looked worse than random",
+      body: [
+        { t: "p", text: "**Symptom.** A team saw an initial loss above the uniform-guess baseline and assumed the training code was broken." },
+        { t: "p", text: "**Mechanism.** Random weights produce confident, arbitrary predictions, and cross-entropy punishes confident wrong predictions heavily, so the starting loss can exceed the uniform baseline." },
+        { t: "p", text: "**Fix.** Initial-loss checks compare against what initialisation should give, and output layers are initialised small so starting predictions are near uniform." }
+      ] }
   ],
 
   takeaways: [

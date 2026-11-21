@@ -365,6 +365,17 @@ out["above"] = out["amount"] > out["region_mean"]`,
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Reaching for apply first",
+
+      body: [
+
+        { t: "p", text: "`groupby().apply` calls Python once per group and is the slowest verb, and its output shape depends on what the function returns. It is often used where `agg` or `transform` does the same job in compiled code." },
+
+        { t: "p", text: "Choose the verb from the output shape — one row per group, one per input row, or whole groups — and use `apply` only when no named aggregation fits." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Refactor",
       title: "The cohort feature job that takes forty minutes",
@@ -623,7 +634,14 @@ def test_single_transaction_customer_has_share_one():
           why: "`transform` broadcasts the group statistic back to the original index, so `amount / transform(\"sum\")` needs no merge and no reset. `agg` gives one row per group and needs a join; `apply` works but runs Python per group and returns a MultiIndex to undo."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a groupby apply that took twenty minutes",
+      body: [
+        { t: "p", text: "**Symptom.** A feature-generation step using `groupby().apply()` took twenty minutes on a few million rows." },
+        { t: "p", text: "**Mechanism.** `apply` called a Python function once per group and concatenated the results. The function computed a per-group mean and a difference — work that `transform` does in compiled code in one pass." },
+        { t: "p", text: "**Fix.** The step uses `transform('mean')` and arithmetic on columns, and runs in seconds. `apply` is reserved for operations no named aggregation can express." }
+      ] }
   ],
 
   takeaways: [

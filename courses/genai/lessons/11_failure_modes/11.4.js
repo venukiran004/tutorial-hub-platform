@@ -273,7 +273,7 @@ for name, rule in RULES.items():
 
 print()
 print("=" * 78)
-print("B -- THE REFERENCE'S WORKED EXAMPLE, REPRODUCED WITH A REAL MODEL")
+print("B -- THE TEXTBOOK WORKED EXAMPLE, REPRODUCED WITH A REAL MODEL")
 print("=" * 78)
 print("the worked example: 4 sentences, 3 supported, 1 invented -> 0.75")
 print()
@@ -351,7 +351,7 @@ Support is available 24/7 worldwide.                    0.0221  0.5800  0.3980  
   argmax == entailment         accuracy 7/7   false-pass 0  false-flag 0
   entailment > contradiction   accuracy 7/7   false-pass 0  false-flag 0
 ==============================================================================
-B -- THE REFERENCE'S WORKED EXAMPLE, REPRODUCED WITH A REAL MODEL
+B -- THE TEXTBOOK WORKED EXAMPLE, REPRODUCED WITH A REAL MODEL
 ==============================================================================
 
 the worked example: 4 sentences, 3 supported, 1 invented -> 0.75

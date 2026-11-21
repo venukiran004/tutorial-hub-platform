@@ -210,6 +210,17 @@ def route(q):
       caption: "**The router runs before retrieval, which is what makes it different from reranking or query rewriting** \u2014 those improve an answer from the index you already chose, and a router decides whether that index is the right one at all. A question whose answer is a number in a database cannot be rescued by better retrieval over prose." },
     { t: "p", text: "**The threshold is the part that makes a router safe.** Nearest-prototype always returns a nearest route, including for a question unlike anything you enumerated \u2014 so without a similarity floor and a fallback, an unfamiliar question is confidently sent to whichever route it resembles least badly. This dispatch layer is also what sits underneath adaptive RAG and the agentic retrieval of lesson 5.11: the agent's choice of tool is this decision, made by a model instead of by a threshold." },
 
+    { t: "callout", kind: "trap", title: "Crediting the pattern with a gain that came from somewhere else",
+
+      body: [
+
+        { t: "p", text: "Small-to-big retrieval improved recall in the lesson, and part of that came from returning larger context rather than from the indexing pattern itself. Adopting a pattern because a benchmark improved, without separating its effects, leads to complexity that does not pay on your data." },
+
+        { t: "p", text: "Run an ablation for each part of a pattern on your own evaluation set before adopting it, and keep only the parts that move the metric." }
+
+      ] },
+
+
     { t: "exercise", kind: "lab", title: "Measure small-to-big against its own components", difficulty: "advanced", minutes: 35,
       body: "Build a parent-child index over your corpus: large parents, small children, with a mapping from each child back to its parent. Measure recall three ways \u2014 flat chunks at a middling size, the children alone, and small-to-big with parent lookup \u2014 and report the context tokens each configuration costs at the same k. Then decide which of the two effects the pattern bundles is doing the work.",
       requirements: [

@@ -155,11 +155,17 @@ lda.fit(dtm)`,
       ["Stability is a check worth running", "Fit several times with different seeds and see which topics recur. The stable ones are the real structure."]
     ] },
 
-    { t: "callout", kind: "warn", title: "Topic modelling is exploratory, not a classifier",
+    { t: "callout", kind: "trap", title: "Topic modelling is exploratory, not a classifier",
       body: [{ t: "p", text: "It is tempting to use topic assignments as labels and build on them, and the purity numbers above are the reason not to: 58 % and 61 % on two of four topics means nearly half those assignments disagree with the real category. If you know what the categories are, label a few hundred documents and train a classifier — lesson 2.1 measured 0.89 accuracy on exactly this data. Topic modelling is for when you *do not* know what the categories are and want a first look at a corpus, which is a real and useful job, and it is a different one." }] },
 
     { t: "exercise", kind: "practice", title: "Fit topics and test them", difficulty: "core", minutes: 40,
       prompt: "Fit LDA on a corpus at k = 3, 5, 10 and 20, and read the top ten words for each topic at each setting. Record which are interpretable, which are merges, and which are artefacts. Then fit the same k five times with different random seeds and measure which topics recur — stable topics are real structure. Compare against NMF on the same data. Finally, if you have labels, measure topic purity as done here.",
+      requirements: [
+        "Fit LDA at k = 3, 5, 10 and 20 and read each topic's top words",
+        "Mark which are interpretable, merged or artefacts",
+        "Refit one k five times with different seeds and measure which topics recur",
+        "Compare against NMF, and measure purity if you have labels"
+      ],
       hints: [
         "Use raw counts for LDA and TF-IDF for NMF — they expect different inputs.",
         "Match topics across seeds by the overlap of their top-20 word lists.",
@@ -171,8 +177,14 @@ lda.fit(dtm)`,
           { t: "p", text: "Junk topics like the box-score one I measured — `pts la pt 16 10 vs` — are a vocabulary problem rather than a model problem. Numbers, mailing-list artefacts and boilerplate co-occur strongly and so form statistically valid topics. Filtering them out of the vocabulary before fitting is more effective than trying to ignore the topic afterwards, because the junk vocabulary is also diluting the real topics." },
           { t: "p", text: "On purity: I measured 93 % for a clean topic and 58 % for a merged one on the same run. That spread is the honest summary of topic modelling — it finds real structure and it finds it unevenly, and there is no k at which every topic is clean. If you need reliable assignments, label a sample and train a classifier instead." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a 'topic' that was really box scores",
+      body: [
+        { t: "p", text: "**Symptom.** A content team built a recommendation category around an LDA topic that turned out to be lists of sports scores." },
+        { t: "p", text: "**Mechanism.** LDA groups words that co-occur, and numbers in result tables co-occurred heavily. The algorithm found structure in formatting, not meaning." },
+        { t: "p", text: "**Fix.** Topics are treated as exploratory: they are checked across random seeds for stability and reviewed by a person before any becomes a product category." }
+      ] }
   ],
 
   takeaways: [

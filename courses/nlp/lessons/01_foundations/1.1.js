@@ -212,18 +212,77 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Measure your own pipeline", difficulty: "foundation", minutes: 30,
       prompt: "Take a few hundred documents from any text source. Run them through each pipeline stage in turn and record the vocabulary size after each — raw, lowercased, punctuation stripped, stopwords removed, stemmed. Plot the curve. Then pick a task with a known answer, such as sentiment on labelled reviews, and train the same simple classifier on the output of each stage to see where accuracy peaks. Finally, find three documents where stopword removal changes the meaning.",
+      requirements: [
+        "Run a few hundred documents through each pipeline stage and record vocabulary size after each",
+        "Plot the vocabulary curve",
+        "Train the same classifier on each stage's output and find where accuracy peaks",
+        "Find three documents whose meaning a stage destroyed"
+      ],
       hints: [
         "Vocabulary size falls fastest at lowercasing and stemming.",
         "Accuracy often peaks before the most aggressive normalisation, not after.",
         "Negation, questions and comparatives are where stopword removal breaks things."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import re, string
+from datasets import load_dataset
+from nltk.stem import PorterStemmer
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS, TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+
+sst = load_dataset("nyu-mll/glue", "sst2")
+train, val = sst["train"].select(range(6000)), sst["validation"]
+stem = PorterStemmer().stem
+STAGES = [
+    ("raw",                 lambda t: t.split()),
+    ("lowercased",          lambda t: t.lower().split()),
+    ("punctuation removed", lambda t: t.lower().translate(str.maketrans("", "", string.punctuation)).split()),
+    ("stopwords removed",   lambda t: [w for w in t.lower().translate(str.maketrans("", "", string.punctuation)).split() if w not in ENGLISH_STOP_WORDS]),
+    ("stemmed",             lambda t: [stem(w) for w in t.lower().translate(str.maketrans("", "", string.punctuation)).split() if w not in ENGLISH_STOP_WORDS]),
+]
+docs = train["sentence"][:500]
+print("stage                 vocabulary (500 docs)   classifier accuracy (6,000 train, SST-2 validation)")
+for name, f in STAGES:
+    vocab = {w for d in docs for w in f(d)}
+    vec = TfidfVectorizer(analyzer=f)                       # the stage IS the tokeniser, so nothing else changes
+    clf = LogisticRegression(max_iter=2000).fit(vec.fit_transform(train["sentence"]), train["label"])
+    print(f"{name:<21} {len(vocab):>21}   {clf.score(vec.transform(val['sentence']), val['label']):.3f}")
+
+print("\\nsentences whose meaning stopword removal destroyed (scikit-learn's list contains 'not', 'no', 'never'):")
+f = STAGES[3][1]; shown = 0
+for s, y in zip(val["sentence"], val["label"]):
+    words = s.lower().split()
+    if any(w in words for w in ("not", "no", "never", "nothing")) and len(words) < 14:
+        print(f"  [{'pos' if y else 'neg'}] {s.strip()!r}\\n        -> {' '.join(f(s))!r}"); shown += 1
+    if shown == 3: break`,
+        out: `stage                 vocabulary (500 docs)   classifier accuracy (6,000 train, SST-2 validation)
+raw                                    1782   0.768
+lowercased                             1782   0.768
+punctuation removed                    1764   0.765
+stopwords removed                      1583   0.741
+stemmed                                1395   0.736
+
+sentences whose meaning stopword removal destroyed (scikit-learn's list contains 'not', 'no', 'never'):
+  [neg] 'scores no points for originality , wit , or intelligence .'
+        -> 'scores points originality wit intelligence'
+  [neg] "it 's not the ultimate depression-era gangster movie ."
+        -> 's ultimate depressionera gangster movie'
+  [neg] 'not exactly the bees knees'
+        -> 'exactly bees knees'`,
+       
         notes: [
           { t: "p", text: "The vocabulary curve falls steeply at first and then flattens, which is the practical argument for the early stages and against the late ones — you get most of the compression from lowercasing and punctuation, and stemming adds relatively little while destroying more. Where the accuracy curve peaks is dataset-dependent and worth knowing for your own data rather than assuming." },
           { t: "p", text: "The three broken documents are the exercise's real point. Negation is the easy one — I measured 'this movie is not good' and 'this movie is good' collapsing to the identical 'movie good'. Questions are the second: remove `who`, `what` and `where` and a question loses the thing that specifies what kind of answer it wants. Comparatives are the third, since `more`, `less`, `than` and `most` are all stopwords and all carry the comparison." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: negative reviews scored as positive",
+      body: [
+        { t: "p", text: "**Symptom.** A review-sentiment dashboard showed a product as well liked while its returns soared." },
+        { t: "p", text: "**Mechanism.** The pipeline removed stopwords with a standard list that includes 'not'. 'This product is not good' became 'product good', and the classifier did exactly what its inputs told it." },
+        { t: "p", text: "**Fix.** Negations were removed from the stopword list and the pipeline was compared stage by stage on labelled reviews, which showed accuracy peaked before stopword removal. The step was dropped." }
+      ] }
   ],
 
   takeaways: [

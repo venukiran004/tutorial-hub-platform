@@ -134,6 +134,12 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Audit a convolutional network", difficulty: "intermediate", minutes: 35,
       prompt: "Take a CNN and produce a per-layer table of parameters, output shape, and estimated FLOPs. Identify which layer holds the most parameters and which costs the most compute — they will not be the same layer. Then test the invariance claims directly: measure accuracy on the test set, and on the same test set shifted by 5 pixels, rotated by 15°, and scaled by 1.2×. Report all four.",
+      requirements: [
+        "Tabulate parameters, output shape and FLOPs per layer",
+        "Identify the layer with the most parameters and the one with the most compute",
+        "Measure accuracy on the test set and on shifted, rotated and scaled versions",
+        "Report all four"
+      ],
       hints: [
         "FLOPs per conv layer ≈ `O_H · O_W · K² · C_in · C_out · 2`.",
         "Early layers are usually compute-heavy and parameter-light; late layers the reverse.",
@@ -144,8 +150,14 @@ EC.receiveLesson({
           { t: "p", text: "The parameters-versus-FLOPs split is the point of the first half. Early layers operate on large feature maps with few channels, so they are cheap in parameters and expensive in compute; late layers are the opposite. Optimising the wrong end is a common mistake — if inference is slow, the fix is usually reducing early-layer spatial size, not pruning the large late layers." },
           { t: "p", text: "The invariance test typically shows accuracy holding up well under small translations and degrading noticeably under rotation and scale. That asymmetry is exactly what the architecture predicts: translation is built in, and nothing else is. It is worth seeing the numbers because it tells you which augmentations your particular deployment actually needs, rather than applying a standard recipe." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a 'translation-invariant' model that failed on shifted images",
+      body: [
+        { t: "p", text: "**Symptom.** A product classifier failed on photographs where the item was off centre." },
+        { t: "p", text: "**Mechanism.** Convolutions are translation-equivariant, not invariant, and the training images were all centred. Pooling gave only a little invariance." },
+        { t: "p", text: "**Fix.** Training uses random crops and shifts, and evaluation includes shifted, rotated and scaled test sets." }
+      ] }
   ],
 
   takeaways: [

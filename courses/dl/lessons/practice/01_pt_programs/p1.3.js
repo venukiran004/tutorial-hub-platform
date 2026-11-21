@@ -254,7 +254,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nmodel = torch.nn.Sequential(torch.nn.Linear(100, 256), torch.nn.ReLU(), torch.nn.Linear(256, 10))\nsize_fp32 = sum(p.numel() * 4 for p in model.parameters())\nquantized = torch.ao.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8)\nx = torch.randn(1, 100)\nout = quantized(x)\nprint(f\"FP32 size: {size_fp32:,} bytes\")\nprint(f\"Output: {out.shape}\")"
+     "code": "import torch\nmodel = torch.nn.Sequential(torch.nn.Linear(100, 256), torch.nn.ReLU(), torch.nn.Linear(256, 10))\nsize_fp32 = sum(p.numel() * 4 for p in model.parameters())\n# torch 2.10: torch(.ao).quantization is deprecated in favour of torchao; it still runs\nquantized = torch.ao.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8)\nx = torch.randn(1, 100)\nout = quantized(x)\nprint(f\"FP32 size: {size_fp32:,} bytes\")\nprint(f\"Output: {out.shape}\")"
     },
     {
      "t": "out",

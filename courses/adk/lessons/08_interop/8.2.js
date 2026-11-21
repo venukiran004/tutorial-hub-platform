@@ -156,6 +156,12 @@ same origin as the location the card was fetched from
 
     { t: "exercise", kind: "practice", title: "Read a card as a reviewer", difficulty: "core", minutes: 20,
       prompt: "Take the agent card above and write the review you would give if a team proposed exposing it on the public internet. Cover: what it discloses, what an anonymous caller could do with it, what you would change in the card itself, and what you would require before approving. Then write the three questions you would ask the team whose agent you were about to call.",
+      requirements: [
+        "Review the agent card for public exposure: what it discloses and what an anonymous caller could do",
+        "Say what you would change in the card",
+        "Say what you would require before approving",
+        "Write the three questions you would ask the team whose agent you were about to call"
+      ],
       hints: [
         "The skills list was generated from docstrings — read it as an attacker would.",
         "There is no authentication anywhere in that card.",
@@ -166,8 +172,14 @@ same origin as the location the card was fetched from
           { t: "p", text: "The disclosure is the first finding: internal tool names and their parameter documentation, served at a well-known path with no authentication. For an internal agent that is unremarkable; on the internet it is a map of your system. The card should be built deliberately rather than generated, with skills described in terms of what a caller can ask for rather than what the implementation has." },
           { t: "p", text: "The three questions to ask the other team are the ones that decide whether this is safe: what identity do you expect from us and what do you do with it; what does your agent have access to when it acts on our behalf; and what is your latency and availability, because a ten-minute default timeout means our user waits ten minutes when you are down. None of those are answered by the protocol, and all of them are answered by a conversation people skip because the integration was easy." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the agent card that listed an internal tool",
+      body: [
+        { t: "p", text: "**Symptom.** A security review of a partner integration found that a public agent card advertised a skill named after an internal administrative tool, with its description." },
+        { t: "p", text: "**Mechanism.** ADK generated the card's skills from the agent's tools and their docstrings. An administrative tool used only internally was on the same agent, so the card disclosed it to anyone who fetched the well-known URL." },
+        { t: "p", text: "**Fix.** The card is now written deliberately with only the public skills, and the internal tool moved to a separate agent that is not exposed over A2A." }
+      ] }
   ],
 
   takeaways: [

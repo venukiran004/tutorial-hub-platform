@@ -16,7 +16,7 @@ EC.receiveLesson({
   blocks: [
 
     { t: "h2", n: "01", id: "route", text: "Routing and cascades are different",
-      sub: "And the reference conflates them" },
+      sub: "And the usual advice conflates them" },
 
     {"kind": "flow", "title": "A cascade is strictly more expensive than a router, always", "caption": "At 80% easy traffic and a 15× price gap, a **router** costs 25.3% of running everything on the strong model. A **cascade** costs that plus the cheap model's price on the escalated share — so it is **strictly more expensive, always, by exactly that amount**. The gap is 1.3 points here. What the premium buys is that **a cascade needs no classifier**: a router requires something that can predict difficulty *before* seeing an answer, and a cascade just tries the cheap model and checks.", "cols": 3, "nodes": [{"id": "r", "label": "Router: classify, then one call", "sub": "25.3% of strong-only", "tone": "good"}, {"id": "c", "label": "Cascade: cheap first, escalate", "sub": "26.6% - strictly more", "tone": "accent"}, {"id": "d", "label": "The difference is the cheap call", "sub": "on the escalated share", "tone": "violet"}, {"id": "n", "label": "But a cascade needs no classifier", "sub": "which is what it buys", "tone": "good"}, {"id": "p", "label": "A router must predict difficulty", "sub": "before seeing any answer", "tone": "warn"}], "edges": [["r", "d"], ["c", "d"], ["d", "n"], ["n", "p"]], "t": "diagram", "id": "dg-11_9-01-0"},
 
@@ -238,7 +238,7 @@ B -- THE CASCADE CLAIM: '80% on a 15x cheaper model'
   the cascade is strictly worse AND it needs no classifier -- that is the trade.
 
 ==========================================================================
-A -- THE SEMANTIC CACHE THRESHOLD, AGAINST THE REFERENCE'S OWN EXAMPLE
+A -- THE SEMANTIC CACHE THRESHOLD, AGAINST THE USUAL EXAMPLE
 ==========================================================================
 the usual advice: set the threshold HIGH, e.g. >= 0.95
 and gives this pair as the motivating example of a semantic hit:
@@ -284,7 +284,7 @@ the dangerous neighbour is the one to name:
   a PIN is not a password and a colleague's password is not yours --
   but they are lexically and semantically adjacent, so a loose threshold
   serves a confidently wrong answer. that is the correctness bug the
-  reference warns about, with the numbers attached.`,
+  usual advice warns about, with the numbers attached.`,
         notes: [
           { t: "p", text: "**The cascade premium has a clean interpretation**: it is exactly the cheap model\u2019s price paid on the escalated share. So it shrinks as the price gap widens and grows as more traffic escalates \u2014 at a 15x gap and 20% escalation it is 1.3 points, and at a 3x gap with half the traffic escalating it is much larger." },
           { t: "p", text: "**Which means the cascade is only cheap when the cheap model is very cheap.** The pattern is usually justified by \u2018we avoid building a classifier\u2019, and that argument weakens exactly when the price gap narrows \u2014 the case where you most want the saving." },

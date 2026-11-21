@@ -406,8 +406,25 @@ def is_prime(n: int) -> bool:
       ["And type-hint it", "At this difficulty the code is almost free, so the signal is everything around it: a docstring, a type hint, the edge cases named, and the complexity stated without being asked."]
     ] },
 
+    { t: "callout", kind: "trap", title: "Answering a fundamental question with a definition",
+
+      body: [
+
+        { t: "p", text: "'What is RAG' invites a two-sentence definition that every candidate gives. It scores as no depth at all, because the interviewer is listening for whether you have built one." },
+
+        { t: "p", text: "Answer in layers: the definition, the mechanism, one thing that goes wrong in practice and how you would detect it — in under two minutes." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Answer both rounds out loud", difficulty: "core", minutes: 28,
       prompt: "Round one: what RAG is, PDFs with text and images, prompt engineering, imbalanced data, precision/recall/F1, agents against LLM apps — ninety seconds each. Round two: chunking strategies, unstructured PDF extraction, improving retrieval accuracy, SCD, duplicate removal, production components, LangChain against LangGraph. Then write both coding answers without running them, state the edge cases first, and only then test. Finally pick the three answers where you gave a definition rather than a mechanism, and rewrite those.",
+      requirements: [
+        "Answer the round-one and round-two questions aloud, ninety seconds each",
+        "Write both coding answers without running them, stating edge cases first",
+        "Test the code only after writing the edge cases",
+        "Pick the three answers that gave a definition rather than a mechanism, and rewrite them"
+      ],
       hints: [
         "For 'what is RAG', the four problems it solves beat the acronym expansion.",
         "For the metrics question, lead with the 99.11%-accuracy model that catches nothing.",
@@ -418,8 +435,14 @@ def is_prime(n: int) -> bool:
           { t: "p", text: "The definition-against-mechanism pass at the end is the point of the exercise. Fundamentals questions are dangerous precisely because a correct short answer is available to everybody, so the differentiator is the second sentence: the caveat, the trade-off, or the number." },
           { t: "p", text: "On the coding questions, writing before running reproduces the real condition. The two that catch people are `n < 2` in the prime check and negative numbers in the even/odd split — both are edge cases rather than logic, which is exactly what an easy question is testing." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the two-sentence answer to 'what is RAG'",
+      body: [
+        { t: "p", text: "**Symptom.** A candidate answered 'what is RAG' correctly in two sentences and the interviewer moved on quickly; the feedback later said the candidate lacked depth on fundamentals." },
+        { t: "p", text: "**Mechanism.** Fundamental questions are where an interviewer measures depth, because everyone knows the definition. A definition with no mechanism, trade-off or number scores the same as not having built anything." },
+        { t: "p", text: "**Fix.** The candidate now answers fundamentals in layers: the definition in one sentence, the mechanism in two, then one thing that goes wrong in practice and how they would detect it. The answer stays under two minutes and invites the follow-up they are ready for." }
+      ] }
   ],
 
   takeaways: [

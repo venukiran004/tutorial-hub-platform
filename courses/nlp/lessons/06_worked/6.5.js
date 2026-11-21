@@ -103,6 +103,17 @@ EC.receiveLesson({
     { t: "callout", kind: "note", title: "Two sublayers, exactly as in lesson 4.7",
       body: [{ t: "p", text: "Nothing here is specific to translation. This is the same encoder block from lesson 4.7 — two sublayers, two norms, two residuals, shape preserved throughout at (3, 4). A real model stacks six or more of these and the memory is the last one's output. The only thing that makes it an *encoder* rather than a decoder is the absence of a causal mask and the absence of a cross-attention sublayer." }] },
 
+    { t: "callout", kind: "trap", title: "Re-running the encoder at every decoding step",
+
+      body: [
+
+        { t: "p", text: "The source sequence does not change during decoding, so running the encoder again for each generated token wastes most of the compute." },
+
+        { t: "p", text: "Run the encoder once per input and cache its output for every decoder step and layer." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Trace the encoder", difficulty: "core", minutes: 30,
       requirements: [
         "Run the NumPy and confirm the memory matrix to three decimal places.",
@@ -188,7 +199,14 @@ memory change without the FFN: max 0.196, mean 0.103`,
           { t: "p", text: "Unmasked, 'I' reads all three source tokens. With a causal mask it can only read itself (weight 1.0), and its memory row moved by up to 1.6, the largest change of any row. A causal encoder throws away exactly the right-hand context that translation needs, and the first source word suffers most." },
           { t: "p", text: "A four-word source gives a 4×4 memory: one row per source token, independent of how long the translation will be. Its key and value projections are fixed for the whole translation. For 10 decoding steps across 6 layers, caching them saves 54 of 60 projections, the encoder-decoder version of the KV cache. Removing the FFN changed the memory by 0.10 on average and up to 0.20." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: re-running the encoder at every decoding step",
+      body: [
+        { t: "p", text: "**Symptom.** A translation service's latency grew with output length far faster than expected." },
+        { t: "p", text: "**Mechanism.** The implementation re-ran the encoder for every generated token, though the source does not change during decoding." },
+        { t: "p", text: "**Fix.** The encoder runs once per request and its output is cached for every decoder step and layer." }
+      ] }
   ],
 
   takeaways: [

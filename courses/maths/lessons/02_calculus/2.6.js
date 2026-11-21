@@ -424,6 +424,17 @@ assert rel < 1e-6, f"gradient mismatch: {rel:.2e}"` },
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Choosing a smaller finite-difference step for more accuracy",
+
+      body: [
+
+        { t: "p", text: "Shrinking the step reduces truncation error and increases rounding error; below about 1e-8 in double precision, a finite-difference gradient gets worse, not better." },
+
+        { t: "p", text: "Use a central difference with a step near 1e-5 to 1e-6 for gradient checks, or automatic differentiation when exact gradients matter." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Debug",
       title: "Find four numerical bugs in working code",

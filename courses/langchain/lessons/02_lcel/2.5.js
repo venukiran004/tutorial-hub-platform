@@ -134,6 +134,12 @@ EC.receiveLesson({
       out: "I am not sure which specialist handles that.",
       caption: "A default that declines beats a default that guesses." },
     { t: "p", text: "The temptation is to make the default a general-purpose chain, so that something always gets answered. That converts every routing failure into a plausible answer from the wrong specialist \u2014 which is invisible in metrics and arrives as a complaint. A default that says it does not know is a measurable signal, and the rate at which it fires tells you whether the router needs work." },
+    { t: "callout", kind: "trap", title: "A branch with no default that silently does nothing",
+      body: [
+        { t: "p", text: "`RunnableBranch` requires a default, and the common workaround for 'there is no sensible default' is to pass a chain that returns an empty answer. Every input that matches none of the conditions — a new category, a typo, an unexpected language — is then answered with nothing, and no error is recorded." },
+        { t: "p", text: "Make the default branch explicit and loud: route to a human, return a clear refusal, or raise. Log which branch ran on every request, so an unmatched category shows up as a rising default count rather than as user complaints." }
+      ] },
+
     { t: "exercise", kind: "build", title: "Route two ways, then find the wall",
       difficulty: "core", minutes: 22,
       body: "Implement the same three-way router with RunnableBranch and with a plain function returning a Runnable, and confirm they behave identically. Then write down what neither can express, and build a router whose default declines rather than guessing.",

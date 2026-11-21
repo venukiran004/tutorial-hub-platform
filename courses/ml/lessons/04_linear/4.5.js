@@ -357,7 +357,14 @@ m1 = LogisticRegression(C=1).fit(X_leak, y)                               # a sm
           why: "Squared error through the sigmoid is not convex (two minima on six points); cross-entropy is. That is the reason for the pairing."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a coefficient that changed sign when a feature was added",
+      body: [
+        { t: "p", text: "**Symptom.** Analysts reported that a higher fee reduced churn, contradicting the previous quarter's report that it increased it." },
+        { t: "p", text: "**Mechanism.** Fee and plan were correlated. Adding plan to the model changed what the fee coefficient meant — the effect of fee within a plan rather than across plans." },
+        { t: "p", text: "**Fix.** Coefficients are reported with the model specification they belong to, and causal claims are made only with designs that support them." }
+      ] }
   ],
 
   takeaways: [

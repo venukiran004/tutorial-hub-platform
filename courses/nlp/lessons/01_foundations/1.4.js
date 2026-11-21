@@ -63,13 +63,13 @@ EC.receiveLesson({
 
 
     { t: "out", text: `  features: ['cat', 'chased', 'dog', 'log', 'mat', 'on', 'sat', 'the']
-  reference: ['cat','chased','dog','log','mat','on','sat','the']
+  expected: ['cat','chased','dog','log','mat','on','sat','the']
   match    : True
   matrix:
     doc 0 [1, 0, 0, 0, 1, 1, 1, 2]
     doc 1 [0, 0, 1, 1, 0, 1, 1, 2]
     doc 2 [1, 1, 1, 0, 0, 0, 0, 2]
-  reference matrix matches: True` },
+  hand-computed matrix matches: True` },
 
     { t: "p", text: "Three documents, eight distinct words, one row per document. The matrix reproduces exactly. Note the last column: **`the` is 2 in every single document**, so it contributes nothing that distinguishes one document from another — it is pure dimensionality with zero discriminative value, and that is the problem TF-IDF exists to address." },
 
@@ -227,19 +227,83 @@ EC.receiveLesson({
     { t: "p", text: "Worth knowing because the matrix is **sparse and its columns are anonymous integers** — without `get_feature_names_out()` you have a score for column 4 and no way to say which word that is. The pairing with `idf_` is the useful part: zip them together and you can print exactly why a term scored what it did, which is §05’s argument and the reason TF-IDF stays debuggable in a way an embedding is not." },
     { t: "exercise", kind: "practice", title: "Compute it yourself, then beat it", difficulty: "foundation", minutes: 35,
       prompt: "Take a labelled text classification dataset. Build BoW and TF-IDF representations and compare a linear classifier on each. Then compute the TF-IDF matrix by hand for three documents and reconcile every number against `TfidfVectorizer` — you will need to account for smoothing and L2 normalisation. Finally, inspect the highest-weighted features for each class and check whether they make sense; then add `sublinear_tf` and `min_df` and see what changes.",
+      requirements: [
+        "Compare a linear classifier on BoW and on TF-IDF features",
+        "Compute TF-IDF by hand for three documents and reconcile against TfidfVectorizer",
+        "Inspect the top-weighted features for each class",
+        "Add sublinear_tf and measure the change"
+      ],
       hints: [
         "`tfidf.idf_` exposes the fitted idf values for direct comparison.",
         "Rows are L2-normalised by default, so divide by the norm before comparing to a hand calculation.",
         "The top features per class should be readable — if they are not, suspect a preprocessing bug."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import math
+import numpy as np
+from sklearn.datasets import fetch_20newsgroups
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+
+cats = ["rec.sport.hockey", "sci.space", "comp.graphics", "talk.politics.mideast"]
+tr = fetch_20newsgroups(subset="train", categories=cats, remove=("headers", "footers", "quotes"))
+te = fetch_20newsgroups(subset="test", categories=cats, remove=("headers", "footers", "quotes"))
+
+def score(vec):
+    Xtr, Xte = vec.fit_transform(tr.data), vec.transform(te.data)
+    clf = LogisticRegression(max_iter=3000, C=10).fit(Xtr, tr.target)
+    return clf.score(Xte, te.target), clf, vec
+for name, vec in [("bag of words", CountVectorizer()), ("TF-IDF", TfidfVectorizer()),
+                  ("TF-IDF, sublinear_tf", TfidfVectorizer(sublinear_tf=True)), ("TF-IDF, sublinear_tf, min_df=3", TfidfVectorizer(sublinear_tf=True, min_df=3))]:
+    acc, clf, v = score(vec)
+    print(f"{name:<32} accuracy {acc:.3f}   features {len(v.vocabulary_):,}")
+    if name == "TF-IDF":
+        feats = np.array(v.get_feature_names_out())
+        for k, c in enumerate(tr.target_names):        # class order is tr.target_names (alphabetical), not cats
+            print(f"   top for {c:<22}", ", ".join(feats[np.argsort(clf.coef_[k])[-6:][::-1]]))
+
+# TF-IDF by hand for three documents, reconciled with TfidfVectorizer's defaults:
+# smooth_idf -> idf = ln((1 + N) / (1 + df)) + 1;  raw counts as tf;  each row L2-normalised.
+docs = ["the cat sat on the mat", "the dog sat on the log", "the cat chased the dog"]
+tokens = [d.split() for d in docs]; vocab = sorted({w for t in tokens for w in t}); N = len(docs)
+df = {w: sum(w in t for t in tokens) for w in vocab}
+idf = {w: math.log((1 + N) / (1 + df[w])) + 1 for w in vocab}
+rows = []
+for t in tokens:
+    r = np.array([t.count(w) * idf[w] for w in vocab]); rows.append(r / np.linalg.norm(r))
+hand = np.vstack(rows)
+sk = TfidfVectorizer().fit(docs)
+print("\\nvocabulary:", vocab)
+print("idf by hand:", " ".join(f"{w}={idf[w]:.4f}" for w in vocab))
+print(f"max |hand - TfidfVectorizer| = {np.abs(hand - sk.transform(docs).toarray()).max():.1e}   (idf match: "
+      f"{np.allclose([idf[w] for w in vocab], sk.idf_)})")`,
+        out: `bag of words                     accuracy 0.840   features 32,288
+TF-IDF                           accuracy 0.899   features 32,288
+   top for comp.graphics          graphics, image, file, computer, 3d, files
+   top for rec.sport.hockey       hockey, game, team, games, he, nhl
+   top for sci.space              space, nasa, orbit, moon, launch, spacecraft
+   top for talk.politics.mideast  israel, israeli, jews, jewish, turkish, of
+TF-IDF, sublinear_tf             accuracy 0.907   features 32,288
+TF-IDF, sublinear_tf, min_df=3   accuracy 0.900   features 11,068
+
+vocabulary: ['cat', 'chased', 'dog', 'log', 'mat', 'on', 'sat', 'the']
+idf by hand: cat=1.2877 chased=1.6931 dog=1.2877 log=1.6931 mat=1.6931 on=1.2877 sat=1.2877 the=1.0000
+max |hand - TfidfVectorizer| = 0.0e+00   (idf match: True)`,
+       
         notes: [
           { t: "p", text: "Reconciling with scikit-learn is the part that teaches the most, because it forces you to notice three defaults that differ from the textbook: smoothed idf, L2-normalised rows, and no division by document length. I verified the smoothed idf matches `ln((1+N)/(1+df)) + 1` exactly, which is the piece worth checking; the rest is convention and needs to be read from the documentation rather than assumed." },
           { t: "p", text: "Inspecting the top features per class is the cheapest debugging tool in classical NLP. If the top terms for a class are meaningless fragments, you have a tokenisation problem; if they are stopwords, your idf or min_df is not doing its job; and if they are artefacts like boilerplate or document IDs, you have leakage. All three are visible in thirty seconds and invisible in an accuracy number." },
           { t: "p", text: "TF-IDF with a linear model usually lands closer to a fine-tuned transformer than people expect. Where it loses is on tasks needing word order or meaning rather than presence — negation, comparison, anything where the same words in a different arrangement mean something different. That gap is exactly what embeddings and then attention were built to close." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a classifier that learned the template",
+      body: [
+        { t: "p", text: "**Symptom.** A support-ticket classifier performed well until a new ticketing system changed the email footer, then failed across every category." },
+        { t: "p", text: "**Mechanism.** The highest-weighted TF-IDF features were words from each team's signature template, not the problem described. The model had learned which template a ticket came from." },
+        { t: "p", text: "**Fix.** Templates and signatures are stripped before vectorising, and the top-weighted features per class are reviewed on every retrain." }
+      ] }
   ],
 
   takeaways: [

@@ -143,8 +143,25 @@ EC.receiveLesson({
         { label: "Otherwise: Terraform plus images", desc: "And if you adopt it anyway: it cannot clean up, so a removed task leaves the package installed." }
       ] },
 
+    { t: "callout", kind: "trap", title: "Expecting Ansible to clean up what you removed",
+
+      body: [
+
+        { t: "p", text: "Deleting a task from a playbook leaves its effects on every host that already ran it, because Ansible has no state of what it previously applied. Fleets end up split by when each host was provisioned." },
+
+        { t: "p", text: "State the desired end state explicitly — including absence — and rebuild long-lived hosts from images on a schedule." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Classify your own infrastructure", difficulty: "intro", minutes: 20,
       prompt: "List every machine your ML workloads touch — cloud instances, cluster nodes, on-prem GPU boxes, notebook servers, jump hosts — and for each one answer two questions. Is it disposable and rebuilt from an image, or is it long-lived and configured in place? And is anything kernel-adjacent installed on it: a GPU driver, a kernel module, a container runtime setting such as the shm default? Then apply the deletion test to three things in your Terraform configuration: if you removed the block, should the real resource be destroyed? Any that should not is in the wrong tool or needs `ignore_changes`.",
+      requirements: [
+        "List every machine your ML workloads touch and mark it disposable or long-lived",
+        "Note anything kernel-adjacent installed on each",
+        "Apply the deletion test to three resources in your Terraform configuration",
+        "Move or ignore any resource that fails the test"
+      ],
       hints: [
         "The machine nobody lists is usually the one that matters: an on-prem GPU box, or a notebook server someone set up by hand two years ago.",
         "A host configured in place with no record of what was done to it is the case Ansible's final 'record what was converged' task addresses.",
@@ -155,8 +172,14 @@ EC.receiveLesson({
           { t: "p", text: "Most container-native teams find every host is disposable and the answer is Terraform plus images, which is a legitimate conclusion rather than a gap. The exception is almost always GPU hardware: drivers are kernel-adjacent, so an image cannot supply them, and the version has to match what the containers' CUDA userland expects." },
           { t: "p", text: "The deletion test usually finds one resource that should not be destroyed if its block disappears — frequently a bucket holding data or a long-lived database. Those want `prevent_destroy` in their lifecycle block, which is the guardrail lesson 6.1 named." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the driver that came back after it was removed",
+      body: [
+        { t: "p", text: "**Symptom.** A team removed a pinned GPU driver task from its Ansible playbook so the cloud image's newer driver would be used. Months later, training jobs on half the on-prem boxes still failed with a CUDA version mismatch." },
+        { t: "p", text: "**Mechanism.** Ansible has no state file. Removing a task does not undo what the task did on machines that already ran it, so every host provisioned before the change kept the old driver. Only hosts set up afterwards got the new one, and the fleet was split along the date of the edit." },
+        { t: "p", text: "**Fix.** The playbook now has an explicit task asserting the driver version, which upgrades hosts that drift, and long-lived GPU machines are rebuilt from an image on a schedule. Removing a declaration in Ansible is not a request to undo it; stating the desired version is." }
+      ] }
   ],
 
   takeaways: [

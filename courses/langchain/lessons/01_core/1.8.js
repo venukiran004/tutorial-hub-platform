@@ -213,7 +213,7 @@ EC.receiveLesson({
         ["exactly one yes", "judgement call", "write the raw version and the one feature; revisit at the second"]
       ] },
 
-    { t: "callout", kind: "warn", title: "The failure mode is neither column",
+    { t: "callout", kind: "trap", title: "The failure mode is neither column",
       body: [
         { t: "p", text: "It is writing the raw version, then adding failover, then streaming, then a retry on one step \u2014 and rebuilding the uniformity yourself, badly, one requirement at a time. By the third addition you have an in-house abstraction with none of the testing, no documentation, and exactly one person who understands it." },
         { t: "p", text: "That is the outcome the five questions are designed to avoid, which is why they ask about the system you are **going to** build rather than the one you are writing this week." }

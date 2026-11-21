@@ -255,6 +255,17 @@ report approval and outcome rates by protected group; monitor drift, coverage an
         }
       ] },
 
+    { t: "callout", kind: "trap", title: "Removing the protected attribute and calling it fair",
+
+      body: [
+
+        { t: "p", text: "Other features often encode the protected attribute, so a model without it can still treat groups differently." },
+
+        { t: "p", text: "Keep the attribute for auditing, measure outcomes per group, and mitigate based on those measurements." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "The impossibility at other base rates, IPW by hand, and the strength of a collider",
@@ -298,7 +309,14 @@ report approval and outcome rates by protected group; monitor drift, coverage an
           { t: "p", text: "(c) is the collider's dose–response: the more a dataset has been selected on an outcome, the more it lies about the causes." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: removing the protected attribute did not remove the bias",
+      body: [
+        { t: "p", text: "**Symptom.** A lending model that did not use ethnicity still approved one group at a much lower rate." },
+        { t: "p", text: "**Mechanism.** Postcode and other features were strongly correlated with the attribute, so the model learned it indirectly." },
+        { t: "p", text: "**Fix.** Fairness is measured with the attribute held out of the model but kept for auditing, and mitigation is evaluated on outcome rates by group." }
+      ] }
   ],
 
   takeaways: [

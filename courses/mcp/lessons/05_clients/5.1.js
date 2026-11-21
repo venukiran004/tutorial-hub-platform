@@ -179,18 +179,121 @@ async def ask(q: Query):
 
     { t: "exercise", kind: "practice", title: "Build a client that does not leak", difficulty: "advanced", minutes: 30,
       prompt: "Write a client that connects to two servers via a session group with a name-prefix hook, lists the merged tools, and calls one from each. Deliberately create a name collision without the hook and record the error. Then build a small FastAPI app two ways: first with the client inside the handler, and measure the per-request latency; then with the group in the application lifespan, and measure again. Finally, kill one server subprocess while the app is running and record what the next call does — then add whatever is needed to survive it.",
+      requirements: [
+        "Connect to two servers through a session group with a name-prefix hook and call one tool from each",
+        "Create a name collision without the hook and record the error",
+        "Build a FastAPI app with the client inside the handler and measure per-request latency",
+        "Move the group into the application lifespan and measure again",
+        "Kill one server subprocess while the app runs, record what the next call does, and make the app survive it"
+      ],
       hints: [
         "Time ten sequential requests in each version; the difference is interpreter startup.",
         "Kill the child process by pid, from another terminal.",
         "The survival step is the one nobody writes until it happens in production."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `"""python 5.1.py runs everything; \`python 5.1.py serve <name>\` is one of the two stdio servers."""
+import json, logging, os, sys, time, warnings
+
+def serve(name):
+    from mcp.server.fastmcp import FastMCP
+    mcp = FastMCP(name)
+    @mcp.tool()
+    def status() -> str:
+        """Report this server's status."""
+        return json.dumps({"server": name, "pid": os.getpid()})
+    mcp.run()
+
+async def main():
+    import anyio, httpx
+    from contextlib import asynccontextmanager
+    from fastapi import FastAPI
+    from mcp import StdioServerParameters
+    from mcp.client.session_group import ClientSessionGroup
+    params = {n: StdioServerParameters(command=sys.executable, args=[__file__, "serve", n]) for n in ("billing", "shipping")}
+    hook = lambda name, info: f"{info.name}.{name}"              # prefix every tool with its server's name
+
+    async with ClientSessionGroup(component_name_hook=hook) as g:
+        for p in params.values(): await g.connect_to_server(p)
+        print("merged tools:", sorted(g.tools))
+        for t in ("billing.status", "shipping.status"):
+            print(f"  {t} ->", (await g.call_tool(t, {})).content[0].text)
+
+    print("\\nwithout the hook, both servers expose \`status\`:")
+    try:
+        async with ClientSessionGroup() as g:
+            for p in params.values(): await g.connect_to_server(p)
+    except Exception as e:
+        print(f"  {type(e).__name__}: {str(e)[:100]}")
+
+    # FastAPI, two ways
+    per_request = FastAPI()
+    @per_request.get("/status")
+    async def status_per_request():
+        async with ClientSessionGroup(component_name_hook=hook) as g:     # spawns a server on every request
+            await g.connect_to_server(params["billing"])
+            return json.loads((await g.call_tool("billing.status", {})).content[0].text)
+
+    @asynccontextmanager
+    async def lifespan(app):
+        async with ClientSessionGroup(component_name_hook=hook) as g:
+            await g.connect_to_server(params["billing"])
+            app.state.group = g
+            yield
+    shared = FastAPI(lifespan=lifespan)
+    @shared.get("/status")
+    async def status_shared():
+        g = shared.state.group
+        try:
+            return json.loads((await g.call_tool("billing.status", {})).content[0].text)
+        except Exception as e:                                  # the server died: reconnect once, then retry
+            for session in list(g.sessions): await g.disconnect_from_server(session)
+            await g.connect_to_server(params["billing"])
+            return {"reconnected_after": type(e).__name__, **json.loads((await g.call_tool("billing.status", {})).content[0].text)}
+
+    for label, app in [("client inside the handler", per_request), ("group in the app lifespan", shared)]:
+        async with app.router.lifespan_context(app):
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t") as c:
+                times = []
+                for _ in range(5):
+                    t0 = time.perf_counter(); r = await c.get("/status"); times.append((time.perf_counter() - t0) * 1000)
+                print(f"\\n{label}: per-request latency {', '.join(f'{x:.0f}' for x in times)} ms; pids {r.json()['pid']}")
+                if app is shared:
+                    os.kill(r.json()["pid"], 9)                 # kill the server subprocess under the running app
+                    await anyio.sleep(0.5)
+                    print("after killing the server:", (await c.get("/status")).json())
+
+if __name__ == "__main__":
+    if sys.argv[1:2] == ["serve"]: serve(sys.argv[2])
+    else:
+        warnings.filterwarnings("ignore"); logging.disable(logging.CRITICAL)
+        import anyio; anyio.run(main)`,
+        out: `merged tools: ['billing.status', 'shipping.status']
+  billing.status -> {"server": "billing", "pid": 9168}
+  shipping.status -> {"server": "shipping", "pid": 22496}
+
+without the hook, both servers expose \`status\`:
+  McpError: {'status'} already exist in group tools.
+
+client inside the handler: per-request latency 3193, 3173, 3203, 3169, 3224 ms; pids 19748
+
+group in the app lifespan: per-request latency 16, 11, 11, 12, 11 ms; pids 21568
+after killing the server: {'reconnected_after': 'ClosedResourceError', 'server': 'billing', 'pid': 22880}`,
+       
         notes: [
           { t: "p", text: "The latency comparison makes the case on its own — about a second per request against effectively zero — but the leak is the more serious half and it is harder to demonstrate: cancel a request mid-flight a few times and watch the process count climb. Nothing in the application's logs mentions it." },
           { t: "p", text: "Killing the subprocess is the step worth doing, because the default behaviour is unpleasant: every subsequent call fails, the group does not notice, and the application keeps serving errors until someone restarts it. A reconnect path plus a health check that actually calls a tool is the minimum, and 'is the process alive' is not a sufficient check — a wedged server is alive." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: four thousand orphaned server processes",
+      body: [
+        { t: "p", text: "**Symptom.** An agent API's hosts ran out of memory every few hours and were restarted by the orchestrator. Request logs showed nothing unusual, and latency had been poor — about a second per request — since launch." },
+        { t: "p", text: "**Mechanism.** The request handler opened a stdio client, called one tool and returned. Each request therefore launched a Python subprocess, which is where the second of latency went. Under cancellation — a client disconnecting mid-request — the handler's context managers did not always unwind, and the child process was left running. A few leaked per minute, and each held an interpreter and a loaded model of the data." },
+        { t: "p", text: "**Why it was missed.** Functionally it was correct: every request got its answer. The cost was a subprocess per request, which looks like slowness rather than a bug, and the leak needed hours of real traffic to show." },
+        { t: "p", text: "**Fix.** The session group moved into the application lifespan, so the subprocesses are started once and closed at shutdown, and per-request latency fell to the tool's own. A supervisor now detects a dead child and reconnects, because a long-lived connection is a thing that can fail between requests. A client owns a process, and ownership has to be given to something that lives as long as the process should." }
+      ] }
   ],
 
   takeaways: [

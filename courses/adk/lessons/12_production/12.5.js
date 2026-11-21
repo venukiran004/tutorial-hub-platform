@@ -125,8 +125,25 @@ EC.receiveLesson({
     { t: "callout", kind: "good", title: "The shortest honest summary of this course",
       body: [{ t: "p", text: "An agent is a loop you do not control, around a model that will sometimes be wrong and can sometimes be persuaded. Everything useful you build is about bounding what that loop can do: narrow tools, scoped credentials, checks that do not depend on recognising an attack, approval where reversal is impossible, and enough recorded detail to explain any answer afterwards. The framework makes all of that a few lines each. Deciding which to use is the engineering." }] },
 
+    { t: "callout", kind: "trap", title: "Deferring the decisions that are hard to undo",
+
+      body: [
+
+        { t: "p", text: "Identity, the session store, the event retention policy and the tool permission model are cheap to decide at the start and expensive to change once data and users depend on them. Teams that postpone them ship with whatever the defaults were." },
+
+        { t: "p", text: "Write those decisions down in the architecture review before launch, with the failure each one prevents, and revisit them only deliberately." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "The architecture review", difficulty: "expert", minutes: 45,
       prompt: "Take an agent you have built during this course, or design one for a domain you know. Write the full architecture: client, API, plugins, agents, tools, services, data layer. For each component, write one sentence saying what failure it prevents. Then answer all ten review questions from section 06 honestly, marking anything you cannot answer. Finally, write the paragraph you would give a security reviewer describing what the agent can do unattended, and the paragraph you would give a finance reviewer describing where the money goes.",
+      requirements: [
+        "Write the full architecture with one sentence per component naming the failure it prevents",
+        "Answer all ten review questions, marking any you cannot",
+        "Write the paragraph for a security reviewer on what the agent can do unattended",
+        "Write the paragraph for a finance reviewer on where the money goes"
+      ],
       hints: [
         "The components you cannot justify by a named failure are the ones to cut.",
         "The questions you cannot answer are your actual backlog.",
@@ -137,8 +154,14 @@ EC.receiveLesson({
           { t: "p", text: "The justification exercise is a filter in both directions. Components with no named failure behind them tend to be there because a tutorial had them — a memory service nobody ingests into, a reflection step nobody measured. And failures with no component behind them are the gaps: almost every design I have seen has no answer for a stuck approval or for what deletion means across three stores." },
           { t: "p", text: "The two paragraphs are the real deliverable. The security one forces you to enumerate side effects and thresholds in plain language, and it is very hard to write honestly for an agent with a broad tool list — which is itself the finding. The finance one forces you to know where tokens go, which is a question you can only answer if you attributed usage per agent, and it is usually the conversation that gets a classifier moved onto a cheaper model." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: an architecture with no owner for identity",
+      body: [
+        { t: "p", text: "**Symptom.** A pre-launch review of an agent platform found that three different layers each assumed another was authenticating users, and none did." },
+        { t: "p", text: "**Mechanism.** The API trusted the client, the agent trusted the API's `user_id`, and the tools trusted the agent. Each layer was correct about its own job and wrong about its neighbours'." },
+        { t: "p", text: "**Fix.** The API owns identity and derives `user_id` from a verified token, tools read identity from context rather than parameters, and the architecture document names which layer prevents which failure." }
+      ] }
   ],
 
   takeaways: [

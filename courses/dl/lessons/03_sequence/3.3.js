@@ -136,21 +136,123 @@ with torch.no_grad():
     { t: "callout", kind: "mental", title: "Path length is the quantity that matters",
       body: [{ t: "p", text: "Every solution here can be read as shortening the gradient's journey. An RNN's path from step 1 to step T passes through T multiplications. An LSTM keeps the path the same length but makes each hop cheap — multiply by a gate the network sets near 1. Skip connections literally shorten it. Self-attention reduces it to a single hop between *any* two positions, regardless of distance, which is why transformers handle thousands of tokens where LSTMs manage hundreds. When you meet a new sequence architecture, asking 'how long is the gradient path between distant positions?' will usually tell you what it is for." }] },
 
+    { t: "callout", kind: "trap", title: "Concluding an architecture does not work from a default initialisation",
+
+      body: [
+
+        { t: "p", text: "An LSTM at chance on a long-range task looks like evidence that LSTMs do not help. The cause in the lesson was a forget-gate bias of zero, which closes the gate at the start of training." },
+
+        { t: "p", text: "Before comparing architectures, check the gradient reaching early positions and use the recommended initialisation for each." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Run the diagnosis yourself", difficulty: "advanced", minutes: 45,
       prompt: "Build the signal-at-position-0 task and train an RNN, a default LSTM and an LSTM with forget-gate bias 1.0 at lags of 10, 20, 30 and 50. Before training, measure the gradient each model delivers to position 0. Then confirm the initialisation effect by sweeping the forget-gate bias over −1, 0, 1, 2 and 3 at a fixed lag, plotting accuracy against bias. Finally, log the mean forget-gate value during a successful run to see where it settles.",
+      requirements: [
+        "Train an RNN, a default LSTM and an LSTM with forget bias 1 at lags 10, 20, 30 and 50",
+        "Measure the gradient each delivers to position 0 before training",
+        "Sweep the forget bias over −1 to 3 at a fixed lag",
+        "Log the mean forget-gate value during a successful run"
+      ],
       hints: [
         "Set both `bias_ih_l0[H:2H]` and `bias_hh_l0[H:2H]` — they are summed.",
         "Use the same seed across variants so the comparison is about the bias alone.",
         "For the gradient measurement, `retain_grad()` on the embedding output gives per-position norms."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+# Signal-at-position-0: the label is the sign of x[0]; the remaining lag steps are noise.
+def data(n, lag):
+    x = torch.zeros(n, lag, 2); x[:, :, 1] = torch.randn(n, lag); y = (torch.rand(n) > 0.5).long()
+    x[:, 0, 0] = y.float() * 2 - 1; return x, y
+
+class Net(nn.Module):
+    def __init__(self, cell, forget_bias=None, H=32):
+        super().__init__(); self.r = cell(2, H, batch_first=True); self.o = nn.Linear(H, 2)
+        if forget_bias is not None:
+            with torch.no_grad():
+                self.r.bias_ih_l0.zero_(); self.r.bias_hh_l0.zero_(); self.r.bias_ih_l0[H:2 * H] = forget_bias
+    def forward(self, x): return self.o(self.r(x)[0][:, -1])
+
+def grad_at_0(m, lag):
+    x, y = data(256, lag); x.requires_grad_(True)
+    F.cross_entropy(m(x), y).backward(); return x.grad[:, 0].norm(dim=1).mean().item()
+
+def train(m, lag, steps=800):
+    opt = torch.optim.Adam(m.parameters(), 3e-3)
+    for _ in range(steps):
+        x, y = data(64, lag); loss = F.cross_entropy(m(x), y); opt.zero_grad(); loss.backward(); opt.step()
+    with torch.no_grad(): x, y = data(2000, lag); return (m(x).argmax(1) == y).float().mean().item()
+
+models = {"RNN": lambda: Net(nn.RNN), "LSTM default": lambda: Net(nn.LSTM), "LSTM forget=1": lambda: Net(nn.LSTM, 1.0)}
+print("lag  model           grad at t=0 (before training)  accuracy")
+for lag in [10, 20, 30, 50]:
+    for name, make in models.items():
+        torch.manual_seed(0); m = make(); g = grad_at_0(m, lag)
+        torch.manual_seed(0); m = make(); acc = train(m, lag)
+        print(f"{lag:<4} {name:<15} {g:29.2e}  {acc:8.3f}")
+
+print("\\nforget bias sweep at lag 50 (3 seeds each)")
+for fb in [-1.0, 0.0, 1.0, 2.0, 3.0]:
+    accs = []
+    for seed in range(3):
+        torch.manual_seed(seed); accs.append(train(Net(nn.LSTM, fb), 50))
+    print(f"bias {fb:+.0f}: accuracy " + " ".join(f"{a:.3f}" for a in accs))
+
+# Mean forget-gate value through a successful run (seed 1 solved lag 50 above)
+torch.manual_seed(1); m = Net(nn.LSTM, 1.0); opt = torch.optim.Adam(m.parameters(), 3e-3)
+for step in range(1, 801):
+    x, y = data(64, 50); loss = F.cross_entropy(m(x), y); opt.zero_grad(); loss.backward(); opt.step()
+    if step in (1, 100, 400, 800):
+        with torch.no_grad():                                 # recompute f_t from the weights
+            L, H = m.r, 32; h = c = torch.zeros(256, H); xs, _ = data(256, 50); fs = []
+            for t in range(50):
+                z = xs[:, t] @ L.weight_ih_l0.T + h @ L.weight_hh_l0.T + L.bias_ih_l0 + L.bias_hh_l0
+                i, f, g, o = z.chunk(4, 1); f = f.sigmoid(); c = f * c + i.sigmoid() * g.tanh(); h = o.sigmoid() * c.tanh(); fs.append(f.mean())
+        print(f"step {step:>3}: mean forget gate {torch.stack(fs).mean():.3f}")`,
+        out: `lag  model           grad at t=0 (before training)  accuracy
+10   RNN                                  1.97e-06     1.000
+10   LSTM default                         6.84e-07     1.000
+10   LSTM forget=1                        9.61e-06     1.000
+20   RNN                                  2.00e-08     1.000
+20   LSTM default                         5.73e-09     1.000
+20   LSTM forget=1                        1.71e-06     1.000
+30   RNN                                  2.22e-10     1.000
+30   LSTM default                         5.84e-11     0.506
+30   LSTM forget=1                        3.35e-07     1.000
+50   RNN                                  2.38e-14     0.506
+50   LSTM default                         5.38e-15     0.513
+50   LSTM forget=1                        1.85e-08     0.513
+
+forget bias sweep at lag 50 (3 seeds each)
+bias -1: accuracy 0.513 0.491 0.493
+bias +0: accuracy 0.513 0.491 0.501
+bias +1: accuracy 0.513 1.000 0.498
+bias +2: accuracy 1.000 1.000 0.501
+bias +3: accuracy 1.000 1.000 1.000
+step   1: mean forget gate 0.731
+step 100: mean forget gate 0.790
+step 400: mean forget gate 0.808
+step 800: mean forget gate 0.811`,
+       
         notes: [
-          { t: "p", text: "The bias sweep should show a clear threshold rather than a smooth curve: below about 0.5 the model never gets started, above it the model solves the task, and very high values eventually hurt because the network struggles to learn to forget anything. The arithmetic explains the shape — `sigmoid(0) = 0.5` gives 0.5^20 ≈ 1e-06 of the starting gradient, while `sigmoid(1) = 0.73` gives 1.9e-03, a factor of two thousand at twenty steps." },
+          { t: "p", text: "The bias sweep shows a threshold rather than a smooth curve, and at lag 50 it sits higher than you might guess: in the reference run, biases of −1 and 0 never got started in three seeds, 1 solved one of three, 2 solved two and 3 solved all three. The longer the lag, the further the threshold moves up. Very high values can eventually hurt, because the network must then learn to forget, but that did not appear by 3 at this lag. The arithmetic explains the shape — `sigmoid(0) = 0.5` gives 0.5^20 ≈ 1e-06 of the starting gradient, while `sigmoid(1) = 0.73` gives 1.9e-03, a factor of two thousand at twenty steps." },
           { t: "p", text: "The broader lesson is about diagnosis. The first experiment said the LSTM lost to a vanilla RNN, which contradicts everything the theory predicts. The right move was not to accept it and not to dismiss it, but to find a measurement that discriminated between explanations — the per-position gradient, which showed the LSTM's gradient was *larger*, ruling out the architecture and pointing at something preventing the model from exploiting it. Most confusing experimental results in deep learning resolve this way, with a default you did not know you had accepted." },
           { t: "p", text: "Logging the forget gate during a successful run typically shows it rising well above its initialised value for the dimensions carrying the signal and drifting down elsewhere. That is the network learning its own retention policy, which is the thing the initialisation only has to make *possible* — once training is underway the gate is data-driven, and the bias matters only for getting off the ground." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: an LSTM that lost to a simpler model",
+      body: [
+        { t: "p", text: "**Symptom.** An LSTM performed at chance on a long-range task that a vanilla RNN solved, and the team concluded LSTMs did not help." },
+        { t: "p", text: "**Mechanism.** The forget-gate bias was initialised at zero, so the gate started half closed and the cell state decayed quickly. The architecture was fine; the initialisation was not." },
+        { t: "p", text: "**Fix.** Forget-gate biases are initialised to 1, and the gradient reaching early positions is measured before conclusions are drawn." }
+      ] }
   ],
 
   takeaways: [

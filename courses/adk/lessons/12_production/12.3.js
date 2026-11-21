@@ -180,6 +180,11 @@ curl -X POST \\
 
     { t: "exercise", kind: "practice", title: "Write the client before you have an engine", difficulty: "advanced", minutes: 28,
       prompt: "Build an AdkApp around a tool-using agent locally and write a client module against it with three functions: start_conversation(user_id) returning a session id, ask(user_id, session_id, message) yielding rendered updates, and history(user_id, session_id). Have ask() turn each event dict into one of three things — a progress line for a call, nothing for a raw result, or text for an answer. Then confirm the only line that would change against a real deployment is the one that builds the client object.",
+      requirements: [
+        "Write start_conversation, ask and history functions against a local AdkApp",
+        "Have ask() render a progress line for a call, nothing for a raw result and text for an answer",
+        "Confirm only the client construction changes against a real deployment"
+      ],
       hints: [
         "`AdkApp(agent=agent)` needs a project id: `vertexai.init(...)` or the GOOGLE_CLOUD_PROJECT environment variable.",
         "Use the async methods; the sync session ones now warn that they are deprecated.",
@@ -210,8 +215,14 @@ curl -X POST \\
           { t: "p", text: "The constructor taking a backend is what makes the seam real: locally you pass an `AdkApp` and the whole thing runs in process with no cloud project, in production you pass the object `agent_engines.get()` returned, and nothing else in the module changes. That is not a coincidence — it is because both expose the operations `register_operations()` listed." },
           { t: "p", text: "Dropping raw function responses from the stream is the right default for a chat interface: the model is about to summarise them, so showing both is noise. Keep them if the interface is a debugging view, and keep the whole event list either way, because a support conversation about a wrong answer is answered by the trace rather than by the text." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a deployed agent with no memory",
+      body: [
+        { t: "p", text: "**Symptom.** Users of a deployed assistant found it forgot everything between messages." },
+        { t: "p", text: "**Mechanism.** The client called the streaming query without a `session_id`, so each message created a new single-turn session. The engine behaved exactly as asked." },
+        { t: "p", text: "**Fix.** The client creates a session at the start of a conversation, stores its id with the application's own conversation record, and passes it on every call." }
+      ] }
   ],
 
   takeaways: [

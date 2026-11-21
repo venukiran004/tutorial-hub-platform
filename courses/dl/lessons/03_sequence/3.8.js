@@ -152,21 +152,129 @@ EC.receiveLesson({
 
     { t: "p", text: "One attention operation produces one weighted average, so it can express one relationship per position. Multi-head runs `h` of them in parallel on separate learned projections of the same input and concatenates. With `d_k = d_model/h` the total cost is unchanged — you are partitioning the representation, not enlarging it. In practice different heads specialise: some track syntactic dependencies, some resolve coreference, some attend to adjacent positions." },
 
+    { t: "callout", kind: "trap", title: "Leaving out the √d_k scaling",
+
+      body: [
+
+        { t: "p", text: "Without dividing scores by √d_k, dot products grow with dimension, the softmax saturates and gradients vanish. Small models train anyway, so the omission appears only when the dimension grows." },
+
+        { t: "p", text: "Always scale scores by 1/√d_k, and check the attention entropy at initialisation." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Implement attention and inspect it", difficulty: "advanced", minutes: 45,
       prompt: "Implement scaled dot-product attention and verify against `F.scaled_dot_product_attention` to 1e-6. Measure the entropy of the attention distribution with and without the √d_k scaling at d_k of 8, 64 and 512. Confirm permutation-equivariance by shuffling the input. Then add sinusoidal positional encoding and confirm the equivariance is gone. Finally, build a seq2seq model with and without attention and compare BLEU or accuracy on a copy or reversal task at source lengths 10, 20, 40 and 80.",
+      requirements: [
+        "Implement scaled dot-product attention and verify against F.scaled_dot_product_attention",
+        "Measure attention entropy with and without scaling at d_k 8, 64 and 512",
+        "Confirm permutation-equivariance, then show positional encoding removes it",
+        "Compare seq2seq with and without attention at lengths 10 to 80"
+      ],
       hints: [
         "Verify the softmax rows sum to 1 before comparing against PyTorch.",
         "Entropy is `−Σ p log p`; use it as a scalar summary of how peaked the distribution is.",
         "For the length sweep, plot both models' accuracy against length — the shapes differ, not just the values."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+torch.manual_seed(0)
+
+def attention(q, k, v, scale=True, mask=None):
+    s = q @ k.transpose(-2, -1)
+    if scale: s = s / math.sqrt(q.shape[-1])
+    if mask is not None: s = s.masked_fill(~mask, float("-inf"))
+    w = s.softmax(-1)
+    return w @ v, w
+
+q, k, v = torch.randn(3, 2, 7, 16).unbind(0)
+print(f"max diff vs F.scaled_dot_product_attention: {(attention(q, k, v)[0] - F.scaled_dot_product_attention(q, k, v)).abs().max():.1e}")
+
+print("\\nd_k   scaled: max-w  entropy   unscaled: max-w  entropy   (10 keys, uniform entropy 2.30; mean of 500 queries)")
+for d in [8, 64, 512]:
+    q, k, v = torch.randn(500, 1, d), torch.randn(500, 10, d), torch.randn(500, 10, d)
+    row = []
+    for sc in [True, False]:
+        w = attention(q, k, v, scale=sc)[1][:, 0]
+        row += [w.max(-1).values.mean().item(), -(w * w.clamp_min(1e-12).log()).sum(-1).mean().item()]
+    print(f"{d:<5} {row[0]:13.3f} {row[1]:8.3f} {row[2]:17.3f} {row[3]:8.3f}")
+
+# Permutation equivariance, and how positional encoding breaks it
+def sinusoid(T, d):
+    pos = torch.arange(T)[:, None]; i = torch.arange(0, d, 2)
+    pe = torch.zeros(T, d); pe[:, 0::2] = torch.sin(pos / 10000 ** (i / d)); pe[:, 1::2] = torch.cos(pos / 10000 ** (i / d)); return pe
+x = torch.randn(1, 6, 16); perm = torch.randperm(6)
+self_attn = lambda z: attention(z, z, z)[0]
+print(f"\\nwithout PE: |f(Px) - P f(x)| = {(self_attn(x[:, perm]) - self_attn(x)[:, perm]).abs().max():.1e}")
+pe = sinusoid(6, 16)
+print(f"with PE:    |f(Px+PE) - P f(x+PE)| = {(self_attn(x[:, perm] + pe) - self_attn(x + pe)[:, perm]).abs().max():.1e}")
+
+# Seq2seq copy task, with and without attention (GRU encoder/decoder, teacher forcing)
+V, BOS = 12, 0
+class S2S(nn.Module):
+    def __init__(self, attn):
+        super().__init__(); self.attn = attn; H = 64
+        self.emb = nn.Embedding(V, 32); self.enc = nn.GRU(32, H, batch_first=True)
+        self.dec = nn.GRU(32 + (H if attn else 0), H, batch_first=True); self.out = nn.Linear(H * (2 if attn else 1), V)
+    def forward(self, src, tgt_in):
+        mem, h = self.enc(self.emb(src)); logits = []
+        ctx = torch.zeros_like(mem[:, :1])
+        for t in range(tgt_in.shape[1]):
+            e = self.emb(tgt_in[:, t:t + 1])
+            o, h = self.dec(torch.cat([e, ctx], -1) if self.attn else e, h)
+            if self.attn:
+                ctx = attention(o, mem, mem)[0]; logits.append(self.out(torch.cat([o, ctx], -1)))
+            else: logits.append(self.out(o))
+        return torch.cat(logits, 1)
+    @torch.no_grad()
+    def generate(self, src):
+        y = torch.full((src.shape[0], 1), BOS)
+        for _ in range(src.shape[1]): y = torch.cat([y, self(src, y)[:, -1:].argmax(-1)], 1)
+        return y[:, 1:]
+
+print("\\nlength  no-attention  attention   (token accuracy, free-running copy)")
+for L in [10, 20, 40, 80]:
+    accs = []
+    for use in [False, True]:
+        torch.manual_seed(0); m = S2S(use); opt = torch.optim.Adam(m.parameters(), 3e-3)
+        for _ in range(600):
+            src = torch.randint(1, V, (32, L)); tin = torch.cat([torch.full((32, 1), BOS), src[:, :-1]], 1)
+            loss = F.cross_entropy(m(src, tin).reshape(-1, V), src.reshape(-1)); opt.zero_grad(); loss.backward(); opt.step()
+        src = torch.randint(1, V, (200, L)); accs.append((m.generate(src) == src).float().mean().item())
+    print(f"{L:<7} {accs[0]:12.3f}  {accs[1]:9.3f}")`,
+        out: `max diff vs F.scaled_dot_product_attention: 0.0e+00
+
+d_k   scaled: max-w  entropy   unscaled: max-w  entropy   (10 keys, uniform entropy 2.30; mean of 500 queries)
+8             0.309    1.946             0.619    1.085
+64            0.317    1.931             0.867    0.351
+512           0.310    1.943             0.951    0.116
+
+without PE: |f(Px) - P f(x)| = 1.2e-07
+with PE:    |f(Px+PE) - P f(x+PE)| = 1.6e+00
+
+length  no-attention  attention   (token accuracy, free-running copy)
+10             0.533      0.998
+20             0.195      0.975
+40             0.141      0.959
+80             0.114      0.875`,
+       
         notes: [
-          { t: "p", text: "The entropy measurement is the one that makes the scaling argument concrete. At d_k = 512 unscaled I measured a maximum weight of 1.0000 and entropy 0.0004 — the softmax is fully saturated at initialisation, so the gradient through the attention weights is essentially zero and whichever position won at random keeps winning. Scaled, the same setup gives max weight 0.379 and entropy 1.60. It is the same saturation failure as a sigmoid with large inputs, and the same fix: control the variance entering the nonlinearity." },
+          { t: "p", text: "The entropy measurement is the one that makes the scaling argument concrete. Averaged over 500 random queries against ten keys, the unscaled softmax at d_k = 512 put a mean maximum weight of 0.951 on one key, with entropy 0.116 against a uniform 2.30 — effectively saturated at initialisation, so the gradient through the attention weights is close to zero and whichever position won at random keeps winning. Scaled, the same setup gives 0.310 and 1.94 at every d_k from 8 to 512, which is the point of dividing by √d_k: it makes the distribution's sharpness independent of the dimension. It is the same saturation failure as a sigmoid with large inputs, and the same fix: control the variance entering the nonlinearity." },
           { t: "p", text: "The length sweep is the point of the whole lesson. Without attention, accuracy should fall off sharply past twenty or thirty tokens as the fixed context vector saturates. With attention it should stay roughly flat, because nothing is being compressed — the decoder reads whichever encoder states it needs at each step. The two curves having *different shapes* rather than a constant offset is what tells you the bottleneck was the binding constraint." },
           { t: "p", text: "On positional encoding, it is worth plotting the similarity between position 0 and every other position rather than assuming it decays. I measured 0.957 at gap 1 falling to 0.495 at gap 16, then rising again to 0.602 at gap 32 — sinusoidal encodings oscillate because they are sums of periodic functions. The common description of 'decaying with distance' is only loosely true, and seeing the actual curve is more useful than the slogan." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: attention that saturated at large dimensions",
+      body: [
+        { t: "p", text: "**Symptom.** Increasing an attention model's key dimension made training slower and worse." },
+        { t: "p", text: "**Mechanism.** The scores were not divided by √d_k. Larger dimensions produced larger dot products, the softmax saturated and its gradients vanished." },
+        { t: "p", text: "**Fix.** Scores are scaled by 1/√d_k, and attention entropy at initialisation is part of the model test." }
+      ] }
   ],
 
   takeaways: [

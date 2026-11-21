@@ -95,7 +95,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "Two calls, two answers",
       code: 'one AIMessage, 2 tool_calls\n  ToolMessage id=a   714\n  ToolMessage id=b   {"id": "A-1", "status": "shipped", "eta": "2026-10-12"}',
       caption: "One ToolMessage per call, each carrying the id it answers." },
-    { t: "callout", kind: "warn", title: "An unanswered call breaks the next request", body: [
+    { t: "callout", kind: "trap", title: "An unanswered call breaks the next request", body: [
       { t: "p", text: "If an AIMessage contains two tool calls and you append only one ToolMessage, the conversation is malformed. The failure does not happen when you build the list \u2014 it happens on the **next** model call, when the provider rejects a transcript containing a request with no response." },
       { t: "p", text: "That displacement is what makes it hard to debug: the error arrives one step after the mistake, and it names the unanswered id rather than the code path that skipped it. The usual cause is a loop that `break`s or `continue`s on the first failure." }
     ] },

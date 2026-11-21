@@ -164,19 +164,112 @@ read_only = [t for t in tools if getattr(t, "annotations", None)
 
     { t: "exercise", kind: "practice", title: "Both directions, in one afternoon", difficulty: "advanced", minutes: 32,
       prompt: "Write a FastMCP server with three tools, one of which is destructive-sounding (delete_record). Connect an ADK agent to it over stdio, list the discovered tools, and run a turn that calls a safe one. Then add a tool_filter that excludes the destructive tool and confirm the model can no longer call it even when the user asks directly. Finally, add a second toolset pointing at the same server with a prefix, and confirm the names do not collide.",
+      requirements: [
+        "Write a FastMCP server with three tools, one destructive-sounding",
+        "Connect an ADK agent over stdio and run a turn that calls a safe tool",
+        "Add a tool_filter excluding the destructive tool and confirm the model cannot call it",
+        "Add a prefixed second toolset to the same server and confirm names do not collide"
+      ],
       hints: [
         "Docstrings become descriptions — write them as the model will read them.",
         "Ask the agent directly to delete something and confirm it cannot, rather than assuming.",
         "Close both toolsets at the end and watch the child processes exit."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `"""python 8.1.py runs the agent; \`python 8.1.py serve\` is the MCP server it launches over stdio."""
+import sys
+
+def serve():
+    from mcp.server.fastmcp import FastMCP
+    mcp = FastMCP("records")
+    @mcp.tool()
+    def get_record(record_id: str) -> str:
+        """Read one record."""
+        return f"record {record_id}: active"
+    @mcp.tool()
+    def list_records() -> list[str]:
+        """List record ids."""
+        return ["R-1", "R-2"]
+    @mcp.tool()
+    def delete_record(record_id: str) -> str:
+        """Permanently delete a record."""
+        return f"deleted {record_id}"
+    mcp.run()
+
+async def main():
+    import logging, warnings
+    warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+    from mcp import StdioServerParameters
+    from google.adk.agents import LlmAgent
+    from google.adk.models import BaseLlm
+    from google.adk.models.llm_response import LlmResponse
+    from google.adk.runners import InMemoryRunner
+    from google.adk.tools.mcp_tool import McpToolset
+    from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
+    from google.genai import types
+
+    class Obedient(BaseLlm):
+        """Calls whichever tool the user names, whether or not it was declared, then reports the result."""
+        model: str = "obedient"
+        async def generate_content_async(self, llm_request, stream=False):
+            last = llm_request.contents[-1].parts[0]
+            if last.function_response:
+                yield LlmResponse(content=types.Content(role="model", parts=[types.Part(text=f"tool said: {last.function_response.response}")]))
+                return
+            name, rid = last.text.split()
+            yield LlmResponse(content=types.Content(role="model", parts=[types.Part(function_call=types.FunctionCall(name=name, args={"record_id": rid}))]))
+
+    def toolset(**kw):
+        return McpToolset(connection_params=StdioConnectionParams(server_params=StdioServerParameters(
+            command=sys.executable, args=[__file__, "serve"]), timeout=30), **kw)
+
+    async def turn(agent, msg):
+        runner = InMemoryRunner(agent=agent, app_name="rec")
+        sid = (await runner.session_service.create_session(app_name="rec", user_id="u")).id
+        try:
+            async for e in runner.run_async(user_id="u", session_id=sid, new_message=types.Content(role="user", parts=[types.Part(text=msg)])):
+                for p in (e.content.parts if e.content else []):
+                    if p.text: return p.text
+        except Exception as e:
+            return f"{type(e).__name__}: {str(e)[:90]}"
+
+    full = toolset()
+    print("discovered tools:", [t.name for t in await full.get_tools()])
+    print("safe call      :", await turn(LlmAgent(name="a", model=Obedient(), tools=[full]), "get_record R-1"))
+    safe = toolset(tool_filter=["get_record", "list_records"])
+    print("\\nfiltered tools :", [t.name for t in await safe.get_tools()])
+    print("delete, asked directly, with the filter:", await turn(LlmAgent(name="b", model=Obedient(), tools=[safe]), "delete_record R-1"))
+    prefixed = toolset(tool_filter=["get_record"], tool_name_prefix="archive")
+    print("\\nsecond toolset with a prefix:", [t.name for t in await prefixed.get_tools()])
+    print("both toolsets on one agent :", await turn(LlmAgent(name="c", model=Obedient(), tools=[safe, prefixed]), "archive_get_record R-2"))
+    for ts in (full, safe, prefixed): await ts.close()
+
+if __name__ == "__main__":
+    if sys.argv[1:2] == ["serve"]: serve()
+    else:
+        import asyncio; asyncio.run(main())`,
+        out: `discovered tools: ['delete_record', 'get_record', 'list_records']
+safe call      : tool said: {'content': [{'type': 'text', 'text': 'record R-1: active'}], 'structuredContent': {'result': 'record R-1: active'}, 'isError': False}
+
+filtered tools : ['get_record', 'list_records']
+delete, asked directly, with the filter: tool said: {'error': 'Invoking \`delete_record()\` failed as no tool with that name is available. The tools you can call are: get_record, list_records. You could retry, but it is IMPORTANT that you only call a tool from that list.'}
+
+second toolset with a prefix: ['get_record']
+both toolsets on one agent : tool said: {'content': [{'type': 'text', 'text': 'record R-2: active'}], 'structuredContent': {'result': 'record R-2: active'}, 'isError': False}`,
+       
         notes: [
           { t: "p", text: "Asking the agent to delete something after filtering is the part worth doing properly. The model has no declaration for the tool, so it cannot emit a call for it — it will say it lacks that capability. That is a categorically stronger guarantee than an instruction saying not to, and it is the same argument as lesson 4.7: not giving the agent a tool beats telling it not to use one." },
           { t: "p", text: "Watching the processes exit on `close` makes the lifecycle concrete. A service that constructs toolsets per request without closing them leaks a process per request, which presents as memory exhaustion hours later with nothing in the agent logs to explain it." }
         ]
       } },
 
-    
+    { t: "callout", kind: "scenario", title: "Incident: a tool that appeared after a server upgrade",
+      body: [
+        { t: "p", text: "**Symptom.** After an MCP server the team consumed released a new version, the agent gained a `delete_all_records` tool nobody had approved, and a user's vague request nearly triggered it." },
+        { t: "p", text: "**Mechanism.** The toolset had no filter, so every tool the server offered became the agent's tool, and a server can add tools at any time. The upgrade expanded the agent's capabilities without a code change on the consuming side." },
+        { t: "p", text: "**Fix.** The toolset uses an explicit allow-list of tool names, and the server version is pinned. Adding a tool to the agent is now a reviewed change in the consumer's repository." }
+      ] }
   ],
 
   takeaways: [

@@ -214,6 +214,17 @@ outer_scores = cross_val_score(search, X, y, cv=outer, scoring="roc_auc")   # ea
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Reporting the best score from the search",
+
+      body: [
+
+        { t: "p", text: "The best of many configurations evaluated on the same folds is biased upward, and the bias grows with the number of configurations tried." },
+
+        { t: "p", text: "Report performance from nested cross-validation or from a holdout that the search never touched." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "A probability, an acquisition, and an optimism you must measure",
@@ -274,7 +285,14 @@ outer_scores = cross_val_score(search, X, y, cv=outer, scoring="roc_auc")   # ea
           why: "The assumption is that early performance ranks candidates like final performance; check it before trusting the speed-up."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a tuned score that was too good",
+      body: [
+        { t: "p", text: "**Symptom.** A model reported 0.88 AUC after a large hyperparameter search and scored 0.84 on a later holdout." },
+        { t: "p", text: "**Mechanism.** The reported score was the best of hundreds of configurations on the same validation folds. Selecting the maximum of many noisy scores biases it upward." },
+        { t: "p", text: "**Fix.** Performance is reported from nested cross-validation or a holdout untouched by the search." }
+      ] }
   ],
 
   takeaways: [

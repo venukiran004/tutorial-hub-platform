@@ -210,6 +210,17 @@ ORDER  BY c.name;
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Filtering the right table in WHERE after a LEFT JOIN",
+
+      body: [
+
+        { t: "p", text: "Of the four outer-join traps, this is the one that ships most often: `LEFT JOIN orders o ... WHERE o.status = 'paid'` removes every customer with no orders, turning the outer join into an inner one, and the query still looks correct." },
+
+        { t: "p", text: "Put conditions on the right-hand table in the ON clause; the only right-table condition that belongs in WHERE is `IS NULL`, for an anti-join." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Debug",
       title: "Four broken reports",
@@ -307,7 +318,14 @@ SELECT SUM(oi.qty * oi.unit_price) FROM order_items oi JOIN orders o ON o.order_
           why: "A condition on the right-hand table in WHERE filters the join's output, padding included. In ON it decides which orders pair with each customer, and the customers with no qualifying orders stay, with a count of zero when you COUNT(o.order_id)."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: customers with no orders disappeared from the report",
+      body: [
+        { t: "p", text: "**Symptom.** A report of order counts per customer was meant to include customers with zero orders for a re-engagement campaign. It contained none of them." },
+        { t: "p", text: "**Mechanism.** The query used `LEFT JOIN orders o ON ... WHERE o.status = 'paid'`. For a customer with no orders, `o.status` is NULL, the WHERE condition is unknown, and the padded row is dropped — the outer join became an inner one." },
+        { t: "p", text: "**Fix.** The status condition moved into the ON clause, the count uses `COUNT(o.id)` rather than `COUNT(*)`, and the report's output is checked against the customer table's row count." }
+      ] }
   ],
 
   takeaways: [

@@ -229,6 +229,17 @@ cal = CalibratedClassifierCV(pipe, method="isotonic", cv=5).fit(tickets, categor
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Naive Bayes without smoothing",
+
+      body: [
+
+        { t: "p", text: "A word never seen with a class gets probability zero there, which makes the whole product zero and the class impossible for any document containing that word." },
+
+        { t: "p", text: "Use additive smoothing, and monitor out-of-vocabulary rates on new data." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "A posterior by hand, a variance you must justify, and a duplication you must explain",
@@ -289,7 +300,14 @@ cal = CalibratedClassifierCV(pipe, method="isotonic", cv=5).fit(tickets, categor
           why: "Underflow is the other failure (0.01²⁰⁰ = 0.0) and log space is its fix; zero counts are fixed by smoothing."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a spam filter that gave a word probability zero",
+      body: [
+        { t: "p", text: "**Symptom.** A Naive Bayes spam filter classified every message containing a new product name as certainly not spam, including obvious spam." },
+        { t: "p", text: "**Mechanism.** Without smoothing, a word never seen in the spam class had probability zero there, which made the whole spam likelihood zero." },
+        { t: "p", text: "**Fix.** The model uses Laplace smoothing, and new vocabulary is monitored so the model is retrained as language changes." }
+      ] }
   ],
 
   takeaways: [

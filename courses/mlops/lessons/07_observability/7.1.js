@@ -173,18 +173,82 @@ sum(rate(predict_score_bucket{le="0.5"}[5m]))
 
     { t: "exercise", kind: "practice", title: "Instrument and count", difficulty: "core", minutes: 30,
       prompt: "Add four metrics to a model service: a latency histogram labelled by stage, a request counter labelled by model version and outcome, an in-flight gauge, and a histogram of the prediction score labelled by model version. Then compute the cardinality: multiply the value counts of every label on each metric, multiply histograms by their bucket count, and sum. Compare that against your Prometheus's current series count. Then audit your existing metrics for any label whose value set is unbounded — ids, messages, paths with ids in them — and for any Summary whose quantiles are being averaged across replicas on a dashboard.",
+      requirements: [
+        "Add a stage-labelled latency histogram, a request counter by version and outcome, an in-flight gauge and a score histogram",
+        "Compute each metric's cardinality and sum them",
+        "Compare against your Prometheus series count",
+        "Find any label with an unbounded value set and any Summary averaged across replicas"
+      ],
       hints: [
         "A path label like /predict/12345 is an unbounded label wearing a route's clothes; normalise it to /predict/:id at instrumentation time.",
         "The stage label on latency is what makes lesson 12.1's decomposition a query rather than an investigation.",
         "If a dashboard panel shows avg of a p99, that is the 46% error from lesson 7.2 and it is on your wall."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import random, time
+from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, generate_latest
+
+reg = CollectorRegistry()
+STAGE_BUCKETS = (.005, .01, .025, .05, .1, .25, .5, 1, 2.5)
+SCORE_BUCKETS = tuple(i / 10 for i in range(1, 10))
+latency = Histogram("predict_stage_seconds", "Latency per stage", ["stage"], buckets=STAGE_BUCKETS, registry=reg)
+requests = Counter("predict_requests_total", "Requests", ["model_version", "outcome"], registry=reg)
+in_flight = Gauge("predict_in_flight", "Requests being served", registry=reg)
+score = Histogram("predict_score", "Prediction score", ["model_version"], buckets=SCORE_BUCKETS, registry=reg)
+
+def predict(features, version="v7"):
+    in_flight.inc()
+    try:
+        with latency.labels("features").time(): time.sleep(random.uniform(0, .002))
+        with latency.labels("model").time(): p = random.betavariate(2, 5)
+        score.labels(version).observe(p)
+        requests.labels(version, "ok").inc(); return p
+    except Exception:
+        requests.labels(version, "error").inc(); raise
+    finally:
+        in_flight.dec()
+
+for _ in range(200): predict({}, random.choice(["v7", "v8"]))
+
+# Cardinality: every combination of label values is a series; a histogram is (buckets + 1 for +Inf) + _sum + _count
+STAGES, VERSIONS, OUTCOMES = 3, 2, 2            # features, model, postprocess | two live versions | ok, error
+series = {
+    "predict_stage_seconds": STAGES * (len(STAGE_BUCKETS) + 1 + 2),
+    "predict_requests_total": VERSIONS * OUTCOMES,
+    "predict_in_flight": 1,
+    "predict_score": VERSIONS * (len(SCORE_BUCKETS) + 1 + 2),
+}
+for k, v in series.items(): print(f"{k:<24} {v:>4} series")
+print(f"{'per instance':<24} {sum(series.values()):>4} series;  x 20 pods = {20 * sum(series.values()):,}")
+bad = VERSIONS * OUTCOMES * 50_000
+print(f"\\nadd a customer_id label (50,000 customers) to the request counter: {bad:,} series from one metric")
+
+exposed = [l for l in generate_latest(reg).decode().splitlines() if l.startswith("predict_") and "_created" not in l]
+print(f"\\nseries actually exposed after 200 requests: {len(exposed)} (a label value appears only once used: "
+      "no 'postprocess' stage ran and no request failed)")`,
+        out: `predict_stage_seconds      36 series
+predict_requests_total      4 series
+predict_in_flight           1 series
+predict_score              24 series
+per instance               65 series;  x 20 pods = 1,300
+
+add a customer_id label (50,000 customers) to the request counter: 200,000 series from one metric
+
+series actually exposed after 200 requests: 51 (a label value appears only once used: no 'postprocess' stage ran and no request failed)`,
+       
         notes: [
           { t: "p", text: "The unbounded label is usually a URL path containing an id, which is easy to miss because it looks like a route. Normalising at instrumentation time is the fix; dropping it later means losing the series and the history." },
           { t: "p", text: "The score histogram is the metric most often absent, and it is the one lesson 2.2 identified as the fastest harm-correlated signal available without labels — 1.9 minutes to detect a five-point move in the positive rate." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the label that took monitoring down",
+      body: [
+        { t: "p", text: "**Symptom.** Prometheus ran out of memory and restarted repeatedly, taking every dashboard and alert with it during an unrelated outage. The cause was a change merged two days earlier." },
+        { t: "p", text: "**Mechanism.** A developer added `customer_id` as a label on the prediction-latency histogram to debug one client. Cardinality is the product of label values times buckets, so a few thousand customers turned a few thousand series into millions. Each became an in-memory time series, and the server could not hold them." },
+        { t: "p", text: "**Fix.** The label was removed and per-request detail moved to logs and traces, which carry the correlation id instead (lesson 7.3). CI now computes the cardinality of new or changed metrics and fails on unbounded labels, and Prometheus has a per-scrape sample limit so one target cannot take the server down." }
+      ] }
   ],
 
   takeaways: [

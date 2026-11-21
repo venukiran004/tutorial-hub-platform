@@ -145,7 +145,14 @@ def find_order_detail(query: str) -> dict:
 (d) 4 model calls (n+1 for 3 dependent tools).      ~4.6 s
 (e) 2 model calls, but the tools run one after the
     other because one blocks the loop.              ~2.4 s   (1 + 0.4 + 1)`,
-        notes: [{ t: "p", text: "The gap between (c) and (e) is only 200 ms here, which understates the problem: the blocking tool also stalls every other request being served by the same process for its whole duration, so under load the cost is paid by users who never called that tool." }] } }
+        notes: [{ t: "p", text: "The gap between (c) and (e) is only 200 ms here, which understates the problem: the blocking tool also stalls every other request being served by the same process for its whole duration, so under load the cost is paid by users who never called that tool." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: parallel lookups that ran one after the other",
+      body: [
+        { t: "p", text: "**Symptom.** An agent that checked three systems in one model round took three times as long as any single check, though the model requested all three at once." },
+        { t: "p", text: "**Mechanism.** Tools requested in the same round run concurrently only if they are async. Two of the three were plain `def` functions using a blocking HTTP client, so they occupied the event loop in turn." },
+        { t: "p", text: "**Fix.** The tools use an async HTTP client, and the one blocking library call is wrapped with `asyncio.to_thread`. The turn now takes about as long as its slowest tool." }
+      ] }
   ],
 
   takeaways: [

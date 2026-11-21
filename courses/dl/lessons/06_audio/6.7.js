@@ -104,19 +104,158 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Decode and synthesise", difficulty: "advanced", minutes: 45,
       prompt: "Take a CTC model's frame probabilities and decode three ways: greedy, plain beam search, and prefix beam search. Compare the outputs and count how many distinct texts survive in the beam for each method — plain beam search should show duplicates. Then add shallow fusion with a small n-gram language model and measure the change. Separately, build a biasing list of ten unusual names, and measure recognition accuracy on utterances containing them with and without boosting.",
+      requirements: [
+        "Decode CTC output greedily, with plain beam search and with prefix beam search",
+        "Count distinct texts in each beam",
+        "Add shallow fusion with an n-gram model and measure the change",
+        "Build a ten-name biasing list and measure accuracy with and without it"
+      ],
       hints: [
         "For plain beam search, track the frame-level paths; for prefix beam, track collapsed text.",
         "Count unique collapsed strings in the beam — that is the wasted-width measurement.",
         "For biasing, boosting the log-probability of the first token of each name is enough to see the effect."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import glob, math, os, re, sys
+from collections import Counter, defaultdict
+import numpy as np
+import soundfile as sf
+import torch
+from sklearn.datasets import fetch_20newsgroups
+from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor, logging as hf_logging
+hf_logging.set_verbosity_error(); hf_logging.disable_progress_bar()
+
+# Recordings: 16 kHz WAVs plus sentences.txt (reference per recording index). The reference run used
+# 60 synthesised utterances; a character-level CTC model (wav2vec2-base-960h) provides the frame probabilities.
+SPEECH = sys.argv[1] if len(sys.argv) > 1 else "speech"
+refs = open(os.path.join(SPEECH, "sentences.txt"), encoding="utf-8").read().splitlines()
+files = sorted(glob.glob(os.path.join(SPEECH, "sent", "*.wav")))
+proc = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
+model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h").eval()
+vocab = proc.tokenizer.convert_ids_to_tokens(list(range(model.config.vocab_size)))
+BLANK, SPACE = proc.tokenizer.pad_token_id, vocab.index("|")
+char = lambda i: " " if i == SPACE else vocab[i]
+
+@torch.no_grad()
+def log_probs(path):
+    audio, _ = sf.read(path, dtype="float32")
+    return model(proc(audio, sampling_rate=16000, return_tensors="pt").input_values).logits[0].log_softmax(-1).numpy()
+
+def greedy(lp):
+    out, prev = [], None
+    for t in lp.argmax(1):
+        if t != prev and t != BLANK: out.append(char(t))
+        prev = t
+    return "".join(out).strip()
+
+def collapse(path):
+    out, prev = [], None
+    for t in path:
+        if t != prev and t != BLANK: out.append(char(t))
+        prev = t
+    return "".join(out).strip()
+
+def plain_beam(lp, width=10):
+    """beam over frame-level paths: different alignments of the same text occupy separate slots"""
+    beams = [((), 0.0)]
+    for frame in lp:
+        top = np.argsort(frame)[-width:]
+        beams = sorted(((p + (int(c),), s + frame[c]) for p, s in beams for c in top), key=lambda b: -b[1])[:width]
+    texts = [collapse(p) for p, _ in beams]
+    return texts[0], len(set(texts))
+
+# Character trigram LM trained on unrelated text (20 newsgroups), used for shallow fusion
+text = " ".join(fetch_20newsgroups(subset="train", remove=("headers", "footers", "quotes")).data[:3000]).upper()
+text = re.sub(r"[^A-Z' ]+", " ", text); text = re.sub(" +", " ", text)
+tri, bi = Counter(text[i:i + 3] for i in range(len(text) - 2)), Counter(text[i:i + 2] for i in range(len(text) - 1))
+def lm(ctx, c):                                        # add-one smoothed log P(c | last two chars)
+    h = ("  " + ctx)[-2:]; return math.log((tri[h + c] + 1) / (bi[h] + 29))
+
+def lse(*xs):
+    m = max(xs); return m if m == -math.inf else m + math.log(sum(math.exp(x - m) for x in xs))
+
+def prefix_beam(lp, width=10, alpha=0.0, beta=0.0, bias=(), boost=0.0):
+    """CTC prefix beam search; alpha = LM weight, beta = per-character bonus, bias words get \`boost\` per matching char"""
+    trie = {w[:k] for w in bias for k in range(1, len(w) + 1)}
+    beams = {"": (0.0, -math.inf)}                       # prefix -> (log p ending in blank, log p ending in non-blank)
+    for frame in lp:
+        nxt = defaultdict(lambda: (-math.inf, -math.inf))
+        cands = set(np.argsort(frame)[-8:].tolist()) | {BLANK}
+        for prefix, (pb, pnb) in beams.items():
+            for c in cands:
+                p = frame[c]
+                if c == BLANK:
+                    b, nb = nxt[prefix]; nxt[prefix] = (lse(b, pb + p, pnb + p), nb); continue
+                ch = char(c); new = prefix + ch
+                last = prefix[-1] if prefix else None
+                bonus = alpha * lm(prefix, ch) + beta
+                word = new.split(" ")[-1]
+                if boost and word and word in trie: bonus += boost
+                b, nb = nxt[new]
+                nxt[new] = (b, lse(nb, (pb + p + bonus) if ch == last else lse(pb, pnb) + p + bonus))
+                if ch == last:                           # repeated char without a blank stays the same prefix
+                    b, nb = nxt[prefix]; nxt[prefix] = (b, lse(nb, pnb + p))
+        beams = dict(sorted(nxt.items(), key=lambda kv: -lse(*kv[1]))[:width])
+    best = max(beams.items(), key=lambda kv: lse(*kv[1]))[0]
+    return best.strip(), len(beams)
+
+def wer(ref, hyp):
+    norm = lambda s: re.sub(r"[^a-z' ]", " ", s.lower()).split()
+    r, h = norm(ref), norm(hyp); d = list(range(len(h) + 1))
+    for i, rw in enumerate(r, 1):
+        prev, d[0] = d[0], i
+        for j, hw in enumerate(h, 1): prev, d[j] = d[j], min(d[j] + 1, d[j - 1] + 1, prev + (rw != hw))
+    return d[-1], len(r)
+
+NAMES = ["PRIYA", "OKAFOR", "REYKJAVIK", "SIOBHAN", "WOJCIK", "THORVALDSEN", "RAGHUNATHAN", "ABERYSTWYTH", "KWABENA", "KSENIA"]
+cache = [(log_probs(f), refs[int(os.path.basename(f)[:2])]) for f in files]
+results = defaultdict(lambda: [0, 0]); distinct_plain = []
+for lp, ref in cache:
+    hyps = {"greedy": greedy(lp), "prefix beam": prefix_beam(lp)[0], "prefix beam + LM": prefix_beam(lp, alpha=0.3, beta=0.5)[0]}
+    text, distinct = plain_beam(lp); hyps["plain beam"] = text; distinct_plain.append(distinct)
+    for k, h in hyps.items():
+        e, n = wer(ref, h); results[k][0] += e; results[k][1] += n
+print(f"{len(files)} utterances, width 10")
+for k, (e, n) in results.items(): print(f"  {k:<18} WER {e / n:.3f}")
+print(f"  plain beam: on average {np.mean(distinct_plain):.1f} distinct texts among its 10 paths; prefix beam: 10 distinct prefixes by construction")
+
+print("\\nbiasing toward ten names (prefix beam): boost per matching character")
+for boost in [0, 1.5, 3, 5, 8]:
+    ok = total = e_all = n_all = 0
+    for lp, ref in cache:
+        h = prefix_beam(lp, bias=NAMES, boost=boost)[0]
+        e, n = wer(ref, h); e_all += e; n_all += n
+        for name in NAMES:
+            if name.lower() in ref.lower(): ok += name in h.upper().split(); total += 1
+    print(f"  boost {boost:<4} names recognised {ok:>2}/{total}   WER over all utterances {e_all / n_all:.3f}")`,
+        out: `60 utterances, width 10
+  greedy             WER 0.141
+  prefix beam        WER 0.148
+  prefix beam + LM   WER 0.146
+  plain beam         WER 0.141
+  plain beam: on average 1.9 distinct texts among its 10 paths; prefix beam: 10 distinct prefixes by construction
+
+biasing toward ten names (prefix beam): boost per matching character
+  boost 0    names recognised  0/20   WER over all utterances 0.148
+  boost 1.5  names recognised  2/20   WER over all utterances 0.156
+  boost 3    names recognised  7/20   WER over all utterances 0.156
+  boost 5    names recognised 13/20   WER over all utterances 0.193
+  boost 8    names recognised 12/20   WER over all utterances 0.411`,
+       
         notes: [
-          { t: "p", text: "The beam-occupancy count is the measurement worth making. With plain beam search a large share of the beam holds different frame alignments of the same text, so an apparent width of 10 might carry only three or four distinct hypotheses. Prefix beam search merges them and uses the full width on genuinely different candidates, which is why it both scores better and is the correct algorithm rather than just a faster one." },
-          { t: "p", text: "The biasing experiment usually produces the largest single improvement anyone measures on a product-like test set, because rare proper nouns are exactly where a general model is weakest and exactly what users care about most. It also shows the limits: boosting too aggressively makes the model hallucinate contact names into unrelated audio, so the weight is a precision-recall dial rather than a free win, and it should be tuned against utterances that contain none of the boosted words." },
+          { t: "p", text: "The beam-occupancy count is the measurement worth making. With plain beam search a large share of the beam holds different frame alignments of the same text, so an apparent width of 10 might carry only a handful of distinct hypotheses — 1.9 on average in the reference run. Prefix beam search merges them and uses the full width on genuinely different candidates, and it ranks texts by their probability summed over every alignment, which is the quantity you actually want. That makes it the correct algorithm; it does not guarantee a lower WER on every test set. On clean speech, where greedy is already close to the best path, the reference run measured 0.141 for greedy and plain beam against 0.148 for prefix beam, the difference coming from word splits such as `RIVER SIDE`." },
+          { t: "p", text: "The biasing experiment usually produces the largest single improvement anyone measures on a product-like test set, because rare proper nouns are exactly where a general model is weakest and exactly what users care about most. In the reference run, names went from 0 of 20 to 13 of 20 as the boost rose to 5, while overall WER rose from 0.148 to 0.193 and reached 0.411 at a boost of 8. That is the limit: boosting too aggressively makes the model hallucinate names into unrelated audio, so the weight is a precision-recall dial rather than a free win, and it should be tuned against utterances that contain none of the boosted words." },
           { t: "p", text: "Greedy decoding being close to beam search for a strong model is worth confirming, because it changes the engineering calculus. If the gap is a fraction of a point, the latency-critical path can use greedy and reserve beam search for offline rescoring — which is the two-pass idea from lesson 6.6 in a different guise." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: an assistant that could not call anyone with an unusual name",
+      body: [
+        { t: "p", text: "**Symptom.** A voice assistant repeatedly failed to call contacts with uncommon names, though it recognised common words well." },
+        { t: "p", text: "**Mechanism.** The decoder relied on a general language model that gave unusual names very low probability." },
+        { t: "p", text: "**Fix.** The decoder boosts the user's own contact names through contextual biasing, and accuracy on a list of unusual names is a release metric." }
+      ] }
   ],
 
   takeaways: [

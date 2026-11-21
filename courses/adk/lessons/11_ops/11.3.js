@@ -169,18 +169,141 @@ async def turn(runner, session, text_in):
 
     { t: "exercise", kind: "practice", title: "Test the thing you would otherwise hope about", difficulty: "advanced", minutes: 30,
       prompt: "Write a test suite for an agent with a guarded tool: (1) a permitted call runs and writes state; (2) a forbidden call is blocked, the body does not run, and the state is unchanged; (3) a raising tool is converted by on_tool_error and the turn still completes; (4) a user-scoped state write is visible in a second session; (5) the instruction actually contains an interpolated state value — assert on `llm.seen[0].config.system_instruction`. Time the suite.",
+      requirements: [
+        "Test that a permitted call runs and writes state",
+        "Test that a forbidden call is blocked, its body does not run and state is unchanged",
+        "Test that a raising tool is converted and the turn completes",
+        "Test user-scoped state across sessions and assert on the interpolated system instruction, then time the suite"
+      ],
       hints: [
         "Prove the body did not run with a module-level flag the tool sets.",
         "Test 5 is the one that catches a renamed state key before production does.",
         "The whole suite should finish in well under a second."
       ],
       solution: {
+        lang: "python", title: "test_guarded.py",
+        code: `"""pytest test_guarded.py -q  -- an agent with a guarded tool, tested against a scripted model (no API calls)."""
+import pytest
+from google.adk.agents import LlmAgent
+from google.adk.models import BaseLlm
+from google.adk.models.llm_response import LlmResponse
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.adk.tools import ToolContext
+from google.genai import types
+
+def text(s): return LlmResponse(content=types.Content(role="model", parts=[types.Part(text=s)]))
+def call(name, **args): return LlmResponse(content=types.Content(role="model", parts=[types.Part(function_call=types.FunctionCall(name=name, args=args))]))
+
+class FakeLlm(BaseLlm):
+    model: str = "fake-model"
+    script: list = []
+    seen: list = []
+    async def generate_content_async(self, llm_request, stream=False):
+        self.seen.append(llm_request); i = len(self.seen) - 1
+        yield self.script[i] if i < len(self.script) else text("(script exhausted)")
+    @staticmethod
+    def supported_models(): return [r"fake-.*"]
+
+BODY_RAN = []
+
+def transfer(amount: int, tool_context: ToolContext) -> dict:
+    """Move money between the user's own accounts."""
+    BODY_RAN.append(amount)
+    tool_context.state["user:last_transfer"] = amount
+    return {"status": "done", "amount": amount}
+
+def flaky(tool_context: ToolContext) -> dict:
+    """A tool whose upstream fails."""
+    raise ConnectionError("upstream timed out")
+
+def guard(tool, args, tool_context):                     # before_tool_callback: a dict return skips the body
+    if tool.name == "transfer" and args.get("amount", 0) > 1000:
+        return {"status": "blocked", "reason": "transfers over 1000 need approval"}
+
+def on_error(tool, args, tool_context, error):           # on_tool_error_callback: convert, do not crash the turn
+    return {"status": "error", "message": f"{tool.name} is unavailable, try again later"}
+
+async def make(script):
+    llm = FakeLlm(script=list(script), seen=[])
+    agent = LlmAgent(name="bank", model=llm, tools=[transfer, flaky],
+                     instruction="You help {user:name}. Never move more than 1000 without approval.",
+                     before_tool_callback=guard, on_tool_error_callback=on_error)
+    svc = InMemorySessionService()
+    runner = Runner(agent=agent, app_name="bank", session_service=svc)
+    return llm, runner, svc
+
+async def turn(runner, session_id, msg="go", user="u1"):
+    return [e async for e in runner.run_async(user_id=user, session_id=session_id,
+                                              new_message=types.Content(role="user", parts=[types.Part(text=msg)]))]
+
+@pytest.fixture
+def anyio_backend(): return "asyncio"
+
+@pytest.mark.anyio
+async def test_permitted_call_runs_and_writes_state():
+    BODY_RAN.clear(); llm, runner, svc = await make([call("transfer", amount=200), text("Done.")])
+    s = await svc.create_session(app_name="bank", user_id="u1", state={"user:name": "Ada"})
+    await turn(runner, s.id)
+    assert BODY_RAN == [200]
+    assert (await svc.get_session(app_name="bank", user_id="u1", session_id=s.id)).state["user:last_transfer"] == 200
+
+@pytest.mark.anyio
+async def test_forbidden_call_is_blocked_and_state_unchanged():
+    BODY_RAN.clear(); llm, runner, svc = await make([call("transfer", amount=5000), text("I can't do that.")])
+    s = await svc.create_session(app_name="bank", user_id="u1", state={"user:name": "Ada"})
+    events = await turn(runner, s.id)
+    assert BODY_RAN == []
+    responses = [p.function_response.response for e in events for p in (e.content.parts if e.content else []) if p.function_response]
+    assert responses == [{"status": "blocked", "reason": "transfers over 1000 need approval"}]
+    assert "user:last_transfer" not in (await svc.get_session(app_name="bank", user_id="u1", session_id=s.id)).state
+
+@pytest.mark.anyio
+async def test_raising_tool_is_converted_and_turn_completes():
+    llm, runner, svc = await make([call("flaky"), text("Sorry, that service is down.")])
+    s = await svc.create_session(app_name="bank", user_id="u1", state={"user:name": "Ada"})
+    events = await turn(runner, s.id)
+    assert events[-1].content.parts[0].text == "Sorry, that service is down."
+    assert "unavailable" in str(llm.seen[1].contents[-1])          # the converted error is what the model saw next
+
+@pytest.mark.anyio
+async def test_user_state_visible_in_second_session():
+    llm, runner, svc = await make([call("transfer", amount=50), text("Done.")])
+    s1 = await svc.create_session(app_name="bank", user_id="u1", state={"user:name": "Ada"})
+    await turn(runner, s1.id)
+    s2 = await svc.create_session(app_name="bank", user_id="u1")
+    assert s2.state["user:last_transfer"] == 50 and s2.state["user:name"] == "Ada"
+    other = await svc.create_session(app_name="bank", user_id="u2")
+    assert "user:last_transfer" not in other.state
+
+@pytest.mark.anyio
+async def test_instruction_interpolates_state():
+    llm, runner, svc = await make([text("Hello.")])
+    s = await svc.create_session(app_name="bank", user_id="u1", state={"user:name": "Ada"})
+    await turn(runner, s.id)
+    assert "You help Ada." in llm.seen[0].config.system_instruction`,
+        out: `$ pytest test_guarded.py -q
+.....
+5 passed in 18.19s
+
+# the same suite with the guard and on_tool_error removed and {user:name} taken out of the instruction:
+FAILED test_forbidden_call_is_blocked_and_state_unchanged
+FAILED test_raising_tool_is_converted_and_turn_completes
+FAILED test_instruction_interpolates_state
+3 failed, 2 passed in 18.38s`,
+       
         notes: [
           { t: "p", text: "Test 5 is the one people never write and the one that pays off. Renaming a state key or removing the callback that sets it leaves `{user_tier}` unfilled or raising, and nothing else in your suite notices — the agent just starts behaving generically. Asserting on the assembled system instruction catches it at the point of change." },
           { t: "p", text: "The timing matters as much as the assertions. A suite that finishes in under a second gets run on every save; one that takes two minutes because it calls a real model gets run before a release, which is to say after the mistake has been built on. Speed is what makes a test suite a design tool rather than a gate." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a test suite that cost money and still failed randomly",
+      body: [
+        { t: "p", text: "**Symptom.** A team's agent tests called the real model, cost a noticeable amount per run, took minutes and failed about one run in ten." },
+        { t: "p", text: "**Mechanism.** The tests asserted on the model's exact wording, which varies between calls, and needed network access. They were testing the model's judgement rather than the code the team wrote." },
+        { t: "p", text: "**Fix.** The tests use a scripted model that replays responses, and assert on events, state and the recorded requests. Model judgement is covered separately by the evaluation set." }
+      ] }
   ],
 
   takeaways: [

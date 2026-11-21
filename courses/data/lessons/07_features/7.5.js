@@ -688,7 +688,14 @@ def test_smearing_is_correct_when_residuals_are_skewed():
           why: "Half the outcomes are above the log-scale prediction and half below, but the ones above are further above — that is what skew means — so the average exceeds the exponentiated centre. For a total, correct with smearing or the log-normal factor, or model the mean directly with a log-link GLM."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: every forecast too low",
+      body: [
+        { t: "p", text: "**Symptom.** A revenue forecast built on a log-transformed target came in under actuals every month." },
+        { t: "p", text: "**Mechanism.** Predictions were transformed back with `exp`. The exponential of the mean of the logs is the geometric mean, which is below the arithmetic mean for a skewed distribution, so every forecast was biased low." },
+        { t: "p", text: "**Fix.** Back-transformed predictions use a smearing correction estimated from the residuals, and forecast bias is tracked as its own metric." }
+      ] }
   ],
 
   takeaways: [

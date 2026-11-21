@@ -84,7 +84,7 @@ EC.receiveLesson({
       ["a smaller checkpoint", "9.x persists the state on **every superstep**, so an 8 KB raw response in the schema is 8 KB written per step, forever. The output schema does not help here \u2014 only keeping it out of the internal schema does."],
       ["a boundary", "The leaky version returns the raw upstream response to the caller, which is how internal error details and upstream identifiers reach a client. That is 5.5's filter argument applied to state rather than to documents."]
     ] },
-    { t: "callout", kind: "warn", title: "The second one is the expensive one", body: [
+    { t: "callout", kind: "trap", title: "The second one is the expensive one", body: [
       { t: "p", text: "The output schema controls what the caller sees. It does **not** reduce what gets persisted \u2014 the internal schema is what the checkpointer writes, on every superstep." },
       { t: "p", text: "So a large blob in the internal state is a per-step serialisation cost even with a tidy output schema, and the fix is different: keep the blob out of the state entirely \u2014 write it to storage and keep a reference \u2014 rather than hiding it from the caller." }
     ] },

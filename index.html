@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="assets/css/home.css">
 <link rel="stylesheet" href="assets/css/aurora.css">
 <link rel="stylesheet" href="assets/css/home-plus.css">
+<link rel="stylesheet" href="assets/css/home-vis.css">
 </head>
 <body id="top">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -32,6 +33,7 @@
 <div class="page wide">
 
   <!-- ============================================================= hero -- -->
+  <div class="hero-grid">
   <section class="home-hero">
     <span class="hero-eyebrow" id="badge"></span>
 
@@ -52,6 +54,11 @@
       <a class="cta ghost" href="courses/practice/index.html">Jump to Coding Practice</a>
     </div>
   </section>
+
+  <figure class="hero-map" id="hero-map">
+    <figcaption class="hero-map-cap"><i></i><span><b>The whole curriculum, one map.</b> Five stages, sixteen courses — every node opens its course.</span></figcaption>
+  </figure>
+  </div>
 
   <!-- ========================================================= stats -- -->
   <div class="hp-stats" id="stats-strip"></div>
@@ -135,6 +142,7 @@
       c: [["sysdesign", "System Design"], ["mlops", "MLOps & Deployment"], ["interview", "Interview Experience"]] }
   ];
 
+  window.HOME_PATH = path;   // home-vis.js draws the hero map from the same stages
   $("#path-grid").innerHTML = path.map(function (s) {
     return '<div class="path-i">' +
       '<div class="path-n">' + s.n + "</div>" +
@@ -198,7 +206,7 @@
     { t: "GenAI & LLMs", ic: I.target, live: true, href: "courses/genai/index.html",
       d: "How large models are controlled, aligned and served — every parameter demonstrated on real logits, retrieval from chunking to GraphRAG, DPO derived in full, the metrics computed rather than cited, and the production failure modes.",
       tags: ["Parameters", "KV cache", "DPO/GRPO", "RAG", "Guardrails", "Voice"],
-      meta: "13 modules · 176 lessons" },
+      meta: "13 modules · 177 lessons" },
 
     { t: "LangChain & LangGraph", ic: I.link, live: true, href: "courses/langchain/index.html",
       d: "Composition, state and control flow for LLM applications — the Runnable protocol, retrieval implemented from the formula, LangGraph's state machine, the agent patterns, and the failure modes that appear once an agent can act.",
@@ -218,7 +226,7 @@
     { t: "System Design", ic: I.layers, live: true, href: "courses/sysdesign/index.html",
       d: "From one server to millions of users, every idea drawn before it is explained — caching, sharding, queues, consensus, resilience, architecture, ML and LLM systems, and the interview run as a method.",
       tags: ["Scaling", "Caching", "Consistency", "Distributed", "Patterns", "Interview"],
-      meta: "15 modules · 78 lessons" },
+      meta: "15 modules · 79 lessons" },
 
     { t: "Google ADK", ic: I.link, live: true, href: "courses/adk/index.html",
       d: "The Agent Development Kit as a runtime: agents, tools, sessions, memory and context; callbacks and artifacts; RAG; A2A and MCP clients; guardrails, approval, streaming, evaluation and deployment.",
@@ -284,7 +292,7 @@
      lesson file, every figure inside one, and the practice bank. */
   var stats = [
     { n: "16",    l: "courses",           c: "--t-blue"   },
-    { n: "1,405", l: "lessons",           c: "--t-violet" },
+    { n: "1,407", l: "lessons",           c: "--t-violet" },
     { n: "4,411", l: "figures drawn",     c: "--t-cyan"   },
     { n: "2,882", l: "practice problems", c: "--t-green"  },
     { n: "0",     l: "accounts needed",   c: "--t-amber"  }
@@ -333,5 +341,6 @@
   }
 })();
 </script>
+<script src="assets/js/home-vis.js"></script>
 </body>
 </html>

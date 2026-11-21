@@ -39,7 +39,7 @@ EC.receiveLesson({
     [0.151, 1.0, 0.0]
     [0.0, 0.0, 1.0]` },
 
-    { t: "p", text: "The quoted figure is roughly `[[1, .4, 0], [.4, 1, 0], [0, 0, 1]]`. Run with scikit-learn's defaults the middle value is **0.151**, not 0.4 — the difference is that `TfidfVectorizer` drops single-character tokens by default, so `I` is not a feature, and the two documents share only `learning`. The shape of the result is what the reference is illustrating and that holds: documents 0 and 1 are related, document 2 is unrelated." },
+    { t: "p", text: "The quoted figure is roughly `[[1, .4, 0], [.4, 1, 0], [0, 0, 1]]`. Run with scikit-learn's defaults the middle value is **0.151**, not 0.4 — the difference is that `TfidfVectorizer` drops single-character tokens by default, so `I` is not a feature, and the two documents share only `learning`. The shape of the result is what the example is illustrating, and that holds: documents 0 and 1 are related, document 2 is unrelated." },
 
     { t: "table", head: ["Measure", "What it compares", "Range"],
       rows: [
@@ -48,12 +48,12 @@ EC.receiveLesson({
         ["**Levenshtein**", "Character edits to turn one into the other", "0 to max length"]
       ] },
 
-    { t: "out", text: `  Levenshtein('kitten','sitting') = 3   (reference says 3)
+    { t: "out", text: `  Levenshtein('kitten','sitting') = 3   (by hand: 3)
   a simple normalised ratio = 1 - 3/7 = 0.571
   (python-Levenshtein's .ratio() uses a different normalisation and gives 0.615)` },
 
     { t: "callout", kind: "note", title: "There is more than one way to normalise an edit distance",
-      body: [{ t: "p", text: "The raw distance of 3 is unambiguous and matches the reference. The *ratio* is not: dividing by the longer string gives 0.571, while `python-Levenshtein`'s `.ratio()` computes `(total_length − distance) / total_length` using a slightly different alignment cost and returns 0.615. Neither is wrong; they are different conventions. If you are comparing similarity scores across systems or setting a threshold, check which one you are getting — a threshold tuned on one is not valid for the other. Lesson 8.1 works the edit-distance table out in full." }] },
+      body: [{ t: "p", text: "The raw distance of 3 is unambiguous and matches the hand count. The *ratio* is not: dividing by the longer string gives 0.571, while `python-Levenshtein`'s `.ratio()` computes `(total_length − distance) / total_length` using a slightly different alignment cost and returns 0.615. Neither is wrong; they are different conventions. If you are comparing similarity scores across systems or setting a threshold, check which one you are getting — a threshold tuned on one is not valid for the other. Lesson 8.1 works the edit-distance table out in full." }] },
 
     { t: "h2", n: "02", text: "Where lexical similarity breaks", id: "failure" },
 
@@ -97,7 +97,7 @@ EC.receiveLesson({
     { t: "out", text: `  embedding shape (3, 384)
   ML question vs ML question : 0.5336
   ML question vs weather     : 0.0593
-  reference says ~0.85 and ~0.10
+  commonly quoted: ~0.85 and ~0.10
 
   the same four pairs, now semantically:
     0.534   'How to learn machine learning?' / 'What is the best way to study ML?'
@@ -157,21 +157,125 @@ EC.receiveLesson({
     { t: "callout", kind: "good", title: "Retrieve with a bi-encoder, rerank with a cross-encoder",
       body: [{ t: "p", text: "This is the standard architecture and it resolves the trade cleanly. The bi-encoder searches the whole corpus and returns perhaps the top 100 candidates, which is fast because the corpus vectors are precomputed. The cross-encoder then scores those 100 properly, with the query and document attending to each other, and reorders them. You pay 100 forward passes rather than ten million, and you get most of the cross-encoder's accuracy. It is the same two-pass idea as the streaming-then-rescoring design in speech recognition — a cheap wide pass followed by an expensive narrow one." }] },
 
+    { t: "callout", kind: "trap", title: "Indexing unnormalised embeddings for cosine search",
+
+      body: [
+
+        { t: "p", text: "An inner-product index on unnormalised vectors ranks by length as well as direction, so long documents or common topics dominate results." },
+
+        { t: "p", text: "L2-normalise embeddings before indexing so inner product equals cosine." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Build and measure a search system", difficulty: "core", minutes: 40,
       prompt: "Build semantic search over a document collection with a bi-encoder, and compare its top-10 results against TF-IDF on the same queries. Construct ten queries that are paraphrases of document content using different vocabulary, and measure recall at 10 for both. Then add a cross-encoder reranker over the top 50 and measure the improvement. Finally, build an approximate index and measure its recall against exhaustive search.",
+      requirements: [
+        "Build semantic search with a bi-encoder and compare its top-10 with TF-IDF",
+        "Write ten paraphrased queries and measure recall at 10 for both",
+        "Add a cross-encoder reranker over the top 50 and measure the gain",
+        "Build an approximate index and measure its recall against exhaustive search"
+      ],
       hints: [
         "The paraphrase queries are where the two approaches separate — on keyword queries TF-IDF is competitive.",
         "Cross-encoder reranking usually helps most when the bi-encoder's top-10 is nearly right but mis-ordered.",
         "For ANN recall, compute exhaustive results on a sample and measure overlap."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import time
+import numpy as np
+import faiss
+from sentence_transformers import CrossEncoder, SentenceTransformer
+from sklearn.datasets import fetch_20newsgroups
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+raw = fetch_20newsgroups(subset="train", remove=("headers", "footers", "quotes")).data
+docs = [d.strip().replace("\\n", " ")[:600] for d in raw if len(d.strip()) > 200][:5000]
+# Ten paraphrase queries, each written for one target document using different vocabulary.
+TARGETS = {
+    "automobile engine making a knocking noise": "engine",
+    "spacecraft circling the planet": "orbit",
+    "handgun ownership laws": "gun control",
+    "graphics card drivers for the PC": "video card",
+    "ice hockey goaltender statistics": "goalie",
+    "the existence of a deity": "god",
+    "encrypting messages so the government cannot read them": "encryption",
+    "selling a used motorbike": "bike",
+    "medical treatment for persistent headaches": "migraine",
+    "sharing image files between computers": "gif",
+}
+# relevant = documents containing the target phrase (the queries avoid that phrase on purpose)
+relevant = {q: {i for i, d in enumerate(docs) if t in d.lower()} for q, t in TARGETS.items()}
+assert all(relevant.values()), "every query needs at least one relevant document"
+queries = list(TARGETS)
+
+tfidf = TfidfVectorizer(stop_words="english", sublinear_tf=True).fit(docs); D_t = tfidf.transform(docs)
+bi = SentenceTransformer("BAAI/bge-small-en-v1.5")
+import os
+t0 = time.time()
+if os.path.exists("doc_emb.npy"): D_e = np.load("doc_emb.npy")             # embedding is the slow step: cache it
+else: D_e = bi.encode(docs, batch_size=64, normalize_embeddings=True, convert_to_numpy=True); np.save("doc_emb.npy", D_e)
+enc_s = time.time() - t0
+Q_e = bi.encode(queries, normalize_embeddings=True, convert_to_numpy=True)
+
+def recall_at(ranked, q, k=10):
+    return len(set(ranked[:k]) & relevant[q]) / min(k, len(relevant[q]))
+
+lex = {q: np.argsort(-(D_t @ tfidf.transform([q]).T).toarray().ravel())[:50].tolist() for q in queries}
+sem = {q: np.argsort(-(D_e @ Q_e[i]))[:50].tolist() for i, q in enumerate(queries)}
+ce = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+rer = {}
+for q in queries:
+    scores = ce.predict([(q, docs[i]) for i in sem[q]]); rer[q] = [sem[q][j] for j in np.argsort(-scores)]
+print(f"{len(docs):,} documents embedded (or loaded from cache) in {enc_s:.0f}s; relevant documents per query: " + ", ".join(str(len(relevant[q])) for q in queries))
+print("\\nrecall@10        TF-IDF   bi-encoder   bi-encoder + cross-encoder rerank of top 50")
+for q in queries:
+    print(f"  {q[:38]:<38} {recall_at(lex[q], q):.2f}     {recall_at(sem[q], q):.2f}         {recall_at(rer[q], q):.2f}")
+print(f"  {'mean':<38} {np.mean([recall_at(lex[q], q) for q in queries]):.2f}     {np.mean([recall_at(sem[q], q) for q in queries]):.2f}"
+      f"         {np.mean([recall_at(rer[q], q) for q in queries]):.2f}")
+
+exact = faiss.IndexFlatIP(D_e.shape[1]); exact.add(D_e)
+hnsw = faiss.IndexHNSWFlat(D_e.shape[1], 16, faiss.METRIC_INNER_PRODUCT); hnsw.add(D_e)
+probe = D_e[np.random.default_rng(0).choice(len(D_e), 200, replace=False)]
+_, truth = exact.search(probe, 10)
+for ef in [8, 16, 64]:
+    hnsw.hnsw.efSearch = ef; t0 = time.perf_counter(); _, approx = hnsw.search(probe, 10); ms = (time.perf_counter() - t0) * 1000 / 200
+    overlap = np.mean([len(set(a) & set(t)) / 10 for a, t in zip(approx, truth)])
+    print(f"HNSW efSearch={ef:<3} recall@10 against exhaustive search {overlap:.3f}   {ms:.3f} ms/query")`,
+        out: `
+
+5,000 documents embedded (or loaded from cache) in 0s; relevant documents per query: 103, 43, 10, 31, 10, 182, 64, 99, 8, 40
+
+recall@10        TF-IDF   bi-encoder   bi-encoder + cross-encoder rerank of top 50
+  automobile engine making a knocking no 0.50     0.30         0.40
+  spacecraft circling the planet         0.20     0.30         0.30
+  handgun ownership laws                 0.10     0.00         0.20
+  graphics card drivers for the PC       0.10     0.10         0.00
+  ice hockey goaltender statistics       0.00     0.20         0.20
+  the existence of a deity               0.50     1.00         1.00
+  encrypting messages so the government  0.30     0.60         0.60
+  selling a used motorbike               0.10     0.70         0.50
+  medical treatment for persistent heada 0.25     0.62         0.50
+  sharing image files between computers  0.30     0.20         0.10
+  mean                                   0.23     0.40         0.38
+HNSW efSearch=8   recall@10 against exhaustive search 0.940   0.011 ms/query
+HNSW efSearch=16  recall@10 against exhaustive search 0.975   0.007 ms/query
+HNSW efSearch=64  recall@10 against exhaustive search 0.997   0.018 ms/query`,
+       
         notes: [
           { t: "p", text: "The paraphrase queries are the whole experiment. On queries that share vocabulary with the documents, TF-IDF is genuinely competitive and sometimes better, because exact term matching is a strong signal when the terms are right. The gap appears when the query uses different words for the same thing — I measured `car` against `automobile` at 0.247 lexically and 0.910 semantically. Hybrid retrieval, combining both scores, is common for exactly this reason." },
-          { t: "p", text: "Cross-encoder reranking tends to give a large improvement in the top few positions and little change in recall at 50, which makes sense: it reorders what the bi-encoder found and cannot recover anything the bi-encoder missed. That is the argument for retrieving generously — 100 or 200 candidates — before reranking, since the reranker's ceiling is set by the retrieval." },
+          { t: "p", text: "Cross-encoder reranking is often the largest gain in the top few positions, but measure it rather than assume it. In the reference run on 20 Newsgroups the bi-encoder roughly doubled TF-IDF's recall@10 on paraphrased queries (0.40 against 0.23), and an MS MARCO cross-encoder reranking its top 50 did not improve it (0.38): a reranker trained on web question-answer pairs is not automatically right for forum posts, and relevance labels defined by keyword matching reward lexical overlap. Whatever it does to precision, it reorders what the bi-encoder found and cannot recover anything the bi-encoder missed. That is the argument for retrieving generously — 100 or 200 candidates — before reranking, since the reranker's ceiling is set by the retrieval." },
           { t: "p", text: "Measuring ANN recall against exhaustive search is a step people skip, and the default index parameters are not always right for your dimensionality and corpus size. A recall of 0.95 at ten times the speed is usually an excellent trade; a recall of 0.7 discovered in production is not. It takes a few minutes on a sample and turns an assumption into a number." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: search that could not find 'automobile'",
+      body: [
+        { t: "p", text: "**Symptom.** Users searching an internal knowledge base for 'automobile policy' found nothing, though a 'car policy' document existed." },
+        { t: "p", text: "**Mechanism.** Search used TF-IDF cosine, which matches words. Different vocabulary for the same meaning scored zero overlap." },
+        { t: "p", text: "**Fix.** Search combines BM25 with a sentence-embedding retriever and reranks the top results, and recall is measured on paraphrased queries." }
+      ] }
   ],
 
   takeaways: [

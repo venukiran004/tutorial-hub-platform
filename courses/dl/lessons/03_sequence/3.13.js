@@ -150,21 +150,134 @@ embedding.weight.requires_grad = False     # freeze, or True to fine-tune`,
         ] }
       ] },
 
+    { t: "callout", kind: "trap", title: "Comparing an RNN and a transformer at one sequence length",
+
+      body: [
+
+        { t: "p", text: "At short lengths a transformer is fast and memory is not a concern; attention memory grows with the square of the length and becomes the binding constraint on long inputs." },
+
+        { t: "p", text: "Benchmark time and memory across the sequence lengths you will actually serve." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Measure the crossover", difficulty: "intermediate", minutes: 40,
       prompt: "Benchmark an LSTM and a transformer encoder layer of comparable size at sequence lengths 32, 128, 512, 2048 and 8192, recording both time and peak memory. Find the length where the transformer's memory becomes the binding constraint on your hardware. Then verify the embedding identity — that `nn.Embedding(idx)` equals one-hot times the weight matrix — and train a small classifier three ways: random embeddings, frozen pretrained, and fine-tuned pretrained, on both a small and a large training set.",
+      requirements: [
+        "Benchmark an LSTM and a transformer layer at lengths 32 to 8,192 for time and memory",
+        "Find where transformer memory becomes the limit",
+        "Verify that nn.Embedding equals one-hot times the weight matrix",
+        "Train a classifier with random, frozen and fine-tuned embeddings on small and large data"
+      ],
       hints: [
         "Use `torch.cuda.max_memory_allocated()` if on GPU, or track tensor sizes analytically on CPU.",
         "Keep parameter counts roughly matched so the comparison is about architecture.",
         "The embedding comparison should differ by one or two data-set sizes, not just one."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import time, tracemalloc
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+torch.manual_seed(0)
+
+# Time and peak memory for one forward + backward, LSTM vs one transformer encoder layer (~same parameters).
+d = 128
+lstm = nn.LSTM(d, d, batch_first=True)
+enc = nn.TransformerEncoderLayer(d, 4, 2 * d, dropout=0.0, batch_first=True)
+print(f"parameters: LSTM {sum(p.numel() for p in lstm.parameters()):,}  transformer layer {sum(p.numel() for p in enc.parameters()):,}")
+
+def attention_bytes(T, heads=4, batch=1): return batch * heads * T * T * 4      # one float32 attention matrix
+
+def measure(f, T):
+    x = torch.randn(1, T, d, requires_grad=True)
+    tracemalloc.start(); t0 = time.perf_counter()
+    out = f(x); out.float().pow(2).mean().backward()
+    sec = time.perf_counter() - t0; _, peak = tracemalloc.get_traced_memory(); tracemalloc.stop()
+    return sec, peak
+
+print("\\nlength   LSTM s    transformer s   one attention matrix (MB, 4 heads)")
+for T in [32, 128, 512, 2048, 8192]:
+    tl, _ = measure(lambda x: lstm(x)[0], T)
+    if attention_bytes(T) < 2e9:
+        tt, _ = measure(lambda x: enc(x, is_causal=False), T)
+        tts = f"{tt:13.3f}"
+    else: tts = "    (skipped)"
+    print(f"{T:<8} {tl:7.3f}  {tts}   {attention_bytes(T) / 1e6:12.1f}")
+print("LSTM activation memory grows like T; the attention matrix grows like T^2 and, per head and per example,"
+      "\\nreaches 1 GB at T = 16,384 in float32: the point where memory, not time, decides.")
+
+# The embedding identity: a lookup is a one-hot row times the weight matrix
+emb = nn.Embedding(1000, 64); idx = torch.tensor([3, 17, 999])
+print(f"\\nmax |Embedding(idx) - one_hot(idx) @ W| = {(emb(idx) - F.one_hot(idx, 1000).float() @ emb.weight).abs().max():.1e}")
+
+# Random vs frozen vs fine-tuned word embeddings on SST-2, with GloVe 300d as the pretrained table
+# (safetensors weights and a JSON vocabulary from the Hugging Face Hub, about 480 MB).
+import json, re
+from huggingface_hub import hf_hub_download
+from safetensors.torch import load_file
+from datasets import load_dataset
+REPO = "sentence-transformers/average_word_embeddings_glove.6B.300d"
+glove = load_file(hf_hub_download(REPO, "0_WordEmbeddings/model.safetensors"))["emb_layer.weight"]
+vocab = json.load(open(hf_hub_download(REPO, "0_WordEmbeddings/whitespacetokenizer_config.json"), encoding="utf-8"))["vocab"]
+w2i = {w: i for i, w in enumerate(vocab)}
+ds = load_dataset("nyu-mll/glue", "sst2")
+def encode(rows, n, L=48):
+    ids = torch.zeros(n, L, dtype=torch.long)                       # index 0 is GloVe's padding row
+    for k, s in enumerate(rows["sentence"][:n]):
+        toks = [w2i[w] for w in re.findall(r"[a-z0-9']+|[^\\sa-z0-9]", s.lower()) if w in w2i][:L]
+        if toks: ids[k, :len(toks)] = torch.tensor(toks)
+    return ids, torch.tensor(rows["label"][:n])
+Xva, yva = encode(ds["validation"], 872)
+
+class BoW(nn.Module):
+    def __init__(self, mode):
+        super().__init__()
+        self.e = nn.Embedding.from_pretrained(glove.clone(), freeze=(mode == "frozen"), padding_idx=0) if mode != "random"                  else nn.Embedding(*glove.shape, padding_idx=0)
+        self.o = nn.Sequential(nn.Linear(glove.shape[1], 64), nn.ReLU(), nn.Linear(64, 2))
+    def forward(self, ids):
+        m = (ids != 0).float()[..., None]; return self.o((self.e(ids) * m).sum(1) / m.sum(1).clamp(min=1.0))
+
+print("\\ntraining examples   random   frozen GloVe   fine-tuned GloVe   (SST-2 validation accuracy)")
+for n in [500, 20000]:
+    Xtr, ytr = encode(ds["train"], n); row = []
+    for mode in ["random", "frozen", "finetune"]:
+        torch.manual_seed(0); m = BoW(mode); opt = torch.optim.Adam([p for p in m.parameters() if p.requires_grad], 1e-3)
+        for _ in range(max(400, 4 * n // 64)):
+            i = torch.randint(0, n, (64,)); loss = F.cross_entropy(m(Xtr[i]), ytr[i]); opt.zero_grad(); loss.backward(); opt.step()
+        with torch.no_grad(): row.append((m(Xva).argmax(1) == yva).float().mean().item())
+    print(f"{n:<19} {row[0]:6.3f}   {row[1]:12.3f}   {row[2]:16.3f}")`,
+        out: `parameters: LSTM 132,096  transformer layer 132,480
+
+length   LSTM s    transformer s   one attention matrix (MB, 4 heads)
+32         0.075          0.008            0.0
+128        0.005          0.005            0.3
+512        0.011          0.008            4.2
+2048       0.042          0.075           67.1
+8192       0.183          0.921         1073.7
+LSTM activation memory grows like T; the attention matrix grows like T^2 and, per head and per example,
+reaches 1 GB at T = 16,384 in float32: the point where memory, not time, decides.
+
+max |Embedding(idx) - one_hot(idx) @ W| = 0.0e+00
+
+training examples   random   frozen GloVe   fine-tuned GloVe   (SST-2 validation accuracy)
+500                  0.617          0.739              0.741
+20000                0.773          0.769              0.798`,
+       
         notes: [
           { t: "p", text: "The memory curves are the point: the LSTM's grows linearly with length while the transformer's grows quadratically, so they cross somewhere and after that the transformer simply cannot run. Computing where that happens on your own hardware is more useful than any general rule, because it tells you exactly when you need FlashAttention or a sparse variant rather than guessing." },
           { t: "p", text: "On embeddings, the expected pattern is that frozen pretrained wins clearly on the small dataset and fine-tuned wins on the large one, with random embeddings worst on both but closing the gap as data grows. The reason frozen wins when data is scarce is capacity: the embedding matrix is frequently the largest parameter block in the whole model — at 50,000 words by 300 dimensions it is 15 million parameters — so unfreezing it on a few thousand examples is inviting it to memorise. This is the same size-versus-data argument as lesson 2.5's transfer learning strategy table." },
           { t: "p", text: "The one-hot identity is worth verifying once because it demystifies the layer permanently. Once you have seen that they agree exactly, the fact that gradients only reach the rows used in a batch, and that input and output embeddings can be tied in a language model, both follow without needing to be memorised separately." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a transformer that ran out of memory on long inputs",
+      body: [
+        { t: "p", text: "**Symptom.** A transformer replacing an LSTM for log analysis ran out of GPU memory on longer logs." },
+        { t: "p", text: "**Mechanism.** Attention memory grows with the square of sequence length, while the LSTM's grew linearly. The comparison had been made at short lengths only." },
+        { t: "p", text: "**Fix.** Memory and time were benchmarked at production lengths, and long inputs are chunked with a hierarchical model." }
+      ] }
   ],
 
   takeaways: [

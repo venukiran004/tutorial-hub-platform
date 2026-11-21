@@ -147,7 +147,14 @@ main_agent = LlmAgent(name="main", model=M,
 After setting both flags: the billing question is answered by billing as before. The
 tech question, arriving while billing holds the conversation, cannot be transferred
 sideways to tech or back to the coordinator, so billing answers it — badly.`,
-        notes: [{ t: "p", text: "That is the right behaviour inside a transaction — a checkout agent should not release the conversation half way — and the wrong behaviour for general support, where topics change. The usual compromise is to allow transfer to the parent but not to peers, so a specialist can hand back to the router but cannot guess at which sibling to jump to." }] } }
+        notes: [{ t: "p", text: "That is the right behaviour inside a transaction — a checkout agent should not release the conversation half way — and the wrong behaviour for general support, where topics change. The usual compromise is to allow transfer to the parent but not to peers, so a specialist can hand back to the router but cannot guess at which sibling to jump to." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the router that answered instead of routing",
+      body: [
+        { t: "p", text: "**Symptom.** A coordinator meant only to route began answering technical questions itself, badly, after someone gave it a search tool \"for context\"." },
+        { t: "p", text: "**Mechanism.** With a tool of its own, the coordinator's cheapest path to a reply was to search and answer, so it stopped transferring. A router's only tool should be `transfer_to_agent`; anything else gives the model an alternative to routing." },
+        { t: "p", text: "**Fix.** The search tool moved to the specialist, and the coordinator's instruction says it never answers questions itself. An evaluation set checks the routing trajectory, not only the reply (lesson 11.2)." }
+      ] }
   ],
 
   takeaways: [

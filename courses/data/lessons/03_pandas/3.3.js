@@ -688,7 +688,14 @@ def test_all_missing_column_is_safe():
       { t: "p", text: "**Type at read time, not afterwards.** `read_csv(path, dtype=schema)` never allocates the object columns; converting after the fact means peak memory is the *unoptimised* size, which is precisely the number you were trying to avoid." },
       { t: "p", text: "**A dtype schema is a contract worth version-controlling.** It documents what each column is, fails loudly when the source changes shape, and makes the memory characteristics of a job predictable rather than emergent." },
       { t: "p", text: "**Measure with `deep=True` or do not quote the number.** A frame reporting 40 MB and occupying 155 MB is the normal case for anything with text in it, and capacity planning built on the shallow figure is planning for a different program." }
-    ]}
+    ]},
+
+    { t: "callout", kind: "scenario", title: "Incident: a notebook that ran out of memory on a 2 GB file",
+      body: [
+        { t: "p", text: "**Symptom.** Loading a 2 GB order-history CSV crashed a 32 GB machine." },
+        { t: "p", text: "**Mechanism.** Several text columns with a handful of distinct values — status, country, channel — were loaded as `object` dtype, which stores a separate Python string per row. The in-memory size was many times the file size, and `memory_usage()` without `deep=True` had reported a small number." },
+        { t: "p", text: "**Fix.** Low-cardinality columns are read as `category` and free text as `string[pyarrow]`, and memory is measured with `deep=True`. The same file now loads in under 3 GB." }
+      ] }
   ],
 
   takeaways: [

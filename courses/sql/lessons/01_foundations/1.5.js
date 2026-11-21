@@ -238,6 +238,17 @@ GROUP  BY m.month ORDER BY m.month;
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Concatenating a nullable column",
+
+      body: [
+
+        { t: "p", text: "`'Country: ' || country` returns NULL when `country` is NULL, so a label column built that way is blank exactly for the rows that most need explaining. Most engines raise no warning." },
+
+        { t: "p", text: "Wrap nullable parts with `COALESCE`, or use `CONCAT`, which treats NULL as empty on most engines, and check the result for NULLs." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A weekly series with zeros, durations and a clean key",
@@ -310,7 +321,14 @@ SELECT name, LOWER(TRIM(name)) || '-' || LOWER(COALESCE(country, 'xx')) AS key F
           why: "GROUP BY can only group rows that exist. A spine supplies the periods; the LEFT JOIN keeps them; COALESCE(SUM(…), 0) turns the absence into a zero. Filters on the joined table go in ON so the empty periods survive."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an average order value that ignored the pennies",
+      body: [
+        { t: "p", text: "**Symptom.** A finance analyst found that average order value in the warehouse differed from the application's by a few pence on most days." },
+        { t: "p", text: "**Mechanism.** The query divided an integer revenue in pence by an integer order count. On PostgreSQL integer division truncates, so every daily average was rounded down before being converted to pounds." },
+        { t: "p", text: "**Fix.** One side is cast to NUMERIC before dividing, money is stored as NUMERIC rather than FLOAT, and a test compares the warehouse figure with the application's for a sample day." }
+      ] }
   ],
 
   takeaways: [

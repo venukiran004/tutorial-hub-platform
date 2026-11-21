@@ -272,7 +272,14 @@ ALTER TABLE products_legacy ALTER COLUMN price_pence TYPE INTEGER USING price_pe
           why: "BETWEEN is `>= a AND <= b`, and a date literal compared with a timestamp is cast to midnight. The whole of the 15th after 00:00:00 lies outside. Write `>= '2025-03-01' AND < '2025-03-16'`."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: the last day of every month missing from revenue",
+      body: [
+        { t: "p", text: "**Symptom.** Monthly revenue was consistently a few percent below the payments system's figure, always by roughly one day's takings." },
+        { t: "p", text: "**Mechanism.** The report filtered `placed_at BETWEEN '2025-03-01' AND '2025-03-31'` on a timestamp column. The upper literal becomes midnight at the start of the 31st, so every order after 00:00:00 on the last day was excluded." },
+        { t: "p", text: "**Fix.** Every time slice is written as a half-open range — `>= '2025-03-01' AND < '2025-04-01'` — which is correct at any granularity and indexable. A reconciliation check against the payments total now runs with each report." }
+      ] }
   ],
 
   takeaways: [

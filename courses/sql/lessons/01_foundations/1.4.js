@@ -293,7 +293,14 @@ ORDER  BY paid_revenue DESC;
           why: "The missing ELSE does not matter here — SUM skips the NULLs and still gives 10. The problem is integer arithmetic on the result. `AVG(CASE WHEN status = 'paid' THEN 1.0 ELSE 0 END)` gives 0.8333 on every engine."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: the conversion rate that was always NULL",
+      body: [
+        { t: "p", text: "**Symptom.** A dashboard tile showing weekly conversion went blank for every week in which a particular channel had no sales." },
+        { t: "p", text: "**Mechanism.** The numerator was `SUM(CASE WHEN status = 'paid' THEN 1 END)`. With no ELSE, non-matching rows produce NULL; when no row matched, SUM returned NULL and the division returned NULL." },
+        { t: "p", text: "**Fix.** Conditional aggregates are written `SUM(CASE WHEN ... THEN 1 ELSE 0 END)`, or `COUNT(*) FILTER (WHERE ...)`, which counts zero rather than returning NULL, and the tile shows 0% rather than nothing." }
+      ] }
   ],
 
   takeaways: [

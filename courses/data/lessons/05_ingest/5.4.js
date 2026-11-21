@@ -376,6 +376,17 @@ pd.read_parquet("data.parquet", dtype_backend="pyarrow")
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Partitioning by a column nobody filters on",
+
+      body: [
+
+        { t: "p", text: "Partitioning a Parquet dataset by a high-cardinality or rarely filtered column creates many small files and no pruning, so queries are slower than with no partitioning." },
+
+        { t: "p", text: "Partition by the column most queries filter on — usually date — keep file sizes reasonable, and sort within files on the next most common filter." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Convert a CSV archive into a dataset that answers questions quickly",
@@ -640,7 +651,14 @@ def test_reconciles_to_csv(tmp="t_arch"):
           why: "Pushdown depends on the data being clustered, not on the format. Statistics are always stored; they only help when they are narrow. Sorting by region before writing — or partitioning on it — is what makes the second filter fast."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a Parquet dataset that read every file for one day",
+      body: [
+        { t: "p", text: "**Symptom.** A query for a single day of events read the entire year of data and took minutes." },
+        { t: "p", text: "**Mechanism.** The dataset was written as one large file without partitioning and with row groups that mixed dates, so the reader's statistics could not skip anything." },
+        { t: "p", text: "**Fix.** The dataset is partitioned by date and sorted within files, so a date filter is pushed down to read one partition. Read time for one day fell to under a second." }
+      ] }
   ],
 
   takeaways: [

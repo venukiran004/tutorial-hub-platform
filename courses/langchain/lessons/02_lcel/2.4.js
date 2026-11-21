@@ -166,6 +166,12 @@ EC.receiveLesson({
       ["add a key, keep everything else", "`RunnablePassthrough.assign(k=fn)`"],
       ["take one key from a dict", "`itemgetter(\"k\")`"]
     ] },
+    { t: "callout", kind: "trap", title: "Using RunnablePassthrough where you meant .assign",
+      body: [
+        { t: "p", text: "`RunnablePassthrough()` forwards its input unchanged; `RunnablePassthrough.assign(key=...)` forwards its input with a new key added. Reaching for the first when you meant the second loses the original fields at the next step, and the error appears two steps later as a missing key in a prompt." },
+        { t: "p", text: "When a later step needs both the original input and something computed from it, use `.assign`. When you need several computed values side by side, use a dict fan-out." }
+      ] },
+
     { t: "exercise", kind: "build", title: "Keep what the chain eats",
       difficulty: "core", minutes: 24,
       body: "Show the problem first: a chain whose output no longer contains its input. Then fix it two ways — with a passthrough branch in a fan-out, and with .assign. Chain two assigns so the second reads a key the first produced. Use itemgetter to select a key, including as part of a multi-step branch.",

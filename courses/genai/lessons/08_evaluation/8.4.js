@@ -152,6 +152,17 @@ EC.receiveLesson({
   <text x="16" y="264" class="s-sub">and always report the harness \u2014 formatting, few-shot count and answer parsing all move the number</text>
 </svg>` },
 
+    { t: "callout", kind: "trap", title: "Comparing benchmark scores run with different prompts",
+
+      body: [
+
+        { t: "p", text: "Benchmark scores move with prompt format, few-shot count and answer parsing. Two published numbers for the same benchmark are often not comparable, and a team that chooses a model on that comparison may be choosing on formatting." },
+
+        { t: "p", text: "Run every candidate through the same harness with the same prompts and parser, and treat published numbers only as a rough shortlist." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Build the eval set that replaces the benchmark", difficulty: "core", minutes: 35,
       body: "Construct a private evaluation set for your own task from real traffic, and compare what it says about two candidate models against what public benchmarks say. Report both rankings and explain any disagreement.",
       requirements: [

@@ -94,7 +94,7 @@ EC.receiveLesson({
       ["cancel my order", "cancel my account", "0.50"],
       ["how do I add a user", "how do I add a payment method", "0.62"]
     ] },
-    { t: "callout", kind: "warn", title: "The asymmetry is the whole argument", body: [
+    { t: "callout", kind: "trap", title: "The asymmetry is the whole argument", body: [
       { t: "p", text: "A **miss** costs one model call \u2014 a few cents and some latency, and the user gets a correct answer. A **wrong hit** costs a wrong answer, served fast, with no error raised, to every user who asks that question until the entry expires." },
       { t: "p", text: "Cancelling an order and cancelling an account are not the same request, and a cache that serves one answer for both is doing something far worse than being slow. So the threshold is a risk setting, not a performance dial, and raising it to improve a hit-rate dashboard is optimising the wrong number." }
     ] },

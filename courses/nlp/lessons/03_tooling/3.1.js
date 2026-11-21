@@ -235,7 +235,8 @@ import spacy
 from spacy.language import Language
 from spacy.tokens import Span
 from spacy.matcher import Matcher, PhraseMatcher
-from docs import DOCS
+from docs import DOCS   # docs.py is yours: DOCS = [six or more multi-sentence English passages]
+                        # the output shown is from the author's passages, so your figures will differ
 
 nlp = spacy.load("en_core_web_sm")
 print("pipe_names:", nlp.pipe_names)
@@ -313,7 +314,14 @@ Matcher         96.479 ms/doc, 2 matches`,
           { t: "p", text: "`nlp.pipe` with a batch size of 1 was no faster than the loop. The gain arrived by 32 and flattened afterwards: 6.14 s for the loop, 4.4–4.8 s batched. On a small CPU model the win is modest. On transformer pipelines it is much larger, so measure on the model you deploy." },
           { t: "p", text: "The three-token negation window fixed 'not good' and failed on 'Nothing about the food was good.' The negator is more than three tokens away. 'Not only good, it was great' scored zero because 'not' flipped 'good'. Windowed negation is a heuristic; scope needs the dependency parse. At 10,000 terms, PhraseMatcher cost 0.02 ms per document against 96 ms for Matcher, with identical matches. Use Matcher only when the patterns need token attributes that a phrase cannot express." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a pipeline that processed ten documents a second",
+      body: [
+        { t: "p", text: "**Symptom.** A spaCy entity-extraction job over two million documents was projected to take days." },
+        { t: "p", text: "**Mechanism.** Each document was processed with a separate `nlp(text)` call, and the pipeline ran components it did not need, including the parser." },
+        { t: "p", text: "**Fix.** The job uses `nlp.pipe` with batching and disables unused components, and throughput is measured on a sample before the full run." }
+      ] }
   ],
 
   takeaways: [

@@ -214,6 +214,17 @@ max |dW2 − autograd| = 9.06e-09` },
     { t: "callout", kind: "insight", title: "What the framework adds",
       body: [{ t: "p", text: "Compare this class with lesson 1.11's PyTorch version. The framework replaces backward() with autograd, the weight updates with an optimiser object that can also do momentum and Adam, the full-batch loop with a DataLoader of mini-batches, and adds the GPU. What it does not change is any of the maths: the tensors it stores during forward, the gradients it produces, and the update it applies are the ones you have just read." }] },
 
+    { t: "callout", kind: "trap", title: "Skipping the gradient check because the loss goes down",
+
+      body: [
+
+        { t: "p", text: "A slightly wrong backward pass still lowers the loss, just more slowly or to a worse value, so a decreasing loss is weak evidence that the gradients are right." },
+
+        { t: "p", text: "Compare analytic gradients with finite differences on random inputs before training anything written by hand." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Add momentum to the class", difficulty: "core", minutes: 20,
       body: [{ t: "p", text: "Give NeuralNetwork a `momentum` argument (default 0.9) and velocity buffers for all four parameters, and replace the four update lines with lesson 1.5's rule v = βv + (1 − β)·grad, θ −= lr·v. Re-run the two-moons training with the same seed and compare the epoch at which accuracy first exceeds 90 %." }],
       requirements: [
@@ -232,7 +243,14 @@ self.vW2 = b * self.vW2 + (1 - b) * dW2; self.W2 -= self.lr * self.vW2
 self.vb2 = b * self.vb2 + (1 - b) * db2; self.b2 -= self.lr * self.vb2
 self.vW1 = b * self.vW1 + (1 - b) * dW1; self.W1 -= self.lr * self.vW1
 self.vb1 = b * self.vb1 + (1 - b) * db1; self.b1 -= self.lr * self.vb1`,
-        notes: [{ t: "p", text: "With the (1 − β) convention and lr = 0.1, momentum's effective step is the same as plain SGD's once the velocity has warmed up, so the gain comes from the smoothing rather than a larger step; raise lr to 0.5 to see the acceleration the lesson-1.5 formulas promise. Whether 90 % arrives earlier depends on the seed — record both numbers and say what you observed." }] } }
+        notes: [{ t: "p", text: "With the (1 − β) convention and lr = 0.1, momentum's effective step is the same as plain SGD's once the velocity has warmed up, so the gain comes from the smoothing rather than a larger step; raise lr to 0.5 to see the acceleration the lesson-1.5 formulas promise. Whether 90 % arrives earlier depends on the seed — record both numbers and say what you observed." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a from-scratch network whose loss rose",
+      body: [
+        { t: "p", text: "**Symptom.** A NumPy implementation's loss increased steadily from the first step." },
+        { t: "p", text: "**Mechanism.** The update added the gradient instead of subtracting it. Every step moved uphill." },
+        { t: "p", text: "**Fix.** The implementation was checked against finite differences and against a framework on the same initial weights before training." }
+      ] }
   ],
 
   takeaways: [

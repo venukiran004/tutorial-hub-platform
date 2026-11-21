@@ -738,7 +738,14 @@ def test_the_original_alignment_bug():
           why: "A filter preserves labels rather than renumbering them, so after it the index might be `[3, 7, 11]`. `.loc` addresses labels and `.iloc` addresses positions — which one you need depends on what you meant, and the default RangeIndex hides the distinction until the first filter."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a column of NaN after adding two frames",
+      body: [
+        { t: "p", text: "**Symptom.** A report of revenue minus refunds per region came out entirely NaN, though both input frames had a value for every region." },
+        { t: "p", text: "**Mechanism.** The refunds frame had been sorted and reset, so its index no longer held region labels. pandas aligned the two frames on index labels before subtracting; no labels matched, and every result was NaN." },
+        { t: "p", text: "**Fix.** Both frames are indexed by region before arithmetic, and the report checks the count of non-null results against the number of regions." }
+      ] }
   ],
 
   takeaways: [

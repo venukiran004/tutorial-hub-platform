@@ -114,6 +114,12 @@ EC.receiveLesson({
       code: '# speech to text\nfrom transformers import pipeline\nasr = pipeline("automatic-speech-recognition", model="openai/whisper-small")\nasr("audio.wav", return_timestamps=True)["chunks"]\n\n# text to speech\nfrom TTS.api import TTS\ntts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")\ntts.tts_to_file(text="Hello there.", speaker_wav="ref.wav",\n                language="en", file_path="output.wav")',
       caption: "`return_timestamps=True` is what makes a transcript usable for anything but reading." },
     { t: "p", text: "Two practical notes. **Whisper’s encoder is fixed at 30 seconds (§02’s 1500 tokens), so the pipeline chunks longer audio and stitches the results** — which is where most transcription errors at segment boundaries come from, not from the model. And `speaker_wav` is the voice-cloning argument: **a reference clip of a few seconds is the whole enrollment**, which is §06’s VALL-E row arriving as a keyword parameter in an installable package." },
+    { t: "callout", kind: "trap", title: "Feeding raw audio or every video frame to a transformer",
+      body: [
+        { t: "p", text: "Raw audio samples and full-rate video produce token counts far beyond any context window." },
+        { t: "p", text: "Compress first — spectrograms for audio, sampled and pooled frames for video — and compute the token budget before processing." }
+      ] },
+
     { t: "exercise", kind: "Challenge", title: "Compute the budgets", difficulty: "intro", minutes: 25,
       requirements: [
         "Compute the sequence length for your audio at several hop sizes, and check it against your model's limit.",
@@ -167,7 +173,14 @@ whisper-small: encoder 88,154,112, decoder 153,580,800 (includes the 51,865 x 76
           { t: "p", text: "Video is far more expensive: ten minutes at 4 fps with 196 patches per frame is 470,400 tokens, beyond almost any context window. Factorised attention, spatial within a frame and then temporal across frames, uses 148 times fewer attention entries than joint attention for a 600-frame clip." },
           { t: "p", text: "Measured on whisper-small, the encoder is 88M parameters and the decoder 154M. The decoder is the larger half here because it includes the 51,865 × 768 token embedding. So 'the encoder is most of Whisper' depends on which variant and whether embeddings are counted. The cross-attention alignment check needs a real speech clip, and none is available here." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a video model that ran out of context",
+      body: [
+        { t: "p", text: "**Symptom.** A video-summarisation prototype failed on clips longer than a few seconds." },
+        { t: "p", text: "**Mechanism.** Each frame produced hundreds of tokens, so a few seconds of video exceeded the context window." },
+        { t: "p", text: "**Fix.** Frames are sampled at a low rate and pooled, and the token budget per clip is computed before processing." }
+      ] }
   ],
 
   takeaways: [

@@ -159,7 +159,7 @@ async def get_user(uid: int, db: AsyncSession = Depends(get_async_db)):
 
     { t: "h2", n: "06", text: "The five recurring lessons", id: "five" },
 
-    { t: "diagram", kind: "compare", title: "Sixteen incidents, five rules", caption: "Every scenario in the reference breaks one of these. When a new incident arrives, ask which rule it broke; the fix is usually the rule's standard remedy.", columns: [
+    { t: "diagram", kind: "compare", title: "Sixteen incidents, five rules", caption: "Every scenario in this module breaks one of these. When a new incident arrives, ask which rule it broke; the fix is usually the rule's standard remedy.", columns: [
       { title: "The GIL draws the line", tone: "crit", items: ["threads for I/O", "processes for CPU", "never block the loop", "scenarios 1, 6, 16"] },
       { title: "Sessions per request", tone: "warn", items: ["engine global", "commit / rollback / close", "pool × workers < max_conn", "scenarios 2, 3, 13"] },
       { title: "Invariants in the DB", tone: "accent", items: ["atomic UPDATE … WHERE", "row locks, constraints", "not in-process locks", "scenarios 5, 8, 10, 11"] },

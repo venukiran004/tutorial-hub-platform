@@ -347,6 +347,17 @@ m.ppf(0.99)            # 42.1    the p99 user
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Treating a density value as a probability",
+
+      body: [
+
+        { t: "p", text: "A probability density can exceed 1 and has units, so 'the density at x is 3' says nothing about the probability of x. Code that thresholds densities as probabilities, or compares densities across variables with different units, gives meaningless results." },
+
+        { t: "p", text: "Integrate the density over an interval, or use the CDF, whenever you need a probability." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Build a distribution from a latency histogram",

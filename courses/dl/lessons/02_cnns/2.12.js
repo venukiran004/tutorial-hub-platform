@@ -163,6 +163,12 @@ traced = torch.jit.trace(model, dummy)        # records ONE execution path`,
 
     { t: "exercise", kind: "practice", title: "Take a model to production shape", difficulty: "advanced", minutes: 45,
       prompt: "Export a trained model to both TorchScript and ONNX. Verify output agreement against PyTorch for at least twenty real inputs, not one — record the maximum difference. Confirm the dynamic batch axis works at three batch sizes. Then benchmark latency at batch sizes 1, 2, 4, 8, 16 and 32, and pick the batch size for a 100 ms p99 budget. Finally, export once with the model in training mode and compare its outputs across repeated runs on the same input.",
+      requirements: [
+        "Export to TorchScript and ONNX and compare outputs on twenty real inputs",
+        "Confirm the dynamic batch axis at three batch sizes",
+        "Benchmark latency at batch sizes 1 to 32 and pick one for a 100 ms p99 budget",
+        "Export once in training mode and compare outputs across runs"
+      ],
       hints: [
         "Run the ONNX comparison on real data; a random tensor can miss operator bugs that only fire on realistic activations.",
         "Check what files the export produced and their sizes before you package anything.",
@@ -174,8 +180,14 @@ traced = torch.jit.trace(model, dummy)        # records ONE execution path`,
           { t: "p", text: "The file check is the one that bites people. On torch 2.10, exporting ResNet-18 gives a 0.09 MB `model.onnx` plus a 46.79 MB `model.onnx.data`, and the graph file alone looks like a complete artefact. Packaging only the first produces a container that builds, passes a smoke test that merely loads the file in some tools, and fails at first inference." },
           { t: "p", text: "The training-mode export gives non-deterministic outputs for the same input, because dropout is live in the exported graph. That is the clearest possible demonstration of why `model.eval()` comes before export — and it is a bug that produces plausible-looking predictions rather than an error, so it can survive a long way into a deployment before anyone notices the model is slightly random." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: an exported model that differed on every run",
+      body: [
+        { t: "p", text: "**Symptom.** An ONNX model gave different outputs for the same input on repeated runs, unlike the PyTorch original." },
+        { t: "p", text: "**Mechanism.** The model was exported in training mode, so dropout and batch-norm behaviour were baked into the graph." },
+        { t: "p", text: "**Fix.** Export always follows `model.eval()`, and outputs are compared with PyTorch on twenty or more real inputs after every export." }
+      ] }
   ],
 
   takeaways: [

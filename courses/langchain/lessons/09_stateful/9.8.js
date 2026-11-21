@@ -120,6 +120,12 @@ EC.receiveLesson({
       ["fragility", "breaks on a node rename", "breaks only if you change the node"]
     ] },
     { t: "p", text: "Use static for **debugging** and for a blanket *never act unattended* policy. Use dynamic for anything where the decision to ask is itself logic \u2014 which is most production approval, because approving everything is a workflow nobody sustains and approving nothing is not a gate." },
+    { t: "callout", kind: "trap", title: "Gating the preparation instead of the action",
+      body: [
+        { t: "p", text: "An approval gate placed before the node that drafts a refund pauses the run before anything worth approving exists. The reviewer approves an intention, and the node that actually issues the refund runs later without a pause." },
+        { t: "p", text: "Put the interrupt immediately before the node with the side effect, and show the reviewer the exact arguments that node will use." }
+      ] },
+
     { t: "exercise", kind: "build", title: "Build an approval gate",
       difficulty: "core", minutes: 30,
       body: "Add a static breakpoint before an acting node and resume from it, noting which resume form it takes. While paused, correct a value with update_state and confirm the action uses the corrected value \u2014 and note what the reducers did to the edit. Compare interrupt_before against interrupt_after and say which is right for approval and why. Then build a dynamic gate that only asks above a threshold, handling skip, approve and refuse in one node.",

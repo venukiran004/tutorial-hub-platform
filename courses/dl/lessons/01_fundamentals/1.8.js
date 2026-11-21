@@ -207,6 +207,17 @@ with BatchNorm after every layer, ReLU, N(0, 4/n):  depth 5: 1.345e-01  depth 20
     { t: "callout", kind: "mental", title: "Residual connections, in one derivative",
       body: [{ t: "p", text: "A residual block computes x + F(x), and ∂(x + F(x))/∂x = 1 + ∂F/∂x. The 1 is a path through the layer that no weight scale and no activation derivative can shrink; the gradient reaches the bottom of a hundred-layer network along the identity path even if every F contributes nothing. That is why ResNets (module 2) train at depths that plain stacks cannot, and why transformers wrap every sub-layer in one." }] },
 
+    { t: "callout", kind: "trap", title: "Batch normalisation with very small batches",
+
+      body: [
+
+        { t: "p", text: "BatchNorm estimates statistics from each batch. With batches of two or four, those estimates are noisy and training becomes unstable, and inference statistics drift from training ones." },
+
+        { t: "p", text: "Use GroupNorm or LayerNorm for small batches, or synchronised batch norm across devices." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Batch norm's γ and β at work", difficulty: "core", minutes: 12,
       body: [{ t: "p", text: "Set the batch-norm layer's γ to [2, 1, 0.5] and β to [1, 0, −1], apply it in train mode to the 4 × 3 batch, and verify by hand that each column is γ·x̂ + β. Then explain why a network is free to learn γ = σ_B and β = μ_B and thereby undo the normalisation entirely — and why it usually does not." }],
       requirements: [
@@ -222,7 +233,14 @@ with torch.no_grad():
 print(bn(x).detach())
 # column 1: 2·[-1.342, -0.447, 0.447, 1.342] + 1 = [-1.683, 0.106, 1.894, 3.683]
 # column 3: 0.5·[-1.414, 1.414, 0, 0] - 1 = [-1.707, -0.293, -1, -1]`,
-        notes: [{ t: "p", text: "γ and β give the layer back the freedom that normalisation took away: with γ = σ_B and β = μ_B the output equals the input, so batch norm can never make a network less expressive. In practice the network keeps the normalised scale because that is where the following activation and the optimiser behave well — the affine parameters are there so that it is a choice, not a constraint." }] } }
+        notes: [{ t: "p", text: "γ and β give the layer back the freedom that normalisation took away: with γ = σ_B and β = μ_B the output equals the input, so batch norm can never make a network less expressive. In practice the network keeps the normalised scale because that is where the following activation and the optimiser behave well — the affine parameters are there so that it is a choice, not a constraint." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: batch norm that broke on single-example requests",
+      body: [
+        { t: "p", text: "**Symptom.** A model performed well in batch evaluation and erratically when serving one request at a time." },
+        { t: "p", text: "**Mechanism.** The model was still in training mode, so batch normalisation computed statistics from each single-example batch instead of using its running averages." },
+        { t: "p", text: "**Fix.** The service runs the model in evaluation mode, and the test suite compares predictions for one example alone and inside a batch." }
+      ] }
   ],
 
   takeaways: [

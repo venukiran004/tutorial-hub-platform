@@ -156,6 +156,12 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Complete the LSTM backward pass", difficulty: "advanced", minutes: 55,
       prompt: "Write `LSTMScratch.backward` and verify all gradients against PyTorch autograd. Work back from `h_t = o ⊙ tanh(c_t)`: the gradient reaching `c_t` comes both from `h_t` and from `c_{t+1}`, exactly as `dh_next` works in the RNN. Then instrument it to report, at each step, what fraction of `dc` arrives via the cell path against the hidden path. Finally, run the same instrumentation with the forget-gate bias at 0 and at 1 and compare.",
+      requirements: [
+        "Write LSTMScratch.backward and verify all gradients against autograd",
+        "Instrument it to report the share of dc arriving through the cell path",
+        "Run the instrumentation with forget-gate bias 0 and 1",
+        "Compare the two"
+      ],
       hints: [
         "`dc_t = dh_t ⊙ o ⊙ (1 − tanh(c_t)²) + dc_next`, and `dc_prev = dc_t ⊙ f`.",
         "Sigmoid derivative is `s(1−s)`; tanh derivative is `1 − t²`. Both are available from cached outputs.",
@@ -167,8 +173,14 @@ EC.receiveLesson({
           { t: "p", text: "The instrumentation is where the insight is. Early in a sequence, most of the gradient arriving at `c_t` comes through `dc_next` — the cell path — rather than through `h_t`. That is the highway carrying signal backwards. With the forget bias at 0 the cell path's contribution decays away within a dozen steps and the hidden path dominates, which is precisely the RNN's situation and precisely why lesson 3.3's LSTM sat at chance until the bias was fixed." },
           { t: "p", text: "Expect agreement around 1e-15 in float64. If you see 1e-6 you have a real bug that float32 would have hidden — a good reason to do gradient checks in double precision even when you will train in single. The most common error is forgetting that the gradient reaching `c_t` has two sources, which gives gradients that look nearly right for short sequences and diverge as T grows." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a hand-written BPTT that overwrote its gradients",
+      body: [
+        { t: "p", text: "**Symptom.** A from-scratch RNN learned only from the last time step." },
+        { t: "p", text: "**Mechanism.** The backward loop assigned the weight gradient at each step instead of accumulating it, so only the final step's contribution survived." },
+        { t: "p", text: "**Fix.** Shared-weight gradients accumulate with `+=`, and the implementation is gradient-checked against autograd." }
+      ] }
   ],
 
   takeaways: [

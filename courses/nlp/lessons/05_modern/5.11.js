@@ -197,7 +197,14 @@ small delta keeps the state (remember); large delta resets it (focus on the new 
           { t: "p", text: "The half-life is ln(0.5) / ln(A): 6.6 steps at A = 0.9 and 693 at 0.999. A value stored at A = 0.9 falls below 1% after 44 steps; at 0.999 it lasts 4,603. Memory length is set entirely by how close A is to 1, which is why long-range SSMs parameterise A close to 1 and learn small deviations from it." },
           { t: "p", text: "In the selective version, the step size Δ sets the discrete decay to exp(Δ·A), and the measured one-step decay matches exactly. A small Δ (0.01) keeps 99% of the state, so the model remembers through the input. A large Δ (3.0) keeps 5%, so it resets and attends to the new input. Making Δ depend on the input is what lets a selective SSM decide what to remember. The copying-task comparison against a transformer needs two training runs and is not executed here." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: an SSM that could not recall an early detail",
+      body: [
+        { t: "p", text: "**Symptom.** A state-space model replaced a transformer for long documents and failed questions about specific facts near the start." },
+        { t: "p", text: "**Mechanism.** The model compresses history into a fixed-size state, so exact recall of arbitrary early details is limited." },
+        { t: "p", text: "**Fix.** Tasks needing exact retrieval use a hybrid with attention layers or retrieval, and the evaluation includes recall tests at varying positions." }
+      ] }
   ],
 
   takeaways: [

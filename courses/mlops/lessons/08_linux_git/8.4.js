@@ -131,18 +131,70 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Reproduce both graphs", difficulty: "intro", minutes: 25,
       prompt: "In a throwaway repository, create the same divergence: two commits on a base, two on a feature branch, one on the main branch. Resolve it by merge and print `git log --all --oneline --graph --decorate`. Then reset to the divergent state and resolve it by rebase, and print the graph again. Record the feature commits' hashes in both cases and confirm they differ. Then check two things in a real repository you work on: is the history merge-based or linear, and does your team's convention match who has the commits — specifically, has anyone ever force-pushed a branch somebody else had checked out?",
+      requirements: [
+        "Create the same divergence in a throwaway repository and resolve it by merge",
+        "Reset and resolve it by rebase",
+        "Record the feature commits' hashes in both and confirm they differ",
+        "Check whether your team's history is merge-based or linear, and whether anyone has force-pushed a shared branch"
+      ],
       hints: [
         "`git reflog` gives you the pre-merge hash to reset back to, so you can resolve the same divergence twice.",
         "Compare the hashes directly: identical content with different ids is the whole of the shared-branch rule.",
         "`git config --get pull.rebase` reveals the team's default, which is often set without anyone having decided it."
       ],
       solution: {
+        lang: "bash", title: "8.4.sh",
+        code: `set -e
+cd "$(mktemp -d)" && git init -q -b main && git config user.email you@example.com && git config user.name You && git config core.autocrlf false
+c() { echo "$1" > "$1.txt"; git add "$1.txt"; git commit -qm "$1"; }     # one file per commit: no conflicts
+c base-1; c base-2
+git switch -qc feature; c feature-1; c feature-2
+git switch -q main; c main-1
+MAIN=$(git rev-parse main); FEAT=$(git rev-parse feature)
+before="$(git rev-parse --short feature~1) $(git rev-parse --short feature)"
+
+echo "== resolved by merge"
+git merge -q --no-edit feature
+git log --all --oneline --graph --decorate | sed 's/^/  /'
+echo "  feature commits keep their hashes: $before -> $(git rev-parse --short feature~1) $(git rev-parse --short feature)"
+
+echo "== the same divergence, resolved by rebase"
+git reset -q --hard "$MAIN"; git switch -q feature; git reset -q --hard "$FEAT"
+git rebase -q main
+git log --all --oneline --graph --decorate | sed 's/^/  /'
+echo "  feature commits get NEW hashes:    $before -> $(git rev-parse --short feature~1) $(git rev-parse --short feature)"
+echo "  anyone who pulled the old feature commits now holds commits that are no longer on the branch"`,
+        out: `== resolved by merge
+  *   b265f7a (HEAD -> main) Merge branch 'feature'
+  |\\  
+  | * 746fad0 (feature) feature-2
+  | * 0e86426 feature-1
+  * | 0c8162d main-1
+  |/  
+  * 766b49a base-2
+  * 3d2bfae base-1
+  feature commits keep their hashes: 0e86426 746fad0 -> 0e86426 746fad0
+== the same divergence, resolved by rebase
+  * 20cd561 (HEAD -> feature) feature-2
+  * 8851b37 feature-1
+  * 0c8162d (main) main-1
+  * 766b49a base-2
+  * 3d2bfae base-1
+  feature commits get NEW hashes:    0e86426 746fad0 -> 8851b37 20cd561
+  anyone who pulled the old feature commits now holds commits that are no longer on the branch`,
+       
         notes: [
           { t: "p", text: "Seeing the two graphs side by side from the same starting point makes the trade concrete in a way reading about it does not — and reading the hashes makes the rewriting undeniable rather than a cautionary abstraction." },
           { t: "p", text: "The force-push question usually has a story attached, and the useful follow-up is adopting `--force-with-lease` as the team default: it refuses when the remote has moved since your last fetch, which converts overwriting a colleague's work into a rejected push." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the experiment branch rebased under three people",
+      body: [
+        { t: "p", text: "**Symptom.** Two researchers found that their commits on a shared experiment branch had disappeared from it, and a third found theirs duplicated with different hashes." },
+        { t: "p", text: "**Mechanism.** The branch owner rebased the shared branch onto main and force-pushed. Rebase creates new commits with new hashes, so everyone else's local branch now pointed at commits the remote no longer had. Their next pull merged old and new copies, and one push overwrote the other." },
+        { t: "p", text: "**Fix.** Shared branches are protected against force-push. Rebasing is reserved for branches only one person has checked out, and the lost commits were recovered from the researchers' reflogs (lesson 8.5)." }
+      ] }
   ],
 
   takeaways: [

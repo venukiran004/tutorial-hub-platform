@@ -105,6 +105,17 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "Parsing is where the information is lost",
       body: [{ t: "p", text: "PDF text extraction destroys exactly what makes documents comprehensible: table structure becomes a jumble of cells, figures vanish, column layout interleaves, and a chart's meaning disappears entirely. ColPali skips it — render the page, embed the image, retrieve on that. The document is preserved as it appears. This inverts the usual instinct that text is the canonical representation and images are a degraded form; for documents, **the rendered page is the canonical form** and the extracted text is the degradation. The cost is storage and compute per page, and that the retrieval model must be strong at reading text in images — which lesson 7.2 identified as one of CLIP's weakest areas, hence the specialised models." }] },
 
+    { t: "callout", kind: "trap", title: "Ranking text and image results on one score",
+
+      body: [
+
+        { t: "p", text: "In a shared embedding space, text–text similarities are systematically higher than text–image ones, so a single ranking favours text." },
+
+        { t: "p", text: "Retrieve per modality and merge with normalised scores." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Build and probe an index", difficulty: "core", minutes: 40,
       requirements: [
         "Run cross-modal retrieval on your own images and check the gap between the correct match and the best distractor.",
@@ -203,7 +214,14 @@ caption index     recall@5 16/16`,
           { t: "p", text: "BLIP's captions named both the colour (or count) and the shape for 9 of 16 images; 'two red circles' became 'a red dot on a white background'. At recall@5 both the image index and the caption index found all 16, because 16 images is too few to separate them. On a real collection, captions lose counts and relations, and the CLIP index keeps more visual detail. The PDF-extraction step needs a PDF parser and a real document, and is not run here." },
           { t: "p", text: "The images are drawn with PIL so their content is known exactly: counts, colours and positions are ground truth, which makes failures unambiguous. Synthetic flat shapes are easier than photographs in some ways and harder in others, so repeat the probes on your own images." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: image search that ranked captions over photos",
+      body: [
+        { t: "p", text: "**Symptom.** A multimodal search returned text documents above relevant images for most queries." },
+        { t: "p", text: "**Mechanism.** Text-to-text similarity scores were systematically higher than text-to-image scores in the shared space, so the two could not be ranked on one scale." },
+        { t: "p", text: "**Fix.** Results are retrieved per modality and merged with normalised scores, and evaluation measures relevance in each modality separately." }
+      ] }
   ],
 
   takeaways: [

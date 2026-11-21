@@ -289,7 +289,14 @@ cross_val_score(RandomForestClassifier(200), X, y, cv=5, scoring="average_precis
           why: "The boosted model made the same point more sharply: untreated, it had the best PR-AUC and best-F1 of all its variants."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: oversampling before the split",
+      body: [
+        { t: "p", text: "**Symptom.** A fraud model reported a recall of 0.93 in validation and 0.55 in production." },
+        { t: "p", text: "**Mechanism.** SMOTE was applied before the train–test split, so synthetic copies derived from validation fraud cases were in training. Validation was partly measuring memory." },
+        { t: "p", text: "**Fix.** Resampling happens inside each training fold through an imbalanced-learn pipeline, and evaluation uses the original class balance." }
+      ] }
   ],
 
   takeaways: [

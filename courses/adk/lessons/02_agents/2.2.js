@@ -168,7 +168,14 @@ def refund_order(order_id: str, amount_paise: int) -> dict:
 #     a list of transfer targets and their descriptions
 # (c) {key} raises when the key is absent; {key?} renders as empty
 # (d) yes — inside the transfer guidance ADK appends, which is how routing works`,
-        notes: [{ t: "p", text: "Doing this once for a real agent is worth more than reading any amount of prompt advice: what you tuned and what the framework added are both in there, and the interaction between them is where surprising behaviour comes from." }] } }
+        notes: [{ t: "p", text: "Doing this once for a real agent is worth more than reading any amount of prompt advice: what you tuned and what the framework added are both in there, and the interaction between them is where surprising behaviour comes from." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the {account_tier} placeholder that crashed new users",
+      body: [
+        { t: "p", text: "**Symptom.** Every first-time user's first message failed with an error; returning users were fine." },
+        { t: "p", text: "**Mechanism.** The instruction contained `{account_tier}`, interpolated from session state. State for a new session did not yet contain the key, and a missing key in a required placeholder raises. Returning users had the key from an earlier turn." },
+        { t: "p", text: "**Fix.** Optional values use `{account_tier?}`, which renders empty when missing, and the session is created with defaults for keys the instruction requires. A test creates a fresh session and runs one turn." }
+      ] }
   ],
 
   takeaways: [

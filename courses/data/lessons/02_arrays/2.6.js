@@ -853,7 +853,14 @@ def test_short_run_is_refused():
       { t: "p", text: "**Smoothing is a lossy transformation that looks like a cleaning step.** Every window length is a claim about what counts as noise, and that claim belongs in the code as a named parameter with a justification, not as a number someone tuned until the chart looked right." },
       { t: "p", text: "**A centred window is leakage in a forecasting feature.** `np.convolve(x, kernel, mode=\"same\")` uses future values at every position — fine for a chart, invalid for anything predicting the next step. Use a trailing window there, and see 4.3." },
       { t: "p", text: "**Record what was removed.** A despiking step that silently drops 8% of readings is hiding a sensor fault, and the count is often more valuable than the cleaned series." }
-    ]}
+    ]},
+
+    { t: "callout", kind: "scenario", title: "Incident: a sales trend that dipped at both ends",
+      body: [
+        { t: "p", text: "**Symptom.** A dashboard's smoothed sales line always fell sharply at the start and end of the chart, prompting a week of investigation into 'declining recent sales'." },
+        { t: "p", text: "**Mechanism.** The moving average used `np.convolve(..., mode='same')`, which pads with zeros. The first and last values averaged real data with zeros that were not in the dataset." },
+        { t: "p", text: "**Fix.** The smoothing uses `mode='valid'` and plots against the matching dates, or a rolling mean that leaves the edges undefined. The chart now shows no value where there is not a full window." }
+      ] }
   ],
 
   takeaways: [

@@ -138,6 +138,17 @@ EC.receiveLesson({
         { t: "p", text: "Note also that span attributes carry no PII and are therefore the thing you can keep longest \u2014 which is another argument for putting real diagnostic information into attributes rather than relying on being able to go back to the audio." }
       ] },
 
+    { t: "callout", kind: "trap", title: "Watching one latency number for a voice agent",
+
+      body: [
+
+        { t: "p", text: "Time to first audio can be identical for a healthy turn, an over-patient endpointer, an interrupted turn and a struggling recogniser. A dashboard with that one number stays green while users leave." },
+
+        { t: "p", text: "Emit spans for each stage of a turn, measure from the end of speech, and track interruptions and words spoken against words played." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Diagnose four turns with identical durations",
       difficulty: "core", minutes: 24,
       body: "Construct four voice turns as span trees that have identical total durations and four different states of health: healthy, an over-patient endpointer, an interrupted turn, and one where recognition struggled. Print the aggregate duration for all four to show it carries no information, then print the span trees with attributes and state which attribute identifies each pathology.",

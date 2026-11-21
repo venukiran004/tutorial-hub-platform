@@ -87,7 +87,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "MMR against the baseline",
       code: "lambda   natural MRR   natural R@5\n1.0      0.964         1.000\n0.7      0.964         1.000\n0.5      0.929         0.893\n0.3      0.929         0.893",
       caption: "No improvement at any lambda, and a real cost below 0.7." },
-    { t: "callout", kind: "warn", title: "A technique can be correct and unmeasurable", body: [
+    { t: "callout", kind: "trap", title: "A technique can be correct and unmeasurable", body: [
       { t: "p", text: "MMR was never going to improve these numbers. 13 of the 14 queries have exactly **one** relevant document, so every metric here scores where that single document ranks \u2014 and removing redundant *non-relevant* results cannot change that. The best MMR can do is leave the number alone, which at `lambda=0.7` is exactly what it does." },
       { t: "p", text: "What MMR improves is the **context**: fewer near-duplicate distractors in the window, which shows up in answer quality, not in R@5. So the honest conclusion is not \u201cMMR does not work\u201d \u2014 it is that this evaluation cannot answer the question, and measuring it would require labels about answer quality rather than about ranking." }
     ] },

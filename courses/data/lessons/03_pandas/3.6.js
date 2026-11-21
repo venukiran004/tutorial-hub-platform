@@ -688,7 +688,14 @@ def test_clean_data_gives_full_coverage():
           why: "A left join keeps every left row at least once, so growth can only come from a left row matching multiple right rows — a duplicated key. `validate=\"many_to_one\"` turns this into a `MergeError` at the merge line instead of a quiet row-count change."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: the join that doubled the revenue",
+      body: [
+        { t: "p", text: "**Symptom.** Monthly revenue in a report was almost exactly double the finance figure after a customer-attributes table was joined in." },
+        { t: "p", text: "**Mechanism.** The attributes table had two rows per customer after a schema change added a history row. The merge produced one output row per matching pair, so every order appeared twice." },
+        { t: "p", text: "**Fix.** The merge uses `validate='many_to_one'`, which raises when the right side has duplicate keys, and the report checks the row count before and after the join." }
+      ] }
   ],
 
   takeaways: [

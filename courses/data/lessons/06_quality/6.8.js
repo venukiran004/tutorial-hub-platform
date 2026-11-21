@@ -726,7 +726,14 @@ def test_every_log_row_has_evidence_and_rule():
           why: "The other columns are the evidence. A 1,000× ratio to the median looks like a unit error until the quantity explains it. If the model is a linear one that the magnitude would dominate, a log transform or a robust loss lets it cope — but the row stays, because production will contain rows like it."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: removing the most important sales",
+      body: [
+        { t: "p", text: "**Symptom.** A revenue forecast consistently underestimated quarters with large enterprise deals." },
+        { t: "p", text: "**Mechanism.** Outlier removal discarded orders more than three standard deviations above the mean. Those were genuine enterprise sales, and the model learned a world without them." },
+        { t: "p", text: "**Fix.** Values are investigated before treatment: data-entry errors are corrected, and genuine large values are kept, with a robust loss or a separate model for large accounts." }
+      ] }
   ],
 
   takeaways: [

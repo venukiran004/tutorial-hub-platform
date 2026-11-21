@@ -225,6 +225,17 @@ each column is a coefficient to estimate; 23,426 columns from 863 rows is 4.3's 
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Choosing the polynomial degree by training error",
+
+      body: [
+
+        { t: "p", text: "Training error always falls as the degree rises, so choosing by it picks the most wiggly curve, which extrapolates badly and oscillates between points." },
+
+        { t: "p", text: "Choose the degree by validation error, and prefer splines with regularisation for flexible curves." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Investigate",
       title: "A step the polynomial cannot make",
@@ -294,7 +305,14 @@ each column is a coefficient to estimate; 23,426 columns from 863 rows is 4.3's 
           why: "Degree sets the capacity; α sets how much of it is used. Ridge's effective degrees of freedom Σd²/(d² + α) is the honest count."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a degree-15 polynomial that predicted negative prices",
+      body: [
+        { t: "p", text: "**Symptom.** A price-curve model fitted beautifully on historical data and produced negative prices for inputs just beyond its range." },
+        { t: "p", text: "**Mechanism.** A high-degree polynomial fits the training points and oscillates between and beyond them. Extrapolation amplified those swings." },
+        { t: "p", text: "**Fix.** The curve is fitted with splines and regularisation, its degree chosen by validation, and predictions outside the training range are flagged." }
+      ] }
   ],
 
   takeaways: [

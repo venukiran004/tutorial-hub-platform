@@ -138,26 +138,112 @@ with torch.no_grad():
 
 
     { t: "out", text: `  d=100, h=256: RNN    91,648   LSTM   366,592   ratio 4.00x
-    reference formula 4h(h+d) = 364,544; with both bias vectors PyTorch has 366,592
+    textbook formula 4h(h+d) = 364,544; with both bias vectors PyTorch has 366,592
   d= 32, h= 64: RNN     6,272   LSTM    25,088   ratio 4.00x` },
 
     { t: "p", text: "Four gates, four sets of weights — **exactly 4× a vanilla RNN**. The `4h(h+d)` formula gives 364,544 for the first case against PyTorch's 366,592; the 2,048 difference is the two separate bias vectors PyTorch keeps for CuDNN compatibility, which are mathematically redundant with each other." },
 
+    { t: "callout", kind: "trap", title: "Assuming gate order when loading weights",
+
+      body: [
+
+        { t: "p", text: "Frameworks and papers pack LSTM gates in different orders. Loading weights with the wrong order gives each gate another gate's parameters, and the model runs without errors." },
+
+        { t: "p", text: "Map gates by name, and compare a custom cell's output with the framework's on the same weights." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Build an LSTM and watch its gates", difficulty: "advanced", minutes: 45,
       prompt: "Implement the six equations and verify against `nn.LSTM` to 1e-6, being careful with the i,f,g,o packing order. Then train it on a task with a known long-range dependency and log the mean forget-gate value per timestep across training — does the network learn to keep the gate open where it matters? Finally, train two identical models differing only in forget-gate bias initialisation (0 against 1) on a 50-step task and compare convergence.",
+      requirements: [
+        "Implement the six equations and verify against nn.LSTM to 1e-6",
+        "Train on a long-range task and log the mean forget gate per timestep",
+        "Train two models differing only in forget-gate bias, 0 and 1, on a 50-step task",
+        "Compare their convergence"
+      ],
       hints: [
         "`z.chunk(4, dim=1)` gives i, f, g, o in that order — not the f,i,g,o order some papers use.",
         "Sum `bias_ih_l0` and `bias_hh_l0`; PyTorch keeps both.",
         "Log the forget gate as a heatmap of timestep against training step."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+torch.manual_seed(0)
+
+# 1. Six equations against nn.LSTM. PyTorch packs the gates as i, f, g, o.
+lstm = nn.LSTM(8, 16, batch_first=True)
+x = torch.randn(4, 10, 8)
+W, U, b = lstm.weight_ih_l0, lstm.weight_hh_l0, lstm.bias_ih_l0 + lstm.bias_hh_l0
+h = c = torch.zeros(4, 16); outs = []
+for t in range(10):
+    z = x[:, t] @ W.T + h @ U.T + b
+    i, f, g, o = z.chunk(4, dim=1)
+    i, f, g, o = torch.sigmoid(i), torch.sigmoid(f), torch.tanh(g), torch.sigmoid(o)
+    c = f * c + i * g
+    h = o * torch.tanh(c)
+    outs.append(h)
+print(f"max diff vs nn.LSTM: {(torch.stack(outs, 1) - lstm(x)[0]).abs().max():.1e}")
+
+# 2. Long-range task: the label is the sign of the first input; the rest is noise.
+def data(n, T):
+    x = torch.zeros(n, T, 2); x[:, :, 1] = torch.randn(n, T); y = (torch.rand(n) > 0.5).long()
+    x[:, 0, 0] = y.float() * 2 - 1                              # channel 0: the signal, at t = 0 only
+    return x, y
+
+class Model(nn.Module):
+    def __init__(self, forget_bias):
+        super().__init__()
+        self.lstm, self.head = nn.LSTM(2, 32, batch_first=True), nn.Linear(32, 2)
+        with torch.no_grad():
+            for b in (self.lstm.bias_ih_l0, self.lstm.bias_hh_l0):
+                b.zero_(); b[32:64] = forget_bias / 2          # forget slice; the two halves sum
+    def forward(self, x):
+        return self.head(self.lstm(x)[0][:, -1])
+    def forget_gate(self, x):                                   # mean f_t per timestep
+        L = self.lstm; h = c = torch.zeros(x.shape[0], 32); fs = []
+        for t in range(x.shape[1]):
+            z = x[:, t] @ L.weight_ih_l0.T + h @ L.weight_hh_l0.T + L.bias_ih_l0 + L.bias_hh_l0
+            i, f, g, o = z.chunk(4, 1); i, f, g, o = i.sigmoid(), f.sigmoid(), g.tanh(), o.sigmoid()
+            c = f * c + i * g; h = o * c.tanh(); fs.append(f.mean().item())
+        return fs
+
+print("\\nforget bias  steps to 95% (T=50)  final acc")
+for fb in [0.0, 1.0]:
+    torch.manual_seed(1); m = Model(fb); opt = torch.optim.Adam(m.parameters(), 3e-3); hit = None
+    for step in range(1, 1201):
+        x, y = data(64, 50); loss = nn.functional.cross_entropy(m(x), y)
+        opt.zero_grad(); loss.backward(); opt.step()
+        if step % 50 == 0:
+            with torch.no_grad():
+                xv, yv = data(1000, 50); acc = (m(xv).argmax(1) == yv).float().mean().item()
+            if hit is None and acc >= 0.95: hit = step
+    print(f"{fb:>11}  {str(hit):>18}  {acc:9.3f}")
+    if fb == 1.0:
+        fs = m.forget_gate(data(256, 50)[0])
+        print("mean forget gate at t = 0, 10, 25, 49:", " ".join(f"{fs[t]:.3f}" for t in [0, 10, 25, 49]))`,
+        out: `max diff vs nn.LSTM: 8.9e-08
+
+forget bias  steps to 95% (T=50)  final acc
+        0.0                None      0.502
+        1.0                 100      1.000
+mean forget gate at t = 0, 10, 25, 49: 0.767 0.813 0.787 0.822`,
+       
         notes: [
           { t: "p", text: "The gate-order detail catches nearly everyone porting between frameworks or papers. PyTorch uses i, f, g, o; the original paper's presentation and some other frameworks order them differently. Get it wrong and the model still trains — the shapes are identical and gradients flow — it just learns badly, because the sigmoid gates and the tanh candidate have been swapped around. That is a silent failure of the same family as lesson 2.11's double softmax." },
           { t: "p", text: "The forget-gate heatmap is genuinely illuminating. On a task where information must persist, you see the gate rise towards 1 for the dimensions carrying that information and stay low elsewhere — the network learning its own memory policy, per dimension. That is the concrete meaning of 'the decay rate is learned rather than fixed', and it explains why an LSTM can handle hundreds of steps where an RNN manages twenty." },
           { t: "p", text: "The bias comparison should show a clear convergence gap at 50 steps. The arithmetic is stark: 0.5^50 is 8.9e-16 while 0.73^50 is 1.5e-07, a factor of 1.6e+08 in the starting gradient. The model initialised at 0 may eventually learn to open its forget gates, but it has to do so using the very gradient signal that the closed gates are suppressing — a chicken-and-egg problem that the initialisation simply sidesteps." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: hand-written LSTM gates in the wrong order",
+      body: [
+        { t: "p", text: "**Symptom.** A custom LSTM loaded with pretrained weights produced nonsense." },
+        { t: "p", text: "**Mechanism.** The pretrained weights were packed in the order input, forget, cell, output; the custom code assumed a different order, so each gate received another gate's weights." },
+        { t: "p", text: "**Fix.** Weight loading maps gates by name, and a test compares the custom cell's output with the framework's on the same weights." }
+      ] }
   ],
 
   takeaways: [

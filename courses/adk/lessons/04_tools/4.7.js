@@ -169,7 +169,14 @@ malformed body → RAISE. Your parsing assumption is wrong; that is a bug, and a
 
 Bound: RunConfig(max_llm_calls=…) on the invocation, plus a per-invocation attempt
 counter in temp: state that flips retryable to false after the second failure.`,
-        notes: [{ t: "p", text: "The malformed-body case is the one people get wrong. Returning 'something went wrong' hides a bug that will keep producing subtly wrong answers; raising makes it visible in your error tracking on the first occurrence, which is where you want it." }] } }
+        notes: [{ t: "p", text: "The malformed-body case is the one people get wrong. Returning 'something went wrong' hides a bug that will keep producing subtly wrong answers; raising makes it visible in your error tracking on the first occurrence, which is where you want it." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: an upstream 500 that ended the conversation",
+      body: [
+        { t: "p", text: "**Symptom.** When a pricing service briefly returned errors, users of the sales agent got no reply at all — the chat window simply stopped." },
+        { t: "p", text: "**Mechanism.** The pricing tool raised on a 500, and an exception in a tool propagates out of `run_async` and ends the invocation. The web handler logged a stack trace and returned nothing to the user." },
+        { t: "p", text: "**Fix.** The tool returns `{'status': 'error', 'retryable': true, ...}` for upstream failures so the model can tell the user, retries with a cap inside the tool, and keeps raising only for bugs." }
+      ] }
   ],
 
   takeaways: [

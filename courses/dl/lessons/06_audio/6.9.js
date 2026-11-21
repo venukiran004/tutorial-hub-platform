@@ -98,19 +98,108 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Break a model, then fix it", difficulty: "advanced", minutes: 50,
       prompt: "Take a pretrained ASR model and measure WER on clean speech. Then degrade the audio four ways and re-measure: resample to 8 kHz and back, add babble noise at 10 dB SNR, convolve with a room impulse response, and encode through a low-bitrate codec. Rank the degradations by damage. Then apply SpecAugment during a short fine-tune and see how much of each gap it closes. Finally, evaluate the same model on read speech and on spontaneous speech and compare.",
+      requirements: [
+        "Measure WER on clean speech",
+        "Degrade audio four ways — 8 kHz resampling, babble at 10 dB, room impulse response, low-bitrate codec — and re-measure",
+        "Fine-tune with SpecAugment and measure how much of each gap closes",
+        "Compare read and spontaneous speech"
+      ],
       hints: [
         "The 8 kHz round trip is the most instructive — it removes information permanently.",
         "SpecAugment masks in the log-mel, so apply it after feature extraction.",
         "For spontaneous speech, any recording of unscripted conversation will show the gap."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import glob, os, sys
+import numpy as np
+import librosa
+import soundfile as sf
+import torch
+import torchaudio.functional as AF
+from transformers import WhisperForConditionalGeneration, WhisperProcessor, logging as hf_logging
+hf_logging.set_verbosity_error(); hf_logging.disable_progress_bar()
+
+# Recordings: 16 kHz WAVs named <index>_<speaker>.wav plus sentences.txt. The reference run used synthesised
+# speech from two voices. Read versus spontaneous speech needs real spontaneous recordings (synthetic speech
+# is all "read"), so point SPEECH at such a folder to run that comparison with the same code.
+SPEECH = sys.argv[1] if len(sys.argv) > 1 else "speech"
+refs = open(os.path.join(SPEECH, "sentences.txt"), encoding="utf-8").read().splitlines()
+files = sorted(glob.glob(os.path.join(SPEECH, "sent", "*.wav")))
+load = lambda f: sf.read(f, dtype="float32")[0]
+idx = lambda f: int(os.path.basename(f)[:2])
+# Split by sentence AND voice: fine-tune on sentences 0-14 in one voice, test on sentences 15-29 in the other,
+# so the model can neither memorise the test sentences nor the test speaker.
+train_set = [(load(f), refs[idx(f)]) for f in files if f.endswith("_d.wav") and idx(f) < 15]
+test_set = [(load(f), refs[idx(f)]) for f in files if f.endswith("_z.wav") and idx(f) >= 15]
+rng = np.random.default_rng(0)
+
+def at_snr(clean, noise, snr_db):
+    noise = np.resize(noise, len(clean)); return clean + noise * np.sqrt(np.mean(clean ** 2) / (np.mean(noise ** 2) * 10 ** (snr_db / 10)))
+babble_src = [a for a, _ in train_set[:6]]
+rir = rng.standard_normal(int(0.5 * 16000)) * np.exp(-6.9 * np.arange(int(0.5 * 16000)) / (0.5 * 16000)); rir[0] = 1.0; rir /= np.abs(rir).sum() ** 0.5
+DEGRADE = {
+    "clean": lambda a: a,
+    "8 kHz round trip": lambda a: librosa.resample(librosa.resample(a, orig_sr=16000, target_sr=8000), orig_sr=8000, target_sr=16000)[: len(a)],
+    "babble at 10 dB": lambda a: at_snr(a, sum(np.resize(b, len(a)) for b in babble_src), 10),
+    "room reverb (RT60 0.5 s)": lambda a: np.convolve(a, rir)[: len(a)].astype(np.float32),
+    "4-bit mu-law at 8 kHz": lambda a: librosa.resample(AF.mu_law_decoding(AF.mu_law_encoding(torch.tensor(
+        librosa.resample(a, orig_sr=16000, target_sr=8000)).clamp(-1, 1), 16), 16).numpy(), orig_sr=8000, target_sr=16000)[: len(a)],
+}
+
+proc = WhisperProcessor.from_pretrained("openai/whisper-tiny"); norm = proc.tokenizer.normalize
+def wer(model, data, degrade):
+    model.eval(); errs = words = 0
+    for audio, ref in data:
+        feats = proc(degrade(audio).astype(np.float32), sampling_rate=16000, return_tensors="pt").input_features
+        with torch.no_grad(): hyp = proc.batch_decode(model.generate(feats, language="en", task="transcribe", max_new_tokens=60), skip_special_tokens=True)[0]
+        r, h = norm(ref).split(), norm(hyp).split(); d = list(range(len(h) + 1))
+        for i, rw in enumerate(r, 1):
+            prev, d[0] = d[0], i
+            for j, hw in enumerate(h, 1): prev, d[j] = d[j], min(d[j] + 1, d[j - 1] + 1, prev + (rw != hw))
+        errs += d[-1]; words += len(r)
+    return errs / words
+
+def fine_tune(spec_augment, epochs=3):
+    torch.manual_seed(0)
+    m = WhisperForConditionalGeneration.from_pretrained("openai/whisper-tiny", apply_spec_augment=spec_augment,
+                                                        mask_time_prob=0.05, mask_feature_prob=0.1 if spec_augment else 0.0)
+    opt = torch.optim.AdamW(m.parameters(), 1e-5); prompt = proc.tokenizer.prefix_tokens
+    for _ in range(epochs):
+        m.train()
+        for audio, ref in train_set:                               # clean speech only: no degradation is simulated
+            feats = proc(audio, sampling_rate=16000, return_tensors="pt").input_features
+            labels = torch.tensor([proc.tokenizer(ref).input_ids[1:]])   # drop <|startoftranscript|>: the model prepends it
+            loss = m(input_features=feats, labels=labels).loss; opt.zero_grad(); loss.backward(); opt.step()
+    return m
+
+base = WhisperForConditionalGeneration.from_pretrained("openai/whisper-tiny")
+tuned = {"none": base, "fine-tuned": fine_tune(False), "fine-tuned + SpecAugment": fine_tune(True)}
+print(f"WER on the held-out voice ({len(test_set)} utterances)")
+print(f"{'condition':<26}" + "".join(f"{k:>26}" for k in tuned))
+for name, fn in DEGRADE.items():
+    print(f"{name:<26}" + "".join(f"{wer(m, test_set, fn):26.3f}" for m in tuned.values()))`,
+        out: `WER on the held-out voice (15 utterances)
+condition                                       none                fine-tuned  fine-tuned + SpecAugment
+clean                                          0.071                     0.079                     0.071
+8 kHz round trip                               0.110                     0.087                     0.087
+babble at 10 dB                                0.102                     0.087                     0.126
+room reverb (RT60 0.5 s)                       0.110                     0.134                     0.102
+4-bit mu-law at 8 kHz                          0.173                     0.150                     0.126`,
+       
         notes: [
-          { t: "p", text: "The 8 kHz round trip usually does the most damage, and it is the one augmentation cannot fully repair — the fricative band above 4 kHz is gone, and a model can learn to cope with its absence but cannot recover the information. That is the distinction worth internalising: noise and reverberation add interference that a robust model sees through, while band-limiting removes signal permanently. Different problems, different fixes." },
-          { t: "p", text: "SpecAugment should close a meaningful share of the noise and reverberation gaps despite simulating neither directly, which is the interesting part. Masking frequency bands teaches the model not to depend on any single region of the spectrum, which is exactly the robustness that noise and reverberation demand. That generality at essentially zero cost is why it became standard." },
+          { t: "p", text: "Rank the damage on your own model rather than assuming it. On Whisper-tiny with synthetic speech the reference run ranked a 4-bit µ-law codec stand-in worst (WER 0.071 clean to 0.173), with the 8 kHz round trip and reverberation next (0.110 each). The 8 kHz round trip is still the one augmentation cannot fully repair — the fricative band above 4 kHz is gone, and a model can learn to cope with its absence but cannot recover the information. That is the distinction worth internalising: noise and reverberation add interference that a robust model sees through, while band-limiting removes signal permanently. Different problems, different fixes." },
+          { t: "p", text: "SpecAugment is expected to close part of the noise and reverberation gaps despite simulating neither directly — but measure it with a proper split. The reference run fine-tuned on fifteen utterances in one voice and tested on fifteen different sentences in another: SpecAugment helped on reverberation (0.110 to 0.102) and the codec (0.173 to 0.126) and hurt on babble (0.102 to 0.126), which on fifteen utterances is within noise. An earlier version of the same experiment that tested on the training sentences reported a dramatic improvement; that was memorisation, which is why the split matters more than the augmentation. Masking frequency bands teaches the model not to depend on any single region of the spectrum, which is exactly the robustness that noise and reverberation demand. That generality at essentially zero cost is why it became standard." },
           { t: "p", text: "The read-versus-spontaneous comparison is the one to show anyone who quotes a benchmark number. Expect roughly a doubling, and expect the errors to concentrate on disfluencies, restarts and overlapping turns — phenomena that read speech contains none of. It reframes benchmark WER as an upper bound rather than an expectation, which is the correct way to read it." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a recogniser that failed in cars",
+      body: [
+        { t: "p", text: "**Symptom.** An in-car voice system trained on clean read speech failed most commands at motorway speed." },
+        { t: "p", text: "**Mechanism.** Road noise and the car's acoustics were absent from training data, so the model met a distribution it had never seen." },
+        { t: "p", text: "**Fix.** Training adds noise, room impulse responses and SpecAugment, and evaluation includes recordings from moving vehicles." }
+      ] }
   ],
 
   takeaways: [

@@ -52,7 +52,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "The team's messages merged upward",
       code: "-            HumanMessage('research refunds')\nsearcher     AIMessage('found 3 sources')",
       caption: "Both schemas declare `messages`, so the team's output reached the parent." },
-    { t: "callout", kind: "warn", title: "Which is right for messages and wrong for scratch state", body: [
+    { t: "callout", kind: "trap", title: "Which is right for messages and wrong for scratch state", body: [
       { t: "p", text: "State crosses by key name with no mapping layer (10.1). A team with a `candidates` key that the top level also declares will have its **working notes merged upward** \u2014 and a team whose key the parent does **not** declare has its update silently discarded." },
       { t: "p", text: "So the boundary is a **schema design** decision: name the team's internal keys so they cannot collide, or wrap the team in a function with an explicit mapping. The second is better across a team boundary, because then the interface is code a rename breaks visibly." }
     ] },

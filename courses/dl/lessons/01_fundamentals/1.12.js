@@ -197,18 +197,92 @@ m.eval();  c = m(inp); d = m(inp)` },
 
     { t: "exercise", kind: "practice", title: "Break it on purpose, then find it", difficulty: "core", minutes: 26,
       prompt: "Take the PyTorch classifier from lesson 1.11 and introduce one bug at a time, without looking at which: (a) softmax before the loss, (b) validation without model.eval(), (c) shuffle=False, (d) labels shifted by one, (e) the last layer initialised with std=5. For each, record the initial loss, whether one batch overfits, and the gradient norm on step one. Build a table of symptom against cause, then check it against the checklist.",
+      requirements: [
+        "Introduce each of the five bugs one at a time",
+        "For each, record the initial loss, whether one batch overfits, and the step-one gradient norm",
+        "Build a table of symptom against cause",
+        "Check the table against the lesson's checklist"
+      ],
       hints: [
         "The initial loss separates (d) and (e) immediately.",
         "The overfit test passes for (b) and (c) and fails for (d).",
         "Log `clip_grad_norm_`'s return value even when you are not clipping."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from sklearn.datasets import load_digits
+from torch.utils.data import DataLoader, TensorDataset
+
+X, y = load_digits(return_X_y=True)
+X = torch.tensor(X / 16.0, dtype=torch.float32); y = torch.tensor(y)
+Xtr, ytr, Xva, yva = X[:1400], y[:1400], X[1400:], y[1400:]
+order = ytr.argsort(stable=True); Xtr, ytr = Xtr[order], ytr[order]       # stored by class, as many datasets are
+
+def make_model(last_std=None):
+    m = nn.Sequential(nn.Linear(64, 128), nn.ReLU(), nn.Dropout(0.3), nn.Linear(128, 10))
+    if last_std: nn.init.normal_(m[-1].weight, std=last_std)
+    return m
+
+def run(bug=None):
+    torch.manual_seed(0)
+    m = make_model(5.0 if bug == "init std=5" else None)
+    labels = (ytr + 1) % 10 if bug == "labels shifted" else ytr
+    logits = lambda xb: F.softmax(m(xb), 1) if bug == "softmax before loss" else m(xb)
+    # 1. initial loss on one batch (expected ln 10 = 2.303)
+    idx = torch.randperm(1400, generator=torch.Generator().manual_seed(1))[:64]
+    xb, yb = Xtr[idx], labels[idx]
+    init_loss = F.cross_entropy(logits(xb), yb).item()
+    # 2. step-one gradient norm
+    m.zero_grad(); F.cross_entropy(logits(xb), yb).backward()
+    g1 = torch.cat([p.grad.flatten() for p in m.parameters()]).norm().item()
+    # 3. can it overfit one batch?
+    opt = torch.optim.Adam(m.parameters(), 1e-2)
+    for _ in range(200):
+        opt.zero_grad(); loss = F.cross_entropy(logits(xb), yb); loss.backward(); opt.step()
+    overfit = loss.item()
+    # 4. a short real training run, then validation (with or without eval())
+    torch.manual_seed(0); m2 = make_model(5.0 if bug == "init std=5" else None); opt = torch.optim.Adam(m2.parameters(), 1e-3)
+    lg = (lambda xb: F.softmax(m2(xb), 1)) if bug == "softmax before loss" else m2
+    dl = DataLoader(TensorDataset(Xtr, labels), batch_size=64, shuffle=(bug != "shuffle=False"))
+    for _ in range(15):
+        m2.train()
+        for xb2, yb2 in dl: opt.zero_grad(); F.cross_entropy(lg(xb2), yb2).backward(); opt.step()
+    if bug != "no model.eval()": m2.eval()
+    with torch.no_grad():
+        accs = [(m2(Xva).argmax(1) == yva).float().mean().item() for _ in range(3)]
+    return init_loss, g1, overfit, accs
+
+print(f"{'bug':<22} {'init loss':>9} {'step-1 |g|':>10} {'1-batch loss':>12}  val acc (3 evals)")
+for bug in [None, "softmax before loss", "no model.eval()", "shuffle=False", "labels shifted", "init std=5"]:
+    il, g, ov, accs = run(bug)
+    print(f"{str(bug or 'none (correct)'):<22} {il:9.3f} {g:10.3f} {ov:12.4f}  " + " ".join(f"{a:.3f}" for a in accs))
+print(f"\\nexpected initial loss for 10 classes: ln 10 = {math.log(10):.3f}")`,
+        out: `bug                    init loss step-1 |g| 1-batch loss  val acc (3 evals)
+none (correct)             2.304      0.482       0.0010  0.879 0.879 0.879
+softmax before loss        2.302      0.048       1.4619  0.866 0.866 0.866
+no model.eval()            2.304      0.482       0.0010  0.861 0.859 0.851
+shuffle=False              2.304      0.482       0.0010  0.829 0.829 0.829
+labels shifted             2.337      0.462       0.0018  0.005 0.005 0.005
+init std=5                18.175     68.110       0.0137  0.902 0.902 0.902
+
+expected initial loss for 10 classes: ln 10 = 2.303`,
+       
         notes: [
           { t: "p", text: "The table is the deliverable, and the useful discovery is how few symptoms there are: initial loss, does-one-batch-overfit, and gradient norm distinguish nearly every bug on the list between them. That is why the checklist is ordered the way it is — those three checks come first because they partition the space." },
           { t: "p", text: "Two of these do not fail the overfit test at all. Missing `eval()` and `shuffle=False` both memorise a single batch perfectly, because neither bug affects a single repeated batch — the first only matters when you evaluate, the second only when there is more than one batch. That is worth feeling: the sanity check is powerful and it is not complete, which is why the checklist keeps going after step 1." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a model that trained on shifted labels",
+      body: [
+        { t: "p", text: "**Symptom.** A classifier trained to a respectable loss and predicted the wrong class for most inputs at evaluation." },
+        { t: "p", text: "**Mechanism.** A preprocessing change made labels one-indexed while the model expected zero-indexed classes. The model learned a shifted mapping consistently, so training looked healthy." },
+        { t: "p", text: "**Fix.** Training starts with a check of the label distribution and range, and a few predictions are inspected against raw examples before a full run." }
+      ] }
   ],
 
   takeaways: [

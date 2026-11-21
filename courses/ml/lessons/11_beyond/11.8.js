@@ -201,6 +201,17 @@ def auc_trapezoid(y, s):                                                        
         }
       ] },
 
+    { t: "callout", kind: "trap", title: "Answering with a definition and no number",
+
+      body: [
+
+        { t: "p", text: "Interviewers can tell a reading answer from an experienced one by whether a claim comes with a measurement. A correct definition with no number scores below a shorter answer with one." },
+
+        { t: "p", text: "Prepare a measured example for each classic question: what the error did, what the interval was, what changed." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Investigate",
       title: "Your own numbers for the classics",
@@ -236,7 +247,14 @@ def auc_trapezoid(y, s):                                                        
           { t: "p", text: "The case in your own words is the design round; the numbers are what separate an answer from a recitation." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an interview answer with no numbers",
+      body: [
+        { t: "p", text: "**Symptom.** A candidate explained bias and variance correctly and was rated below a candidate who said less." },
+        { t: "p", text: "**Mechanism.** The second candidate attached a measurement to every claim — what the error did as the degree increased, what interval came with a reported score — which showed they had done the work." },
+        { t: "p", text: "**Fix.** Preparation for interviews focuses on the numbers each concept produces in practice, and practice answers are rehearsed with a measurement attached." }
+      ] }
   ],
 
   takeaways: [

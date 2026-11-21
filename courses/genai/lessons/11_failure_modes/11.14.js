@@ -89,7 +89,7 @@ def output_safe(text: str, canary: str) -> dict:
       { k: "Grounding / faithfulness gate", v: "Gate on a faithfulness score so ungrounded claims are blocked or regenerated \u2014 11.4 and 11.5. This is the expensive one: 739 ms per claim measured on CPU, which is why 11.15\u2019s latency budget is dominated by it." }
     ] },
 
-    { t: "callout", kind: "warn", title: "Streaming breaks the output stage, and most guardrail designs do not address it",
+    { t: "callout", kind: "trap", title: "Streaming breaks the output stage, and most guardrail designs do not address it",
       body: [
         { t: "p", text: "Every check here assumes a complete response to inspect. With streaming, tokens reach the user as they are produced \u2014 so by the time a moderation check could run on the full text, the user has already read it. The last line of defence has no line to stand on." },
         { t: "p", text: "There are three workable designs and each gives something up. **Buffer** the whole response, check it, then stream it \u2014 which discards the entire latency benefit and returns you to 9.15\u2019s spinner. **Chunk-check** on a sliding window, which catches a slur mid-stream and cannot catch an ungrounded claim that needs the whole answer. **Stream optimistically and retract**, which is honest about the exposure and needs a UI that can withdraw text." },
@@ -98,7 +98,7 @@ def output_safe(text: str, canary: str) -> dict:
 
     { t: "callout", kind: "good", title: "And what you serve when a check fires is not the raw output",
       body: [
-        { t: "p", text: "The reference is explicit: return a safe refusal, **not the raw text**. That sounds obvious and the failure mode is common \u2014 a guardrail that logs a violation and serves the response anyway, because blocking felt too aggressive during implementation." },
+        { t: "p", text: "The standard design is explicit: return a safe refusal, **not the raw text**. That sounds obvious and the failure mode is common \u2014 a guardrail that logs a violation and serves the response anyway, because blocking felt too aggressive during implementation." },
         { t: "p", text: "The refusal should also not explain which check fired. \u2018I cannot help with that\u2019 is correct; \u2018your request was blocked by the injection detector\u2019 is a free oracle for anyone probing the boundary, letting them binary-search the filter." },
         { t: "p", text: "And log the event with references to the input and output rather than the content itself, which is 10.10\u2019s allowlist argument \u2014 you want the guardrail event queryable without exporting the payload that triggered it." }
       ] },

@@ -64,14 +64,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "Implementing it", id: "implementation" },
 
-    {"kind": "trace", "title": "Three cases including the empty string, all matching the reference", "caption": "The implementation reproduces all three: **`kitten`/`sitting` = 3, `flaw`/`lawn` = 2, and `''`/`'abc'` = 3.** The last is the one worth having in a test suite — **it exercises the boundary row the recurrence depends on**, and a version that initialises `d[0][j]` to zero instead of `j` passes the first two cases and fails only this one. **Which is the general shape of an edit-distance bug: the interior logic is easy and the base case is where it goes wrong.**", "left": "pair", "codeW": 190, "vars": ["distance", "reference"], "steps": [{"code": "'kitten' / 'sitting'", "state": ["3", "3 ok"], "tone": "good"}, {"code": "'flaw' / 'lawn'", "state": ["2", "2 ok"], "changed": [0, 1], "tone": "good"}, {"code": "'' / 'abc'", "state": ["3", "3 ok"], "changed": [0], "tone": "violet", "note": "exercises the base case"}], "t": "diagram", "id": "dg-8_1-04-3"},
+    {"kind": "trace", "title": "Three cases including the empty string, all matching the expected values", "caption": "The implementation reproduces all three: **`kitten`/`sitting` = 3, `flaw`/`lawn` = 2, and `''`/`'abc'` = 3.** The last is the one worth having in a test suite — **it exercises the boundary row the recurrence depends on**, and a version that initialises `d[0][j]` to zero instead of `j` passes the first two cases and fails only this one. **Which is the general shape of an edit-distance bug: the interior logic is easy and the base case is where it goes wrong.**", "left": "pair", "codeW": 190, "vars": ["distance", "reference"], "steps": [{"code": "'kitten' / 'sitting'", "state": ["3", "3 ok"], "tone": "good"}, {"code": "'flaw' / 'lawn'", "state": ["2", "2 ok"], "changed": [0, 1], "tone": "good"}, {"code": "'' / 'abc'", "state": ["3", "3 ok"], "changed": [0], "tone": "violet", "note": "exercises the base case"}], "t": "diagram", "id": "dg-8_1-04-3"},
 
     { t: "code", lang: "python", title: "two rows, not a full matrix", code:
 "def levenshtein(a, b):\n    \"\"\"Two rows instead of the full matrix: O(min(m, n)) memory.\"\"\"\n    prev = list(range(len(b) + 1))          # the \"\" row: 0, 1, 2, ...\n    for i, ca in enumerate(a, 1):\n        cur = [i]                           # the \"\" column\n        for j, cb in enumerate(b, 1):\n            cur.append(min(\n                prev[j] + 1,                # delete\n                cur[j - 1] + 1,             # insert\n                prev[j - 1] + (ca != cb),   # substitute; True is 1\n            ))\n        prev = cur\n    return prev[-1]",
       caption: "Each row depends only on the previous one, so the full matrix is never needed — memory drops from O(m·n) to O(min(m,n)). Time stays O(m·n)." },
 
     { t: "out", text:
-"levenshtein('kitten', 'sitting') = 3    reference 3    ok\nlevenshtein('flaw',   'lawn')    = 2    reference 2    ok\nlevenshtein('',       'abc')     = 3    reference 3    ok" },
+"levenshtein('kitten', 'sitting') = 3    expected 3    ok\nlevenshtein('flaw',   'lawn')    = 2    expected 2    ok\nlevenshtein('',       'abc')     = 3    expected 3    ok" },
 
     { t: "callout", kind: "insight", title: "O(m·n) is why blocking exists",
       body: [{ t: "p", text: "Every comparison costs the product of the two string lengths. That is fine for one pair and ruinous at scale: comparing a million records pairwise is 5 × 10¹¹ comparisons, which lesson 8.5 computes at roughly **15 years** at ten thousand per second. The response is not a faster edit-distance implementation — it is to **not compare most pairs at all**, which is what blocking does. Recognising that the algorithm's cost forces an architectural decision is the important part." }] },
@@ -132,9 +132,20 @@ Levenshtein.distance(a, b, score_cutoff=1)     # returns 2 immediately`,
       caption: "**`recieve` against `receive` is the whole argument for Damerau-Levenshtein: one transposition, scored as 2 by Levenshtein and 1 by Damerau.** Typed human text is full of transpositions, so the distinction changes real match rates — and `Indel`, which forbids substitution entirely, is what `fuzz.ratio` is built on, which explains why the two families give different numbers for the same pair." },
     { t: "p", text: "**`score_cutoff` is where the speed comes from when screening at scale:** the computation abandons a pair as soon as the distance exceeds the threshold, so a million comparisons against a cutoff of 2 cost far less than a million full distances. Set thresholds on the normalised forms rather than on raw edit counts, or the same cutoff means something different for a postcode and for a company name." },
 
+    { t: "callout", kind: "trap", title: "Using edit distance on reordered names",
+
+      body: [
+
+        { t: "p", text: "Edit distance compares characters in order, so 'Smith, John' and 'John Smith' look very different." },
+
+        { t: "p", text: "Normalise and token-sort names first, and combine with a token-based similarity." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Implement and probe", difficulty: "core", minutes: 30,
       requirements: [
-        "Implement Levenshtein with two rows and verify all three reference values.",
+        "Implement Levenshtein with two rows and verify all three expected values.",
         "Print the full matrix for a pair of your own and check one cell by hand.",
         "Add the transposition case and find a pair where Damerau and Levenshtein differ by 1.",
         "Take 20 real pairs from your data and find the threshold that separates matches from non-matches.",
@@ -221,7 +232,14 @@ best threshold 0.85 classifies 20/30 pairs correctly
           { t: "p", text: "The best single threshold (0.85) classified only 20 of 30 pairs correctly. The two true matches that scored below 0.3 show why: 'Smith, John' is a reordering, and 'IBM' is an abbreviation. Neither is a typo, so no edit-distance threshold can rescue them. They need a different similarity family (lesson 8.3) or an alias table." },
           { t: "p", text: "The 30 labelled pairs stand in for 'your data'. They were written to include each failure family, so treat the accuracies as a demonstration of the method, not as a benchmark." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: duplicates missed because names were reordered",
+      body: [
+        { t: "p", text: "**Symptom.** A customer deduplication job missed most duplicates where names had been entered surname first." },
+        { t: "p", text: "**Mechanism.** Edit distance compares characters in order, so 'Smith, John' and 'John Smith' scored as very different." },
+        { t: "p", text: "**Fix.** Names are normalised and token-sorted before comparison, and a token-based similarity is combined with edit distance." }
+      ] }
   ],
 
   takeaways: [

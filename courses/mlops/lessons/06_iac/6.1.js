@@ -180,6 +180,12 @@ stB = read_state()          # both read the same serial -- this is the race
 
     { t: "exercise", kind: "practice", title: "Find the drift and the ownership conflict", difficulty: "core", minutes: 30,
       prompt: "For infrastructure you manage with Terraform, run `terraform plan` against production right now with no configuration change, and read what it proposes. Zero actions is the healthy answer; anything else is drift, and for each item decide which of the two responses applies — commit it, or `ignore_changes` because something else owns that attribute. Then check the backend: is state remote, is locking configured, is object versioning on, and is the bucket encrypted. Finally, grep the configuration for resources whose values legitimately vary at run time — replica counts, desired capacity, anything an autoscaler touches — and check whether they are in `ignore_changes`.",
+      requirements: [
+        "Run terraform plan against production with no configuration change and read what it proposes",
+        "For each proposed action, decide whether to commit the drift or add ignore_changes",
+        "Check that state is remote, locked, versioned and encrypted",
+        "Find attributes an autoscaler changes and check they are in ignore_changes"
+      ],
       hints: [
         "Recurring drift on the same attribute is always an ownership conflict, not carelessness. Name the other owner.",
         "If state is local, that is the finding: every engineer has a different reality and there is no lock.",
@@ -190,8 +196,14 @@ stB = read_state()          # both read the same serial -- this is the race
           { t: "p", text: "The usual discovery is drift on exactly the attributes an autoscaler owns, which is the `ignore_changes` case rather than a problem with anyone's discipline. The second usual discovery is that nobody has run `plan` against production in weeks, so the drift has been accumulating and the next apply will be large." },
           { t: "p", text: "Scheduling a plan-only run daily and alerting on non-empty output converts that from a surprise during an urgent change into a ticket. It is the same argument lesson 3.1 made for a scheduled retrain: the run that happens regularly is the run that still works when you need it." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the apply that undid the night's fix",
+      body: [
+        { t: "p", text: "**Symptom.** During a traffic spike an on-call engineer raised a feature store's node count from the console. The next morning a routine Terraform apply for an unrelated change reduced it again, and the spike's second wave hit an undersized cluster." },
+        { t: "p", text: "**Mechanism.** Terraform diffs config against state against the world. The console change existed only in the world, so the plan proposed to put the node count back to what the configuration said. The line was in the plan output, among forty others, and nobody read it as a reversal of the night before." },
+        { t: "p", text: "**Fix.** Emergency console changes are now followed by a pull request the same day, and the autoscaled attribute is in `ignore_changes` because something else owns it. The pipeline posts the plan to the pull request and blocks on any change to a capacity attribute without an explicit approval." }
+      ] }
   ],
 
   takeaways: [

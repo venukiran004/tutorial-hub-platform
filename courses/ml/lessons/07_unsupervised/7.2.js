@@ -375,7 +375,14 @@ converged (many iterations later):  μ = (1.5, 8.5),  σ = (0.408, 0.408),  π =
           why: "The same word decides between perfect and useless; there is no default that is right for both."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: DBSCAN that called most customers noise",
+      body: [
+        { t: "p", text: "**Symptom.** A density-based clustering of customers labelled 70% of them as noise after a new data source was added." },
+        { t: "p", text: "**Mechanism.** `eps` had been tuned on the old features. The new features changed the scale of distances, so most points no longer had enough neighbours within `eps`." },
+        { t: "p", text: "**Fix.** Features are scaled, `eps` is chosen from a k-distance plot on each new feature set, and the noise fraction is reported with every run." }
+      ] }
   ],
 
   takeaways: [

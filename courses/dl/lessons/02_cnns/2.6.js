@@ -177,18 +177,99 @@ eval_transform = T.Compose([
 
     { t: "exercise", kind: "practice", title: "Measure what augmentation is worth", difficulty: "intermediate", minutes: 35,
       prompt: "Take a small image dataset (2,000 training images is plenty) and train the same model four ways: no augmentation, flip plus crop, the full standard pipeline, and the full pipeline plus MixUp. For each, record training accuracy, validation accuracy and the gap. Then add test-time augmentation to the best model and measure what it adds. Finally, deliberately apply the training transform to your validation set and observe what happens to the metric's run-to-run variance.",
+      requirements: [
+        "Train four ways: no augmentation, flip plus crop, the full pipeline, and full plus MixUp",
+        "Record training accuracy, validation accuracy and the gap",
+        "Add test-time augmentation to the best model",
+        "Apply the training transform to validation and measure the run-to-run variance"
+      ],
       hints: [
         "Keep the number of epochs fixed across runs, or you are comparing two things at once.",
         "The train/validation *gap* is the quantity augmentation targets — watch it, not just validation accuracy.",
         "For the last part, evaluate the same fixed model three times and compare the three numbers."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import sys
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision
+import torchvision.transforms.v2 as T
+
+DATA = sys.argv[1] if len(sys.argv) > 1 else "data"
+cifar_tr = torchvision.datasets.CIFAR10(DATA, train=True, download=True)
+cifar_te = torchvision.datasets.CIFAR10(DATA, train=False, download=True)
+to_t = lambda ds, n: (torch.tensor(ds.data[:n]).permute(0, 3, 1, 2).float() / 255, torch.tensor(ds.targets[:n]))
+Xtr, ytr = to_t(cifar_tr, 2000); Xva, yva = to_t(cifar_te, 1000)
+mean, std = Xtr.mean((0, 2, 3), keepdim=True), Xtr.std((0, 2, 3), keepdim=True)
+norm = lambda x: (x - mean) / std
+
+flip_crop = T.Compose([T.RandomHorizontalFlip(), T.RandomCrop(32, padding=4)])
+full = T.Compose([T.RandomHorizontalFlip(), T.RandomCrop(32, padding=4), T.ColorJitter(0.3, 0.3, 0.3), T.RandomErasing(p=0.25)])
+
+def net():
+    def blk(i, o): return [nn.Conv2d(i, o, 3, padding=1), nn.BatchNorm2d(o), nn.ReLU(), nn.MaxPool2d(2)]
+    return nn.Sequential(*blk(3, 32), *blk(32, 64), *blk(64, 128), nn.AdaptiveAvgPool2d(1), nn.Flatten(), nn.Linear(128, 10))
+
+def augment(x, tf): return torch.stack([tf(img) for img in x]) if tf else x
+
+def evaluate(m, X, y, tf=None):
+    m.eval()
+    with torch.no_grad(): return (m(norm(augment(X, tf))).argmax(1) == y).float().mean().item()
+
+def train(tf, mixup=False, epochs=80):            # augmentation needs more epochs to pay off
+    torch.manual_seed(0); m = net(); opt = torch.optim.SGD(m.parameters(), 0.05, momentum=0.9, weight_decay=5e-4)
+    sched = torch.optim.lr_scheduler.OneCycleLR(opt, 0.05, total_steps=epochs * 32)
+    for _ in range(epochs):
+        m.train(); perm = torch.randperm(2000)
+        for i in range(0, 2000, 64):
+            x, y = augment(Xtr[perm[i:i + 64]], tf), ytr[perm[i:i + 64]]
+            if mixup:
+                lam = torch.distributions.Beta(0.2, 0.2).sample().item(); j = torch.randperm(len(x))
+                out = m(norm(lam * x + (1 - lam) * x[j])); loss = lam * F.cross_entropy(out, y) + (1 - lam) * F.cross_entropy(out, y[j])
+            else: loss = F.cross_entropy(m(norm(x)), y)
+            opt.zero_grad(); loss.backward(); opt.step(); sched.step()
+    return m
+
+print("pipeline              train acc  val acc  gap")
+models = {}
+for name, tf, mix in [("none", None, False), ("flip + crop", flip_crop, False), ("full", full, False), ("full + MixUp", full, True)]:
+    m = train(tf, mix); models[name] = m
+    tr_acc, va_acc = evaluate(m, Xtr, ytr), evaluate(m, Xva, yva)
+    print(f"{name:<21} {tr_acc:9.3f}  {va_acc:7.3f}  {tr_acc - va_acc:+.3f}")
+
+best = max(models, key=lambda k: evaluate(models[k], Xva, yva)); m = models[best]; m.eval()
+with torch.no_grad():
+    p = F.softmax(m(norm(Xva)), 1) + F.softmax(m(norm(Xva.flip(3))), 1)            # TTA: original + horizontal flip
+print(f"\\nbest ({best}) without TTA {evaluate(m, Xva, yva):.3f}, with flip TTA {(p.argmax(1) == yva).float().mean():.3f}")
+
+runs = [evaluate(m, Xva, yva, full) for _ in range(5)]
+print("validation with the TRAINING transform, 5 evaluations of the same model: " + " ".join(f"{r:.3f}" for r in runs)
+      + f"   spread {max(runs) - min(runs):.3f};  with no transform the spread is 0.000")`,
+        out: `solution.py:83: VisibleDeprecationWarning: dtype(): align should be passed as Python or NumPy boolean but got \`align=0\`. Did you mean to pass a tuple to create a subarray type? (Deprecated NumPy 2.4)
+  entry = pickle.load(f, encoding="latin1")
+pipeline              train acc  val acc  gap
+none                      1.000    0.570  +0.430
+flip + crop               0.872    0.619  +0.253
+full                      0.801    0.615  +0.186
+full + MixUp              0.776    0.625  +0.151
+
+best (full + MixUp) without TTA 0.625, with flip TTA 0.621
+validation with the TRAINING transform, 5 evaluations of the same model: 0.579 0.574 0.576 0.573 0.590   spread 0.017;  with no transform the spread is 0.000`,
+       
         notes: [
           { t: "p", text: "The expected pattern is that no-augmentation gives the highest training accuracy and the worst validation accuracy — a large gap, which is overfitting by definition. Each augmentation step should narrow the gap, usually by lowering training accuracy and raising validation accuracy at the same time. MixUp typically lowers training accuracy a lot, because the model is being scored against soft targets it is not allowed to match exactly, so compare validation numbers only." },
           { t: "p", text: "The last part is the one worth doing. Evaluating a *fixed* model on a randomly augmented validation set gives a different number each time, which makes the metric useless for comparing checkpoints — you cannot tell a 0.5-point improvement from noise. That is why the evaluation transform is deterministic, and it is a mistake that survives in real codebases for a surprisingly long time because it degrades the number without ever throwing an error." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a validation score that changed every run",
+      body: [
+        { t: "p", text: "**Symptom.** A team could not tell whether a change helped, because validation accuracy varied by several points between identical runs." },
+        { t: "p", text: "**Mechanism.** Random augmentation had been applied to the validation set, so every evaluation saw different images." },
+        { t: "p", text: "**Fix.** Validation uses a fixed, deterministic transform, and augmentation is applied only to training data." }
+      ] }
   ],
 
   takeaways: [

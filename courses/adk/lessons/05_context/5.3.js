@@ -129,6 +129,12 @@ user_states ['app_name', 'user_id', 'state', 'update_time']` },
 
     { t: "exercise", kind: "practice", title: "Prove the swap is free", difficulty: "core", minutes: 20,
       prompt: "Write one agent and one function that takes a session service as a parameter, runs two turns, and prints the resulting event count and state. Call it twice — once with InMemorySessionService and once with DatabaseSessionService against a SQLite file — and confirm the output is identical. Then construct a second database service, read the session back, and confirm it survived. Finally, try a plain `sqlite:///` URL and read the error.",
+      requirements: [
+        "Write one function that runs two turns against a session service passed as a parameter",
+        "Run it with InMemorySessionService and with DatabaseSessionService on SQLite, and compare",
+        "Read the session back through a second database service",
+        "Try a plain sqlite:/// URL and read the error"
+      ],
       hints: [
         "Keep the agent and the tool outside the function; only the service should vary.",
         "`pip install aiosqlite` before using the SQLite URL.",
@@ -151,8 +157,14 @@ print(await run_with(DatabaseSessionService(db_url="sqlite+aiosqlite:///demo.db"
           { t: "p", text: "The two lines print the same event count and the same state, which is the point: nothing in the agent, the tool or the runner knows which store it is talking to. The only asymmetry is that the second one leaves a file behind." },
           { t: "p", text: "The synchronous URL raises at construction rather than on first query, with a message naming the driver you should have used. That is worth seeing once, because in a container the failure shows up as a crash loop on deploy and the traceback is the whole diagnosis." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the database session service that would not start",
+      body: [
+        { t: "p", text: "**Symptom.** An agent that had worked against SQLite in development failed on startup in production with an error about the database driver." },
+        { t: "p", text: "**Mechanism.** The production URL was `postgresql://...`. ADK 2.x's database service is async and needs an async driver in the URL — `postgresql+asyncpg://` — and the error named the driver rather than the URL." },
+        { t: "p", text: "**Fix.** The URL was corrected and the driver added to requirements. Startup now creates and deletes a test session so a misconfigured store fails the deploy, not the first user." }
+      ] }
   ],
 
   takeaways: [

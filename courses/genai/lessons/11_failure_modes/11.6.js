@@ -39,7 +39,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "insight", title: "Two of the six are defined as pairs, and that is deliberate",
       body: [
-        { t: "p", text: "**Abstention rate** is explicitly two-sided in the reference \u2014 too low *and* too high are both faults. That is unusual for a dashboard metric and it is correct, because abstention is the system choosing not to answer, which is good when the context is insufficient and bad when it is not." },
+        { t: "p", text: "**Abstention rate** is explicitly two-sided in the standard design \u2014 too low *and* too high are both faults. That is unusual for a dashboard metric and it is correct, because abstention is the system choosing not to answer, which is good when the context is insufficient and bad when it is not." },
         { t: "p", text: "**Citation accuracy** is defined as two checks: the cited id must be in the retrieved set, *and* the chunk must entail the claim. 11.3 measured why both are needed \u2014 a real id attached to a contradicting claim passes the id check cleanly." },
         { t: "p", text: "The general pattern is that a single number here is almost always ambiguous, which is why the decision flow in \u00a704 reads **pairs**: recall against faithfulness, abstention against recall. 10.13\u2019s whole investigation turned on one such pair." }
       ] },
@@ -202,7 +202,7 @@ def eval_suite(rows, threshold=THRESHOLD):
     halluc = sum(1 for q, f, ab, c, r in rows if f < threshold and not ab)
     return halluc / float(len(rows))
 
-print("THE REFERENCE'S eval_suite, RUN")
+print("THE STANDARD eval_suite, RUN")
 print("=" * 72)
 print("%-26s %6s %10s %8s %8s" % ("question", "faith", "abstained", "cites", "recall"))
 for q, f, ab, c, r in GOLDEN:
@@ -288,7 +288,7 @@ for N in (10, 50, 200, 1000):
     print("  N=%-5d hallucination rate 0.20 +/- %.1f pts (95%%)" % (N, 1.96 * se * 100))
 print("  -> a 10-case golden set carries +/-24.8 points. it is a smoke test,")
 print("     not a measurement. 9.16's arithmetic applies unchanged.")`,
-        out: `THE REFERENCE'S eval_suite, RUN
+        out: `THE STANDARD eval_suite, RUN
 ========================================================================
 question                    faith  abstained    cites   recall
 refund window unopened       1.00      False     True      1.0

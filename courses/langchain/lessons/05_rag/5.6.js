@@ -102,6 +102,12 @@ EC.receiveLesson({
       code: 'retriever = store.as_retriever(search_kwargs={"k": 5})\n\nretriever = store.as_retriever(\n    search_type="similarity_score_threshold",\n    search_kwargs={"k": 5, "score_threshold": 0.35})\n\nretriever = store.as_retriever(\n    search_type="mmr",\n    search_kwargs={"k": 5, "fetch_k": 20, "lambda_mult": 0.5})\n\n# equivalently, straight off the store:\nstore.max_marginal_relevance_search("stop my plan", k=5, fetch_k=20)',
       caption: "One line each, and the middle one changes the output **contract**." },
     { t: "p", text: "The threshold form is the interesting one, because it is the only configuration here that lets a retriever return **fewer than k documents** — or none at all. 7.1 is the measurement that makes it worth knowing: a plain retriever always returns k whether anything matched or not, so *“nothing relevant”* is not a result it can express. And `search_type=\"mmr\"` is 6.6’s diversity problem as a keyword argument, with `lambda_mult` as the relevance-against-diversity dial." },
+    { t: "callout", kind: "trap", title: "Configuring k on the store and forgetting it per query",
+      body: [
+        { t: "p", text: "Setting k on the vector store makes every retriever built from it inherit the same value, so a query type that needs more candidates — or a reranking stage that needs more to choose from — gets the same five as everything else." },
+        { t: "p", text: "Set search parameters on the retriever for each use, following the rule in the lesson: anything that varies by query belongs on the retriever, anything fixed by the data belongs on the store." }
+      ] },
+
     { t: "exercise", kind: "build", title: "Compose a retriever",
       difficulty: "core", minutes: 22,
       body: "Build a retriever from a vector store and call it. Confirm it is a Runnable by checking for the standard methods, then compose it with a formatting function in a pipe and show the result. Finally, classify five configuration settings as retriever-level or store-level and state the rule that decides.",

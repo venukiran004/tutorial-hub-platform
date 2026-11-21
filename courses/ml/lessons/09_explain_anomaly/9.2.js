@@ -257,6 +257,17 @@ exp = explainer.explain_instance(
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Showing unstable explanations to users",
+
+      body: [
+
+        { t: "p", text: "LIME explanations depend on random perturbations and can change between runs for the same prediction. Presenting them to customers or regulators produces contradictions." },
+
+        { t: "p", text: "Use deterministic methods such as TreeSHAP where possible, fix seeds where not, and store the explanation with the decision." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Shapley values by hand for a model with an interaction, then the exact linear case",
@@ -321,7 +332,14 @@ exp = explainer.explain_instance(
           why: "The by-hand computation and shap agreed to four decimals: interactions are shared, not assigned."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: LIME explanations that changed on every request",
+      body: [
+        { t: "p", text: "**Symptom.** Support agents showing customers LIME explanations of a credit decision found the top reason varied each time they refreshed." },
+        { t: "p", text: "**Mechanism.** LIME fits a local surrogate on random perturbations, and with default settings the explanation varied between runs." },
+        { t: "p", text: "**Fix.** Customer-facing explanations use TreeSHAP, which is deterministic for tree models, and explanations are cached with the decision they explain." }
+      ] }
   ],
 
   takeaways: [

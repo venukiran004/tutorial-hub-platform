@@ -235,6 +235,17 @@ plot_ale(exp, features=["tenure", "monthly_charges"], n_cols=2)
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Partial dependence on correlated features",
+
+      body: [
+
+        { t: "p", text: "Partial dependence averages predictions over combinations of feature values, including combinations that never occur when features are correlated. The plot can describe customers who do not exist." },
+
+        { t: "p", text: "Use ALE plots for correlated features, and check how much real data lies in the region a plot describes." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Importance by hand, an ALE by hand, and an interaction you must find",
@@ -297,7 +308,14 @@ plot_ale(exp, features=["tenure", "monthly_charges"], n_cols=2)
           why: "With x₂ redrawn independently, both methods gave slope 2.0: the assumption, not the method, was the problem."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a partial dependence plot that showed an impossible customer",
+      body: [
+        { t: "p", text: "**Symptom.** A partial-dependence plot suggested that churn fell sharply for customers with very long tenure and very low spend, and a campaign targeted them." },
+        { t: "p", text: "**Mechanism.** Tenure and spend were strongly correlated, so few such customers existed. Partial dependence averaged predictions over combinations the model had never seen." },
+        { t: "p", text: "**Fix.** Correlated features are explained with ALE plots, and every explanation is checked against how many real customers occupy the region it describes." }
+      ] }
   ],
 
   takeaways: [

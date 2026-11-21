@@ -167,7 +167,14 @@ checker = LlmAgent(name="checker", model=M, output_key="critique", tools=[exit_l
 
 refine = LoopAgent(name="refine", sub_agents=[drafter, checker], max_iterations=3)
 pipeline = SequentialAgent(name="research", sub_agents=[gather, refine])`,
-        notes: [{ t: "p", text: "Three details worth noting. The drafter reads {critique?} with the optional marker, because on the first iteration there is none. The checker writes its critique to state whether it passes or not, so the next iteration has something to act on. And max_iterations=3 bounds the cost even if the checker never calls exit_loop — which, on a bad day, it will not." }] } }
+        notes: [{ t: "p", text: "Three details worth noting. The drafter reads {critique?} with the optional marker, because on the first iteration there is none. The checker writes its critique to state whether it passes or not, so the next iteration has something to act on. And max_iterations=3 bounds the cost even if the checker never calls exit_loop — which, on a bad day, it will not." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a parallel step that read the other branch's half-written state",
+      body: [
+        { t: "p", text: "**Symptom.** A research pipeline's drafting step occasionally used one source's facts twice and ignored the other's." },
+        { t: "p", text: "**Mechanism.** Both parallel gatherers wrote to the same state key, `facts`. Branches keep separate conversations but share session state, so whichever finished last overwrote the other, and the order varied with network latency." },
+        { t: "p", text: "**Fix.** Each branch writes its own key — `facts_web`, `facts_docs` — and the drafter's instruction reads both. Parallel children never share an output key." }
+      ] }
   ],
 
   takeaways: [

@@ -124,7 +124,7 @@ EC.receiveLesson({
       hl: [2, 3, 4],
       caption: "parsed is None and parsing_error is None. Both are accurate, and the combination is the problem." },
 
-    { t: "callout", kind: "warn", title: "parsed=None, parsing_error=None",
+    { t: "callout", kind: "trap", title: "parsed=None, parsing_error=None",
       body: [
         { t: "p", text: "The library is telling the truth. Nothing failed to parse because nothing was offered to the parser \u2014 the model produced prose, which is a legitimate thing for it to do. So `parsing_error` is correctly empty, and the net effect is a `None` travelling into your pipeline with no signal attached to it." },
         { t: "p", text: "A structured-output call has three outcomes: a valid object, a `ValidationError`, and `None`. Code that handles the first two and not the third is the common case, and the symptom is an `AttributeError` on `NoneType` somewhere downstream, well away from the cause." }

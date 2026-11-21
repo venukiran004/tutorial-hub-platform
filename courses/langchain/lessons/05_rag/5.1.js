@@ -91,6 +91,12 @@ EC.receiveLesson({
 
     { t: "p", text: "Dense retrieval over the whole corpus took a few milliseconds per query. A cross-encoder scores a **query-document pair** rather than embedding documents once, so it costs roughly a hundred times more per document scored \u2014 6.1 measures it." },
     { t: "p", text: "That ratio is the entire argument. You cannot afford the expensive model over every document, and you cannot trust the cheap model's ordering. So: cheap over everything to build a candidate set, expensive over the candidates to order them." },
+    { t: "callout", kind: "trap", title: "Reranking more candidates than retrieval found",
+      body: [
+        { t: "p", text: "Teams often tune the reranker when answers are wrong, but a reranker can only reorder what retrieval returned. If the relevant document was not in the candidates, no reranker can recover it, and the tuning effort is wasted." },
+        { t: "p", text: "Measure recall at the candidate count before touching precision. Fix recall first — the query, the index or the candidate count — and only then tune the reranker." }
+      ] },
+
     { t: "exercise", kind: "analysis", title: "Measure the recall curve",
       difficulty: "core", minutes: 22,
       body: "Run dense retrieval over the corpus at several values of k and record recall at each. Identify where recall stops improving and explain what the extra candidates are for beyond that point. Then time stage one per query and state why the two-stage design is forced.",

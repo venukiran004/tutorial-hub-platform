@@ -115,6 +115,12 @@ EC.receiveLesson({
       { t: "p", text: "`recursion_limit` is the only guard the runtime gives you, and it is the one that should fire **least** often \u2014 because it firing means every other guard failed." },
       { t: "p", text: "That is the summary worth carrying: a safe cyclic graph is mostly guards you wrote, in routers and nodes. Reaching for a lower recursion limit as the primary control is treating the backstop as the mechanism." }
     ] },
+    { t: "callout", kind: "trap", title: "A loop guard that counts attempts but not progress",
+      body: [
+        { t: "p", text: "An iteration cap stops a loop eventually; it does not stop a loop that repeats the same failed attempt four times. The cap is reached having achieved nothing, and the cost of every attempt is paid." },
+        { t: "p", text: "Store a progress signal in state — a score, a hash of the output — and exit when it stops improving, as well as when the cap is reached." }
+      ] },
+
     { t: "exercise", kind: "build", title: "Guard a cyclic graph",
       difficulty: "advanced", minutes: 30,
       body: "Build an unconditional cycle and run it against a low recursion limit, noting that every superstep executed the node. Add a counter and an exit condition to the router and show the graph returning rather than raising. Then build a loop that makes no progress, bound it with a counter, and show that it consumes the whole budget. Add a progress check. Confirm that a skipped fan-in branch does not deadlock and show what the join reads. Finally collect the guards and say where each lives.",

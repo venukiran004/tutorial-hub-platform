@@ -193,6 +193,17 @@ LEFT   JOIN LATERAL (SELECT placed_at, status FROM orders WHERE customer_id = c.
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "A correlated subquery in the SELECT list on a large table",
+
+      body: [
+
+        { t: "p", text: "A correlated scalar subquery can be executed once per outer row. On a few thousand rows it is fine; on millions it dominates the query, and the plan may not make that obvious at a glance." },
+
+        { t: "p", text: "Rewrite as a join to a pre-aggregated derived table, or use LATERAL deliberately when you need per-row logic, and check the loop count in the plan." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Three lookups, three shapes",
@@ -273,7 +284,14 @@ ORDER  BY 1;
           why: "A subquery in a comparison plays the scalar role and is held to one row. Data that happens to satisfy that today does not make the query correct; the shape of the question — 'any of' — asks for IN."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a scalar subquery that broke on a duplicate",
+      body: [
+        { t: "p", text: "**Symptom.** A nightly report failed with 'more than one row returned by a subquery used as an expression' after months of running cleanly." },
+        { t: "p", text: "**Mechanism.** A scalar subquery looked up each customer's account manager. When a customer was briefly assigned two managers during a handover, the subquery returned two rows." },
+        { t: "p", text: "**Fix.** The lookup became a LEFT JOIN to a table with a uniqueness constraint on the current assignment, and a data check flags customers with more than one active manager." }
+      ] }
   ],
 
   takeaways: [

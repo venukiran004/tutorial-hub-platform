@@ -80,7 +80,7 @@ EC.receiveLesson({
       ["anything **permissioned**", "**Never.** 7.5's finding: a cache keyed on the question alone will serve one user's filtered results to another."],
       ["a **tool result with effects**", "Never. It is not a read."]
     ] },
-    { t: "callout", kind: "warn", title: "The permission case turns an optimisation into a breach", body: [
+    { t: "callout", kind: "trap", title: "The permission case turns an optimisation into a breach", body: [
       { t: "p", text: "And it is easy to ship, because the bug is invisible until two users with **different access** ask the same question. Every test with one user passes." },
       { t: "p", text: "If you cache it anyway, the key must include the permission scope \u2014 and that usually destroys the hit rate that motivated the cache, which is the honest reason to not cache permissioned retrieval at all." }
     ] },

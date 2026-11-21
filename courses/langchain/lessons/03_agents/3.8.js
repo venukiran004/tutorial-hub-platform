@@ -141,6 +141,12 @@ EC.receiveLesson({
       { t: "p", text: "Everything on the give-up list is a form of predictability, and the thing you get in exchange is the ability to handle inputs you did not anticipate. That is a good trade exactly when the inputs are genuinely unanticipated and a bad one when you simply did not enumerate them." },
       { t: "p", text: "So the question to ask is not \u201ccould an agent do this?\u201d \u2014 it almost always could \u2014 but \u201cdo I actually not know the steps?\u201d. If you can write them down, writing them down is cheaper, faster, testable and debuggable." }
     ] },
+    { t: "callout", kind: "trap", title: "Choosing an agent because the demo needed several steps",
+      body: [
+        { t: "p", text: "A task that needs three steps in a fixed order is a chain, even if a demo built it as an agent. The agent version costs more, varies more in latency, and can take a different path on the same input — all for flexibility the task does not use." },
+        { t: "p", text: "Write the steps down first. If you can, build the chain; use an agent only for the part where the sequence genuinely depends on what the model finds." }
+      ] },
+
     { t: "exercise", kind: "analysis", title: "Choose between a chain and an agent",
       difficulty: "core", minutes: 24,
       body: "Compare four approaches to the same task on calls at p50 and p95, and explain why the agent's two numbers differ. List what an agent gives up. Then write out a four-question test and map each answer to an approach, and state when a router is the right answer.",

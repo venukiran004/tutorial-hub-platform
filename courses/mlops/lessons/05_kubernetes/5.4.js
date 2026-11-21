@@ -149,6 +149,13 @@ volumes:
 
     { t: "exercise", kind: "practice", title: "Audit one namespace", difficulty: "core", minutes: 25,
       prompt: "For a namespace you have access to, check five things. List the Secrets and decode one you are authorised to read, to make the base64 point concrete. Then check who can `create pods` in that namespace and note that this is equivalent to reading every Secret in it. Check whether credentials are delivered as env vars or mounted files, and work out what rotating one would require. Find where your model artifact comes from and, if it is a PersistentVolume, determine its access mode and whether that constrains scheduling. Finally, check whether any pod sets `runAsNonRoot` and `readOnlyRootFilesystem`, and whether the namespace has a Pod Security Admission label enforcing it.",
+      requirements: [
+        "Decode one Secret you are authorised to read",
+        "List who can create pods in the namespace, and note what that grants",
+        "Check whether credentials arrive as environment variables or mounted files, and what rotation requires",
+        "Find where the model artifact comes from, and the access mode if it is a volume",
+        "Check runAsNonRoot, readOnlyRootFilesystem and Pod Security Admission"
+      ],
       hints: [
         "`kubectl auth can-i --list --as=<user> -n <ns>` is the fastest way to see the create-pods grant.",
         "An env-var credential means rotation is a rolling restart of every consumer — which is a deploy, and worth knowing before the rotation is urgent.",
@@ -159,8 +166,14 @@ volumes:
           { t: "p", text: "The create-pods finding is the one worth escalating: it is a routine grant that most teams do not realise is equivalent to read on every Secret in the namespace, and it is the reason high-stakes credentials belong in an external store with workload identity rather than in a Secret." },
           { t: "p", text: "The securityContext audit usually comes back empty, because every field defaults to the insecure value and nothing warns. The fix is one namespace label rather than a change to every manifest, which makes it unusually cheap for the surface it removes." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the database password in a debug log",
+      body: [
+        { t: "p", text: "**Symptom.** A production database password appeared in a log aggregation tool readable by the whole engineering organisation. It had been there for weeks." },
+        { t: "p", text: "**Mechanism.** The credential was delivered as an environment variable from a Secret. A crash handler dumped the process environment on error, and the dump went to the logs. A Secret is base64, not encryption, and an environment variable is visible wherever the process is: in dumps, in `/proc`, and to anyone who can exec into the pod." },
+        { t: "p", text: "**Fix.** Credentials are mounted as files, read on use, and issued short-lived through workload identity and an external secret manager, so rotation needs no redeploy. Crash handlers were changed to redact the environment, and the password was rotated." }
+      ] }
   ],
 
   takeaways: [

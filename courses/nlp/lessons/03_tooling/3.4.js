@@ -313,7 +313,14 @@ perplexity generated, repetitive      9.54`,
           { t: "p", text: "The adversarial suite is the important result. BLEU and METEOR failed all five cases, ranking the reversed, negated or wrong-number sentence above a correct paraphrase. BERTScore failed four of five: it passed only the swapped arguments in 'the cat sat on the mat', and even that by 0.001. Every one of these metrics measures overlap with the reference, so a sentence that keeps the words and flips the meaning wins. That is why such cases belong in the suite as assertions, and why a faithfulness check (NLI, lesson 3.8) is needed alongside them." },
           { t: "p", text: "Repeating one sentence three times gave GPT-2 perplexity 9.54 against 62.64 for the varied reference. A lower perplexity on generated text is not good news until you have checked it for repetition." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a summariser that improved on the metric and got worse",
+      body: [
+        { t: "p", text: "**Symptom.** A summarisation model's ROUGE score rose after a change, and users said the summaries were worse." },
+        { t: "p", text: "**Mechanism.** The change made the model copy longer passages from the source. ROUGE measures overlap with reference summaries, so copying scored well while readability fell." },
+        { t: "p", text: "**Fix.** Releases are judged on a human-rated sample alongside automatic metrics, and faithfulness is checked with an NLI model." }
+      ] }
   ],
 
   takeaways: [

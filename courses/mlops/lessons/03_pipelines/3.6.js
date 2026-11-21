@@ -113,6 +113,13 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Score yourself against the six", difficulty: "intro", minutes: 25,
       prompt: "For a model you operate, mark each of the six present, partial or absent, with evidence rather than intention. For the prediction log: pull one prediction from last month and show its inputs, score and model version. For shared feature code: name the function both paths call, or name the two implementations. For the gate: state the threshold and where the number came from. For rollback: say when it was last exercised. For signals: say what would page and what would trigger a retrain. For runbooks: open the one for drift. Then take the lowest-cost absent item and do it this week — it will almost always be the log or the threshold derivation.",
+      requirements: [
+        "Mark each of the six practices present, partial or absent, with evidence",
+        "Pull one prediction from last month with its inputs, score and model version",
+        "Name the function both feature paths call, or the two implementations",
+        "State the gate threshold and where the number came from",
+        "Say when rollback was last exercised"
+      ],
       hints: [
         "'We log requests' is not the prediction log unless the score and the model version are in it.",
         "If the gate's threshold has no derivation, run lesson 3.2's seed experiment — it is twenty minutes and gives you the number.",
@@ -123,8 +130,14 @@ EC.receiveLesson({
           { t: "p", text: "The most common profile is a log that records requests but not the score or the model version, a gate with an undocumented threshold, and a rollback nobody has run. All three are cheap to fix and each converts a future incident from archaeology into a lookup." },
           { t: "p", text: "The honest version of this exercise usually finds that signals are wired backwards — drift pages and nothing gates a retrain — which is exactly the arrangement lesson 1.1's measurements argue against, and rewiring it costs a configuration change rather than a project." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the rollback that had never been run",
+      body: [
+        { t: "p", text: "**Symptom.** A bad model reached production on a Friday evening. The runbook said to roll back; forty minutes later the previous model was still not serving." },
+        { t: "p", text: "**Mechanism.** The rollback procedure existed as a document. The previous artifact had been garbage-collected from the registry, the deploy tool's rollback flag pointed at an image tag that had been overwritten, and the one engineer who had done it before was unreachable. Detection time plus rollback time is the harm, and the second number had never been measured." },
+        { t: "p", text: "**Fix.** Rollback is one command that is run in every game day and after each release in staging, and the registry retains the last three promoted artifacts by policy. The team now reports rollback time alongside deploy time." }
+      ] }
   ],
 
   takeaways: [

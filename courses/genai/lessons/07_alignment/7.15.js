@@ -77,7 +77,7 @@ EC.receiveLesson({
       { k: "Control for length", v: "7.11 showed length is the canonical hack and 7.6 showed the implicit reward is linear in length. An uncontrolled win rate rewards the verbosity you are trying to detect." }
     ] },
 
-    { t: "callout", kind: "warn", title: "Position bias is the one that silently invalidates the whole number",
+    { t: "callout", kind: "trap", title: "Position bias is the one that silently invalidates the whole number",
       body: [
         { t: "p", text: "If the judge prefers position A and you always put the new model there, a 55% win rate might be entirely the bias. The fix is cheap \u2014 randomise, and ideally evaluate each pair **both ways** and count only the cases where the judge is consistent." },
         { t: "p", text: "Evaluating both ways also gives you a free diagnostic: the fraction of pairs where the judge flips when the order flips *is* the position bias, measured on your own setup rather than assumed. If that fraction is large, the judge is not usable and no amount of randomisation rescues it \u2014 randomisation removes the systematic error and leaves the noise." },

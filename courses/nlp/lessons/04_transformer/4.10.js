@@ -137,6 +137,17 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Parameters are the wrong headline number",
       body: [{ t: "p", text: "Chinchilla's finding was that most large models of its era were substantially *under-trained* for their size — the compute would have been better spent on more tokens through a smaller model. Since then the trend has run toward smaller models trained far longer, because inference cost scales with parameters and is paid on every request forever, while training cost is paid once. So when you see a parameter count, the useful follow-up question is how many tokens it saw, not how big it is." }] },
 
+    { t: "callout", kind: "trap", title: "Sizing hardware for the weights alone",
+
+      body: [
+
+        { t: "p", text: "Training memory includes gradients, optimiser state and activations, several times the weights. A GPU that holds the model may not hold its training." },
+
+        { t: "p", text: "Estimate memory for every component from the parameter count before choosing hardware." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Predict before you measure", difficulty: "core", minutes: 30,
       requirements: [
         "Take a model card's configuration, compute 12·L·d² plus embeddings, then load the model and compare. Aim to be within 1%.",
@@ -204,7 +215,14 @@ GPT-2 XL     embedding share   5.2%
           { t: "p", text: "Doubling depth doubles the parameter count; doubling width quadruples it, because every matrix is d × d. The embedding share falls from 31% at GPT-2 small to 0.6% at 70B scale, so it crosses 10% between GPT-2 small and XL. For small models the vocabulary is a large part of the budget." },
           { t: "p", text: "Mixed-precision Adam needs 16 bytes per parameter before activations: 2 for fp16 weights, 2 for gradients, 4 for the fp32 master copy, and 8 for Adam's two moments. A 7B model therefore needs 112 GB, which is why it does not train on one 80 GB GPU without sharding or 8-bit optimiser states." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a model that did not fit on the GPU it was bought for",
+      body: [
+        { t: "p", text: "**Symptom.** A team rented GPUs for fine-tuning and ran out of memory on the first step." },
+        { t: "p", text: "**Mechanism.** They had sized for the weights only. Training also stores gradients and optimiser state, several times the weights' size." },
+        { t: "p", text: "**Fix.** Memory is estimated from the parameter count for weights, gradients, optimiser state and activations before hardware is chosen." }
+      ] }
   ],
 
   takeaways: [

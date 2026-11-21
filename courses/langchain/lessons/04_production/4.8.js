@@ -130,6 +130,12 @@ EC.receiveLesson({
       { t: "p", text: "Conflating them produces one of two bad outcomes. Assert on model output in CI and you get a brittle suite that breaks every time the model rephrases something, which trains people to ignore it. Rely on an eval set for everything and you have no coverage of the wiring, where module 1 found four silent failures." },
       { t: "p", text: "The split is clean because the boundary is clean: everything up to and including what was sent is deterministic and testable; everything the model decides is a distribution and needs a graded set with a threshold." }
     ] },
+    { t: "callout", kind: "trap", title: "Asserting on the answer instead of on the request",
+      body: [
+        { t: "p", text: "A test that checks the model's reply against an expected string either fails randomly against a real model or passes trivially against a scripted one. Neither tells you whether the chain built the request correctly, which is where most bugs in chain code live." },
+        { t: "p", text: "With a scripted model, assert on the message list the model received: the system prompt, the interpolated values and the history length. Leave answer quality to an evaluation set." }
+      ] },
+
     { t: "exercise", kind: "build", title: "Test the machinery, not the model",
       difficulty: "core", minutes: 26,
       body: "Show that a scripted model makes a chain deterministic. Then write assertions on the resolved message list covering message count, an unchanged system message and a correctly interpolated variable. Write a property test that the system message survives trimming. Finally, list what a scripted model cannot test and state the split between testing and evaluation.",

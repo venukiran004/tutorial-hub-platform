@@ -170,19 +170,122 @@ return self.fc((h * mask).sum(1) / mask.sum(1).clamp(min=1.0))`,
 
     { t: "exercise", kind: "practice", title: "Reproduce the bug, then the fix", difficulty: "advanced", minutes: 50,
       prompt: "Build the four-model comparison on 20 newsgroups with `remove=('headers','footers','quotes')`. Before training, count how many documents are empty after tokenisation, and assert that every model's forward pass produces finite output on a batch containing one. Then deliberately remove the clamp and confirm the transformer collapses to the majority class. Finally, add `assert_finite` guards from lesson 7.1 to every model's forward pass and check that they name the failure at its source rather than letting it reach the loss.",
+      requirements: [
+        "Build the four-model comparison on 20 newsgroups with headers, footers and quotes removed",
+        "Count empty documents and assert finite outputs on a batch containing one",
+        "Remove the clamp and confirm the transformer collapses",
+        "Add finite-value guards to every model's forward pass"
+      ],
       hints: [
         "The empty-document count is a two-line check and would have saved the entire investigation.",
         "Feed a batch containing exactly one empty document — that is enough to poison it.",
         "The guard should fire on the pooled tensor, not on the loss."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import math, re, time
+from collections import Counter
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from sklearn.datasets import fetch_20newsgroups
+
+CATS = ["rec.sport.hockey", "sci.space"]
+tr = fetch_20newsgroups(subset="train", categories=CATS, remove=("headers", "footers", "quotes"))
+te = fetch_20newsgroups(subset="test", categories=CATS, remove=("headers", "footers", "quotes"))
+tokenize = lambda s: re.findall(r"[a-z']+", s.lower())
+vocab = {w: i + 2 for i, (w, _) in enumerate(Counter(w for d in tr.data for w in tokenize(d)).most_common(20000))}  # 0 pad, 1 unk
+def encode(docs, L=200):
+    ids = [[vocab.get(w, 1) for w in tokenize(d)][:L] for d in docs]
+    x = torch.zeros(len(ids), L, dtype=torch.long)
+    for i, s in enumerate(ids): x[i, :len(s)] = torch.tensor(s, dtype=torch.long)
+    return x, torch.tensor([max(len(s), 1) for s in ids])        # the recurrent path's incidental clamp
+Xtr, Ltr = encode(tr.data); Xte, Lte = encode(te.data); ytr, yte = torch.tensor(tr.target), torch.tensor(te.target)
+
+empty_tr, empty_te = int(((Xtr != 0).sum(1) == 0).sum()), int(((Xte != 0).sum(1) == 0).sum())
+print(f"train: {empty_tr} of {len(Xtr)} documents are empty after tokenising;  test: {empty_te} of {len(Xte)}")
+
+def assert_finite(name, t):
+    if not torch.isfinite(t).all(): raise FloatingPointError(f"{name} has NaN/Inf")
+
+class Recurrent(nn.Module):
+    def __init__(self, cell):
+        super().__init__(); self.e = nn.Embedding(len(vocab) + 2, 24, padding_idx=0); self.r = cell(24, 64, batch_first=True); self.fc = nn.Linear(64, 2)
+    def forward(self, x, lens):
+        packed = nn.utils.rnn.pack_padded_sequence(self.e(x), lens, batch_first=True, enforce_sorted=False)
+        h = self.r(packed)[1]; h = h[0] if isinstance(h, tuple) else h
+        assert_finite("final hidden state", h); return self.fc(h[-1])
+
+class Transformer(nn.Module):
+    def __init__(self, clamp=True):
+        super().__init__(); self.clamp = clamp; d = 24
+        self.e = nn.Embedding(len(vocab) + 2, d, padding_idx=0); self.pos = nn.Embedding(200, d)
+        self.enc = nn.TransformerEncoder(nn.TransformerEncoderLayer(d, 4, 64, batch_first=True, dropout=0.1), 2); self.fc = nn.Linear(d, 2)
+    def forward(self, x, lens):
+        pad = x == 0; h = self.e(x) + self.pos(torch.arange(x.shape[1]))
+        h = self.enc(h, src_key_padding_mask=pad & ~pad.all(1, keepdim=True))   # an all-masked row would itself give NaN
+        mask = (~pad).unsqueeze(-1).float(); denom = mask.sum(1)
+        pooled = (h * mask).sum(1) / (denom.clamp(min=1.0) if self.clamp else denom)
+        assert_finite("pooled representation", pooled); return self.fc(pooled)
+
+# Every model must produce finite output on a batch that contains an empty document
+probe = torch.cat([Xtr[(Xtr != 0).sum(1) == 0][:1], Xtr[:3]]); probe_len = torch.tensor([1, *Ltr[:3].tolist()])
+for name, make in [("rnn", lambda: Recurrent(nn.RNN)), ("lstm", lambda: Recurrent(nn.LSTM)), ("gru", lambda: Recurrent(nn.GRU)),
+                   ("transformer", lambda: Transformer()), ("transformer, no clamp", lambda: Transformer(clamp=False))]:
+    try: make().eval()(probe, probe_len); print(f"  {name:<22} finite on a batch with an empty document")
+    except FloatingPointError as e: print(f"  {name:<22} {e}")
+
+def train(model, epochs=6, guarded=True):
+    torch.manual_seed(0); opt = torch.optim.Adam(model.parameters(), 2e-3); t0 = time.time()
+    for _ in range(epochs):
+        model.train(); perm = torch.randperm(len(Xtr))
+        for i in range(0, len(Xtr), 32):
+            idx = perm[i:i + 32]; loss = F.cross_entropy(model(Xtr[idx], Ltr[idx]), ytr[idx])
+            opt.zero_grad(); loss.backward(); nn.utils.clip_grad_norm_(model.parameters(), 1.0); opt.step()
+    model.eval()
+    with torch.no_grad(): pred = torch.cat([model(Xte[i:i + 256], Lte[i:i + 256]).argmax(1) for i in range(0, len(Xte), 256)])
+    return (pred == yte).float().mean().item(), time.time() - t0, sum(p.numel() for p in model.parameters())
+
+print(f"\\nmodel                     test acc   params   train s   (majority class {max(yte.float().mean(), 1 - yte.float().mean()):.1%})")
+for name, make in [("rnn", lambda: Recurrent(nn.RNN)), ("lstm", lambda: Recurrent(nn.LSTM)), ("gru", lambda: Recurrent(nn.GRU)), ("transformer", lambda: Transformer())]:
+    torch.manual_seed(0); a, s, p = train(make()); print(f"{name:<25} {a:8.1%}  {p:7,}  {s:8.0f}")
+
+# The bug itself: no clamp, and no guard. NaN reaches the loss, the weights, and then every prediction.
+class Unguarded(Transformer):
+    def forward(self, x, lens):
+        pad = x == 0; h = self.enc(self.e(x) + self.pos(torch.arange(x.shape[1])), src_key_padding_mask=pad & ~pad.all(1, keepdim=True))
+        mask = (~pad).unsqueeze(-1).float(); return self.fc((h * mask).sum(1) / mask.sum(1))
+torch.manual_seed(0); m = Unguarded(); a, _, _ = train(m)
+with torch.no_grad(): p = m(Xte[:256], Lte[:256]).argmax(1)
+print(f"transformer, no clamp, no guard: test acc {a:.1%}; predicts class {p.unique().tolist()} for every document; "
+      f"weights finite: {all(torch.isfinite(q).all() for q in m.parameters())}")`,
+        out: `train: 32 of 1193 documents are empty after tokenising;  test: 26 of 793
+  rnn                    finite on a batch with an empty document
+  lstm                   finite on a batch with an empty document
+  gru                    finite on a batch with an empty document
+  transformer            finite on a batch with an empty document
+  transformer, no clamp  pooled representation has NaN/Inf
+
+model                     test acc   params   train s   (majority class 50.3%)
+rnn                          59.1%  432,658        22
+lstm                         75.2%  449,938        34
+gru                          84.2%  444,178        32
+transformer                  82.6%  442,930        73
+transformer, no clamp, no guard: test acc 50.3%; predicts class [0] for every document; weights finite: False`,
+       
         notes: [
           { t: "p", text: "The empty-document count is the check worth building the habit around. Two lines run before any training would have surfaced this immediately, and the same class of problem — a dataset property that violates an assumption in your pipeline — accounts for a large share of the time people spend on models that will not train. Counting empties, checking value ranges, and looking at the length distribution are cheap and catch a great deal." },
           { t: "p", text: "With the `assert_finite` guards in place, the failure reports itself as a non-finite pooled tensor rather than as a mysteriously constant model, which is the difference between a five-minute fix and the investigation described here. It is worth noting that none of the five hyperparameter runs would have been necessary had the guard been there from the start — the instrumentation from lesson 7.1 pays for itself the first time it fires." },
           { t: "p", text: "One more thing worth doing: after fixing it, check what the model does with an empty document at inference. Pooling to a zero vector is finite and defensible, but the classifier will still emit a confident-looking prediction for an input containing no information. If that matters for your application, the right behaviour is to detect empty input upstream and decline to predict, rather than to let the model produce something." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a transformer that scored exactly the baseline",
+      body: [
+        { t: "p", text: "**Symptom.** A transformer text classifier scored exactly the majority-class rate, and hyperparameter changes made no difference." },
+        { t: "p", text: "**Mechanism.** Some documents were empty after cleaning. An all-padding sequence made every attention score masked, the softmax returned NaN, and the NaN spread through training." },
+        { t: "p", text: "**Fix.** Empty documents are removed or given a placeholder token, every forward pass asserts finite outputs, and a batch containing an empty document is part of the test suite." }
+      ] }
   ],
 
   takeaways: [

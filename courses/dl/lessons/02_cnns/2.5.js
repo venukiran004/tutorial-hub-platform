@@ -178,6 +178,12 @@ for param in model.layer4.parameters():
 
     { t: "exercise", kind: "practice", title: "Reproduce the gap, then close it", difficulty: "intermediate", minutes: 40,
       prompt: "Reproduce the headline comparison on a small subset of any labelled image dataset: pretrained-and-frozen against from-scratch, same epochs. Then add two more runs — fine-tuning layer4 with a single learning rate for everything, and fine-tuning layer4 with discriminative rates. Record test accuracy and trainable parameter count for all four. Finally, run the pretrained model once with ImageNet normalisation and once with plain [0,1] inputs and measure the difference.",
+      requirements: [
+        "Compare pretrained-and-frozen with from-scratch on a small subset",
+        "Add fine-tuning of layer4 with one learning rate and with discriminative rates",
+        "Record test accuracy and trainable parameters for all four",
+        "Run the pretrained model with and without ImageNet normalisation and measure the difference"
+      ],
       hints: [
         "Keep the subset small — 2,000 images is where transfer learning's advantage is starkest.",
         "The single-LR fine-tune may score *worse* than the frozen baseline. That is the result, not a bug.",
@@ -189,8 +195,14 @@ for param in model.layer4.parameters():
           { t: "p", text: "The single-learning-rate fine-tune is the instructive run. At a rate high enough to train the new head usefully, the pretrained backbone is being moved several per cent of its norm per step, so it forgets ImageNet faster than it learns your task. A result *below* the frozen baseline is the normal outcome and is the clearest argument for parameter groups that exists — it is much more convincing than being told that pretrained layers need smaller steps." },
           { t: "p", text: "The normalisation comparison typically costs several points. What makes it worth doing once yourself is that nothing fails: no exception, no warning, no obviously broken output. It is a whole category of bug where the only symptom is a number that is lower than it should be, and you will only catch it by knowing to look." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a pretrained model fed the wrong normalisation",
+      body: [
+        { t: "p", text: "**Symptom.** A transfer-learning model performed far worse than expected from published results on similar data." },
+        { t: "p", text: "**Mechanism.** Inputs were scaled to [0, 1] while the pretrained backbone expected ImageNet mean and standard deviation normalisation. Its features were computed on inputs out of distribution." },
+        { t: "p", text: "**Fix.** Preprocessing is taken from the pretrained model's own configuration, and a check compares input statistics against those it expects." }
+      ] }
   ],
 
   takeaways: [

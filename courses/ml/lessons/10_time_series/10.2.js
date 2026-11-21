@@ -340,7 +340,14 @@ plot_acf(w7); plot_pacf(w7)                       # ACF cuts at 7, PACF decays a
           { t: "p", text: "(c) is the argument for a step regressor over differencing: the tests pass either way, but the differenced series carries seven large residuals every model will pay for." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: differencing that removed the signal",
+      body: [
+        { t: "p", text: "**Symptom.** An ARIMA model's forecasts were noisy and worse than a naive forecast." },
+        { t: "p", text: "**Mechanism.** The series was differenced twice though once was enough. Over-differencing introduced negative autocorrelation the model then tried to fit." },
+        { t: "p", text: "**Fix.** Differencing is chosen with ADF and KPSS tests together, and the residual ACF is checked for over-differencing." }
+      ] }
   ],
 
   takeaways: [

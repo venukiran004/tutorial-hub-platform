@@ -109,7 +109,7 @@ EC.receiveLesson({
 
 
     { t: "p", text: "The honest reading is that not every stage pays for itself, and the ablation is the only way to know which. Here one stage (hybrid, after reranking) is pure cost, one (reranking) helps one class and harms another, and one (MMR) improves both latency and accuracy \u2014 for reasons unrelated to the diversity it was designed for." },
-    { t: "callout", kind: "warn", title: "MMR helped here for the wrong reason", body: [
+    { t: "callout", kind: "trap", title: "MMR helped here for the wrong reason", body: [
       { t: "p", text: "6.6 established that MMR's diversity benefit is invisible to these metrics. So the natural-MRR improvement from 0.845 to 0.871 and the recall recovery from 0.929 to 1.000 are not diversity working \u2014 they are the consequence of giving the reranker a smaller, pre-filtered candidate set, which limits how many documents it can wrongly promote." },
       { t: "p", text: "That is worth stating plainly because it inverts the usual justification. MMR is earning its place in this pipeline as a **brake on the reranker**, not as a diversity mechanism, and if the reranker were removed its contribution would likely vanish. An ablation tells you a stage helps; it does not tell you why, and acting on the assumed reason will mislead you on the next corpus." }
     ] },

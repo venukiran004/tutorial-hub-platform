@@ -274,7 +274,14 @@ FROM   staged;
           why: "UNION is concatenate-then-DISTINCT. Rows that are legitimately equal are deleted with no warning. UNION ALL keeps everything; a month column makes the rows distinct even under UNION."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: two identical months merged by UNION",
+      body: [
+        { t: "p", text: "**Symptom.** A combined report of two regions' monthly figures was missing a month for one region." },
+        { t: "p", text: "**Mechanism.** The regions were combined with UNION. In one month both regions reported exactly the same figures, so the two rows were identical and UNION removed one as a duplicate." },
+        { t: "p", text: "**Fix.** The report uses UNION ALL and includes the region as a column, so rows that happen to share values stay distinct. UNION is used only when the duplicates to remove can be named." }
+      ] }
   ],
 
   takeaways: [

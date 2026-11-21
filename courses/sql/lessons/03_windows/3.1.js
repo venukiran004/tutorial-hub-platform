@@ -220,6 +220,17 @@ FROM   ot GROUP BY customer_id ORDER BY total DESC;
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Putting a window function in WHERE",
+
+      body: [
+
+        { t: "p", text: "Window functions are computed after WHERE, so `WHERE ROW_NUMBER() OVER (...) = 1` is an error, and the common workaround of filtering on a different column first changes the rows the window sees." },
+
+        { t: "p", text: "Compute the window in a CTE or subquery and filter in the outer query, so the window sees exactly the rows you intend." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Every order in context",
@@ -296,7 +307,14 @@ WHERE  amount > cust_avg ORDER BY order_id;
           why: "OVER annotates; GROUP BY reduces. The window form is what you need when a per-row value must be compared with its group's value — a share, a difference, a rank."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a share of total that summed to 300%",
+      body: [
+        { t: "p", text: "**Symptom.** A dashboard showing each product's share of revenue added up to far more than 100%." },
+        { t: "p", text: "**Mechanism.** The share was `revenue / SUM(revenue) OVER (PARTITION BY product)`, which divides each row by its own product's total rather than the grand total." },
+        { t: "p", text: "**Fix.** The denominator became `SUM(revenue) OVER ()`, and the query asserts that shares sum to 1 within a tolerance before it publishes." }
+      ] }
   ],
 
   takeaways: [

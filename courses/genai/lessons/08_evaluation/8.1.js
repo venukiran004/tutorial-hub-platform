@@ -171,6 +171,17 @@ EC.receiveLesson({
   <text x="641" y="286" text-anchor="middle" class="s-sub" style="font-size:9px">gold, expensive</text>
 </svg>` },
 
+    { t: "callout", kind: "trap", title: "Evaluating an application with a model benchmark",
+
+      body: [
+
+        { t: "p", text: "A model's benchmark score answers whether the weights are good in general. It does not say whether your RAG system answers your users' questions, and a better benchmark score can come with a worse application." },
+
+        { t: "p", text: "Evaluate applications on your own tasks with your own data, at the unit the user experiences — an answer, a trajectory, a decision." }
+
+      ] },
+
+
     { t: "exercise", kind: "analysis", title: "Classify your own evaluation questions", difficulty: "foundation", minutes: 25,
       body: "List the evaluation questions your team actually asks. For each, say whether it is a model question or an application question, what the unit of measurement is, the cheapest method that would answer it, and whether that method has been validated against something more expensive.",
       requirements: [

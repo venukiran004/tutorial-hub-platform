@@ -98,6 +98,12 @@ EC.receiveLesson({
       code: 'from langchain_core.vectorstores import InMemoryVectorStore\nfrom langchain_openai import OpenAIEmbeddings\n\nstore = InMemoryVectorStore.from_documents(docs, OpenAIEmbeddings())\nstore.add_documents(more_docs)\n\nstore.similarity_search("refund policy", k=5)\nstore.similarity_search_with_score("refund policy", k=5)   # scores too\nstore.similarity_search("refund policy", k=5,\n                        filter={"tenant": "acme"})          # the metadata job\n\n# the persistent version, same four methods:\nfrom langchain_chroma import Chroma\nChroma.from_documents(docs, OpenAIEmbeddings(),\n                      collection_name="policies",\n                      persist_directory="./chroma")',
       caption: "`similarity_search` hides the index; `filter=` is the job this lesson is about." },
     { t: "p", text: "Worth noticing what the wrapper hides and what it does not. The index choice — exact against approximate, and the recall it costs — is a constructor argument you mostly do not see, which is why it is measured by hand above. The **filter** is a first-class keyword on every one of these calls, and 7.5 is the reason to reach for it rather than filtering the results afterwards: a post-filter has already let a restricted document displace a public one in the top k." },
+    { t: "callout", kind: "trap", title: "Filtering after the similarity search",
+      body: [
+        { t: "p", text: "Retrieving the top k and then removing documents the user may not see returns fewer than k results, sometimes none, and the documents removed were the most similar ones. Worse, an implementation that forgets the filter leaks another tenant's data with nothing in the logs." },
+        { t: "p", text: "Apply access filters inside the vector search as a pre-filter, so permission is part of the query, and test with two users who must not see each other's documents." }
+      ] },
+
     { t: "exercise", kind: "build", title: "Index, then filter",
       difficulty: "core", minutes: 26,
       body: "Build an exact FAISS index over the corpus embeddings and show what it returns for a query. Tabulate exact against approximate index types with what each trades. Then query for something only a restricted document answers, with and without a metadata filter, and report what the unfiltered search returns.",

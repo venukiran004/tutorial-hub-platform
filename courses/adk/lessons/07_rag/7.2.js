@@ -147,18 +147,110 @@ planner = LlmAgent(name="planner", model=MODEL, include_contents="none",
 
     { t: "exercise", kind: "practice", title: "Make a miss recoverable, then measure it", difficulty: "advanced", minutes: 30,
       prompt: "Take the corpus from 7.1 and write five questions that use different words from the documents. Run them against a naive agent and count how many are answered correctly. Add the rephrase-and-retry sentence to the instruction and run them again. Then build the LoopAgent version with a structured judge and a cap of three, run them a third time, and record correctness, model calls and wall-clock time for all three. Decide which one you would ship.",
+      requirements: [
+        "Write five questions that use different words from the documents",
+        "Run them against a naive agent and count correct answers",
+        "Add the rephrase-and-retry sentence and rerun",
+        "Build the LoopAgent version with a judge and a cap of three, and record correctness, model calls and time for all three"
+      ],
       hints: [
         "Vocabulary gaps are the point — 'broken' versus 'warranty', 'money back' versus 'refund'.",
         "Count model calls by wrapping the model, as the executed example does.",
         "Time it: the differences are large enough to feel."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import asyncio, logging, os, re, time, warnings
+warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+from pydantic import BaseModel, Field
+from google.adk.agents import LlmAgent, LoopAgent, SequentialAgent
+from google.adk.runners import InMemoryRunner
+from google.adk.tools import ToolContext
+from google.adk.tools.retrieval import BaseRetrievalTool
+from google.genai import types
+
+LLM = __import__("local_llm").LocalLlm(model="local-qwen-3b") if not os.environ.get("GOOGLE_API_KEY") else None
+MODEL = LLM or "gemini-3.8-flash"           # reference output: the local Qwen2.5-3B via local_llm.py
+
+DOCS = {   # the corpus from 7.1
+    "refund-policy": "Refunds are issued within 14 days of purchase. Digital goods are non-refundable once downloaded.",
+    "shipping": "Standard shipping takes 3 to 5 working days. Express shipping takes 1 working day and costs 9 pounds.",
+    "warranty": "Hardware carries a 2-year warranty covering manufacturing faults, not accidental damage.",
+    "returns-address": "Returns go to Unit 4, Riverside Park, Leeds LS10 1AB, with the order number inside the parcel.",
+    "support-hours": "Support is open Monday to Friday, 9am to 6pm UK time. There is no weekend support.",
+}
+class Corpus(BaseRetrievalTool):                    # exact-word matching, so different wording misses
+    def __init__(self): super().__init__(name="search_docs", description="Searches the company's customer policy documents by keyword.")
+    async def run_async(self, *, args, tool_context):
+        words = set(re.findall(r"[a-z]+", args["query"].lower())) - {"the", "a", "is", "of", "to", "and", "how", "what", "do", "i", "my", "can"}
+        hits = [f"[{k}] {v}" for k, v in DOCS.items() if words & set(re.findall(r"[a-z]+", (k + " " + v).lower()))]
+        return "\\n".join(hits) if hits else "No matching document found."
+
+# Five questions that avoid the documents' own words, with the fact a correct answer must contain
+CASES = [("How quickly will I get my money back?", "14"), ("Can I phone you on a Saturday?", "no weekend"),
+         ("How long is the guarantee on a computer?", "2-year"), ("What does next-day delivery cost?", "9"),
+         ("I dropped my tablet and cracked it. Will you fix it for free?", "accidental")]
+BASE = ("You can call the search_docs tool yourself. Call it with a short keyword query, then answer only from what it "
+        "returned, naming the document id in square brackets. If nothing relevant was returned, say the documents do not cover it.")
+RETRY = BASE + (" If search_docs returns 'No matching document found', rephrase the query using different words - "
+                "for example the formal term for the thing asked about - and search again, up to three times.")
+
+class Verdict(BaseModel):
+    answered: bool = Field(description="True only if the draft answer states a fact taken from a cited document")
+    reason: str = Field(description="One short sentence")
+
+def stop_if_answered(tool_context: ToolContext) -> dict:
+    """Call this when the verdict says the draft is answered."""
+    tool_context.actions.escalate = True; return {"stopped": True}
+
+def loop_agent():
+    answerer = LlmAgent(name="answerer", model=MODEL, tools=[Corpus()], output_key="draft",
+                        instruction=BASE + " If a previous verdict exists in {verdict?}, search again with different words.")
+    judge = LlmAgent(name="judge", model=MODEL, output_schema=Verdict, output_key="verdict", include_contents="none",
+                     instruction="Question and draft answer:\\n{draft}\\nDecide whether the draft actually answers from a cited document.")
+    stopper = LlmAgent(name="stopper", model=MODEL, tools=[stop_if_answered], include_contents="none",
+                       instruction="Verdict: {verdict}. If answered is true, call stop_if_answered. Otherwise reply 'retry'.")
+    return LoopAgent(name="loop", sub_agents=[answerer, judge, stopper], max_iterations=3)
+
+async def run(agent, q):
+    runner = InMemoryRunner(agent=agent, app_name="rag")
+    sid = (await runner.session_service.create_session(app_name="rag", user_id="u")).id
+    final = ""
+    async for e in runner.run_async(user_id="u", session_id=sid, new_message=types.Content(role="user", parts=[types.Part(text=q)])):
+        for p in (e.content.parts if e.content else []):
+            if p.text and e.author in ("rag", "answerer"): final = p.text
+    return final
+
+async def main():
+    variants = [("naive", lambda: LlmAgent(name="rag", model=MODEL, instruction=BASE, tools=[Corpus()])),
+                ("rephrase-and-retry instruction", lambda: LlmAgent(name="rag", model=MODEL, instruction=RETRY, tools=[Corpus()])),
+                ("LoopAgent with a structured judge, cap 3", loop_agent)]
+    print(f"{'variant':<42} correct  model calls  seconds")
+    for name, make in variants:
+        c0 = LLM.calls if LLM else 0; t0 = time.time(); correct = 0
+        for q, fact in CASES:
+            correct += fact.lower() in (await run(make(), q)).lower()
+        calls = (LLM.calls - c0) if LLM else float("nan")
+        print(f"{name:<42} {correct}/5      {calls:>5}       {time.time() - t0:6.0f}")
+
+asyncio.run(main())`,
+        out: `variant                                    correct  model calls  seconds
+naive                                      1/5          8          420
+rephrase-and-retry instruction             2/5          9          545
+LoopAgent with a structured judge, cap 3   1/5         36         1518`,
+       
         notes: [
-          { t: "p", text: "The usual shape of the result is that the retry sentence recovers most of the vocabulary-gap failures for one extra model call on the questions that need it and nothing on the questions that do not — which is why it is close to free. The loop version recovers a little more and costs on every question, including the easy ones, because the judge runs regardless." },
+          { t: "p", text: "The usual shape of the result is that the retry sentence recovers most of the vocabulary-gap failures for one extra model call on the questions that need it and nothing on the questions that do not — which is why it is close to free. The loop version costs on every question, including the easy ones, because the judge runs regardless, and whether it recovers anything depends on how good the judge is. In the reference run on a local Qwen2.5-3B, naive retrieval answered 1 of 5 paraphrased questions, the retry sentence 2 of 5 for one extra call, and the loop 1 of 5 for 36 model calls against 8 — the most expensive option was no better than the cheapest. A loop is only as good as its judge, and a judge needs its own evaluation before you pay for it on every question." },
           { t: "p", text: "Whichever you would ship, the exercise's real output is the measurement itself. Agentic RAG is a family of trades between accuracy and cost, and the only way to make that trade honestly is with numbers from your corpus and your questions. A team that adds all four patterns because a blog post described them has bought six model calls per question without knowing whether the second one was already enough." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a retrieval loop that spent forty calls on one question",
+      body: [
+        { t: "p", text: "**Symptom.** One user's question about an obscure product generated over forty model calls before timing out." },
+        { t: "p", text: "**Mechanism.** The agent was told to keep searching until it found an answer, and the corpus did not contain one. Each search returned nothing, the model rephrased, and nothing bounded the loop." },
+        { t: "p", text: "**Fix.** The loop has a cap of three attempts, the judge can conclude 'not in the corpus', and `max_llm_calls` bounds the whole invocation. An unbounded retry is a bill." }
+      ] }
   ],
 
   takeaways: [

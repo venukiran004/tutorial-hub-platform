@@ -568,7 +568,14 @@ def test_target_scaling_changes_ridge_fit():
           why: "Scale matters when a model computes a distance, a penalty on coefficient size, or a gradient step. A tree does none of those; it only asks whether a value is above or below a cut. Scaling tree inputs is harmless and pointless — and the fit-twice diagnostic tells you which kind of model you have."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a scaler fitted on test data",
+      body: [
+        { t: "p", text: "**Symptom.** A model's validation score dropped noticeably when the team rebuilt the pipeline from scratch." },
+        { t: "p", text: "**Mechanism.** The original code fitted `StandardScaler` on the full dataset before splitting, so the validation rows had contributed to the mean and variance. The difference was small but systematic." },
+        { t: "p", text: "**Fix.** Scaling is a step inside a `Pipeline`, so it is fitted on the training fold only, in every cross-validation split and at serving time." }
+      ] }
   ],
 
   takeaways: [

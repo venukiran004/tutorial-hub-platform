@@ -119,6 +119,12 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Make the leak visible", difficulty: "advanced", minutes: 45,
       prompt: "Reproduce the comparison including both baselines. Then construct a non-stationary series — add a regime change at day 700 where the trend slope or noise variance shifts — and repeat the random-versus-temporal split comparison. Measure how much the random split inflates the metric now. Finally, extend the forecast horizon to 5 and 20 steps ahead and plot error against horizon for all three architectures and the persistence baseline.",
+      requirements: [
+        "Reproduce the comparison including both baselines",
+        "Add a regime change at day 700 and repeat the random-versus-temporal split comparison",
+        "Measure how much the random split inflates the metric",
+        "Plot error against horizons of 1, 5 and 20 steps"
+      ],
       hints: [
         "For a regime change, multiply the noise std by 3 after day 700, or change the trend slope.",
         "Persistence for an h-step horizon means predicting the value h steps ago.",
@@ -130,8 +136,14 @@ EC.receiveLesson({
           { t: "p", text: "The horizon sweep usually shows model error growing roughly with the square root of horizon while persistence degrades faster, so the model's advantage over the baseline *widens* with horizon even as its absolute error grows. That is worth knowing when someone reports strong one-step-ahead results: one-step forecasting on a smooth series is nearly trivial, and the interesting question is almost always what happens further out." },
           { t: "p", text: "On the architecture comparison, expect the differences to stay small. I measured LSTM 3.105, GRU 3.283 and RNN 3.423 against a floor of 3.000 — the LSTM is within 3.5 % of optimal and the spread between architectures is a fraction of the gap to the persistence baseline. When you are that close to the noise floor, effort goes into features and horizon definition rather than into the cell type." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a stock model that only learned yesterday's price",
+      body: [
+        { t: "p", text: "**Symptom.** A stock-price LSTM produced a chart that tracked the real price closely, and it lost money in a backtest." },
+        { t: "p", text: "**Mechanism.** The model predicted roughly the previous day's price. A persistence baseline did as well, and a random train–test split had made the model look better than it was." },
+        { t: "p", text: "**Fix.** Forecasts are compared with the persistence baseline on a temporal split, and error is reported by horizon." }
+      ] }
   ],
 
   takeaways: [

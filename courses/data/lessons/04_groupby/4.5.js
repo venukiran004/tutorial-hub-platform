@@ -621,7 +621,14 @@ def test_join_to_lookup_works_on_canonical_form():
           why: "Every `.str` predicate returns a missing value for a missing input, and pandas refuses to treat that as True or False. `na=False` says a missing name does not match. The test fixture was clean, which is why the failure waited for real data."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a text filter that dropped rows silently",
+      body: [
+        { t: "p", text: "**Symptom.** A filter for complaints mentioning 'refund' returned fewer rows than expected; rows with an empty description were missing from both the matching and non-matching sets." },
+        { t: "p", text: "**Mechanism.** `.str.contains('refund')` returned NaN for missing descriptions, and boolean indexing with NaN raised or dropped those rows depending on version." },
+        { t: "p", text: "**Fix.** Filters pass `na=False` explicitly and descriptions are read as `string[pyarrow]`, which also made the filter many times faster." }
+      ] }
   ],
 
   takeaways: [

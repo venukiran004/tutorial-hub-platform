@@ -102,21 +102,120 @@ EC.receiveLesson({
     { t: "callout", kind: "mental", title: "Timestamps from tokens are not an alignment",
       body: [{ t: "p", text: "The distinction matters more than it sounds. Whisper predicts timestamp tokens as part of its output sequence, so they are *generated text* subject to the same fluency-over-accuracy pressure as everything else it produces. A CTC model's alignment, by contrast, falls out of the lattice — it is a consequence of the frame-level probabilities and is genuinely tied to the audio. If you need subtitle timings or word boundaries, transcribe with Whisper for accuracy and then force-align that transcript with a CTC model for timing. Using Whisper's own timestamps for anything that must line up precisely is a common and quiet source of error." }] },
 
+    { t: "callout", kind: "trap", title: "Displaying every streaming hypothesis",
+
+      body: [
+
+        { t: "p", text: "Streaming recognisers revise early words as more audio arrives. An interface that shows each revision makes text appear, change and vanish, which users read as errors." },
+
+        { t: "p", text: "Show partial text distinctly and commit only stabilised words, with a final rescoring pass." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Measure the streaming trade-off", difficulty: "advanced", minutes: 45,
       prompt: "Take a pretrained ASR model and transcribe a set of recordings twice: once with the full utterance available, and once simulating streaming by truncating the input at each point and taking the output so far. Measure word error rate for both and the latency to first token. Then implement a simple two-pass scheme — streaming output followed by a full rescoring — and see how much of the offline accuracy it recovers. Separately, time Whisper on 2-second and 30-second clips and confirm the cost is the same.",
+      requirements: [
+        "Transcribe recordings with full context and with simulated streaming",
+        "Measure WER and latency to first token for both",
+        "Implement streaming plus full rescoring and measure the recovery",
+        "Time Whisper on 2-second and 30-second clips"
+      ],
       hints: [
         "Simulating streaming by repeated truncation is crude but shows the effect.",
         "Words near the end of each chunk are where streaming hurts most.",
         "For the Whisper timing, use identical settings and warm up first."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import glob, os, sys, time
+import numpy as np
+import soundfile as sf
+import torch
+from transformers import WhisperForConditionalGeneration, WhisperProcessor, logging as hf_logging
+hf_logging.set_verbosity_error(); hf_logging.disable_progress_bar()
+
+# Recordings: 16 kHz WAVs plus a sentences.txt with one reference transcript per recording index.
+# The reference run used 60 synthesised utterances (30 sentences x 2 voices); real speech will score worse.
+SPEECH = sys.argv[1] if len(sys.argv) > 1 else "speech"
+refs = open(os.path.join(SPEECH, "sentences.txt"), encoding="utf-8").read().splitlines()
+files = sorted(glob.glob(os.path.join(SPEECH, "sent", "*.wav")))
+proc = WhisperProcessor.from_pretrained("openai/whisper-tiny")
+model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-tiny").eval()
+norm = proc.tokenizer.normalize                              # Whisper's English normaliser ("twenty five dollars" -> "$25")
+
+@torch.no_grad()
+def transcribe(audio):
+    feats = proc(audio, sampling_rate=16000, return_tensors="pt").input_features      # always 3000 frames = 30 s
+    ids = model.generate(feats, language="en", task="transcribe", max_new_tokens=60)
+    return proc.batch_decode(ids, skip_special_tokens=True)[0]
+
+def word_errors(ref, hyp):
+    r, h = norm(ref).split(), norm(hyp).split(); d = list(range(len(h) + 1))
+    for i, rw in enumerate(r, 1):
+        prev, d[0] = d[0], i
+        for j, hw in enumerate(h, 1): prev, d[j] = d[j], min(d[j] + 1, d[j - 1] + 1, prev + (rw != hw))
+    return d[-1], len(r)
+
+def stream(audio, step=0.5):
+    """Simulated streaming: re-transcribe the growing prefix every \`step\` seconds and commit only the words
+    two consecutive hypotheses agree on (local agreement). Returns committed text and when the first word appeared."""
+    committed, prev, first = [], None, None
+    for end in np.arange(step, len(audio) / 16000 + 1e-9, step):
+        t0 = time.perf_counter(); words = norm(transcribe(audio[: int(end * 16000)])).split(); compute = time.perf_counter() - t0
+        if prev is not None:
+            k = 0
+            while k < min(len(words), len(prev)) and words[k] == prev[k]: k += 1
+            if k > len(committed):
+                committed = words[:k]
+                if first is None: first = end + compute       # audio that had to arrive + time to process it
+        prev = words
+    return " ".join(committed), first
+
+tot = {"offline": [0, 0], "streaming": [0, 0], "two-pass": [0, 0]}; ttft_s, ttft_o = [], []
+for f in files:
+    audio, _ = sf.read(f, dtype="float32"); ref = refs[int(os.path.basename(f)[:2])]
+    t0 = time.perf_counter(); full = transcribe(audio); ttft_o.append(len(audio) / 16000 + time.perf_counter() - t0)
+    partial, first = stream(audio)
+    if first is not None: ttft_s.append(first)
+    for k, hyp in [("offline", full), ("streaming", partial), ("two-pass", full)]:   # second pass rescores with full context
+        e, n = word_errors(ref, hyp); tot[k][0] += e; tot[k][1] += n
+print(f"{len(files)} utterances")
+for k, (e, n) in tot.items(): print(f"  {k:<10} WER {e / n:.3f}")
+print(f"  time to first word: streaming {np.mean(ttft_s):.2f} s, offline {np.mean(ttft_o):.2f} s (end of utterance + decode)")
+print("  the streaming errors are words never committed or committed early and wrong; the second pass replaces them")
+
+@torch.no_grad()
+def encoder_time(seconds, reps=5):
+    audio = np.zeros(int(seconds * 16000), dtype=np.float32) + 1e-3 * np.random.default_rng(0).standard_normal(int(seconds * 16000)).astype(np.float32)
+    feats = proc(audio, sampling_rate=16000, return_tensors="pt").input_features
+    model.model.encoder(feats); t0 = time.perf_counter()
+    for _ in range(reps): model.model.encoder(feats)
+    return feats.shape[-1], (time.perf_counter() - t0) / reps
+for s in [2, 30]:
+    frames, t = encoder_time(s); print(f"{s:>2}-second clip: {frames} mel frames into the encoder, {t * 1000:.0f} ms")`,
+        out: `60 utterances
+  offline    WER 0.106
+  streaming  WER 0.129
+  two-pass   WER 0.106
+  time to first word: streaming 1.53 s, offline 4.37 s (end of utterance + decode)
+  the streaming errors are words never committed or committed early and wrong; the second pass replaces them
+ 2-second clip: 3000 mel frames into the encoder, 281 ms
+30-second clip: 3000 mel frames into the encoder, 266 ms`,
+       
         notes: [
           { t: "p", text: "The Whisper timing result is the crisp one: a 2-second clip and a 30-second clip take essentially the same time, because both are padded to 3000 mel frames before the encoder runs. That is a fifteen-fold waste on short utterances and it is entirely structural — no batching or optimisation removes it, since the model's positional embeddings assume that fixed length." },
           { t: "p", text: "For the streaming comparison, expect errors to concentrate on words that later context would have disambiguated, and expect the two-pass rescoring to fix a good share of them. That pattern is the argument for the design: the streaming pass is not meant to be final, it is meant to be immediate, and the second pass is where accuracy comes from. Users tolerate text that improves far better than text that arrives late." },
           { t: "p", text: "Worth also running a silence clip through Whisper while you are set up. It frequently produces confident fluent text, and seeing it once is the most memorable argument for putting voice activity detection in front of any attention-based recogniser." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a streaming recogniser that changed its mind on screen",
+      body: [
+        { t: "p", text: "**Symptom.** Users of live captions complained that words appeared, changed and disappeared." },
+        { t: "p", text: "**Mechanism.** The streaming model emitted early hypotheses that later context revised, and the interface displayed every revision." },
+        { t: "p", text: "**Fix.** Partial results are shown in a distinct style and only stabilised words are committed, with a second pass rescoring the final transcript." }
+      ] }
   ],
 
   takeaways: [

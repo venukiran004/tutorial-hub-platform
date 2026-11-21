@@ -303,6 +303,17 @@ per-client fine-tune from the global model                                # 0.65
         }
       ] },
 
+    { t: "callout", kind: "trap", title: "An online learning rate that chases every change",
+
+      body: [
+
+        { t: "p", text: "A high learning rate adapts quickly to a temporary shift — a holiday, an outage — and then has to unlearn it." },
+
+        { t: "p", text: "Tune the learning rate for stability, and use a drift detector to distinguish lasting change from noise." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "FedAvg by hand, the learning-rate schedules, and the one-pass budget",
@@ -344,7 +355,14 @@ per-client fine-tune from the global model                                # 0.65
           { t: "p", text: "(c) is the cost table: online learning is not for speed; it is for memory, latency and drift." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an online model that learned a holiday as the new normal",
+      body: [
+        { t: "p", text: "**Symptom.** An online click-prediction model degraded after a holiday period and took weeks to recover." },
+        { t: "p", text: "**Mechanism.** The learning rate was high, so the model adapted quickly to holiday behaviour and then had to unlearn it." },
+        { t: "p", text: "**Fix.** The learning rate was lowered and holiday traffic weighted down, and a drift detector distinguishes temporary from lasting change." }
+      ] }
   ],
 
   takeaways: [

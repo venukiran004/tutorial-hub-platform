@@ -296,6 +296,17 @@ with sklearn.config_context(transform_output="default"):
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Re-implementing preprocessing in the serving code",
+
+      body: [
+
+        { t: "p", text: "Writing the scaling or encoding again in the service, instead of loading the fitted pipeline, guarantees small differences between training and serving that degrade predictions silently." },
+
+        { t: "p", text: "Serve the fitted Pipeline object itself, so preprocessing and model are one artefact." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A conformant transformer and a full template",
@@ -373,7 +384,14 @@ allnan = pd.DataFrame([{c: np.nan for c in X.columns}]); assert 0 <= pl.predict_
           why: "Fitted state in trailing-underscore attributes and hyperparameters in constructor arguments is what makes 'copy the recipe, not the result' possible."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a production model that scaled inputs differently from training",
+      body: [
+        { t: "p", text: "**Symptom.** A deployed model's predictions were systematically off, though it matched its training performance in the notebook." },
+        { t: "p", text: "**Mechanism.** The notebook fitted a scaler and the model separately. The serving code re-implemented scaling by hand with slightly different statistics, so production inputs did not match training inputs." },
+        { t: "p", text: "**Fix.** The scaler and model are one fitted `Pipeline` saved together, and the service loads and calls that object, so preprocessing cannot diverge." }
+      ] }
   ],
 
   takeaways: [

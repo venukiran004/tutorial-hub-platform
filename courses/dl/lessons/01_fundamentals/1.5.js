@@ -229,7 +229,14 @@ p = torch.nn.Parameter(torch.tensor([1.0])); opt = torch.optim.RMSprop([p], lr=0
 for g in [2.0, 1.5, -0.5]:
     opt.zero_grad(); p.grad = torch.tensor([g]); opt.step()
 print(p.item())   # 0.9555`,
-        notes: [{ t: "p", text: "(b) With g = 0 for long enough, both m and v decay towards zero; the step m̂/(√v̂ + ε) becomes 0/0 without ε, and with ε = 10⁻⁸ becomes a well-defined 0. ε is there for that ratio's stability, and raising it (10⁻⁶ or 10⁻⁴) is a known fix when Adam takes wild steps on parameters with tiny, noisy gradients." }] } }
+        notes: [{ t: "p", text: "(b) With g = 0 for long enough, both m and v decay towards zero; the step m̂/(√v̂ + ε) becomes 0/0 without ε, and with ε = 10⁻⁸ becomes a well-defined 0. ε is there for that ratio's stability, and raising it (10⁻⁶ or 10⁻⁴) is a known fix when Adam takes wild steps on parameters with tiny, noisy gradients." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: weight decay that did almost nothing",
+      body: [
+        { t: "p", text: "**Symptom.** A model trained with Adam and `weight_decay=0.01` overfitted as if no regularisation were applied." },
+        { t: "p", text: "**Mechanism.** With Adam, an L2 term added to the gradient is divided by the adaptive denominator, so weights with large gradient history are barely regularised. That is not the same as decoupled weight decay." },
+        { t: "p", text: "**Fix.** The optimiser was switched to AdamW, where decay is applied to the weights directly, and the decay value was re-tuned." }
+      ] }
   ],
 
   takeaways: [

@@ -4,7 +4,7 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.5",
- "lede": "**18 \u0001** from the SQL Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
+ "lede": "**18 questions** from the SQL Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
  "objectives": [
   "Answer each question as you would in the interview, then compare against the worked answer",
   "Lead with the definition and the formula, then the trade-off",
@@ -235,7 +235,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "EXPLAIN/EXPLAIN AnalysE shows how database executes a query. Look for: Seq Scan (full scan, slow), Index Scan (good), Sort (costly), Hash Join vs Nested Loop, estimated vs actual rows."
+     "text": "EXPLAIN/EXPLAIN ANALYZE shows how database executes a query. Look for: Seq Scan (full scan, slow), Index Scan (good), Sort (costly), Hash Join vs Nested Loop, estimated vs actual rows."
     }
    ],
    "kind": ""

@@ -143,6 +143,11 @@ tag: {{ .Values.image.tag | quote }}       # correct: a string stays a string` }
 
     { t: "exercise", kind: "practice", title: "Check the two numbers and the one annotation", difficulty: "intro", minutes: 20,
       prompt: "For a Kubernetes-deployed model service, find three things. First, the rollout parameters: are maxUnavailable and maxSurge set, or are they the 25% default — and if default, compute the per-replica load increase during a deploy at your replica count, then read lesson 5.3's utilisation table to see what that does to latency. Second, whether a ConfigMap change restarts your pods: if config arrives as environment variables and there is no checksum annotation, it does not, so some replicas may be running configuration from weeks ago. Third, whether your deploy command waits — `--wait --atomic` for Helm, `kubectl rollout status` otherwise — or whether CI reports success the moment the API server accepts the objects.",
+      requirements: [
+        "Find maxUnavailable and maxSurge, or compute the load increase at the 25% default",
+        "Check whether a ConfigMap change restarts your pods",
+        "Check whether the deploy command waits for the rollout"
+      ],
       hints: [
         "`kubectl get deploy <name> -o jsonpath='{.spec.strategy}'` shows what is actually set, including the defaults made explicit.",
         "The ConfigMap check is easy to confirm: change a value, then check whether pod start times moved.",
@@ -153,8 +158,14 @@ tag: {{ .Values.image.tag | quote }}       # correct: a string stays a string` }
           { t: "p", text: "The ConfigMap finding is the one that surprises people most: a value changed last month may still not be in effect on any replica that has not restarted since, and nothing anywhere reports that. The checksum annotation is three lines and makes config changes behave like code changes." },
           { t: "p", text: "The rollout parameters are usually the default, which means every deploy deliberately removes a quarter of capacity. At a 70% utilisation target that moves you to roughly 93% for the duration, which is the runaway end of lesson 5.3's queueing curve — so the deploy itself becomes the latency incident people blame on the new version." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: latency alarms on every deploy",
+      body: [
+        { t: "p", text: "**Symptom.** A four-replica model service breached its latency objective for a few minutes during each release. Between releases it was comfortably inside it." },
+        { t: "p", text: "**Mechanism.** With the default 25% `maxUnavailable`, a four-replica Deployment runs on three during a rollout. The service was sized to run near 70% utilisation, so losing a replica pushed the rest to about 93%, where queueing delay rises steeply. The rollout was working as configured." },
+        { t: "p", text: "**Fix.** The rollout uses `maxUnavailable: 0` with `maxSurge: 1`, so capacity never falls below four, and the deploy command waits with `--wait --atomic`. The cost is one extra pod for the length of a rollout." }
+      ] }
   ],
 
   takeaways: [

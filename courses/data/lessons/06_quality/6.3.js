@@ -494,6 +494,17 @@ def plausible(df):
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Checking validity and forgetting timeliness",
+
+      body: [
+
+        { t: "p", text: "Stale data passes completeness, validity and uniqueness checks, because it was valid when it was produced. A pipeline that checks only those publishes yesterday's numbers as today's." },
+
+        { t: "p", text: "Check the newest timestamp against the expected arrival time on every run." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A quality gate for a two-table feed, with a history",
@@ -805,7 +816,14 @@ def test_trend_detects_rising_soft_rate(tmp="hist.jsonl"):
           why: "Reconciliation catches lost or doubled money. It does not catch two errors that net to zero, or any error in a column that is not summed, or a well-formed email that belongs to the wrong person. Those need cross-source comparison or a human audit, and cost accordingly."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a quality check that passed on stale data",
+      body: [
+        { t: "p", text: "**Symptom.** A dashboard showed yesterday's figures for three days while every data-quality check passed." },
+        { t: "p", text: "**Mechanism.** The checks covered completeness, validity and uniqueness, all of which yesterday's data satisfied. Nothing checked timeliness, so a stalled upstream job delivered no new data and nothing failed." },
+        { t: "p", text: "**Fix.** A timeliness check compares the newest record's timestamp with the expected arrival time and blocks publication when it is late." }
+      ] }
   ],
 
   takeaways: [

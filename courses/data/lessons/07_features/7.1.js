@@ -658,7 +658,14 @@ def test_column_names_survive():
           why: "A linear model multiplies the code by a weight, so it reads the integer as a quantity. For a nominal column the integer is arbitrary and the coefficient describes the encoding, not the world. A tree would have been fine — it thresholds codes into groups. One-hot is the encoding a linear model needs here."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a model that crashed on a new category",
+      body: [
+        { t: "p", text: "**Symptom.** A scoring service failed for every customer from a newly launched country." },
+        { t: "p", text: "**Mechanism.** The categorical column was one-hot encoded with `pd.get_dummies` at training time. At scoring time the new country produced a column the model had never seen and the expected columns no longer lined up." },
+        { t: "p", text: "**Fix.** Encoding uses a fitted `OneHotEncoder(handle_unknown='ignore')` saved with the model, so unseen categories become all zeros and the column set never changes." }
+      ] }
   ],
 
   takeaways: [

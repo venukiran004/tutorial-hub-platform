@@ -183,24 +183,178 @@ stable on a second call: 43f8831a3a1bb42a`,
 
     { t: "callout", kind: "insight", title: "One slow test is worth having",
       body: [
-        { t: "p", text: "Keep the fast suite fast and add **exactly one** test that spawns the server the way a host will: over stdio, as a subprocess, with the real command line. It costs about a second and it is the only thing that catches the whole class of failures in lesson 2.1 — a print on stdout, an import-time warning, a missing dependency in the packaged environment." },
+        { t: "p", text: "Keep the fast suite fast and add **exactly one** test that spawns the server the way a host will: over stdio, as a subprocess, with the real command line. It costs a second or a few and it is the only thing that catches the whole class of failures in lesson 2.1 — a print on stdout, an import-time warning, a missing dependency in the packaged environment. **Make it fail on the client's log as well as on the result:** the Python SDK client logs a whole stray stdout line as `Failed to parse JSONRPC message from server` and skips it, so a smoke test that only checks the call passes with a print in the server." },
         { t: "p", text: "That is the division that works: everything about the protocol and the schemas in process, where it is cheap enough to run constantly, and one deliberate smoke test for the things only a real process has." }
       ] },
 
+    { t: "callout", kind: "trap", title: "Testing the functions and not the generated schema",
+
+      body: [
+
+        { t: "p", text: "Unit tests that call your tool functions directly pass after a change that removes every parameter description from the schema, because the functions still work. What the model sees has changed and nothing failed." },
+
+        { t: "p", text: "Test through an in-process client and assert on the tool list, required fields, parameter descriptions and enums — the parts MCP generates." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Build the suite, then break the server", difficulty: "core", minutes: 28,
       prompt: "Write a pytest fixture using create_connected_server_and_client_session and a suite asserting: the tool list, the required set, a parameter description, an enum, an outputSchema, a successful call, and a wrong-type call returning isError. Time it. Then break the server four ways and confirm which tests catch which: rename a tool, convert an Annotated parameter back to a plain annotation, change a Pydantic return to a dict, and add a print() to a tool. Finally add one stdio smoke test and record what it costs.",
+      requirements: [
+        "Write a pytest fixture using create_connected_server_and_client_session",
+        "Assert the tool list, the required set, a parameter description, an enum, an outputSchema, a successful call and a wrong-type call",
+        "Time the suite",
+        "Break the server four ways and record which tests catch which",
+        "Add one stdio smoke test and record what it costs"
+      ],
       hints: [
         "The Annotated change is the one a unit test on the function cannot see.",
         "The print() is the one no in-process test catches — that is the lesson.",
         "Expect the whole in-process suite well under 100 ms."
       ],
       solution: {
+        lang: "python", title: "test_finance.py + run_breaks.py",
+        code: `"""pytest test_finance.py  -- set BREAK=rename|plain|dict|print to break the server one way at a time."""
+import json, os, sys, time
+from typing import Annotated, Literal
+import pytest
+from pydantic import BaseModel, Field
+from mcp.server.fastmcp import FastMCP
+
+BREAK = os.environ.get("BREAK", "")
+mcp = FastMCP("finance")
+RATES = {("GBP", "EUR"): 1.17, ("EUR", "GBP"): 0.85}
+
+class Conversion(BaseModel):
+    amount: float
+    currency: str
+
+Currency = Literal["GBP", "EUR"]
+if BREAK == "plain":
+    def convert(amount: float, frm: str, to: str) -> Conversion:
+        """Convert an amount between currencies."""
+        return Conversion(amount=round(amount * RATES[(frm, to)], 2), currency=to)
+elif BREAK == "dict":
+    def convert(amount: Annotated[float, Field(gt=0, description="Amount in the source currency")],
+                frm: Currency, to: Currency) -> dict:
+        """Convert an amount between currencies."""
+        return {"amount": round(amount * RATES[(frm, to)], 2), "currency": to}
+else:
+    def convert(amount: Annotated[float, Field(gt=0, description="Amount in the source currency")],
+                frm: Currency, to: Currency) -> Conversion:
+        """Convert an amount between currencies."""
+        if BREAK == "print": print("converting", flush=True)
+        return Conversion(amount=round(amount * RATES[(frm, to)], 2), currency=to)
+mcp.tool(name="convert_currency" if BREAK == "rename" else "convert")(convert)
+
+if __name__ == "__main__":            # \`python test_finance.py\` serves over stdio for the smoke test
+    mcp.run(); sys.exit()
+
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+from mcp.shared.memory import create_connected_server_and_client_session
+
+@pytest.fixture
+def anyio_backend(): return "asyncio"
+
+@pytest.fixture
+async def session():
+    async with create_connected_server_and_client_session(mcp) as s:
+        yield s
+
+async def tool(s, name="convert"):
+    return {t.name: t for t in (await s.list_tools()).tools}[name]
+
+@pytest.mark.anyio
+async def test_tool_list(session):
+    assert [t.name for t in (await session.list_tools()).tools] == ["convert"]
+
+@pytest.mark.anyio
+async def test_required(session):
+    assert (await tool(session)).inputSchema["required"] == ["amount", "frm", "to"]
+
+@pytest.mark.anyio
+async def test_parameter_description(session):
+    assert (await tool(session)).inputSchema["properties"]["amount"]["description"] == "Amount in the source currency"
+
+@pytest.mark.anyio
+async def test_enum(session):
+    assert (await tool(session)).inputSchema["properties"]["frm"]["enum"] == ["GBP", "EUR"]
+
+@pytest.mark.anyio
+async def test_output_schema(session):
+    assert set((await tool(session)).outputSchema["properties"]) == {"amount", "currency"}
+
+@pytest.mark.anyio
+async def test_successful_call(session):
+    r = await session.call_tool("convert", {"amount": 100, "frm": "GBP", "to": "EUR"})
+    assert not r.isError and r.structuredContent == {"amount": 117.0, "currency": "EUR"}
+
+@pytest.mark.anyio
+async def test_wrong_type_is_error_result(session):
+    r = await session.call_tool("convert", {"amount": "lots", "frm": "GBP", "to": "EUR"})
+    assert r.isError
+
+@pytest.mark.anyio
+async def test_stdio_smoke(caplog):
+    # The Python SDK client LOGS a stray stdout line and skips it, so the call still succeeds:
+    # the smoke test must fail on that log record, not just on the call result.
+    caplog.set_level("ERROR", logger="mcp.client.stdio")
+    t0 = time.perf_counter()
+    params = StdioServerParameters(command=sys.executable, args=[__file__], env={**os.environ})
+    async with stdio_client(params) as (r, w), ClientSession(r, w) as s:
+        await s.initialize()
+        res = await s.call_tool("convert", {"amount": 1, "frm": "GBP", "to": "EUR"})
+        assert not res.isError
+    bad = [r for r in caplog.records if "Failed to parse JSONRPC message" in r.getMessage()]
+    assert not bad, f"server wrote {len(bad)} non-protocol line(s) to stdout"
+    print(f"stdio smoke test: {(time.perf_counter() - t0) * 1000:.0f} ms")
+
+# ---- run_breaks.py: run the suite healthy and once per break ----
+"""Runs test_finance.py once healthy and once per break, and reports which tests catch which break."""
+import os, re, subprocess, sys, time
+
+for brk in ["", "rename", "plain", "dict", "print"]:
+    t0 = time.perf_counter()
+    r = subprocess.run([sys.executable, "-m", "pytest", "test_finance.py", "-q", "-p", "no:cacheprovider", "-s", "-W", "ignore"],
+                       env={**os.environ, "BREAK": brk}, capture_output=True, text=True)
+    failed = sorted(set(re.findall(r"FAILED test_finance.py::(\\w+)", r.stdout)))
+    summary = r.stdout.strip().splitlines()[-1]
+    smoke = re.search(r"stdio smoke test: (\\d+) ms", r.stdout)
+    print(f"{brk or 'healthy':<8} {summary:<40} wall {time.perf_counter() - t0:4.1f}s"
+          + (f"  (stdio smoke {smoke.group(1)} ms)" if smoke else ""))
+    for name in failed: print(f"           caught by {name}")`,
+        out: `healthy  8 passed in 5.28s                        wall 15.5s  (stdio smoke 3579 ms)
+rename   7 failed, 1 passed in 5.97s              wall 16.1s
+           caught by test_enum
+           caught by test_output_schema
+           caught by test_parameter_description
+           caught by test_required
+           caught by test_stdio_smoke
+           caught by test_successful_call
+           caught by test_tool_list
+plain    2 failed, 6 passed in 5.53s              wall 15.6s  (stdio smoke 3158 ms)
+           caught by test_enum
+           caught by test_parameter_description
+dict     2 failed, 6 passed in 5.65s              wall 15.8s  (stdio smoke 3252 ms)
+           caught by test_output_schema
+           caught by test_successful_call
+print    1 failed, 7 passed in 5.93s              wall 16.1s
+           caught by test_stdio_smoke`,
+       
         notes: [
-          { t: "p", text: "The four breakages map cleanly: the rename fails the tool-list assertion, the Annotated removal fails the description assertion, the dict return fails the outputSchema assertion — and the print() passes everything, because in-memory streams are not stdout. That last one is the argument for the single smoke test, and it is better learned here than from a host." },
+          { t: "p", text: "The four breakages map cleanly: the rename fails the tool-list assertion, the Annotated removal fails the description assertion, the dict return fails the outputSchema assertion — and the print() passes everything, because in-memory streams are not stdout. That last one is the argument for the single smoke test — and the smoke test only catches it if it asserts that the client logged no parse failures, because the call itself still succeeds. Measured: with that assertion the print fails exactly one test, the smoke test; without it, all eight pass. It is better learned here than from a host." },
           { t: "p", text: "The Annotated case is the one to dwell on, because it is the realistic regression: nothing about the function's behaviour changed, every unit test still passes, and every consumer's model just lost the documentation for that parameter. Only an assertion on the generated schema sees it." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the tidy-up that removed every parameter description",
+      body: [
+        { t: "p", text: "**Symptom.** Two consuming teams reported in the same week that their agents had started passing dates in the wrong format to a scheduling server. The server's own test suite was green and its functions had not changed behaviour." },
+        { t: "p", text: "**Mechanism.** A refactor replaced `Annotated[str, Field(description=\"ISO 8601 date, e.g. 2026-03-01\")]` with plain `str` across the module, on the grounds that the descriptions duplicated the docstrings. The functions were identical; the generated schemas lost every parameter description, so the format guidance vanished from each consumer's prompt. Unit tests call the function, and the function was fine." },
+        { t: "p", text: "**Why it was missed.** The suite tested what the team wrote and not what MCP generated from it. A schema regression has no failing call to observe — the tool still works when given a correct argument." },
+        { t: "p", text: "**Fix.** An in-process client fixture now asserts, for every tool, the required set, that each parameter carries a description, and the enum values, and a fingerprint of the full tool list fails the build when the public surface changes unannounced. At about 30 ms for the suite it runs on every save." }
+      ] }
   ],
 
   takeaways: [

@@ -111,7 +111,7 @@ EC.receiveLesson({
     { t: "out", text: `  plain     20 blocks: grad norm at block 1 = 3.294e+00, at block 20 = 2.628e-01, ratio 1.25e+01
   residual  20 blocks: grad norm at block 1 = 3.325e+00, at block 20 = 2.767e+00, ratio 1.20e+00` },
 
-    { t: "p", text: "The plain stack's gradient is **12.5× larger at the first block than the last** — signal decaying as it propagates. The residual stack's ratio is **1.20**, essentially flat. That gap at twenty layers is why 152 became possible, and it is the entire justification for the architecture." },
+    { t: "p", text: "The plain stack's gradient is **12.5× larger at the first block than the last** — it compounds as it travels back through the blocks. With batch norm in training mode that compounding is growth; without batch norm the same mechanism makes it vanish instead. Either way it is multiplicative in depth. The residual stack's ratio is **1.20**, essentially flat. That gap at twenty layers is why 152 became possible, and it is the entire justification for the architecture." },
 
     { t: "out", text: `  with the last BatchNorm's gamma zeroed, x + F(x) - x = 0.0e+00  (exactly the identity)` },
 
@@ -167,27 +167,122 @@ EC.receiveLesson({
     { t: "callout", kind: "note", title: "What ConvNeXt actually demonstrated",
       body: [{ t: "p", text: "ConvNeXt-T reaches 82.1 % top-1 against Swin-T's 81.3 % with no attention anywhere. The result was not that convolutions beat transformers — it was that much of the transformers' reported advantage came from **training recipes and design choices** (better augmentation, longer schedules, LayerNorm, GELU, large kernels) rather than from self-attention itself. Applying those to a ResNet closed the gap. That is a useful reminder whenever a new architecture is reported alongside a new training recipe." }] },
 
+    { t: "callout", kind: "trap", title: "Adding depth without residual connections",
+
+      body: [
+
+        { t: "p", text: "A deeper plain network can train worse than a shallower one, even on its training data, because gradients through many layers degrade. Adding layers to a plain CNN is a common way to make a model worse." },
+
+        { t: "p", text: "Use residual blocks for anything deeper than a handful of layers, and compare training loss across depths." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Measure the degradation problem", difficulty: "advanced", minutes: 28,
       prompt: "Build plain and residual stacks at depths 10, 20, 40 and 60 with identical blocks, and for each record the gradient norm at the first and last block. Plot the ratio against depth for both. Then train both a 20-layer plain net and a 20-layer residual net on a small dataset and compare training loss — not validation, training — to see the degradation problem itself. Finally, zero the last BatchNorm gamma in each residual block and confirm the untrained network is exactly the identity.",
+      requirements: [
+        "Build plain and residual stacks at depths 10, 20, 40 and 60 and record first- and last-block gradient norms",
+        "Plot the ratio against depth for both",
+        "Train 20-layer plain and residual nets and compare training loss",
+        "Zero the last BatchNorm gamma in each residual block and confirm the untrained network is the identity"
+      ],
       hints: [
         "Keep the blocks identical so the only difference is the addition.",
         "Degradation shows in *training* loss, which is what makes it distinct from overfitting.",
         "For the identity check, compare input and output element-wise rather than eyeballing."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+torch.manual_seed(0)
+
+class Block(nn.Module):
+    def __init__(self, c, residual, bn=True):
+        super().__init__(); self.residual = residual
+        self.c1, self.c2 = nn.Conv2d(c, c, 3, padding=1, bias=not bn), nn.Conv2d(c, c, 3, padding=1, bias=not bn)
+        self.b1, self.b2 = (nn.BatchNorm2d(c), nn.BatchNorm2d(c)) if bn else (nn.Identity(), nn.Identity())
+    def forward(self, x):
+        h = self.b2(self.c2(F.relu(self.b1(self.c1(x)))))
+        return F.relu(x + h) if self.residual else F.relu(h)
+
+def stack(depth, residual, c=16, bn=True):
+    return nn.Sequential(nn.Conv2d(3, c, 3, padding=1), *[Block(c, residual, bn) for _ in range(depth)],
+                         nn.AdaptiveAvgPool2d(1), nn.Flatten(), nn.Linear(c, 10))
+
+def grad_ratio(depth, residual, bn):
+    """||dL/d(input of block 1)|| / ||dL/d(input of last block)||"""
+    torch.manual_seed(0); m = stack(depth, residual, bn=bn)
+    x, y = torch.randn(32, 3, 16, 16), torch.randint(0, 10, (32,))
+    h = m[0](x); acts = []
+    for blk in m[1:depth + 1]: h.retain_grad(); acts.append(h); h = blk(h)
+    F.cross_entropy(m[depth + 2](m[depth + 1](h)), y).backward()
+    return (acts[0].grad.norm() / acts[-1].grad.norm()).item()
+
+print("first/last block gradient ratio (1 = flat)")
+print("depth   plain+BN   residual+BN   plain, no BN   residual, no BN")
+for depth in [10, 20, 40, 60]:
+    r = [grad_ratio(depth, res, bn) for bn in (True, False) for res in (False, True)]
+    print(f"{depth:<7} {r[0]:8.2e}   {r[1]:11.2e}   {r[2]:12.2e}   {r[3]:15.2e}")
+
+# Training loss (not validation) for 20 blocks: degradation is an optimisation failure
+from sklearn.datasets import load_digits
+X, Y = load_digits(return_X_y=True)
+X = torch.tensor(X, dtype=torch.float32).reshape(-1, 1, 8, 8).repeat(1, 3, 1, 1) / 16; Y = torch.tensor(Y)
+print("\\nepoch   plain-20 train loss   residual-20 train loss")
+models = {}
+for res in [False, True]:
+    torch.manual_seed(0); models[res] = (m := stack(20, res)), torch.optim.SGD(m.parameters(), 0.05, momentum=0.9)
+for ep in range(1, 9):
+    out = []
+    for res, (m, opt) in models.items():
+        m.train(); tot = 0
+        for i in range(0, 1500, 64):
+            loss = F.cross_entropy(m(X[i:i+64]), Y[i:i+64]); opt.zero_grad(); loss.backward(); opt.step(); tot += loss.item() * len(X[i:i+64])
+        out.append(tot / 1500)
+    if ep in (1, 2, 4, 8): print(f"{ep:<7} {out[0]:19.3f}   {out[1]:22.3f}")
+
+# Zero-init the last BN gamma in every residual block: the untrained blocks are exactly the identity (after ReLU)
+torch.manual_seed(0); m = stack(20, True).eval()
+for blk in m[1:21]: nn.init.zeros_(blk.b2.weight)
+h = F.relu(torch.randn(4, 16, 8, 8))                       # non-negative input, as after the stem's ReLU
+with torch.no_grad(): out = m[1:21](h)
+print(f"\\nzero-gamma residual stack: max |f(x) - x| = {(out - h).abs().max():.1e}")`,
+        out: `first/last block gradient ratio (1 = flat)
+depth   plain+BN   residual+BN   plain, no BN   residual, no BN
+10      2.75e+01      1.28e+01       2.81e-08          7.39e-01
+20      1.14e+03      3.17e+01       2.36e-16          8.53e-01
+40      6.15e+05      7.94e+01       0.00e+00          1.17e+00
+60      6.53e+08      1.20e+02       0.00e+00          1.69e+00
+
+epoch   plain-20 train loss   residual-20 train loss
+1                     2.223                    2.137
+2                     2.143                    1.179
+4                     2.071                    0.609
+8                     1.986                    0.104
+
+zero-gamma residual stack: max |f(x) - x| = 0.0e+00`,
+       
         notes: [
-          { t: "p", text: "The ratio-against-depth plot is the point: the plain network's gradient decay compounds with depth while the residual network's stays near 1 regardless. At twenty blocks I measured 12.5× against 1.20×, and the gap widens as you go deeper — which is exactly why plain networks stopped improving past about twenty layers while ResNets kept going to 152." },
+          { t: "p", text: "The ratio-against-depth table is the point: the plain network's ratio is multiplicative in depth while the residual network's grows slowly. In the reference run, with batch norm, the plain stack went from 27× at ten blocks to 6.5e+08 at sixty, while the residual stack went from 13× to 120×; without batch norm the plain stack vanished to 2.4e-16 at twenty blocks and the residual stack stayed between 0.74 and 1.7. The direction depends on normalisation, the exponential shape does not — which is exactly why plain networks stopped improving past about twenty layers while ResNets kept going to 152." },
           { t: "p", text: "Comparing *training* loss is what makes the degradation problem visible as something other than overfitting. A deeper plain network reaching a worse training loss than a shallower one is not a generalisation failure — it is an optimisation failure, and it is strange until you realise the deeper network cannot easily represent the shallower one. The residual formulation can, by setting F(x) to zero, which is the whole insight." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a deeper network that trained worse",
+      body: [
+        { t: "p", text: "**Symptom.** Doubling a plain CNN's depth made even its training error worse." },
+        { t: "p", text: "**Mechanism.** Without residual connections, gradients through many layers degraded and the deeper network could not even fit the training data — the degradation problem." },
+        { t: "p", text: "**Fix.** The network was rebuilt with residual blocks, and training loss is compared across depths before validation is considered." }
+      ] }
   ],
 
   takeaways: [
     "Parameter counts peak at VGG's 138 M and fall afterwards — structure replaced size from 2014 on.",
     "89.4 % of VGG16's parameters are in the fully connected head, which global average pooling removed.",
     "`H(x) = F(x) + x` gives `∂H/∂x = 1 + ∂F/∂x`, a direct path from every layer to the loss.",
-    "Measured over 20 blocks: the plain stack's gradient decays 12.5×, the residual stack's 1.20×.",
+    "Measured over 20 blocks: the plain stack's gradient changes 12.5× from the last block to the first, the residual stack's 1.20×.",
     "Zeroing the last BatchNorm gamma makes a residual block exactly the identity, so depth can never hurt in principle.",
     "The bottleneck cuts a 256-channel block from 1,180,160 to 70,016 parameters — a factor of 16.9."
   ],

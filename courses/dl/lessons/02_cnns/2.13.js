@@ -165,19 +165,116 @@ lossG.backward(); optG.step()`,
 
     { t: "exercise", kind: "practice", title: "Train a GAN and diagnose it", difficulty: "advanced", minutes: 50,
       prompt: "Train the DCGAN above on MNIST and log four things every epoch: D(real), D(fake), both losses, and the mean pairwise distance between 64 generated samples. Plot all four. Then deliberately break it three ways — leave the real data in [0,1] while the generator outputs tanh; remove the label smoothing; and give the discriminator a learning rate ten times the generator's. Record how each failure looks in the logs and in the samples.",
+      requirements: [
+        "Train the DCGAN on MNIST and log D(real), D(fake), both losses and sample diversity",
+        "Plot all four",
+        "Break it three ways: [0,1] data with tanh output, no label smoothing, a discriminator learning rate ten times higher",
+        "Record how each failure shows in the logs and samples"
+      ],
       hints: [
         "Log the diversity metric against the same statistic computed on real images, so it has a reference point.",
         "For the broken-normalisation run, watch D(fake) in the first few dozen steps.",
         "The over-powered discriminator produces a very specific signature in lossG."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import sys
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision
+
+DATA = sys.argv[1] if len(sys.argv) > 1 else "data"
+mnist = torchvision.datasets.MNIST(DATA, train=True, download=True)
+imgs = F.interpolate(mnist.data[:12000, None].float() / 255, size=16, mode="bilinear", antialias=True)   # 16x16, in [0, 1]
+
+class Generator(nn.Module):                     # as in the lesson
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(nn.ConvTranspose2d(100, 256, 4, 1, 0), nn.BatchNorm2d(256), nn.ReLU(),
+                                 nn.ConvTranspose2d(256, 128, 4, 2, 1), nn.BatchNorm2d(128), nn.ReLU(),
+                                 nn.ConvTranspose2d(128, 1, 4, 2, 1), nn.Tanh())
+    def forward(self, z): return self.net(z.view(-1, 100, 1, 1))
+
+class Discriminator(nn.Module):                 # 531,329 parameters, matching the lesson's count
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(nn.Conv2d(1, 128, 4, 2, 1), nn.LeakyReLU(0.2),
+                                 nn.Conv2d(128, 256, 4, 2, 1), nn.BatchNorm2d(256), nn.LeakyReLU(0.2),
+                                 nn.Conv2d(256, 1, 4, 1, 0), nn.Sigmoid())
+    def forward(self, x): return self.net(x).view(-1)
+
+def diversity(samples):                          # mean pairwise L2 distance between 64 samples
+    s = samples.flatten(1); return torch.cdist(s, s).sum().item() / (64 * 63)
+
+def run(name, scale_data=True, smooth=True, d_lr_mult=1.0, epochs=4):
+    torch.manual_seed(0); G, D = Generator(), Discriminator()
+    optG = torch.optim.Adam(G.parameters(), 2e-4, betas=(0.5, 0.999))
+    optD = torch.optim.Adam(D.parameters(), 2e-4 * d_lr_mult, betas=(0.5, 0.999))
+    REAL = 0.9 if smooth else 1.0; data = imgs * 2 - 1 if scale_data else imgs
+    real_div = diversity((imgs[:64] * 2 - 1))
+    print(f"\\n{name}\\n  epoch  D(real)  D(fake)  lossD   lossG   diversity (real data {real_div:.2f})")
+    for ep in range(epochs):
+        perm = torch.randperm(len(data)); stats = torch.zeros(4); n = 0
+        for i in range(0, len(data), 128):
+            x = data[perm[i:i + 128]]; b = len(x)
+            optD.zero_grad(); pr = D(x); fake = G(torch.randn(b, 100)); pf = D(fake.detach())
+            lossD = F.binary_cross_entropy(pr, torch.full((b,), REAL)) + F.binary_cross_entropy(pf, torch.zeros(b))
+            lossD.backward(); optD.step()
+            optG.zero_grad(); lossG = F.binary_cross_entropy(D(fake), torch.ones(b)); lossG.backward(); optG.step()
+            stats += torch.tensor([pr.mean().item(), pf.mean().item(), lossD.item(), lossG.item()]); n += 1
+        G.eval()
+        with torch.no_grad(): div = diversity(G(torch.randn(64, 100)))
+        G.train(); s = stats / n
+        print(f"  {ep:>5}  {s[0]:7.3f}  {s[1]:7.3f}  {s[2]:6.3f}  {s[3]:6.3f}  {div:9.2f}")
+    # To look at samples: torchvision.utils.save_image(G(torch.randn(64, 100)) * 0.5 + 0.5, f"{name}.png")
+
+run("baseline: data in [-1, 1], label smoothing 0.9")
+run("break 1: data left in [0, 1] with a tanh generator", scale_data=False)
+run("break 2: no label smoothing", smooth=False)
+run("break 3: discriminator learning rate x10", d_lr_mult=10)`,
+        out: `
+baseline: data in [-1, 1], label smoothing 0.9
+  epoch  D(real)  D(fake)  lossD   lossG   diversity (real data 8.96)
+      0    0.888    0.029   0.367   5.222       8.21
+      1    0.897    0.003   0.335   6.545      10.16
+      2    0.816    0.087   0.584   5.387       7.47
+      3    0.680    0.228   0.814   2.391       7.86
+
+break 1: data left in [0, 1] with a tanh generator
+  epoch  D(real)  D(fake)  lossD   lossG   diversity (real data 8.96)
+      0    0.878    0.042   0.391   4.993       5.90
+      1    0.899    0.003   0.330   6.532       9.28
+      2    0.900    0.001   0.328   7.054      10.06
+      3    0.900    0.001   0.327   7.502      10.25
+
+break 2: no label smoothing
+  epoch  D(real)  D(fake)  lossD   lossG   diversity (real data 8.96)
+      0    0.981    0.034   0.061   5.050       9.75
+      1    0.996    0.008   0.012   7.314       5.69
+      2    0.924    0.082   0.286   5.701       6.74
+      3    0.783    0.223   0.581   2.597       7.84
+
+break 3: discriminator learning rate x10
+  epoch  D(real)  D(fake)  lossD   lossG   diversity (real data 8.96)
+      0    0.891    0.011   0.382   7.413       7.06
+      1    0.899    0.000   0.347   8.176       9.21
+      2    0.900    0.000   0.328   8.780      10.78
+      3    0.900    0.000   0.330   9.248      11.13`,
+       
         notes: [
           { t: "p", text: "The diversity trace is the most informative plot, because it detects mode collapse before it is obvious in the samples. In my run the generator's output standard deviation fell from 0.898 to 0.480 over six epochs while sample quality was still improving — diversity shrinking steadily is the early warning. Compare against the real-data statistic: I measured 7.74 for generated against 8.96 for real, so about 86 % of the spread. A ratio that keeps falling means collapse; a number close to 1 with good samples means it is working." },
           { t: "p", text: "The broken normalisation fails fastest and most completely. With real data in [0,1] and the generator emitting [−1,1], the discriminator separates them on value range within a handful of steps, D(fake) goes to zero and stays there, and the generator never receives a useful gradient. The samples are noise forever. It is worth seeing once because the bug is a single missing `Normalize` and produces no error of any kind." },
           { t: "p", text: "The over-powered discriminator shows up as lossG climbing steadily while lossD goes to near zero — D wins so completely that G's gradients become tiny. This is exactly what label smoothing and the non-saturating loss exist to delay. It is also the single most common way a GAN fails to train in practice, and the reason balancing the two networks' capacity and learning rates gets as much attention as the architecture does." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a GAN whose losses looked fine and produced one image",
+      body: [
+        { t: "p", text: "**Symptom.** A GAN's loss curves looked stable, and every generated sample was nearly the same face." },
+        { t: "p", text: "**Mechanism.** The generator had found one output the discriminator accepted — mode collapse. GAN losses do not reveal it, because both players are still trading wins." },
+        { t: "p", text: "**Fix.** Training logs sample diversity, such as the mean pairwise distance between generated samples, and sample grids are reviewed every epoch." }
+      ] }
   ],
 
   takeaways: [

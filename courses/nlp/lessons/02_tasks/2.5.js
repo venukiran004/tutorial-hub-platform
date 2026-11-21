@@ -169,21 +169,129 @@ results = ner("Hugging Face was founded in New York by Clément Delangue.")
       ["Constrained decoding", "A middle option: mask out invalid transitions at inference without training a CRF. Cheap, and guarantees well-formed output."]
     ] },
 
+    { t: "callout", kind: "trap", title: "Greedy decoding for sequence labelling",
+
+      body: [
+
+        { t: "p", text: "Picking the best tag at each position can produce invalid sequences, such as an I- tag with no B- before it, which downstream code cannot turn into entities." },
+
+        { t: "p", text: "Decode with Viterbi or constrained decoding that forbids invalid transitions." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Decode both ways and count the difference", difficulty: "core", minutes: 35,
       prompt: "Implement Viterbi decoding over a transition matrix and a set of emission scores, and verify it against brute-force enumeration on sequences short enough to enumerate. Then take a trained token classifier, decode its emissions greedily and with Viterbi, and count how many structurally invalid transitions each produces on a test set. Finally, implement constrained decoding — masking invalid transitions without a learned matrix — and compare it with the full CRF.",
+      requirements: [
+        "Implement Viterbi and verify it against brute force on short sequences",
+        "Decode a token classifier greedily and with Viterbi and count invalid transitions",
+        "Implement constrained decoding that masks invalid transitions"
+      ],
       hints: [
         "Brute force is feasible up to about 8 tokens with 3 tags.",
         "Use a large negative number rather than `-inf` for forbidden transitions, to avoid NaN in arithmetic.",
         "Constrained decoding often gets most of the CRF's benefit for none of the training cost."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import itertools
+import torch
+import torch.nn as nn
+from datasets import load_dataset
+torch.manual_seed(0)
+
+def viterbi(em, trans, start):
+    """em: (T, K) emission scores; trans[i, j]: score of moving from tag i to tag j"""
+    score, back = start + em[0], []
+    for t in range(1, len(em)):
+        s = score[:, None] + trans; back.append(s.argmax(0)); score = s.max(0).values + em[t]
+    path = [int(score.argmax())]
+    for b in reversed(back): path.append(int(b[path[-1]]))
+    return path[::-1], float(score.max())
+
+def brute(em, trans, start):
+    T, K = em.shape; best = None
+    for p in itertools.product(range(K), repeat=T):
+        s = start[p[0]] + em[0, p[0]] + sum(trans[p[t - 1], p[t]] + em[t, p[t]] for t in range(1, T))
+        if best is None or s > best[1]: best = (list(p), float(s))
+    return best
+
+agree = 0
+for trial in range(200):
+    T, K = torch.randint(1, 6, ()).item(), 4
+    em, trans, start = torch.randn(T, K), torch.randn(K, K), torch.randn(K)
+    (vp, vs), (bp, bs) = viterbi(em, trans, start), brute(em, trans, start)
+    agree += vp == bp and abs(vs - bs) < 1e-5
+print(f"Viterbi = brute force on {agree}/200 random sequences (lengths 1-5, 4 tags)")
+
+ds = load_dataset("eriktks/conll2003", revision="refs/convert/parquet")
+TAGS = ds["train"].features["ner_tags"].feature.names; K = len(TAGS)
+words = {w for s in ds["train"]["tokens"] for w in s}; w2i = {w: i + 2 for i, w in enumerate(sorted(words))}
+enc = lambda s: torch.tensor([w2i.get(w, 1) for w in s])
+def invalid(tags): return sum(1 for a, b in zip(["O"] + tags, tags) if b.startswith("I-") and (a == "O" or a[2:] != b[2:]))
+
+class Tagger(nn.Module):                              # per-token softmax classifier
+    def __init__(self):
+        super().__init__(); self.e = nn.Embedding(len(w2i) + 2, 64); self.r = nn.LSTM(64, 64, bidirectional=True, batch_first=True); self.o = nn.Linear(128, K)
+    def forward(self, x): return self.o(self.r(self.e(x)[None])[0][0]).log_softmax(-1)
+m = Tagger(); opt = torch.optim.Adam(m.parameters(), 2e-3)
+train = list(zip(ds["train"]["tokens"][:4000], ds["train"]["ner_tags"][:4000]))
+for epoch in range(3):
+    for i in range(0, len(train), 16):
+        loss = sum(nn.functional.nll_loss(m(enc(t)), torch.tensor(y), reduction="sum") for t, y in train[i:i + 16])
+        opt.zero_grad(); loss.backward(); opt.step()
+m.eval()
+
+# Constrained decoding: no learned transitions, just -inf on transitions BIO forbids
+NEG = -1e4
+mask = torch.zeros(K, K); start_mask = torch.zeros(K)
+for j, b in enumerate(TAGS):
+    if b.startswith("I-"):
+        start_mask[j] = NEG
+        for i, a in enumerate(TAGS):
+            if a == "O" or a[2:] != b[2:]: mask[i, j] = NEG
+
+def span_f1(golds, preds):
+    def spans(t):
+        out, s, ty = set(), None, None
+        for i, x in enumerate(t + ["O"]):
+            if x == "O" or x.startswith("B-") or x[2:] != ty:
+                if s is not None: out.add((s, i, ty))
+                s, ty = (i, x[2:]) if x != "O" else (None, None)
+        return out
+    tp = sum(len(spans(g) & spans(p)) for g, p in zip(golds, preds)); P = sum(len(spans(p)) for p in preds); G = sum(len(spans(g)) for g in golds)
+    return 2 * tp / (P + G)
+
+golds, greedy_p, constrained_p = [], [], []
+with torch.no_grad():
+    for toks, tags in zip(ds["test"]["tokens"], ds["test"]["ner_tags"]):
+        em = m(enc(toks)); golds.append([TAGS[t] for t in tags])
+        greedy_p.append([TAGS[t] for t in em.argmax(1).tolist()])
+        constrained_p.append([TAGS[t] for t in viterbi(em, mask, start_mask)[0]])
+print(f"\\n{len(golds):,} test sentences, BiLSTM softmax tagger")
+for name, p in [("greedy (argmax per token)", greedy_p), ("constrained Viterbi (BIO mask)", constrained_p)]:
+    print(f"  {name:<31} invalid transitions {sum(invalid(s) for s in p):>4}   span F1 {span_f1(golds, p):.3f}")
+print("  a full CRF learns these transition scores instead of fixing them; see lesson 1.7's exercise for that comparison")`,
+        out: `Viterbi = brute force on 200/200 random sequences (lengths 1-5, 4 tags)
+
+3,453 test sentences, BiLSTM softmax tagger
+  greedy (argmax per token)       invalid transitions  594   span F1 0.331
+  constrained Viterbi (BIO mask)  invalid transitions    0   span F1 0.348
+  a full CRF learns these transition scores instead of fixing them; see lesson 1.7's exercise for that comparison`,
+       
         notes: [
           { t: "p", text: "Verifying against brute force on short sequences is worth doing once, because it establishes that Viterbi is exact rather than a good heuristic. The dynamic program returns precisely the highest-scoring valid path, and seeing the two agree on every enumerable case removes any doubt about whether it prunes something important." },
           { t: "p", text: "The invalid-transition count on real data is usually the surprise. A strong transformer encoder emits relatively few, because the contextual representation already makes `I-PER` after `O` unlikely — but relatively few is not zero, and every one of them is a span that cannot be decoded. Constrained decoding takes that count to exactly zero for essentially no cost, which is why it is often the right answer when a full CRF is not worth training." },
           { t: "p", text: "Using a large negative constant rather than true `-inf` matters practically: `-inf` plus a finite number is fine, but `-inf` minus `-inf` gives NaN, and that appears as soon as you normalise or compute gradients. A value like −1e9 behaves identically for argmax purposes and never produces NaN." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: entities that began in the middle",
+      body: [
+        { t: "p", text: "**Symptom.** A slot-filling system produced tag sequences like O, I-CITY, I-CITY, which downstream code could not turn into a city." },
+        { t: "p", text: "**Mechanism.** The model was decoded greedily, picking the best tag at each position. An I- tag can only follow a B- or I- of the same type, and greedy decoding ignored that." },
+        { t: "p", text: "**Fix.** Decoding uses Viterbi with a transition matrix that forbids invalid transitions, and invalid sequences are counted in evaluation." }
+      ] }
   ],
 
   takeaways: [

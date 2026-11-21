@@ -117,7 +117,7 @@ EC.receiveLesson({
       "a tool that moves money moves it again",
       "an idempotency key stored in state is replayed with the **old** value \u2014 which is either the fix or the bug, depending on whether you meant it"
     ] },
-    { t: "callout", kind: "warn", title: "Safe on computation, careful on action", body: [
+    { t: "callout", kind: "trap", title: "Safe on computation, careful on action", body: [
       { t: "p", text: "Time travel is safe on a graph of pure computation and model calls, and needs care the moment a node acts on the world. Which is the same conclusion 9.7 reached from a different direction: **side effects and replay do not mix**." },
       { t: "p", text: "The design response is to keep effects in as few nodes as possible, so a graph that might be replayed has a small, identifiable set of nodes you must not replay carelessly. That is also the shape 9.7 recommended for approval gates \u2014 the two constraints point at the same architecture." }
     ] },

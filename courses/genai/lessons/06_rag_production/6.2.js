@@ -182,7 +182,7 @@ EC.receiveLesson({
       "**Keep the old index** until the new one has served real traffic for a while. Rolling back is then a pointer swap rather than a rebuild."
     ] },
 
-    { t: "callout", kind: "warn", title: "An embedding model change is not an update, it is a migration",
+    { t: "callout", kind: "trap", title: "An embedding model change is not an update, it is a migration",
       body: [
         { t: "p", text: "6.8 measures what happens when query and index embeddings come from different models: recall fell from 95% to 50% with **nothing raising an error**, because the dimensionality happened to match." },
         { t: "p", text: "So changing the embedding model requires re-embedding the entire corpus into a new index and cutting over atomically. There is no incremental path \u2014 a half-migrated index is one where some vectors are comparable to the query and some are noise, and no amount of recall tuning fixes it." },

@@ -185,18 +185,128 @@ same origin as the location the card was fetched from
 
     { t: "exercise", kind: "practice", title: "Two processes, one conversation", difficulty: "advanced", minutes: 34,
       prompt: "Serve an agent with a tool using to_a2a on one port and run it. Fetch its card and read the skills. Write a client with a coordinator agent that has one local specialist and the remote agent as a second sub-agent, and ask it a question only the remote one can answer. Confirm the remote tool call appears in your local session. Then kill the server mid-conversation and observe what the caller experiences; finally, set a five-second timeout and compare.",
+      requirements: [
+        "Serve an agent with to_a2a and fetch its card",
+        "Write a coordinator with a local specialist and the remote agent as a second sub-agent",
+        "Ask a question only the remote agent can answer and confirm the remote call appears locally",
+        "Kill the server mid-conversation and observe the caller, then set a five-second timeout and compare"
+      ],
       hints: [
         "Use localhost consistently on both sides or the origin check will stop you.",
         "The coordinator routes on the remote agent's local `description`, so write it as a capability.",
         "The default 600-second timeout is what makes the kill test feel so bad."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `"""python 8.3.py runs the caller; it starts \`python 8.3.py serve\` (the remote agent) on port 8801.
+Both sides use scripted models so the run is deterministic and needs no API key; the A2A plumbing is real."""
+import logging, subprocess, sys, time, warnings
+warnings.filterwarnings("ignore"); logging.disable(logging.CRITICAL)
+from google.adk.agents import LlmAgent
+from google.adk.models import BaseLlm
+from google.adk.models.llm_response import LlmResponse
+from google.genai import types
+
+def reply(*parts): return LlmResponse(content=types.Content(role="model", parts=list(parts)))
+
+class RemoteBrain(BaseLlm):                          # the remote agent: call its tool, then answer
+    model: str = "remote-brain"
+    async def generate_content_async(self, llm_request, stream=False):
+        last = llm_request.contents[-1].parts[0]
+        if last.function_response:
+            yield reply(types.Part(text=f"Order A-77 status: {last.function_response.response['result']}"))
+        else:
+            yield reply(types.Part(function_call=types.FunctionCall(name="order_status", args={"order_id": "A-77"})))
+
+def order_status(order_id: str) -> str:
+    """Look up an order in the fulfilment system."""
+    return "shipped"
+
+def serve():
+    import uvicorn
+    from google.adk.a2a.utils.agent_to_a2a import to_a2a
+    agent = LlmAgent(name="fulfilment", model=RemoteBrain(), tools=[order_status],
+                     description="Answers questions about order fulfilment status.")
+    uvicorn.run(to_a2a(agent, host="127.0.0.1", port=8801), host="127.0.0.1", port=8801, log_level="critical")
+
+class Coordinator(BaseLlm):                          # routes order questions to the remote sub-agent
+    model: str = "coordinator"
+    async def generate_content_async(self, llm_request, stream=False):
+        yield reply(types.Part(function_call=types.FunctionCall(name="transfer_to_agent", args={"agent_name": "fulfilment"})))
+
+async def main():
+    import httpx
+    from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
+    from google.adk.runners import InMemoryRunner
+    proc = subprocess.Popen([sys.executable, __file__, "serve"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        for _ in range(60):
+            try:
+                card = httpx.get("http://127.0.0.1:8801/.well-known/agent-card.json").json(); break
+            except httpx.HTTPError: time.sleep(0.5)
+        print("card:", card["name"], "| skills:", [s["name"] for s in card.get("skills", [])])
+
+        remote = RemoteA2aAgent(name="fulfilment", agent_card="http://127.0.0.1:8801/.well-known/agent-card.json",
+                                description="Order fulfilment status", timeout=10)
+        local = LlmAgent(name="billing", model=Coordinator(), description="Billing questions")
+        root = LlmAgent(name="coordinator", model=Coordinator(), sub_agents=[local, remote])
+        runner = InMemoryRunner(agent=root, app_name="desk")
+        sid = (await runner.session_service.create_session(app_name="desk", user_id="u")).id
+
+        async def ask(q):
+            async for e in runner.run_async(user_id="u", session_id=sid, new_message=types.Content(role="user", parts=[types.Part(text=q)])):
+                if e.error_code or e.error_message:
+                    print(f"  [{e.author}] error event: code={e.error_code} message={(e.error_message or '')[:90]}")
+                for p in (e.content.parts if e.content else []):
+                    kind = "call " + p.function_call.name if p.function_call else "result " + p.function_response.name if p.function_response else "text"
+                    print(f"  [{e.author}] {kind}: {p.text or ''}")
+
+        print("\\nturn 1 (server up):"); await ask("Where is order A-77?")
+        proc.kill(); proc.wait()
+        print("\\nturn 2 (server killed):")
+        t0 = time.perf_counter()
+        try: await ask("And order A-78?")
+        except Exception as e: print(f"  raised {type(e).__name__}: {str(e)[:100]}")
+        print(f"  after {time.perf_counter() - t0:.1f}s (RemoteA2aAgent timeout=10)")
+    finally:
+        if proc.poll() is None: proc.kill()
+
+if __name__ == "__main__":
+    if sys.argv[1:2] == ["serve"]: serve()
+    else:
+        import asyncio; asyncio.run(main())
+
+# With the server gone the caller does not raise: the turn yields an event whose error_message says the remote agent
+# could not be initialised, and no text. A client that renders only text shows the user nothing, so render error
+# events, and keep the timeout short enough that a dead dependency fails fast.`,
+        out: `card: fulfilment | skills: ['model', 'order_status']
+
+turn 1 (server up):
+  [coordinator] call transfer_to_agent: 
+  [coordinator] result transfer_to_agent: 
+  [fulfilment] call order_status: 
+  [fulfilment] result order_status: 
+  [fulfilment] text: Order A-77 status: shipped
+  [fulfilment] text: Order A-77 status: shipped
+
+turn 2 (server killed):
+  [coordinator] call transfer_to_agent: 
+  [coordinator] result transfer_to_agent: 
+  [fulfilment] error event: code=None message=Failed to initialize remote A2A agent: Failed to initialize remote A2A agent fulfilment: F
+  after 2.0s (RemoteA2aAgent timeout=10)`,
+       
         notes: [
           { t: "p", text: "The delegation appearing in your own event log is the thing to take away: the remote agent's tool call and result are local events, so a trace of the whole turn crosses the boundary and you can debug a delegation the way you debug a transfer. What is not local is the other agent's state — it kept its own session, and nothing you stored is visible to it." },
           { t: "p", text: "The kill test is the reason this exercise exists. With the default timeout the caller hangs for ten minutes, which no interface should ever do; with five seconds it fails quickly and you can decide what the coordinator says next. A remote agent is an availability dependency, and the right time to choose a timeout and a fallback is while writing it, not during the first outage." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: remote tasks lost on every deploy",
+      body: [
+        { t: "p", text: "**Symptom.** A remote agent served over A2A returned 'task not found' for any long task that spanned one of its deployments." },
+        { t: "p", text: "**Mechanism.** The server used the default in-process task store. A deploy replaced the process and the store with it, so callers polling for a task found nothing." },
+        { t: "p", text: "**Fix.** The server uses a persistent task store shared by its replicas, and callers handle 'not found' by resubmitting idempotent tasks. Every remote call has a timeout." }
+      ] }
   ],
 
   takeaways: [

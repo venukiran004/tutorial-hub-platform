@@ -46,7 +46,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "Row-major extraction with whitespace collapsed",
       code: "'Plan Seats Rate limit Price Starter 5 600/min $49 Growth 25\n 2400/min $199 Enterprise custom custom custom'",
       caption: "Syntactically fine. The column structure is gone." },
-    { t: "callout", kind: "warn", title: "And it still retrieves", body: [
+    { t: "callout", kind: "trap", title: "And it still retrieves", body: [
       { t: "p", text: "*\u201cWhat is the rate limit on Growth\u201d* needs the association between `Growth` and `2400/min`. In the extracted text those tokens are adjacent to the wrong neighbours, and an embedding of that string carries no column structure at all." },
       { t: "p", text: "Worse, the chunk scores well \u2014 it is genuinely about rate limits and plans \u2014 so retrieval returns it, the metrics look healthy, and the model answers confidently from scrambled input. This is 5.2's invisible failure, and the presence of numbers makes it more dangerous rather than less, because a wrong number reads exactly like a right one." }
     ] },

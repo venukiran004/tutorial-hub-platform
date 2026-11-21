@@ -20,15 +20,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Residual and the first LayerNorm", id: "residual" },
 
-    {"kind": "trace", "title": "The residual restores the token, and the norm rescales what is left", "caption": "Adding `z_sat` back gives **[3.3341, 1.5044, 0.5226, 1.9997]** — and note dimension 0 is now 3.33, well outside the input's range, **which is 4.7's residual-stream growth happening in one step.** LayerNorm then brings it back: **μ = 1.8402, σ = 1.0132, and `n = [1.4745, -0.3315, -1.3005, 0.1574]` with mean 0 and variance 1.** Every figure matches the reference. **The norm is what keeps the next sublayer seeing inputs on a predictable scale.**", "left": "step", "codeW": 150, "vars": ["value"], "steps": [{"code": "attn output", "state": ["[1.4248, 0.9205, 0.5026, 0.9999]"], "tone": "accent"}, {"code": "+ z_sat (residual)", "state": ["[3.3341, 1.5044, 0.5226, 1.9997]"], "changed": [0], "tone": "warn", "note": "dim 0 now 3.33"}, {"code": "mu / sigma", "state": ["1.8402 / 1.0132"], "changed": [0], "tone": "good"}, {"code": "normalised", "state": ["[1.4745, -0.3315, -1.3005, 0.1574]"], "changed": [0], "tone": "good", "note": "mean 0, var 1"}], "t": "diagram", "id": "dg-6_3-01-0"},
+    {"kind": "trace", "title": "The residual restores the token, and the norm rescales what is left", "caption": "Adding `z_sat` back gives **[3.3341, 1.5044, 0.5226, 1.9997]** — and note dimension 0 is now 3.33, well outside the input's range, **which is 4.7's residual-stream growth happening in one step.** LayerNorm then brings it back: **μ = 1.8402, σ = 1.0132, and `n = [1.4745, -0.3315, -1.3005, 0.1574]` with mean 0 and variance 1.** Every figure matches the hand calculation. **The norm is what keeps the next sublayer seeing inputs on a predictable scale.**", "left": "step", "codeW": 150, "vars": ["value"], "steps": [{"code": "attn output", "state": ["[1.4248, 0.9205, 0.5026, 0.9999]"], "tone": "accent"}, {"code": "+ z_sat (residual)", "state": ["[3.3341, 1.5044, 0.5226, 1.9997]"], "changed": [0], "tone": "warn", "note": "dim 0 now 3.33"}, {"code": "mu / sigma", "state": ["1.8402 / 1.0132"], "changed": [0], "tone": "good"}, {"code": "normalised", "state": ["[1.4745, -0.3315, -1.3005, 0.1574]"], "changed": [0], "tone": "good", "note": "mean 0, var 1"}], "t": "diagram", "id": "dg-6_3-01-0"},
 
 
 
     { t: "out", text:
-"residual: add the original input back\n\n  r = z_sat + attn_sat\n    = [1.9093, 0.5839, 0.0200, 0.9998] + [1.4248, 0.9205, 0.5026, 0.9999]\n    = [3.3341, 1.5044, 0.5226, 1.9997]\n\n  reference: [3.33, 1.50, 0.52, 2.00]" },
+"residual: add the original input back\n\n  r = z_sat + attn_sat\n    = [1.9093, 0.5839, 0.0200, 0.9998] + [1.4248, 0.9205, 0.5026, 0.9999]\n    = [3.3341, 1.5044, 0.5226, 1.9997]\n\n  by hand:   [3.33, 1.50, 0.52, 2.00]" },
 
     { t: "out", text:
-"LayerNorm: rescale to mean 0, variance 1\n\n  mean  mu    = 1.8402                  reference 1.84\n  var   sigma2 = 1.0265                 reference 1.03\n        sigma  = 1.0132                 reference 1.01\n\n  n = (r - mu) / sigma\n    = [1.4745, -0.3315, -1.3005, 0.1574]\n\n  reference: [1.47, -0.34, -1.30, 0.16]" },
+"LayerNorm: rescale to mean 0, variance 1\n\n  mean  mu    = 1.8402                  by hand 1.84\n  var   sigma2 = 1.0265                 by hand 1.03\n        sigma  = 1.0132                 by hand 1.01\n\n  n = (r - mu) / sigma\n    = [1.4745, -0.3315, -1.3005, 0.1574]\n\n  by hand:   [1.47, -0.34, -1.30, 0.16]" },
 
     { t: "callout", kind: "insight", title: "The residual is what keeps the original token present",
       body: [{ t: "p", text: "Attention produced `[1.4248, 0.9205, 0.5026, 0.9999]` — a blend dominated by other tokens. Adding `z_sat` back means the output is the original token **plus** a contextual update, rather than a replacement. That is why lesson 4.7's residual-stream framing works: every sublayer writes an increment into a vector that persists from the embedding to the output. Without it, twelve layers of attention would progressively wash out the token's own identity, and gradients would have no unobstructed path back." }] },
@@ -40,7 +40,7 @@ EC.receiveLesson({
 
 
     { t: "out", text:
-"toy weights: W1 = W2 = identity, b1 = [0.5, 0.5, 0.5, 0.5], b2 = 0\nso FFN(n) = ReLU(n + 0.5)\n\n  pre-activation = n + 0.5 = [1.9745, 0.1685, -0.8005, 0.6574]\n  after ReLU               = [1.9745, 0.1685,  0.0000, 0.6574]\n                                                   ^\n                                       the -0.8005 became 0\n\nreference: [1.97, 0.16, -0.80, 0.66] then [1.97, 0.16, 0.00, 0.66]" },
+"toy weights: W1 = W2 = identity, b1 = [0.5, 0.5, 0.5, 0.5], b2 = 0\nso FFN(n) = ReLU(n + 0.5)\n\n  pre-activation = n + 0.5 = [1.9745, 0.1685, -0.8005, 0.6574]\n  after ReLU               = [1.9745, 0.1685,  0.0000, 0.6574]\n                                                   ^\n                                       the -0.8005 became 0\n\nby hand:   [1.97, 0.16, -0.80, 0.66] then [1.97, 0.16, 0.00, 0.66]" },
 
     { t: "callout", kind: "insight", title: "ReLU switching a feature off is the whole non-linearity",
       body: [{ t: "p", text: "One of four dimensions was negative and is now exactly zero. In a toy model that looks trivial; in a real FFN with `d_ff = 3072` it is the mechanism by which the network *selects* which of thousands of learned features are active for this particular token. Under lesson 4.6's key-value memory reading, the hidden activation records **which patterns fired**, and ReLU is what makes that a selection rather than a weighted sum of everything. Note also that the gradient through that dimension is now exactly zero — the dead-ReLU problem, and why GELU and SiLU, which lesson 4.6 measured going smoothly negative, replaced it." }] },
@@ -52,7 +52,7 @@ EC.receiveLesson({
 
 
     { t: "out", text:
-"  r' = n + ffn_out\n     = [1.4745, -0.3315, -1.3005, 0.1574] + [1.9745, 0.1685, 0.0000, 0.6574]\n     = [3.4490, -0.1629, -1.3005, 0.8148]\n\n  reference: [3.44, -0.18, -1.30, 0.82]\n\n  mean  mu    = 0.7001     reference 0.70\n  var   sigma2 = 3.0791    reference 3.07\n        sigma  = 1.7547    reference 1.75\n\n  h = [1.5665, -0.4918, -1.1401, 0.0654]\n  reference: [1.57, -0.49, -1.14, 0.07]" },
+"  r' = n + ffn_out\n     = [1.4745, -0.3315, -1.3005, 0.1574] + [1.9745, 0.1685, 0.0000, 0.6574]\n     = [3.4490, -0.1629, -1.3005, 0.8148]\n\n  by hand:   [3.44, -0.18, -1.30, 0.82]\n\n  mean  mu    = 0.7001     by hand 0.70\n  var   sigma2 = 3.0791    by hand 3.07\n        sigma  = 1.7547    by hand 1.75\n\n  h = [1.5665, -0.4918, -1.1401, 0.0654]\n  by hand:   [1.57, -0.49, -1.14, 0.07]" },
 
     { t: "p", text: "`h` is the final hidden state for the *sat* position after one complete transformer block. In a 96-layer model, steps 4 through 7 would repeat 96 times, each writing another increment into this same vector. Here there is one layer, so the stack is done." },
 
@@ -61,7 +61,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "The LM head", id: "head" },
 
-    {"kind": "trace", "title": "Six logits, each one dot product with an embedding row", "caption": "**With weight tying the projection matrix *is* the embedding matrix, so the logit for a word is `h` dotted with that word's embedding** — the same matrix that mapped ids to vectors on the way in. Which makes each logit readable: **`logit(mat) = h·[1,0,0,1] = 1.5665 + 0.0654 = +1.6319`**, two of `h`'s four numbers added. All six match the reference. **And look at the pairs: `the` at +0.4264 and `<eos>` at −0.4264** — which §06 explains.", "left": "word", "codeW": 130, "vars": ["embedding", "logit = h . E[w]"], "steps": [{"code": "mat", "state": ["[1,0,0,1]", "+1.6319"], "tone": "good", "note": "highest"}, {"code": "sat", "state": ["[1,1,0,0]", "+1.0747"], "changed": [0, 1], "tone": "good"}, {"code": "the", "state": ["[1,0,1,0]", "+0.4264"], "changed": [0, 1], "tone": "accent"}, {"code": "<eos>", "state": ["[0,1,0,1]", "-0.4264"], "changed": [0, 1], "tone": "accent", "note": "exactly negated"}, {"code": "on / cat", "state": ["[0,0,1,1] / [0,1,1,0]", "-1.0747 / -1.6319"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-6_3-04-3"},
+    {"kind": "trace", "title": "Six logits, each one dot product with an embedding row", "caption": "**With weight tying the projection matrix *is* the embedding matrix, so the logit for a word is `h` dotted with that word's embedding** — the same matrix that mapped ids to vectors on the way in. Which makes each logit readable: **`logit(mat) = h·[1,0,0,1] = 1.5665 + 0.0654 = +1.6319`**, two of `h`'s four numbers added. All six match the hand calculation. **And look at the pairs: `the` at +0.4264 and `<eos>` at −0.4264** — which §06 explains.", "left": "word", "codeW": 130, "vars": ["embedding", "logit = h . E[w]"], "steps": [{"code": "mat", "state": ["[1,0,0,1]", "+1.6319"], "tone": "good", "note": "highest"}, {"code": "sat", "state": ["[1,1,0,0]", "+1.0747"], "changed": [0, 1], "tone": "good"}, {"code": "the", "state": ["[1,0,1,0]", "+0.4264"], "changed": [0, 1], "tone": "accent"}, {"code": "<eos>", "state": ["[0,1,0,1]", "-0.4264"], "changed": [0, 1], "tone": "accent", "note": "exactly negated"}, {"code": "on / cat", "state": ["[0,0,1,1] / [0,1,1,0]", "-1.0747 / -1.6319"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-6_3-04-3"},
 
 
 
@@ -72,14 +72,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", text: "Softmax", id: "softmax" },
 
-    {"kind": "trace", "title": "“mat” at 47.51%, matching the reference to three decimals", "caption": "Six logits, one softmax, **probabilities summing to 1.000000 and every value matching the reference to three decimal places.** The prediction is `mat` at **47.51%** — which given a vocabulary containing both *on* and *mat* is **a defensible continuation of a sentence that wants to become *the cat sat on the mat*.** Note the distribution is not peaked: **the top two hold 0.747 between them**, so this toy model is uncertain in the way 5.8 measured GPT-2 being uncertain.", "left": "word", "codeW": 130, "vars": ["logit", "probability", "reference"], "steps": [{"code": "mat", "state": ["+1.6319", "0.4751", "0.476"], "tone": "violet"}, {"code": "sat", "state": ["+1.0747", "0.2721", "0.272"], "changed": [0, 1, 2], "tone": "good"}, {"code": "the", "state": ["+0.4264", "0.1423", "0.142"], "changed": [0, 1, 2], "tone": "good"}, {"code": "<eos>", "state": ["-0.4264", "0.0606", "0.061"], "changed": [0, 1, 2], "tone": "good"}, {"code": "on / cat", "state": ["-1.0747 / -1.6319", "0.0317 / 0.0182", "0.032 / 0.018"], "changed": [0, 1, 2], "tone": "good"}], "t": "diagram", "id": "dg-6_3-05-4"},
+    {"kind": "trace", "title": "“mat” at 47.51%, matching the hand calculation to three decimals", "caption": "Six logits, one softmax, **probabilities summing to 1.000000 and every value matching the hand calculation to three decimal places.** The prediction is `mat` at **47.51%** — which given a vocabulary containing both *on* and *mat* is **a defensible continuation of a sentence that wants to become *the cat sat on the mat*.** Note the distribution is not peaked: **the top two hold 0.747 between them**, so this toy model is uncertain in the way 5.8 measured GPT-2 being uncertain.", "left": "word", "codeW": 130, "vars": ["logit", "probability", "reference"], "steps": [{"code": "mat", "state": ["+1.6319", "0.4751", "0.476"], "tone": "violet"}, {"code": "sat", "state": ["+1.0747", "0.2721", "0.272"], "changed": [0, 1, 2], "tone": "good"}, {"code": "the", "state": ["+0.4264", "0.1423", "0.142"], "changed": [0, 1, 2], "tone": "good"}, {"code": "<eos>", "state": ["-0.4264", "0.0606", "0.061"], "changed": [0, 1, 2], "tone": "good"}, {"code": "on / cat", "state": ["-1.0747 / -1.6319", "0.0317 / 0.0182", "0.032 / 0.018"], "changed": [0, 1, 2], "tone": "good"}], "t": "diagram", "id": "dg-6_3-05-4"},
 
 
 
     { t: "out", text:
-"word      logit      probability     reference\nmat      +1.6319       0.4751          0.476\nsat      +1.0747       0.2721          0.272\nthe      +0.4264       0.1423          0.142\n<eos>    -0.4264       0.0606          0.061\non       -1.0747       0.0317          0.032\ncat      -1.6319       0.0182          0.018\n\n  sum = 1.000000\n\n  prediction: 'mat' at 47.51%" },
+"word      logit      probability     by hand\nmat      +1.6319       0.4751          0.476\nsat      +1.0747       0.2721          0.272\nthe      +0.4264       0.1423          0.142\n<eos>    -0.4264       0.0606          0.061\non       -1.0747       0.0317          0.032\ncat      -1.6319       0.0182          0.018\n\n  sum = 1.000000\n\n  prediction: 'mat' at 47.51%" },
 
-    { t: "p", text: "Every probability matches the reference to three decimal places. *\"the cat sat\"* → *\"mat\"*, which given a vocabulary containing *on* and *mat* is a defensible continuation of a sentence that wants to become *the cat sat on the mat*." },
+    { t: "p", text: "Every probability matches the hand calculation to three decimal places. *\"the cat sat\"* → *\"mat\"*, which given a vocabulary containing *on* and *mat* is a defensible continuation of a sentence that wants to become *the cat sat on the mat*." },
 
     { t: "h2", n: "06", text: "The antisymmetry this is rarely mentioned", id: "antisymmetry" },
 
@@ -108,6 +108,17 @@ EC.receiveLesson({
       ] },
 
     { t: "p", text: "Nothing in the block changes — the same weights run over a sequence one token longer, and the causal mask means the first three positions compute exactly what they computed before. That last fact is what makes the KV cache from lesson 5.2 correct rather than merely convenient: the earlier positions' keys and values are provably unchanged, so recomputing them is pure waste." },
+
+    { t: "callout", kind: "trap", title: "Mistaking a structural symmetry for a bug",
+
+      body: [
+
+        { t: "p", text: "The toy model's logits come in exactly opposite pairs because of LayerNorm and the embedding table's structure. Reviewers who do not expect it may 'fix' correct code." },
+
+        { t: "p", text: "Derive what the arithmetic should produce before judging an output, and check against an independent implementation." }
+
+      ] },
+
 
     { t: "exercise", kind: "Challenge", title: "Finish the trace yourself", difficulty: "core", minutes: 35,
       requirements: [
@@ -198,7 +209,14 @@ cat embedding changed: paired logit sums [0.0, 0.0, 0.032686]
           { t: "p", text: "On 'mat on the' the three pairs again sum to exactly zero. The antisymmetry depends only on the vocabulary's pairing and LayerNorm, not on the sentence. Changing 'cat' to [0, 1, 1, 0.5] broke the pairing and only the cat/mat sum moved (0.033). The two untouched pairs stay at zero, which confirms the mechanism, not just the symptom." },
           { t: "p", text: "Appending 'mat' and running the block again predicts 'mat' a second time at 0.594, ahead of 'on' at 0.165. With identity projections every token attends mostly to itself, so the last word's own embedding dominates the prediction. A real model would need trained weights to avoid repeating its input." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: logits that looked like a bug",
+      body: [
+        { t: "p", text: "**Symptom.** A reviewer flagged a toy model's logits as wrong because they came in exactly opposite pairs." },
+        { t: "p", text: "**Mechanism.** The pairing was a consequence of LayerNorm forcing the hidden state to sum to zero together with an embedding table whose rows paired up. The arithmetic was right." },
+        { t: "p", text: "**Fix.** The lesson explains the symmetry before showing the logits, and the check compares against an independent implementation rather than intuition." }
+      ] }
   ],
 
   takeaways: [

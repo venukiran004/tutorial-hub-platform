@@ -105,19 +105,100 @@ x = x + pe[:x.size(1)]                          # then add position`,
 
     { t: "exercise", kind: "practice", title: "Probe heads and positions", difficulty: "advanced", minutes: 40,
       prompt: "Confirm that `nn.MultiheadAttention` has the same parameter count at 1, 4, 8 and 16 heads for fixed `d_model`. Then take a small pretrained transformer, extract the attention matrices from one layer, and plot each head's pattern on a real sentence — identify any head that consistently attends to the previous token or to the sentence start. Separately, generate sinusoidal encodings and plot cosine similarity between position 0 and all others; confirm it oscillates. Finally, train a tiny transformer with and without positional encoding on a task where order matters, such as deciding whether a sequence is sorted.",
+      requirements: [
+        "Confirm nn.MultiheadAttention has the same parameter count at 1, 4, 8 and 16 heads",
+        "Plot each head's attention in a pretrained model on a real sentence",
+        "Plot cosine similarity between sinusoidal position 0 and the rest",
+        "Train with and without positional encoding on a sortedness task"
+      ],
       hints: [
         "Attention weights are available via `need_weights=True`, or by hooking the module.",
         "Previous-token heads show as a bright subdiagonal; attention-sink heads as a bright first column.",
         "For the order task, without positional encoding accuracy should sit at chance."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from transformers import AutoModel, AutoTokenizer, logging as hf_logging
+hf_logging.set_verbosity_error(); hf_logging.disable_progress_bar()
+
+for h in [1, 4, 8, 16]:
+    print(f"heads {h:>2}: parameters {sum(p.numel() for p in nn.MultiheadAttention(256, h).parameters()):,}")
+
+# Attention patterns of a pretrained model on a real sentence (DistilBERT, layer 1)
+tok = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+model = AutoModel.from_pretrained("distilbert-base-uncased", attn_implementation="eager").eval()
+text = "The engineer who fixed the build went home early because the tests finally passed."
+enc = tok(text, return_tensors="pt")
+with torch.no_grad(): att = model(**enc, output_attentions=True).attentions      # layers x (1, heads, T, T)
+T = enc.input_ids.shape[1]
+prev = torch.stack([torch.stack([a[0, :, i, i - 1] for i in range(1, T)], -1).mean(-1) for a in att])   # (layers, heads)
+sink = torch.stack([(a[0, :, :, 0] + a[0, :, :, -1]).mean(-1) for a in att])                         # [CLS] + [SEP]
+print(f"\\n{T} tokens, {prev.shape[0]} layers x {prev.shape[1]} heads")
+for name, score in [("previous-token", prev), ("[CLS]/[SEP] sink", sink)]:
+    top = score.flatten().topk(3)
+    print(f"strongest {name} heads: " + ", ".join(f"L{i // score.shape[1]}H{i % score.shape[1]} ({v:.2f})" for v, i in zip(top.values.tolist(), top.indices.tolist())))
+# To plot one head: plt.imshow(att[layer][0, head]); label both axes with tok.convert_ids_to_tokens(enc.input_ids[0])
+
+def sinusoid(T, d):
+    pos = torch.arange(T)[:, None].float(); i = torch.arange(0, d, 2).float()
+    pe = torch.zeros(T, d); pe[:, 0::2] = torch.sin(pos / 10000 ** (i / d)); pe[:, 1::2] = torch.cos(pos / 10000 ** (i / d)); return pe
+pe = sinusoid(128, 64)
+cos = F.cosine_similarity(pe[:1], pe, dim=1)
+print("\\ncosine(pos 0, pos k) for k = 0, 4, 8, 16, 32, 64, 127:", " ".join(f"{cos[k]:.2f}" for k in [0, 4, 8, 16, 32, 64, 127]))
+print("local minima after k=0 (oscillation):", [k for k in range(1, 127) if cos[k] < cos[k - 1] and cos[k] < cos[k + 1]][:6])
+
+# Is the sequence sorted? Order is the whole signal.
+class Clf(nn.Module):
+    def __init__(self, use_pe):
+        super().__init__(); self.use_pe = use_pe
+        self.e = nn.Embedding(20, 64); self.register_buffer("pe", sinusoid(12, 64))
+        self.enc = nn.TransformerEncoder(nn.TransformerEncoderLayer(64, 4, 128, batch_first=True, dropout=0.0), 2)
+        self.o = nn.Linear(64, 2)
+    def forward(self, x):
+        h = self.e(x) + (self.pe if self.use_pe else 0)
+        return self.o(self.enc(h).mean(1))
+def batch(n):
+    x = torch.stack([torch.randperm(20)[:12] for _ in range(n)]); y = torch.randint(0, 2, (n,))
+    x[y == 1] = x[y == 1].sort(1).values                 # same multiset of tokens; only the order differs
+    return x, y
+for use_pe in [False, True]:
+    torch.manual_seed(0); m = Clf(use_pe); opt = torch.optim.Adam(m.parameters(), 1e-3)
+    for _ in range(600):
+        x, y = batch(64); loss = F.cross_entropy(m(x), y); opt.zero_grad(); loss.backward(); opt.step()
+    m.eval()
+    with torch.no_grad(): x, y = batch(2000); acc = (m(x).argmax(1) == y).float().mean().item()
+    print(f"sortedness, {'with' if use_pe else 'without'} positional encoding: accuracy {acc:.3f}")`,
+        out: `heads  1: parameters 263,168
+heads  4: parameters 263,168
+heads  8: parameters 263,168
+heads 16: parameters 263,168
+
+17 tokens, 6 layers x 12 heads
+strongest previous-token heads: L0H2 (0.65), L0H3 (0.52), L3H4 (0.47)
+strongest [CLS]/[SEP] sink heads: L3H7 (0.91), L3H6 (0.91), L4H6 (0.88)
+
+cosine(pos 0, pos k) for k = 0, 4, 8, 16, 32, 64, 127: 1.00 0.75 0.70 0.61 0.61 0.43 0.33
+local minima after k=0 (oscillation): [5, 10, 16, 22, 29, 39]
+sortedness, without positional encoding: accuracy 0.495
+sortedness, with positional encoding: accuracy 0.996`,
+       
         notes: [
           { t: "p", text: "The sorted-or-not task is the cleanest demonstration that positional encoding is mandatory rather than helpful. Without it the model is at chance and stays there, because sortedness is purely a property of order and self-attention genuinely cannot represent order — I verified the permutation-equivariance at 4.8e-07 in lesson 3.8. It is not a capacity problem, and no amount of training or width fixes it." },
           { t: "p", text: "In the head patterns you will likely find a previous-token head and an attention-sink head that puts most of its weight on the first token regardless of content. The sink is worth recognising: it is not a broken head, it is the model using position 0 as a place to dump attention mass when a head has nothing useful to attend to — softmax forces the weights to sum to 1, so there must be somewhere for them to go. This is why some recent architectures add a dedicated no-op token." },
           { t: "p", text: "The similarity plot should show clear oscillation rather than monotone decay — I measured 0.495 at a gap of 16 and 0.602 at 32. Seeing the actual curve is worth more than the usual slogan about decaying with distance, and it explains why relative schemes like RoPE and ALiBi were introduced: they give the distance-dependence people assumed sinusoids already provided." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a model that could not tell sorted from unsorted",
+      body: [
+        { t: "p", text: "**Symptom.** A small transformer could not learn whether a sequence was sorted, a task an LSTM learned quickly." },
+        { t: "p", text: "**Mechanism.** Positional encoding had been omitted. Without it, attention is permutation-equivariant and cannot see order at all." },
+        { t: "p", text: "**Fix.** Positional encoding was added, and a test confirms that shuffling the input changes the output." }
+      ] }
   ],
 
   takeaways: [

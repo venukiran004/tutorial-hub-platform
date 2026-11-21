@@ -198,6 +198,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Reading a learning curve from one split",
+
+      body: [
+
+        { t: "p", text: "A learning curve drawn from a single split is noisy, especially at small sizes, and can suggest a trend that is not there." },
+
+        { t: "p", text: "Average learning curves over several folds and show the spread." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Investigate",
       title: "Diagnose three curves you must generate, and one you must extrapolate",
@@ -258,7 +269,14 @@ EC.receiveLesson({
           why: "A flat, low validation line is the signature that says 'do not buy rows'."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: buying data a model could not use",
+      body: [
+        { t: "p", text: "**Symptom.** A team bought a large labelled dataset to improve a model whose validation score then did not move." },
+        { t: "p", text: "**Mechanism.** The learning curve had already flattened, with training and validation scores close together. The model was bias-limited, and more rows could not help." },
+        { t: "p", text: "**Fix.** Learning curves are drawn before any data purchase, and the budget went into features and a more flexible model instead." }
+      ] }
   ],
 
   takeaways: [

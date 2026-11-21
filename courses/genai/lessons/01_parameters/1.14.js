@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "1.14",
 
-  lede: "Token counting is the arithmetic underneath every other lesson in this module — the budget in 1.5, the cache saving in 1.13, the bill in 11.7. It is also where a small, systematic error compounds: the chat envelope nobody counts, the tokeniser that is right for the wrong model, and a reference figure that contradicts the price table by a factor of two. This lesson counts everything properly and builds the estimator you would actually put in a codebase.",
+  lede: "Token counting is the arithmetic underneath every other lesson in this module — the budget in 1.5, the cache saving in 1.13, the bill in 11.7. It is also where a small, systematic error compounds: the chat envelope nobody counts, the tokeniser that is right for the wrong model, and a commonly quoted figure that contradicts the price table by a factor of two. This lesson counts everything properly and builds the estimator you would actually put in a codebase.",
 
   objectives: [
     "Count tokens exactly with the right encoding for a given model",

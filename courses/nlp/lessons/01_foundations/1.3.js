@@ -84,7 +84,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "`(u,g)` scores 20 because it appears in `hug` (10), `pug` (5) and `hugs` (5) — the counts are weighted by how often each word occurs, not by how many distinct words contain the pair. After merging, the counts are recomputed from scratch, which is why `(h,u)` at 15 in round 1 becomes `(h,ug)` at 15 in round 2: the pair is still there, it is just spelled differently now. Watching `pun` and `bun` stay split as `p·un` and `b·un` while `hug` becomes a single token is the whole algorithm in one picture — **frequency decides what gets to be a word**." }] },
 
     { t: "out", text: `  learned merges: [('u', 'g'), ('u', 'n'), ('h', 'ug')]
-  reference says: [('u','g'), ('u','n'), ('h','ug')]
+  expected: [('u','g'), ('u','n'), ('h','ug')]
   match: True
   vocab = ['b', 'g', 'h', 'hug', 'n', 'p', 's', 'u', 'ug', 'un']` },
 
@@ -133,9 +133,9 @@ def bpe_encode(word, merges):
 
 
 
-    { t: "out", text: `  hugs   -> ['hug', 's']   reference: ['hug', 's']   match=True
-  bug    -> ['b', 'ug']   reference: ['b', 'ug']   match=True
-  pun    -> ['p', 'un']   reference: ['p', 'un']   match=True
+    { t: "out", text: `  hugs   -> ['hug', 's']   expected: ['hug', 's']   match=True
+  bug    -> ['b', 'ug']   expected: ['b', 'ug']   match=True
+  pun    -> ['p', 'un']   expected: ['p', 'un']   match=True
   mug    -> ['m', 'ug']   <- 'm' was never in the corpus: an OOV character` },
 
     { t: "p", text: "`bug` never appeared in training, and it still encodes cleanly as `b` + `ug` because both pieces are in the vocabulary. That is the property that makes subword tokenisation work: **a word you have never seen is represented by pieces you have.** But `mug` exposes the limit — `m` was never in the corpus, so there is no symbol for it at all." },
@@ -271,19 +271,115 @@ def bpe_encode(word, merges):
 
     { t: "exercise", kind: "practice", title: "Train a tokeniser and probe it", difficulty: "core", minutes: 40,
       prompt: "Implement BPE training and encoding, and reproduce the three-merge trace exactly. Then train it on a real corpus at vocabulary sizes of 500, 2,000 and 10,000, and for each record the mean number of tokens per word and the fraction of words that stay whole. Plot both against vocabulary size. Finally, tokenise the same paragraph with a real BERT and GPT-2 tokeniser, and tokenise the same content in two different languages to compare token counts.",
+      requirements: [
+        "Implement BPE training and encoding and reproduce the three-merge trace",
+        "Train at vocabulary sizes 500, 2,000 and 10,000 and record tokens per word and whole-word fraction",
+        "Plot both against vocabulary size",
+        "Tokenise the same content with BERT and GPT-2 tokenisers in two languages and compare"
+      ],
       hints: [
         "Weight the pair counts by word frequency, not by document count.",
         "Apply merges in learned order when encoding, and re-check the same position after a glue.",
         "Mean tokens per word falls steeply at first and then flattens — find the knee."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import re
+from collections import Counter
+from sklearn.datasets import fetch_20newsgroups
+from transformers import AutoTokenizer, logging as hf_logging
+hf_logging.set_verbosity_error()
+
+def symbols(word, eow):
+    return tuple(word) + (("</w>",) if eow else ())                  # the end-of-word marker is ONE symbol
+
+def train_bpe(word_freqs, num_merges, eow=True):
+    words = {symbols(w, eow): f for w, f in word_freqs.items()}
+    merges = []
+    for _ in range(num_merges):
+        pairs = Counter()
+        for w, f in words.items():
+            for a, b in zip(w, w[1:]): pairs[(a, b)] += f
+        if not pairs: break                                           # every word is already one token
+        best = max(pairs, key=lambda p: (pairs[p], p))                # most frequent; ties broken deterministically
+        merges.append(best)
+        new = {}
+        for w, f in words.items():
+            out, i = [], 0
+            while i < len(w):
+                if i < len(w) - 1 and (w[i], w[i + 1]) == best: out.append(w[i] + w[i + 1]); i += 2
+                else: out.append(w[i]); i += 1
+            new[tuple(out)] = f
+        words = new
+    return merges
+
+def encode(word, merges, eow=True):
+    w = list(symbols(word, eow))
+    for a, b in merges:                                               # apply merges in the order they were learned
+        i, out = 0, []
+        while i < len(w):
+            if i < len(w) - 1 and w[i] == a and w[i + 1] == b: out.append(a + b); i += 2
+            else: out.append(w[i]); i += 1
+        w = out
+    return w
+
+toy = {"hug": 10, "pug": 5, "pun": 12, "bun": 4, "hugs": 5}
+m = train_bpe(toy, 3, eow=False)
+print("three merges:", m, "  expected [('u','g'), ('u','n'), ('h','ug')]:", m == [("u", "g"), ("u", "n"), ("h", "ug")])
+for w in ["hugs", "bug", "pun"]: print(f"  {w:<5} -> {encode(w, m, eow=False)}")
+
+docs = fetch_20newsgroups(subset="train", remove=("headers", "footers", "quotes")).data[:4000]
+freqs = Counter(w for d in docs for w in re.findall(r"[a-z]+", d.lower()))
+held = [w for d in fetch_20newsgroups(subset="test", remove=("headers", "footers", "quotes")).data[:500] for w in re.findall(r"[a-z]+", d.lower())]
+top = dict(freqs.most_common(3000))                                  # the 3k commonest types, for speed
+base = len({c for w in top for c in w}) + 1                           # letters plus </w>
+all_merges = train_bpe(top, 10000 - base)                             # a smaller vocabulary's merges are a prefix of this list
+print(f"\\ntrained on the {len(top):,} commonest of {len(freqs):,} word types; {len(all_merges):,} merges before every type was one token")
+print("vocab size   tokens per word (held-out text)   words kept whole")
+for vocab in [500, 2000, 10000]:
+    merges = all_merges[: vocab - base]; cache = {}; toks = whole = 0
+    for w in held:
+        if w not in cache: cache[w] = encode(w, merges)
+        toks += len(cache[w]); whole += len(cache[w]) == 1
+    print(f"{min(vocab, base + len(all_merges)):>10}   {toks / len(held):31.2f}   {whole / len(held):15.1%}")
+
+text_en = "The committee postponed the decision because the evidence was incomplete."
+text_de = "Der Ausschuss verschob die Entscheidung, weil die Beweislage unvollständig war."
+for name in ["bert-base-uncased", "gpt2"]:
+    tok = AutoTokenizer.from_pretrained(name)
+    en, de = tok.tokenize(text_en), tok.tokenize(text_de)
+    print(f"\\n{name}: English {len(en)} tokens, German {len(de)} tokens ({len(de) / len(en):.2f}x)")
+    print("  de:", de)`,
+        out: `three merges: [('u', 'g'), ('u', 'n'), ('h', 'ug')]   expected [('u','g'), ('u','n'), ('h','ug')]: True
+  hugs  -> ['hug', 's']
+  bug   -> ['b', 'ug']
+  pun   -> ['p', 'un']
+
+trained on the 3,000 commonest of 41,878 word types; 4,899 merges before every type was one token
+vocab size   tokens per word (held-out text)   words kept whole
+       500                              2.08             53.2%
+      2000                              1.57             71.1%
+      4926                              1.35             82.7%
+
+bert-base-uncased: English 11 tokens, German 30 tokens (2.73x)
+  de: ['der', 'aus', '##sch', '##uss', 've', '##rs', '##cho', '##b', 'die', 'en', '##ts', '##che', '##id', '##ung', ',', 'wei', '##l', 'die', 'be', '##wei', '##sl', '##age', 'un', '##vo', '##lls', '##tan', '##di', '##g', 'war', '.']
+
+gpt2: English 11 tokens, German 31 tokens (2.82x)
+  de: ['Der', 'ĠA', 'uss', 'ch', 'uss', 'Ġvers', 'ch', 'ob', 'Ġdie', 'ĠEnt', 'sche', 'id', 'ung', ',', 'Ġwe', 'il', 'Ġdie', 'ĠB', 'ew', 'e', 'isl', 'age', 'Ġun', 'v', 'oll', 'st', 'Ã¤', 'nd', 'ig', 'Ġwar', '.']`,
+       
         notes: [
           { t: "p", text: "The tokens-per-word curve has a clear knee, and that is how vocabulary size is actually chosen: below it you pay a lot of sequence length for a small vocabulary, above it you pay a lot of embedding parameters for diminishing reductions in length. The knee's position depends on the language — morphologically rich languages like Finnish or Turkish need a larger vocabulary to reach the same tokens-per-word as English, which is one concrete way multilingual models are harder." },
           { t: "p", text: "Comparing real tokenisers, the thing to notice is that GPT-2 attaches the leading space to the token, so `Hello` and `ĠHello` are different IDs, while BERT lowercases and uses `##` to mark continuation. Both are reasonable and they are not interchangeable, which is why a model and its tokeniser must always travel together. Loading the wrong tokeniser produces valid-looking token IDs that mean something else, and nothing errors." },
           { t: "p", text: "The cross-language comparison is the one with practical consequences. I measured a nine-character string with an emoji and two CJK characters costing ten tokens. The same content in English would be two or three. That ratio is a direct consequence of what the training corpus contained, and it shows up as a smaller effective context window and a higher bill for exactly the users whose languages were underrepresented." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a Hindi customer base that cost four times as much",
+      body: [
+        { t: "p", text: "**Symptom.** A chatbot's per-conversation cost was several times higher for Hindi-speaking customers, and nobody had budgeted for it." },
+        { t: "p", text: "**Mechanism.** The model's tokeniser had been trained mostly on English. Devanagari text broke into many more tokens per word, so the same conversation used far more context and cost more." },
+        { t: "p", text: "**Fix.** Costs are estimated per language from tokenised samples before launch, and a model with a multilingual tokeniser was chosen for the markets that needed it." }
+      ] }
   ],
 
   takeaways: [
@@ -293,7 +389,7 @@ def bpe_encode(word, merges):
     "An unseen word encodes from known pieces; a character never seen has no symbol at all.",
     "Byte-level BPE starts from the 256 bytes, so `[UNK]` cannot occur.",
     "WordPiece divides pair frequency by the product of the parts, which picked a different first merge on the same corpus.",
-    "BERT's real output matches the reference; GPT-2's does not — it gives `Ġtransformative` as one token.",
+    "BERT's real output matches the commonly published one; GPT-2's does not — it gives `Ġtransformative` as one token.",
     "`Hello` and `ĠHello` are different tokens, and non-Latin text can cost three to four times more tokens."
   ],
 

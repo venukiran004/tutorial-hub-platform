@@ -186,6 +186,17 @@ ORDER  BY o.order_id, e.occurred_at;
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Joining on a key you assume is unique",
+
+      body: [
+
+        { t: "p", text: "A join to a lookup table multiplies rows whenever the lookup has duplicate keys, and the totals go up without any error. The assumption that the key is unique is usually true until a data load or a history row breaks it." },
+
+        { t: "p", text: "Declare the uniqueness as a constraint, or check `COUNT(*)` before and after every join that should not change the row count." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Predict",
       title: "Row counts before running",
@@ -253,7 +264,14 @@ SELECT COUNT(*) FROM customers c CROSS JOIN (SELECT DISTINCT status FROM orders)
           why: "Each customer contributes as many rows as they have orders, and one row if they have none. 12 order rows plus Mara's single padded row."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: revenue that doubled overnight",
+      body: [
+        { t: "p", text: "**Symptom.** A daily revenue report showed exactly twice the previous day's figure, with no change in order volume." },
+        { t: "p", text: "**Mechanism.** A lookup table of currency rates gained a second row per currency when a supplier changed format. The join from orders to rates matched each order twice, and every order's amount appeared twice in the sum." },
+        { t: "p", text: "**Fix.** The join key was made unique with a constraint, and the report asserts that the joined row count equals the orders row count before aggregating. A join's row count is predictable; checking it is cheap." }
+      ] }
   ],
 
   takeaways: [

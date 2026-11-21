@@ -307,6 +307,17 @@ report MAE per level vs base and vs bottom-up`,
         }
       ] },
 
+    { t: "callout", kind: "trap", title: "Forecasting each level of a hierarchy independently",
+
+      body: [
+
+        { t: "p", text: "Independent forecasts for regions and the national total do not add up, and different teams end up trusting different numbers." },
+
+        { t: "p", text: "Reconcile forecasts across the hierarchy so every level is consistent." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Reconciliation by hand, Croston by hand, and CUSUM's run lengths",
@@ -351,7 +362,14 @@ report MAE per level vs base and vs bottom-up`,
           { t: "p", text: "(c) is the trade-off every online detector has: the threshold buys false-alarm rate with delay, the drift sets the smallest shift worth catching, and known events must be removed or the detector will find them." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: hierarchical forecasts that did not add up",
+      body: [
+        { t: "p", text: "**Symptom.** Regional forecasts did not sum to the national forecast, and finance and operations each trusted a different total." },
+        { t: "p", text: "**Mechanism.** Each level was forecast independently, so the numbers were inconsistent." },
+        { t: "p", text: "**Fix.** Forecasts are reconciled with MinT so every level sums correctly, and the reconciled forecasts were checked for improved accuracy at each level." }
+      ] }
   ],
 
   takeaways: [

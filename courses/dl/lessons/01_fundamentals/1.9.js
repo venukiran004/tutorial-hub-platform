@@ -168,7 +168,14 @@ for t in range(50):
     lrs.append(opt.param_groups[0]["lr"]); opt.step(); sch.step()
 print([f"{lrs[t]:.1e}" for t in [0, 2, 5, 10, 20, 35, 49]])
 # ['0.0e+00', '1.2e-04', '3.0e-04', '3.0e-04', '3.0e-04', '1.5e-04', '1.0e-05']`,
-        notes: [{ t: "p", text: "Epoch 0 is zero (the warm-up starts from nothing), epoch 2 is 2/5 of the peak, epochs 5–20 hold at 3 × 10⁻⁴, epoch 35 is halfway down, epoch 49 is one thirtieth of the peak. Trapezoid schedules like this are common for fine-tuning: the hold phase is where most of the learning happens." }] } }
+        notes: [{ t: "p", text: "Epoch 0 is zero (the warm-up starts from nothing), epoch 2 is 2/5 of the peak, epochs 5–20 hold at 3 × 10⁻⁴, epoch 35 is halfway down, epoch 49 is one thirtieth of the peak. Trapezoid schedules like this are common for fine-tuning: the hold phase is where most of the learning happens." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a scheduler stepped every batch instead of every epoch",
+      body: [
+        { t: "p", text: "**Symptom.** A model's learning rate reached near zero within the first epoch, and training stalled." },
+        { t: "p", text: "**Mechanism.** A step-based schedule configured in epochs was called after every batch, so it advanced hundreds of times faster than intended." },
+        { t: "p", text: "**Fix.** Schedules are defined in optimiser steps, and the learning rate is logged every step so its shape can be checked." }
+      ] }
   ],
 
   takeaways: [

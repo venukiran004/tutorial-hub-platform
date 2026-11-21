@@ -300,6 +300,17 @@ def norm_ok(v, eps=1e-12):
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Expecting a gradient at a kink",
+
+      body: [
+
+        { t: "p", text: "ReLU and absolute value have no derivative at zero. Frameworks return a subgradient there by convention, and hand-written gradient checks at exactly zero report a mismatch that is not a bug." },
+
+        { t: "p", text: "Run gradient checks at random points away from kinks, and know which convention your framework uses at the kink." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Challenge",
       title: "Find the layer that is killing the gradient",

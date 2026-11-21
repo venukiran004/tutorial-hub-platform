@@ -78,7 +78,7 @@ EC.receiveLesson({
     { t: "p", text: "At `d = 4` there are two frequency pairs, so the four dimensions are `[sin(pos), cos(pos), sin(pos/100), cos(pos/100)]` — one fast pair and one slow pair, the miniature version of the geometric spectrum from lesson 4.2." },
 
     { t: "out", text:
-"pos 0:  [0.0000,  1.0000, 0.0000, 1.0000]\npos 1:  [0.8415,  0.5403, 0.0100, 1.0000]\npos 2:  [0.9093, -0.4161, 0.0200, 0.9998]\n\nreference: [0.00,1.00,0.00,1.00] / [0.84,0.54,0.01,1.00] / [0.91,-0.42,0.02,1.00]\nreproduces exactly" },
+"pos 0:  [0.0000,  1.0000, 0.0000, 1.0000]\npos 1:  [0.8415,  0.5403, 0.0100, 1.0000]\npos 2:  [0.9093, -0.4161, 0.0200, 0.9998]\n\nby hand:   [0.00,1.00,0.00,1.00] / [0.84,0.54,0.01,1.00] / [0.91,-0.42,0.02,1.00]\nreproduces exactly" },
 
     { t: "callout", kind: "insight", title: "Watch the two pairs move at different rates",
       body: [{ t: "p", text: "From position 0 to 2 the **fast** pair swings from `[0.00, 1.00]` to `[0.91, -0.42]` — the cosine has changed sign. The **slow** pair moves from `[0.00, 1.00]` to `[0.02, 0.9998]`, barely at all. With only three positions the slow pair is nearly useless, which is precisely the point: it is there to distinguish position 5 from position 500, not position 0 from position 2. A real model with `d_model = 768` has 384 such pairs spanning wavelengths from 6.28 to over 60,000 positions." }] },
@@ -191,7 +191,14 @@ slow pair: sin(pos/100) first exceeds 0.5 at position 53 (sin(53/100) = 0.5055; 
           { t: "p", text: "The one-step rotation reproduces PE(p+1) to 1e-16 starting from 0, 5 and 40, so 'one position later' is the same linear operation everywhere. The one-hot product equals the row lookup exactly. That equality is why an embedding table trains with ordinary backpropagation: the gradient flows to exactly the rows that were used." },
           { t: "p", text: "The slow pair's first component, sin(pos/100), first exceeds 0.5 at position 53. The exact crossing is 100·π/6 = 52.36. In a 6-word toy sentence the slow pair barely moves, which is why the lesson's X looks dominated by the fast pair." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a hand-worked example that disagreed with the code",
+      body: [
+        { t: "p", text: "**Symptom.** A trainee's hand calculation of an embedding plus position disagreed with the reference implementation." },
+        { t: "p", text: "**Mechanism.** The hand calculation used positions starting at 1 while the code started at 0, so every position vector was shifted." },
+        { t: "p", text: "**Fix.** Worked examples state their indexing conventions, and the code prints intermediate values so a reader can check each step." }
+      ] }
   ],
 
   takeaways: [

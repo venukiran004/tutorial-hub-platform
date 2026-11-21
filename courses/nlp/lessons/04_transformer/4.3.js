@@ -55,15 +55,15 @@ EC.receiveLesson({
     { t: "out", text:
 "step 2 — raw scores Q K^T\n  The   [1.22, 1.02, 0.81]\n  cat   [0.92, 1.72, 0.89]\n  sat   [0.80, 1.06, 1.18]\n\nstep 3 — scale by sqrt(4) = 2\n  The   [0.610, 0.510, 0.405]\n  cat   [0.460, 0.860, 0.445]\n  sat   [0.400, 0.530, 0.590]\n\nstep 4 — row-wise softmax\n  The   exp [1.8404, 1.6653, 1.4993]  sum 5.0050  ->  [0.3677, 0.3327, 0.2996]\n  cat   exp [1.5841, 2.3632, 1.5605]  sum 5.5077  ->  [0.2876, 0.4291, 0.2833]\n  sat   exp [1.4918, 1.6989, 1.8040]  sum 4.9947  ->  [0.2987, 0.3401, 0.3612]\n\n  row sums: [1.0, 1.0, 1.0]" },
 
-    { t: "p", text: "Steps 2, 3 and 4 reproduce the reference exactly. Step 5 does not." },
+    { t: "p", text: "Steps 2, 3 and 4 reproduce the published example exactly. Step 5 does not." },
 
     { t: "out", text:
-"step 5 — output = weights x V\n\n           recomputed                              reference prints\n  The   [0.5840, 0.3560, 0.4268, 0.4928]      [0.585, 0.356, 0.427, 0.493]   ok\n  cat   [0.5151, 0.4283, 0.3850, 0.5570]      [0.487, 0.428, 0.353, 0.560]   two wrong\n  sat   [0.5473, 0.3805, 0.4362, 0.5103]      [0.548, 0.380, 0.439, 0.490]   one wrong" },
+"step 5 — output = weights x V\n\n           recomputed                              published example\n  The   [0.5840, 0.3560, 0.4268, 0.4928]      [0.585, 0.356, 0.427, 0.493]   ok\n  cat   [0.5151, 0.4283, 0.3850, 0.5570]      [0.487, 0.428, 0.353, 0.560]   two wrong\n  sat   [0.5473, 0.3805, 0.4362, 0.5103]      [0.548, 0.380, 0.439, 0.490]   one wrong" },
 
     { t: "callout", kind: "warn", title: "Two of the three output rows are wrong in the commonly published example",
       body: [{ t: "p", text: "Term by term for *cat*, using the weights `[0.2876, 0.4291, 0.2833]`:" },
              { t: "p", text: "`dim0 = 0.2876×1.0 + 0.4291×0.2 + 0.2833×0.5 = 0.5151`, where the commonly published output prints 0.487. `dim2 = 0.2876×0.5 + 0.4291×0.1 + 0.2833×0.7 = 0.3850`, where it prints 0.353. For *sat*, `dim3 = 0.2987×0.2 + 0.3401×0.9 + 0.3612×0.4 = 0.5103`, where it prints 0.490." },
-             { t: "p", text: "The recomputed matrix agrees with `torch.nn.functional.scaled_dot_product_attention` to **1.67e-16**, so the arithmetic above is the correct one. The weights the reference derived are right; only the final weighted sums slipped." }] },
+             { t: "p", text: "The recomputed matrix agrees with `torch.nn.functional.scaled_dot_product_attention` to **1.67e-16**, so the arithmetic above is the correct one. The weights the published example derived are right; only the final weighted sums slipped." }] },
 
     { t: "p", text: "Each output row has the same shape as the input token but now blends context from every position. *The* ends up at `[0.5840, 0.3560, 0.4268, 0.4928]` — a near-uniform mixture, because its query matched all three keys similarly. *cat* leaned hardest on itself, at weight 0.4291." },
 
@@ -151,6 +151,17 @@ EC.receiveLesson({
     { t: "callout", kind: "note", title: "Attention is permutation-equivariant",
       body: [{ t: "p", text: "Nothing in the five steps refers to position. Shuffle the input rows and the output rows shuffle identically — the operation cannot tell *the cat sat* from *sat cat the*. That is precisely why positional encoding exists and why it is added to the input rather than being part of attention: the mechanism is deliberately order-blind, and order is injected into the representation beforehand. Lesson 4.5 takes that apart." }] },
 
+    { t: "callout", kind: "trap", title: "Trusting a published worked example without recomputing it",
+
+      body: [
+
+        { t: "p", text: "Worked attention examples circulate with arithmetic errors. Learners who match their numbers against a wrong example conclude their own correct code is broken." },
+
+        { t: "p", text: "Recompute any worked example in code before relying on it." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Rebuild it and break it", difficulty: "core", minutes: 35,
       requirements: [
         "Implement scaled dot-product attention in twelve lines of NumPy and check it against `torch.nn.functional.scaled_dot_product_attention`.",
@@ -222,7 +233,14 @@ max |attn(shuffled) - shuffled(attn)| = 4.44e-16`,
           { t: "p", text: "Score variance tracks d_k almost exactly (63.1 at 64, 1025 at 1024). Without scaling, the attention distribution sharpens with d_k: mean maximum weight 0.38 at d_k = 4 and 0.96 at 1024, with entropy falling from 2.1 to 0.1. With scaling, all five settings sit near 0.17 and entropy 3.0. Dividing by sqrt(d_k) makes the starting sharpness independent of head size, which is the point of the scale." },
           { t: "p", text: "Shuffling the input rows shuffled the output rows identically, to 4e-16. Attention on its own does not know token order, which is why positional information has to be added." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: attention that would not train",
+      body: [
+        { t: "p", text: "**Symptom.** A custom attention layer trained very slowly and its attention maps were nearly one-hot from the first step." },
+        { t: "p", text: "**Mechanism.** The implementation omitted the division by √d_k. Dot products had large variance, the softmax saturated and its gradients were tiny." },
+        { t: "p", text: "**Fix.** The scaling was restored and a test checks the entropy of attention weights at initialisation." }
+      ] }
   ],
 
   takeaways: [

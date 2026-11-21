@@ -26,7 +26,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Enable slow query log. Use EXPLAIN AnalysE. Check: sequential scans on large tables, missing indexes, large sorts, many row estimates being wrong."
+     "text": "Enable slow query log. Use EXPLAIN ANALYZE. Check: sequential scans on large tables, missing indexes, large sorts, many row estimates being wrong."
     }
    ],
    "kind": ""

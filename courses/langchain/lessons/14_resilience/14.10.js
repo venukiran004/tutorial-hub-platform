@@ -92,6 +92,12 @@ EC.receiveLesson({
       { t: "p", text: "Which is not an argument against agents \u2014 it is the argument for reaching for one only when the problem requires it. The list is long because the capability is genuinely powerful and genuinely expensive to operate." },
       { t: "p", text: "And if you do need one: the twenty-two items are not aspirational. Each of them exists because something measured in this course failed in a way that nothing reported." }
     ] },
+    { t: "callout", kind: "trap", title: "Treating the checklist as a launch formality",
+      body: [
+        { t: "p", text: "A checklist filled in once before launch records the system as it was then. Most items — retry predicates, idempotency keys, cache keys, filters — change as features are added, and a later change can quietly undo an item that was ticked." },
+        { t: "p", text: "Turn each checkable item into a test or a monitor where possible, and revisit the list whenever a node, tool or cache is added." }
+      ] },
+
     { t: "exercise", kind: "analysis", title: "Run the production checklist",
       difficulty: "core", minutes: 30,
       body: "Assemble a readiness checklist across correctness, safety, resilience, cost and observability, with the specific measurement behind each line rather than a rationale. Identify the four items that are cheapest to check and highest-yield, and say which of them requires writing code. State what the checklist deliberately omits and why those omissions make it durable. Explain why a checklist catches something a test suite cannot. Finally state the question that comes before every item on it.",

@@ -223,6 +223,12 @@ a 1 km circle is 3.14 km²` },
         ],
         ["LinkedIn", "N×M data pipelines", "Kafka: one replayable log", "Make the log the integration point"]
       ] },
+    { t: "callout", kind: "trap", title: "Assuming a cache in front of a database stays consistent",
+      body: [
+        { t: "p", text: "A read-through cache serves stale data whenever a write reaches the database without invalidating the cache — a missed invalidation, a race between a write and a fill, a write from another service. The system looks correct in tests that write and read in sequence." },
+        { t: "p", text: "Invalidate on write through one path, version or lease cache entries to prevent stale fills, and measure staleness in production." }
+      ] },
+
     { t: "exercise",
       kind: "Challenge",
       title: "Build a Snowflake ID generator",

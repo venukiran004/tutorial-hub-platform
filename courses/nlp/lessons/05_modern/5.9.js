@@ -121,6 +121,17 @@ EC.receiveLesson({
     { t: "callout", kind: "note", title: "Module 7 goes much deeper",
       body: [{ t: "p", text: "This lesson covers the architectural patterns as they appear in the transformer reference. Module 7 — *Multimodal AI* — takes the full treatment: CLIP training in detail, vision-language models, diffusion, audio and speech, video understanding, multimodal RAG and document AI. What matters here is the structural point: making a transformer multimodal is a **tokenisation** problem, not an architecture problem, which is the same conclusion lesson 5.7 reached about ViT." }] },
 
+    { t: "callout", kind: "trap", title: "Sending full-resolution images to a VLM",
+
+      body: [
+
+        { t: "p", text: "A large image can produce thousands of visual tokens, exceeding the context window or the budget before any text is added." },
+
+        { t: "p", text: "Resize images to a token budget per request, and process multi-page documents page by page." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Measure the multimodal budget", difficulty: "core", minutes: 30,
       requirements: [
         "Load CLIP and verify that the text and vision towers share no parameters and never cross-attend.",
@@ -188,7 +199,14 @@ KV cache: text only 750 MB; with five 336px images 2190 MB
           { t: "p", text: "The ordering is mostly right: 'puppy' is closest to 'dog', then 'cat', then 'car'. 'A dog that is not on a photo' scored 0.955, above 'cat' and nearly equal to 'puppy'. CLIP's text tower largely ignores negation, the same weakness as the generation metrics in lesson 3.4." },
           { t: "p", text: "Visual tokens add up quickly. A 336 px image costs 576 tokens, 7% of an 8K window, and at 672 px one image takes 28%. Five 336 px images nearly triple a 1,500-token conversation's KV cache, from 750 MB to 2,190 MB. Tiling a 1,344 px document into 16 tiles plus a thumbnail costs 17 times as many tokens as downscaling it. Use tiling only when the task needs the detail, and compare accuracy on your own documents before paying for it." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: images that did not fit in the context",
+      body: [
+        { t: "p", text: "**Symptom.** A document-assistant product failed on scanned pages at full resolution with a context-length error." },
+        { t: "p", text: "**Mechanism.** Each high-resolution image produced thousands of visual tokens, more than the context left after the prompt." },
+        { t: "p", text: "**Fix.** Images are resized to a token budget computed per request, and multi-page documents are processed page by page." }
+      ] }
   ],
 
   takeaways: [

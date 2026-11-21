@@ -316,6 +316,17 @@ for k in (0.5, 1.0, 2.5):
     {"t": "p", "text": "**The mode moves off zero as soon as k exceeds 1**, and that is the modelling signal. If your latency histogram rises to a peak and then falls, an exponential cannot fit it — its mode is always at zero — and reaching for a Gamma is the correct response rather than transforming the data until the exponential looks acceptable."},
 { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Using the mean and three sigma on heavy-tailed data",
+
+      body: [
+
+        { t: "p", text: "For latency, income or losses, the sample mean is dominated by a few large values and the standard deviation is unstable, so 'three sigma' events happen routinely and alerts fire constantly." },
+
+        { t: "p", text: "Describe heavy-tailed data with quantiles, check the tail with a log-log plot, and set thresholds on percentiles." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Challenge",
       title: "Decide whether a latency SLO is achievable",

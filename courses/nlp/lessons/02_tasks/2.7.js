@@ -249,7 +249,14 @@ corpus BLEU = 0.6658   mean sentence BLEU = 0.6481`,
           { t: "p", text: "Adding 'not' to an instruction kept 0.76 BLEU while reversing the advice. Every other n-gram survives, and one inserted word costs only a few higher-order n-grams. Any n-gram metric is blind to a single-token change of meaning." },
           { t: "p", text: "Corpus BLEU (0.6658) is not the mean of sentence BLEUs (0.6481). Corpus BLEU pools n-gram counts and applies one brevity penalty to the total. The mean gives every sentence equal weight, so short sentences move it more. Report corpus BLEU and name the tokeniser. Steps 4 and 5 need sacrebleu and a COMET checkpoint, which this environment does not have. Run them where you can, and expect the gap between NLTK and sacrebleu to come from tokenisation of punctuation and apostrophes." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a translation model chosen by round-trip BLEU",
+      body: [
+        { t: "p", text: "**Symptom.** A team chose a translation model because it scored highest on round-trip BLEU, and bilingual reviewers later found idioms translated literally throughout." },
+        { t: "p", text: "**Mechanism.** Round-trip BLEU rewards translations that come back unchanged, which a literal translation does best. The metric favoured the very error reviewers objected to." },
+        { t: "p", text: "**Fix.** Models are evaluated with human review on a sample and with reference-based metrics against professional translations, never round trips." }
+      ] }
   ],
 
   takeaways: [

@@ -254,7 +254,14 @@ offline: NDCG@10, hit rate, coverage;  online: interleaving / A/B on clicks and 
           { t: "p", text: "(c) is the data-hunger of the two implicit models and the tuning that WRMF's confidence needs; at ten clicks a user the pairwise model has the pairs it needs, at two nothing does." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: recommendations that narrowed every week",
+      body: [
+        { t: "p", text: "**Symptom.** A content service saw engagement rise for a month and then fall, with users complaining they saw the same kind of content." },
+        { t: "p", text: "**Mechanism.** The recommender trained on clicks from its own recommendations, so it showed more of what it already showed. The feedback loop shrank exposure." },
+        { t: "p", text: "**Fix.** A share of recommendations is exploratory, and training data is weighted to correct for what the system chose to show." }
+      ] }
   ],
 
   takeaways: [

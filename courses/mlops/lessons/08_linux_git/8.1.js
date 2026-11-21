@@ -24,7 +24,7 @@ EC.receiveLesson({
     { t: "callout", kind: "trap", title: "The ownership collision from lesson 4.4, in detail",
       body: [
         { t: "p", text: "Lesson 4.3's image creates `appuser` with uid **10001**. Lesson 4.4 bind-mounted a host directory owned by the developer's uid **1000**. The container's process cannot write to it, and the error is a bare `Permission denied` that mentions neither uid." },
-        { t: "p", text: "The reason is that **the kernel compares numbers, not names.** A uid is an integer; the mapping to a name comes from `/etc/passwd`, which the container and the host each have their own copy of. So `appuser` inside and `venuk` outside are the same entity if and only if their numbers match — and nothing warns you when they do not." },
+        { t: "p", text: "The reason is that **the kernel compares numbers, not names.** A uid is an integer; the mapping to a name comes from `/etc/passwd`, which the container and the host each have their own copy of. So `appuser` inside and `deploy` outside are the same entity if and only if their numbers match — and nothing warns you when they do not." },
         { t: "p", text: "Which is why lesson 5.4's `fsGroup: 10001` exists: it tells Kubernetes to set group ownership of mounted volumes to that gid, so the container's user can write. A named volume (lesson 4.4) avoids the problem because the daemon initialises ownership from the image." }
       ] },
 
@@ -127,6 +127,13 @@ python   4411  app    7w   REG  147G      0      983 /var/log/train.log (deleted
 
     { t: "exercise", kind: "practice", title: "Reproduce the invisible disk", difficulty: "intro", minutes: 25,
       prompt: "On any Linux machine or container, create the deleted-but-open case deliberately: write a large file from a process you keep running, delete the file while the process holds it, then compare `df -h` and `du -sh` on that filesystem and confirm the gap. Use `lsof +L1` to find the holder. Then check two things on a real ML node or container: run `df -i` and see how close the inode usage is to the limit, and locate your checkpoint directory and container image directory and measure both. Finally, check whether any pod spec you own sets an `ephemeral-storage` limit.",
+      requirements: [
+        "Create a deleted-but-open file and confirm the gap between df and du",
+        "Find the holder with lsof +L1",
+        "Check inode usage with df -i on a real ML node",
+        "Measure the checkpoint and image directories",
+        "Check whether pod specs set an ephemeral-storage limit"
+      ],
       hints: [
         "`python -c \"f=open('big','wb'); f.write(b'0'*(2*10**9)); import os; os.remove('big'); input()\"` holds the descriptor open while you look.",
         "`du -x` matters: without it you may be measuring a different filesystem from the one `df` reported on.",
@@ -137,8 +144,14 @@ python   4411  app    7w   REG  147G      0      983 /var/log/train.log (deleted
           { t: "p", text: "Doing the deleted-but-open case by hand is what makes it recognisable later, and it is the single most useful disk diagnosis there is — because the symptom (df full, du small) sends people looking for files that do not exist while the space is held by a process nobody suspects." },
           { t: "p", text: "The ephemeral-storage check usually finds nothing set, which means a checkpoint directory is bounded only by the node's disk. A job that fills it is evicted, which looks like a scheduling problem rather than a storage one — and it takes its neighbours with it, because the kubelet evicts to protect the node." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a full disk that du could not find",
+      body: [
+        { t: "p", text: "**Symptom.** A training node reported its disk full and pods began to be evicted. `du` on the root filesystem accounted for less than half of what `df` said was used." },
+        { t: "p", text: "**Mechanism.** A long-running data loader had been writing a debug log, which a cleanup job deleted while the loader still held it open. A deleted file's blocks are freed only when the last open descriptor closes, so the space stayed used and no path pointed to it." },
+        { t: "p", text: "**Fix.** The loader logs to stdout and log rotation signals processes rather than deleting from under them. The runbook's disk section now starts with `lsof +L1`, and pods set `ephemeral-storage` limits so one container cannot exhaust a node." }
+      ] }
   ],
 
   takeaways: [

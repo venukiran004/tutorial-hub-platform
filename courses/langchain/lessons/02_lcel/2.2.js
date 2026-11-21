@@ -119,6 +119,12 @@ EC.receiveLesson({
       { t: "p", text: "When a chain fails, the traceback goes through `RunnableSequence.invoke`, which 1.8 listed as a genuine cost of the framework. Knowing the chain is an object with a readable `.steps` list is what converts that from opaque to navigable: you can match the failing step index to a name." },
       { t: "p", text: "The habit worth forming is naming chains with `with_config(run_name=...)` as you build them. It costs nothing, changes no behaviour, and is the difference between a span tree you can filter and one that is forty rows of `RunnableSequence`." }
     ] },
+    { t: "callout", kind: "trap", title: "A dict in a pipe is a fan-out, not a data structure",
+      body: [
+        { t: "p", text: "`{\"context\": retriever, \"question\": RunnablePassthrough()} | prompt` reads like building a dictionary. It is coerced into a `RunnableParallel` that sends the same input to every value and runs them concurrently. Writing a constant string as a value, or expecting the values to run in order, produces surprising results — a string is not a Runnable, and order is not guaranteed." },
+        { t: "p", text: "Treat every dict literal in a chain as a fan-out of the incoming input, wrap constants in a lambda, and use `.assign` when you mean to add a key to what came in." }
+      ] },
+
     { t: "exercise", kind: "analysis", title: "Take a chain apart",
       difficulty: "core", minutes: 22,
       body: "Build a three-step chain and inspect what the pipe constructed. Confirm the step list is flat rather than nested, then extract a sub-chain into a variable and confirm the composed result is still flat. Demonstrate both coercions the pipe performs. Finally, inspect the chain's schema and graph without invoking it.",

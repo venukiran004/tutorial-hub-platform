@@ -751,7 +751,14 @@ def test_column_names_clean_in_every_encoding():
           why: "Windows tools write UTF-8 with a BOM, and `read_csv` makes it part of the first header. `repr(df.columns[0])` shows it; `len()` is 3. `encoding=\"utf-8-sig\"` strips it at read time and is safe as a default for any file that might have come from Windows."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a column that could not be found by name",
+      body: [
+        { t: "p", text: "**Symptom.** A pipeline failed with `KeyError: 'customer_id'` on a file whose header plainly showed `customer_id`." },
+        { t: "p", text: "**Mechanism.** The file had been exported with a UTF-8 byte-order mark. Read with `encoding='utf-8'`, the mark became part of the first column's name, which was now `\\ufeffcustomer_id`." },
+        { t: "p", text: "**Fix.** Files are read with `encoding='utf-8-sig'`, which removes the mark when present, and column names are validated against the expected schema after every read." }
+      ] }
   ],
 
   takeaways: [

@@ -400,6 +400,17 @@ define_family(primary=["conversion"],
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Not counting the tests you ran informally",
+
+      body: [
+
+        { t: "p", text: "Multiple-testing correction is applied to the tests in the final report, while the analysis also tried other metrics, subgroups and time windows along the way. Those uncounted tests make the reported p-values too small." },
+
+        { t: "p", text: "Pre-register the comparisons that matter, and count every comparison you looked at when correcting." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Design the correction policy for an experiment platform",

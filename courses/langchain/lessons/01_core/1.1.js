@@ -220,6 +220,12 @@ EC.receiveLesson({
       code: 'HumanMessage(content=[\n    {"type": "text", "text": "What is the charge on this receipt?"},\n    {"type": "image_url",\n     "image_url": {"url": "data:image/png;base64," + b64}},\n])\n\n# audio, the same shape:\nHumanMessage(content=[\n    {"type": "input_audio",\n     "input_audio": {"data": b64, "format": "wav"}},\n])',
       caption: "`content` is a string **or** a list of typed blocks — same message class." },
     { t: "p", text: "Which is the interface argument holding up under a load it was not designed for: adding images did not add a message type, a model class or a method — `content` simply became a list of blocks, and everything downstream that treats a message as opaque kept working. What does **not** survive is anything that assumed `content` was a string: a prompt template that formats it, a trimmer that measures its length, a logger that prints it. So the cost of the generalisation is paid by the code that looked inside." },
+    { t: "callout", kind: "trap", title: "Importing the framework to call one model",
+      body: [
+        { t: "p", text: "The common first move is to adopt LangChain for a single prompt-and-response feature because it is the standard library for LLM work. That buys an install closure and a layer of indirection, and none of the uniformity that justifies it, because there is nothing yet to be uniform across." },
+        { t: "p", text: "The interface pays when there are several providers, several component kinds, or behaviour you want once for all of them — retries, fallbacks, streaming, tracing. Lesson 1.8 has the test; apply it before the import, not after." }
+      ] },
+
     { t: "exercise", kind: "build", title: "Build the protocol, then break it",
       difficulty: "core", minutes: 24,
       body: "Count the adapters a five-component, four-provider system needs with and without a common interface. Then implement the protocol from scratch: a base class with one method and a pipe operator, a sequence, and a lambda wrapper. Compose three components. Then add a fourth component type the original code did not anticipate, and confirm how much existing code had to change. Finally, build the same chain with the real library and compare the structure.",

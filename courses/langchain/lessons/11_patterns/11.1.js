@@ -107,6 +107,12 @@ EC.receiveLesson({
 
     { t: "p", text: "A bounded pattern that nearly works is **one branch away** from working \u2014 the gap is visible and the fix is local. An agent that works unpredictably is a measurement problem, a cost problem and a debugging problem at once, and none of those is one change away from fixed." },
     { t: "p", text: "That asymmetry is why the rule is *stop at the lowest rung that works* rather than *choose the appropriate rung*. Guessing low costs you a branch; guessing high costs you the ability to say anything about the system's behaviour." },
+    { t: "callout", kind: "trap", title: "Adding an agent loop to answer what one tool call answers",
+      body: [
+        { t: "p", text: "When a single tool call already returns the answer, wrapping it in an agent adds a second model call whose only job is to rephrase the tool output. That doubles cost and latency and adds a chance to misstate the result." },
+        { t: "p", text: "Return the tool's result directly, or format it with a template, when the answer is the tool output; use the loop only when the model needs to decide what to do next." }
+      ] },
+
     { t: "exercise", kind: "analysis", title: "Measure the ladder",
       difficulty: "core", minutes: 28,
       body: "Implement the same task at four rungs \u2014 a single call, a single tool-calling turn, a router, and an agent loop \u2014 using a scripted model so the comparison is deterministic. Count the model calls at each. Explain why a single tool-calling turn is not an agent and what class of task it covers. Explain what the agent's second model call buys. Then state the rule and the test, and say why the mistake is asymmetric.",

@@ -378,6 +378,17 @@ def test_paid_features_drops_unpaid():
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Debugging a chain by breaking it apart permanently",
+
+      body: [
+
+        { t: "p", text: "When a chain misbehaves, the common response is to split it back into named intermediates and leave it that way, which reintroduces the stale-variable bugs the chain prevented." },
+
+        { t: "p", text: "Insert a `.pipe(lambda d: print(d.shape) or d)` or an assertion step to inspect the chain in place, and keep the chain." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Refactor",
       title: "The notebook cell nobody can modify",
@@ -651,7 +662,14 @@ def test_the_original_reindex_broadcasts_region_totals():
           why: "`raw.amount` is the original 200-row column. If a `query` earlier in the chain kept 160 rows, the Series form aligns 200 values onto 160 by index — which works by accident — and an array form raises. The lambda always sees the current frame."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a reused variable that pointed at stale data",
+      body: [
+        { t: "p", text: "**Symptom.** A notebook-turned-pipeline produced a model trained on unfiltered data, though a filtering cell clearly existed." },
+        { t: "p", text: "**Mechanism.** Intermediate frames were named `df2`, `df3` and `df_clean`. A later edit trained on `df2` — the pre-filter frame — because the name still existed and looked plausible." },
+        { t: "p", text: "**Fix.** The transformation was rewritten as one method chain from raw data to the training frame, with named steps as functions under `pipe`. There are no intermediate names to reuse by mistake." }
+      ] }
   ],
 
   takeaways: [

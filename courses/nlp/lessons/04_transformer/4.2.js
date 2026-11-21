@@ -238,7 +238,14 @@ distance  sinusoidal  BERT learned
           { t: "p", text: "The rotation property holds to 1e-13 at five starting positions for offsets 1, 7 and 100. A first attempt that wrote the 2×2 block transposed gave errors near 2, so if your check fails by about that much, swap the sign of the sine terms. The norm is exactly sqrt(256) = 16 at every position, because each of the 256 sin/cos pairs contributes sin² + cos² = 1." },
           { t: "p", text: "BERT's learned position embeddings decay much faster than the sinusoid: cosine 0.64 at distance 1 and about zero by 64, against 0.97 and 0.49 for the sinusoid. The learned table encodes 'nearby' over a few tokens and little beyond. Step 5, training both schemes and testing beyond the training length, needs a training run and is not executed here. Expect the learned embeddings to have no rows past their maximum length." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a model that failed on longer documents",
+      body: [
+        { t: "p", text: "**Symptom.** A document classifier fine-tuned on 512-token inputs gave poor results when the limit was raised to 2,048 tokens." },
+        { t: "p", text: "**Mechanism.** Its learned absolute position embeddings had never been trained beyond 512. Positions past that were effectively untrained." },
+        { t: "p", text: "**Fix.** Long documents are processed in windows, or a model with relative positional encoding trained on longer contexts is used." }
+      ] }
   ],
 
   takeaways: [

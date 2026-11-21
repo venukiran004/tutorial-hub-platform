@@ -136,6 +136,12 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Walk the chain on paper", difficulty: "intro", minutes: 20,
       prompt: "Without a cluster, write out the diagnosis path for three stuck deployments, naming the component at fault and the command that would confirm it. First: `kubectl apply` succeeded, `kubectl get pods` shows nothing at all. Second: pods exist with status `Pending` and no node assigned. Third: pods are `Running` but the Service returns connection refused. For each, say which loop in section 2 has not completed its step, and which of `spec` or `status` you would read. Then, if you do have cluster access, delete a pod belonging to a Deployment and time how long it takes to return.",
+      requirements: [
+        "Diagnose: apply succeeded and no pods exist, naming the component and the confirming command",
+        "Diagnose: pods are Pending with no node assigned",
+        "Diagnose: pods are Running and the Service refuses connections",
+        "For each, say which loop has not completed and whether to read spec or status"
+      ],
       hints: [
         "Nothing at all usually means the controller above the pods never acted — check the ReplicaSet, not the pod.",
         "Pending with no node is the scheduler declining to place it: describe the pod and read the events for the reason.",
@@ -146,8 +152,14 @@ EC.receiveLesson({
           { t: "p", text: "The point of the exercise is the habit of asking *which loop stopped* rather than *what is broken*. Case one is a ReplicaSet or quota problem, case two is the scheduler finding no feasible node — resources, taints, affinity — and case three is almost always a selector mismatch or a readiness probe that never passes." },
           { t: "p", text: "The deleted-pod test is worth doing because watching it come back in a couple of seconds makes the control loop concrete in a way reading about it does not. Nothing granted the deletion an exception; the gap simply reappeared and a controller closed it." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: CI said deployed, and nothing was running",
+      body: [
+        { t: "p", text: "**Symptom.** A pipeline reported a successful deployment of a new model server. Traffic continued to be served by the old version for a day, until someone noticed the new pods had never started." },
+        { t: "p", text: "**Mechanism.** `kubectl apply` returned success because the API server accepted the manifest. That records desired state and nothing more. The new pods were Pending: they requested more memory than any node could offer, and the scheduler's reason sat in the pod's status, unread." },
+        { t: "p", text: "**Fix.** The pipeline now waits on `kubectl rollout status` with a timeout and fails when the rollout does not complete, and it prints the pod events on failure. Success means the observed state matched, not that the YAML was accepted." }
+      ] }
   ],
 
   takeaways: [

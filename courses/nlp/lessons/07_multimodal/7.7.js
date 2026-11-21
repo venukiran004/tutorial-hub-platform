@@ -116,6 +116,12 @@ EC.receiveLesson({
       code: 'from unstructured.partition.pdf import partition_pdf\n\nelements = partition_pdf("report.pdf",\n                         strategy="hi_res",\n                         infer_table_structure=True)\n\nfor el in elements:\n    el.category          # Title, NarrativeText, Table, Image, ...\n    el.metadata.page_number\n    el.metadata.text_as_html   # for a Table, the recovered grid',
       caption: "`infer_table_structure=True` is the argument that returns a grid rather than a jumble." },
     { t: "p", text: "The `category` field is the part that matters for §01’s argument: **the output is not a string, it is a list of typed elements with page numbers — so reading order and layout survive as data rather than being flattened away.** And `strategy=\"hi_res\"` runs a layout model rather than the PDF’s own text layer, which is slower and is the only mode that can produce `text_as_html` for a table. **§06’s first error class is exactly what that layout model gets wrong**, so its confidence is worth surfacing rather than trusting." },
+    { t: "callout", kind: "trap", title: "Extracting text and discarding layout",
+      body: [
+        { t: "p", text: "Tables and forms carry meaning in position. Plain text extraction loses which number belongs to which label." },
+        { t: "p", text: "Use layout-aware models or table extraction, and validate totals or cross-field constraints." }
+      ] },
+
     { t: "exercise", kind: "Challenge", title: "Measure your pipeline", difficulty: "core", minutes: 30,
       requirements: [
         "Take 50 documents and measure layout, OCR and extraction accuracy separately, then compare the product against the end-to-end number.",
@@ -180,7 +186,14 @@ consistency check flags: digit errors 100/100, dropped line items 100/100, clean
           { t: "p", text: "Reading two columns line by line interleaves them: 'Revenue rose 12% in Q3, Headcount fell to 210 driven by subscriptions.' Each fragment is correctly transcribed and the sentence is meaningless. A merged table cell becomes an empty string in the next row, so a flat extractor cannot tell that the 98 and 101 still belong to 'North'." },
           { t: "p", text: "The sum check flagged every invoice with a corrupted total digit and every invoice with a dropped line item, and none of the clean ones. It cannot catch an error that keeps the arithmetic consistent, such as a wrong date or vendor. Comparing a general VLM with a document model needs document pages and both models, which this environment lacks." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: invoice totals read from the wrong column",
+      body: [
+        { t: "p", text: "**Symptom.** An invoice-processing pipeline extracted the wrong amount on a fifth of invoices." },
+        { t: "p", text: "**Mechanism.** Text extraction lost the layout, so the pipeline could not tell which number was the total and which was a line item." },
+        { t: "p", text: "**Fix.** A layout-aware model uses positions alongside text, and extraction is validated by checking that line items sum to the total." }
+      ] }
   ],
 
   takeaways: [

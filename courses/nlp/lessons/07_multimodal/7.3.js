@@ -156,6 +156,17 @@ processor.decode(model.generate(**inputs, max_new_tokens=10)[0], skip_special_to
       caption: "**Only the Q-Former is trained: the vision encoder and the language model are both frozen**, so the learned component is around a hundred million parameters compressing an image into a handful of tokens the language model already knows how to read. That is the structural reason this family of models exists at all, and the reason a new vision encoder can be swapped in without retraining the language side." },
     { t: "p", text: "**The prompt format belongs to the checkpoint rather than to the task.** The OPT-based variants were trained with `Question: ... Answer:` and degrade visibly without it, while the Flan-T5 variants expect their own instruction phrasing — so a model card is not documentation here, it is part of the interface. The same asymmetry shows up in the failure mode: BLIP-2 answers fluently about an image it has partly misread, because the language model is doing the writing." },
 
+    { t: "callout", kind: "trap", title: "Using a VLM caption as a fact",
+
+      body: [
+
+        { t: "p", text: "Vision-language models generate fluent captions that can include plausible details that are not in the image, and the wrong count or colour reads as confident." },
+
+        { t: "p", text: "Constrain prompts, cross-check against detectors where facts matter, and review a sample before release." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Probe a VLM's limits", difficulty: "core", minutes: 35,
       requirements: [
         "Caption five images from your domain unconditionally and count how many are accurate.",
@@ -245,7 +256,14 @@ text 'Total: $1,250.00'     -> caption: a white background with the words, ' the
           { t: "p", text: "A LLaVA-style two-layer projector is 21M parameters, 0.29% of a 7.3B system, which is why training only the projector is so cheap. Reading text failed in a revealing way: 'INVOICE 4021' became 'invoice 421 - the best way to get money'. A digit was dropped and the rest invented. Use a dedicated OCR model for text in images; this environment has none, so that comparison is not run here." },
           { t: "p", text: "The images are drawn with PIL so their content is known exactly: counts, colours and positions are ground truth, which makes failures unambiguous. Synthetic flat shapes are easier than photographs in some ways and harder in others, so repeat the probes on your own images." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a captioner that invented a logo",
+      body: [
+        { t: "p", text: "**Symptom.** An accessibility feature described product photos with details that were not in them." },
+        { t: "p", text: "**Mechanism.** The vision-language model generated fluent captions that included plausible but absent details, and the default prompt encouraged description over accuracy." },
+        { t: "p", text: "**Fix.** Captions are generated with prompts that constrain the content, checked against detected objects, and reviewed on a sample before release." }
+      ] }
   ],
 
   takeaways: [

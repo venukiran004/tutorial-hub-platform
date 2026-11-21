@@ -460,6 +460,17 @@ def drift(current, previous, cols):
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Letting type inference run before profiling",
+
+      body: [
+
+        { t: "p", text: "Reading a file with default type inference converts sentinel values and malformed entries before you see them: '-1' becomes a number and 'N/A' becomes NaN, and the evidence of a broken export disappears." },
+
+        { t: "p", text: "Read as strings first, profile the raw values, then cast with explicit dtypes." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A profiler that produces a report someone can act on",
@@ -793,7 +804,14 @@ def test_findings_are_ranked():
           why: "Letting the parser infer types before you know the column roles means an identifier loses its zeros, a blank floats an integer column, and a sentinel becomes a plausible number. Profile first, then convert deliberately by role, and count what fails to parse."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a broken export trained a model",
+      body: [
+        { t: "p", text: "**Symptom.** A churn model's performance collapsed after a routine retrain, and nothing in the pipeline had failed." },
+        { t: "p", text: "**Mechanism.** The month's source export was truncated by an upstream job: a third of customers were missing and a sentinel value of -1 filled a date column. The pipeline read it, inferred types, and trained." },
+        { t: "p", text: "**Fix.** Every load is profiled before use: row count against the previous month, missingness per column, and checks for sentinel values. A fall of more than 10% in rows stops the pipeline." }
+      ] }
   ],
 
   takeaways: [

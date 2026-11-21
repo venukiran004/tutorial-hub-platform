@@ -340,7 +340,14 @@ STL(np.log(s), period=7, robust=True)                   # multiplicative; streng
           { t: "p", text: "(c) is check 4 in numbers: absent rows make a window span a hole with no warning, and two honest options remain — NaN, or an interpolation you can defend." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a random split on a time series",
+      body: [
+        { t: "p", text: "**Symptom.** A sales forecast scored excellently in validation and missed badly when used." },
+        { t: "p", text: "**Mechanism.** Rows were split randomly, so validation days sat between training days. The model interpolated between known neighbours, which is easier than forecasting the future." },
+        { t: "p", text: "**Fix.** Validation uses rolling-origin backtesting, training only on the past and testing on the next period." }
+      ] }
   ],
 
   takeaways: [

@@ -231,6 +231,17 @@ a 100-token response at d=0.02 earns what a 20-token response at d=0.10 earns`,
   <text x="300" y="288" class="s-mono" style="font-size:10px;fill:var(--crit)">-&gt; IPO</text>
 </svg>` },
 
+    { t: "callout", kind: "trap", title: "Picking a DPO variant because it removes a component",
+
+      body: [
+
+        { t: "p", text: "Variants that drop the reference model save memory and compute, and they also remove the anchor that keeps the policy close to where it started. Choosing one for convenience on a dataset that needs that anchor produces drift that the training loss does not show." },
+
+        { t: "p", text: "Choose the variant by the data you have — pairs or thumbs, length bias or not — and compare variants on a held-out win rate and a KL measurement, not on training loss." }
+
+      ] },
+
+
     { t: "exercise", kind: "analysis", title: "Pick a method from your data, not from a paper", difficulty: "core", minutes: 25,
       body: "Characterise the preference data you actually have — its shape, its volume, its label agreement and its length statistics — and derive which member of this family fits. Then state what you would have to collect to use your second choice instead, and whether that is worth it.",
       requirements: [

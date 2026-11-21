@@ -339,7 +339,14 @@ df["fee_corrupt"] = df.monthly_fee > 100                # the rule that survives
           { t: "p", text: "(c) is the multivariate version of the same effect, and the reason the robust estimator is the default for outlier (as opposed to novelty) detection." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: masked outliers in a cost audit",
+      body: [
+        { t: "p", text: "**Symptom.** An expense audit using z-scores found nothing unusual in a quarter that turned out to contain several large fraudulent claims." },
+        { t: "p", text: "**Mechanism.** The fraudulent claims inflated the standard deviation, so none of them was more than three standard deviations from the mean." },
+        { t: "p", text: "**Fix.** The audit uses the median and median absolute deviation, and checks are validated against past confirmed cases." }
+      ] }
   ],
 
   takeaways: [

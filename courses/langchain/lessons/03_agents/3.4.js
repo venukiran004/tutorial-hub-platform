@@ -177,6 +177,17 @@ agent = create_react_agent(
       caption: "**`prompt=` is the current name for what tutorials call `state_modifier` and older ones call `messages_modifier`** \u2014 same argument, same job, three names, which is the most common reason a prebuilt-agent snippet fails to run. A string, a `SystemMessage`, a callable or a Runnable are all valid values." },
     { t: "p", text: "**`pre_model_hook` is where context management belongs in an agent loop**, because it runs before every model call rather than once at the start \u2014 trimming before `invoke` fixes the first turn and nothing after it, which is exactly the failure that looks like a context overflow appearing at random. `post_model_hook` is the symmetric place for validation and redaction, and both exist so that you do not have to abandon the prebuilt and rebuild the loop by hand." },
 
+    { t: "callout", kind: "trap", title: "Following a tutorial whose import has moved",
+
+      body: [
+
+        { t: "p", text: "Agent construction moved between packages during 2025: code written against `langgraph.prebuilt.create_react_agent` now emits a deprecation warning pointing to `langchain.agents.create_agent`. Tutorials written before the move still work, which is why mixed imports end up in one codebase with two different sets of defaults." },
+
+        { t: "p", text: "Pin the library versions, treat a deprecation warning as a task rather than noise, and check the import path of any agent code you copy against the version you run." }
+
+      ] },
+
+
     { t: "exercise", kind: "analysis", title: "Compare the prebuilt against the hand-written loop",
       difficulty: "core", minutes: 24,
       body: "Tabulate what a prebuilt agent provides against what the 3.3 loop had. Build and run a prebuilt agent on the same question and compare the resulting messages. Record the deprecation warning it emits and what it points to. Then list what middleware is for and say what each item corresponds to in graph terms.",

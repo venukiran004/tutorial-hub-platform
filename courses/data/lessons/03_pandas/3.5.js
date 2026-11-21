@@ -670,7 +670,14 @@ def test_empty_input():
           why: "`pivot_table` aggregates duplicates, and its default is `mean`. A quantity report showing one and a half units is the default doing exactly what it says — pass `aggfunc=\"sum\"` for anything additive, and use plain `pivot` when a duplicate would be a bug you want raised."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a pivot that averaged away a duplicate sale",
+      body: [
+        { t: "p", text: "**Symptom.** A monthly sales-by-product table understated revenue for some products." },
+        { t: "p", text: "**Mechanism.** The data had two rows for the same product and month — a correction and an original. `pivot_table` silently aggregated them with its default, the mean, instead of summing." },
+        { t: "p", text: "**Fix.** The pivot specifies `aggfunc='sum'` explicitly, and a check asserts the pivot's grand total equals the long table's total before it is published." }
+      ] }
   ],
 
   takeaways: [

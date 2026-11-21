@@ -126,6 +126,12 @@ async def render_chart(rows: list[dict], tool_context) -> dict:
 
     { t: "exercise", kind: "practice", title: "Measure it yourself", difficulty: "core", minutes: 22,
       prompt: "Write two async tools that each sleep 0.4s and time a turn where the model requests both in one response, then one where it requests them in sequence. Do a warm-up run first and explain why the number changes if you do not. Then replace one tool's `await asyncio.sleep` with `time.sleep`, run ten conversations concurrently with asyncio.gather, and compare total wall-clock time against the async version.",
+      requirements: [
+        "Time a turn where two 0.4 s async tools are requested together, and one where they are sequential",
+        "Do a warm-up run and explain why it matters",
+        "Replace one sleep with time.sleep and run ten conversations concurrently",
+        "Compare total wall-clock time against the async version"
+      ],
       hints: [
         "Build the two-call response by hand as an LlmResponse with two function_call parts.",
         "Import and construction cost lands on the first measured run — warm up.",
@@ -136,8 +142,14 @@ async def render_chart(rows: list[dict], tool_context) -> dict:
           { t: "p", text: "The single-response version lands at about 0.41s and the sequential one at about 0.83s, and the gap is one sleep plus a model round trip. Without a warm-up the first measurement is dominated by imports and construction — mine read 2.75s — which is a good reminder that microbenchmarks measure whatever you forgot to exclude." },
           { t: "p", text: "The ten-concurrent-conversations test is the one that changes behaviour. With async tools the total is roughly the time of one conversation; with `time.sleep` it is roughly ten times that, because every conversation queues behind a frozen loop. That is the production failure mode in miniature: no single request looks slow in isolation, and throughput collapses as soon as there is traffic." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: one slow tool that stalled every conversation",
+      body: [
+        { t: "p", text: "**Symptom.** Whenever one user asked about stock levels, every other conversation on the same server paused for several seconds." },
+        { t: "p", text: "**Mechanism.** The stock tool used a blocking database driver inside an async server. While it waited, the event loop could not run anything else, so every conversation in the process waited with it." },
+        { t: "p", text: "**Fix.** The tool uses an async driver, blocking calls are wrapped in `asyncio.to_thread`, and a loop-lag metric alerts when the event loop is blocked for more than 100 ms." }
+      ] }
   ],
 
   takeaways: [

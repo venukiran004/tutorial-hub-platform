@@ -117,21 +117,105 @@ EC.receiveLesson({
 
     { t: "p", text: "The size difference is the only remaining argument, and it matters on a microcontroller running a wake-word detector in a few kilobytes of RAM. Note that MFCC with deltas and delta-deltas is 39 numbers — essentially the same as 40-band log-mel, so if you were adding dynamic features anyway the saving has already evaporated." },
 
+    { t: "callout", kind: "trap", title: "Keeping MFCCs for a model that expects log-mel",
+
+      body: [
+
+        { t: "p", text: "Pretrained speech encoders are trained on log-mel filterbank features. Feeding them MFCCs, or a front end with different window and mel settings, applies pretrained weights to inputs they have never seen." },
+
+        { t: "p", text: "Use the exact feature extractor the model was trained with, loaded from its configuration." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Measure the redundancy yourself", difficulty: "intermediate", minutes: 40,
       prompt: "On a real speech recording, compute 40-band log-mel and the band-to-band correlation matrix — confirm adjacent bands correlate above 0.9. Apply the DCT and measure the correlation among the first 13 cepstral coefficients. Then reconstruct log-mel from 13 coefficients and measure the error. Finally, train the same small classifier on MFCC-13, MFCC-39 and log-mel-40 features for a simple task such as digit or speaker classification, and compare.",
+      requirements: [
+        "Compute 40-band log-mel and its band-to-band correlation",
+        "Apply the DCT and measure correlation among the first 13 coefficients",
+        "Reconstruct log-mel from 13 coefficients and measure the error",
+        "Train a small classifier on MFCC-13, MFCC-39 and log-mel-40 and compare"
+      ],
       hints: [
         "Use real speech — synthetic tones give the opposite correlation result.",
         "`torchaudio.functional.create_dct(40, 40, 'ortho')` gives an invertible transform.",
         "For speaker classification, expect the feature ranking to differ from digit classification."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import glob, os, sys
+import numpy as np
+import librosa
+from scipy.fft import dct, idct
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+# Recordings: 16 kHz WAVs named <digit>_<speaker>_<rate>_<pitch>.wav and one longer sentence for the statistics.
+# The reference run used 300 synthesised spoken digits (2 voices x 5 speaking rates x 3 pitches x 10 digits).
+SPEECH = sys.argv[1] if len(sys.argv) > 1 else "speech"
+sentence, sr = librosa.load(sorted(glob.glob(os.path.join(SPEECH, "sent", "*.wav")))[0], sr=16000)
+
+def log_mel(y, n_mels=40):
+    return np.log(librosa.feature.melspectrogram(y=y, sr=sr, n_fft=400, hop_length=160, n_mels=n_mels) + 1e-6)   # (40, frames)
+
+L = log_mel(sentence)
+C = np.corrcoef(L)
+print(f"log-mel-40: adjacent-band correlation {np.mean([C[i, i + 1] for i in range(39)]):.3f}, "
+      f"mean |off-diagonal| {np.abs(C[~np.eye(40, dtype=bool)]).mean():.3f}")
+M = dct(L, type=2, axis=0, norm="ortho")                       # cepstra
+Cm = np.corrcoef(M[:13])
+print(f"MFCC 1-13:  mean |off-diagonal| correlation {np.abs(Cm[~np.eye(13, dtype=bool)]).mean():.3f}")
+recon = idct(np.vstack([M[:13], np.zeros((27, M.shape[1]))]), type=2, axis=0, norm="ortho")
+print(f"log-mel rebuilt from 13 coefficients: mean |error| {np.abs(recon - L).mean():.3f} nats "
+      f"(the log-mel itself spans {L.max() - L.min():.1f}); what is lost is fine spectral detail such as pitch harmonics")
+
+rng = np.random.default_rng(0)
+def features(path, kind, snr_db=None):
+    y, _ = librosa.load(path, sr=16000)
+    if snr_db is not None:                                     # white noise at a fixed signal-to-noise ratio
+        y = y + rng.standard_normal(len(y)) * np.sqrt(np.mean(y ** 2) / 10 ** (snr_db / 10))
+    lm = log_mel(y)
+    if kind == "logmel40": f = lm
+    else:
+        m = dct(lm, type=2, axis=0, norm="ortho")[:13]
+        f = m if kind == "mfcc13" else np.vstack([m, librosa.feature.delta(m, width=5), librosa.feature.delta(m, order=2, width=5)])
+    return np.concatenate([f.mean(1), f.std(1)])               # fixed-length summary of a variable-length clip
+
+files = sorted(glob.glob(os.path.join(SPEECH, "digits", "*.wav")))
+meta = [os.path.basename(f)[:-4].split("_") for f in files]   # digit, speaker, rate, pitch
+# Train on one voice and test on the other: with a single training speaker every feature set must
+# generalise to a new vocal tract, which is the hardest version of the task and separates the features.
+digit = np.array([m[0] for m in meta]); test = np.array([m[1] == "z" for m in meta])
+print("\\ndigit accuracy on an unseen voice\\nfeatures     clean   10 dB SNR   0 dB SNR")
+for kind in ["mfcc13", "mfcc39", "logmel40"]:
+    Xtr = np.array([features(f, kind) for f, t in zip(files, test) if not t])
+    clf = make_pipeline(StandardScaler(), LogisticRegression(max_iter=3000)).fit(Xtr, digit[~test])
+    row = [clf.score(np.array([features(f, kind, snr) for f, t in zip(files, test) if t]), digit[test]) for snr in (None, 10, 0)]
+    print(f"{kind:<12} {row[0]:5.3f}   {row[1]:9.3f}   {row[2]:8.3f}")`,
+        out: `log-mel-40: adjacent-band correlation 0.973, mean |off-diagonal| 0.684
+MFCC 1-13:  mean |off-diagonal| correlation 0.237
+log-mel rebuilt from 13 coefficients: mean |error| 0.313 nats (the log-mel itself spans 15.7); what is lost is fine spectral detail such as pitch harmonics
+
+digit accuracy on an unseen voice
+features     clean   10 dB SNR   0 dB SNR
+mfcc13       0.067       0.000      0.027
+mfcc39       0.193       0.127      0.087
+logmel40     0.640       0.200      0.100`,
+       
         notes: [
           { t: "p", text: "The two classification tasks should rank the features differently, and that is the most useful outcome. Log-mel typically wins for content classification because the network exploits the correlation the DCT would have removed. For speaker identification the picture is more interesting, since pitch information lives in the high cepstral coefficients that truncation discards — so MFCC-13 can actually be a *worse* speaker feature than log-mel despite MFCCs' history in that field, where they were paired with explicit pitch features." },
           { t: "p", text: "On real speech I measured adjacent-band correlation at 0.9524 and the DCT reducing mean absolute correlation by 62 %. If your numbers are much lower, check that you are using speech rather than music or tones — I got 0.0877 on synthetic tones, which inverted the conclusion entirely. Broad spectral envelope is what creates the correlation, and only real voiced speech has it." },
           { t: "p", text: "The reconstruction error quantifies the trade precisely: 13 of 40 coefficients hold 98.22 % of the energy and reconstruct log-mel to within 2.76 % of its range. So MFCCs are not a lossy disaster — they are a well-chosen summary. The point is simply that for a neural network the 1.78 % is free to keep, and the pitch structure it contains is sometimes exactly what you need." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: MFCCs fed to a model that wanted log-mel",
+      body: [
+        { t: "p", text: "**Symptom.** A pretrained speech encoder fine-tuned on MFCC features performed far below its published results." },
+        { t: "p", text: "**Mechanism.** The encoder was pretrained on log-mel filterbank features. MFCCs are a different representation, so the pretrained weights were applied to inputs they had never seen." },
+        { t: "p", text: "**Fix.** Fine-tuning uses the exact front end the model was pretrained with, taken from its configuration." }
+      ] }
   ],
 
   takeaways: [

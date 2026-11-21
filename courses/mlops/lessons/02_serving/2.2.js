@@ -155,8 +155,26 @@ n_model = n_for_proportion(0.7167, 0.7667)    # accuracy -5 points`,
 
     { t: "p", text: "One last caveat on the arithmetic. Every figure here assumes twenty requests a second and independent observations. At two requests a second, multiply every detection time by ten — and the data layer's 16.7 minutes becomes nearly three hours, which changes what is worth alerting on. Correlated traffic makes it worse: a thousand predictions for one customer in one session are nowhere near a thousand independent observations." },
 
+    { t: "callout", kind: "trap", title: "Paging on a signal with low statistical power",
+
+      body: [
+
+        { t: "p", text: "An alert evaluated every few minutes on a small sample fires at random intervals even when nothing has changed, and teams learn to ignore it. When the real shift arrives, the page is ignored too." },
+
+        { t: "p", text: "Compute the sample size each signal needs for its detection target, evaluate over windows that reach it, and page only on the fast, high-power layers." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Put your own four layers on the clock", difficulty: "core", minutes: 30,
       prompt: "For a model you operate, compute four detection times rather than estimating them. Take your actual request rate. For infrastructure, pick a realistic error-rate change and compute the sample size. For the data layer, take your main feature and run the power curve from this lesson over your own reference window — find the N at which power reaches 0.80, then convert to wall-clock. For prediction distribution, compute the sample size for a 5-point move in your positive rate. For model quality, write down your label delay honestly, in days. Then look at your current alert rules and ask which of them is paging on a signal whose power you have just computed to be under 0.5.",
+      requirements: [
+        "Compute detection time for an infrastructure error-rate change at your request rate",
+        "Find the sample size at which a shift in your main feature reaches 0.80 power, and convert it to wall-clock",
+        "Compute the sample size for a five-point move in your positive rate",
+        "Write down your label delay in days",
+        "Find any alert that pages on a signal whose power is under 0.5"
+      ],
       hints: [
         "If your drift window is a day of data, compute the power at that N before trusting any alert from it.",
         "Count independent observations, not requests — many predictions for one user in one session are close to one observation.",
@@ -167,8 +185,14 @@ n_model = n_for_proportion(0.7167, 0.7667)    # accuracy -5 points`,
           { t: "p", text: "The two usual discoveries: the label delay is far longer than anyone says out loud, and at least one existing alert is computed on a window with power well under 0.5 — which explains an alert that has a reputation for being flaky without anyone having diagnosed why." },
           { t: "p", text: "The useful output is a table of four times. It makes the design argument for you: the signals fast enough to page on are the ones that cannot establish harm, so paging and retraining need separate triggers, and the prediction log is what makes the slow one usable at all." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the drift alert that fired once and was believed",
+      body: [
+        { t: "p", text: "**Symptom.** A feature-drift alert fired on a Tuesday morning and a team spent two days retraining and redeploying. The retrained model was no better, and the alert did not fire again on the original model's traffic." },
+        { t: "p", text: "**Mechanism.** The alert evaluated a statistical test every few minutes on a small window. At that sample size the test had low power, so a single firing was weak evidence of a real shift and frequent evaluation made a false alarm likely within a week. Nobody had computed how many samples the test needed to be trusted." },
+        { t: "p", text: "**Fix.** The rule now requires the test to hold over a window sized for 80% power and to persist across consecutive windows. Data-layer alerts open a ticket; retraining is triggered by labelled quality, and paging is reserved for the layers that detect in seconds." }
+      ] }
   ],
 
   takeaways: [

@@ -312,7 +312,14 @@ the SVD route:  X = U D Vᵀ  ->  XᵀX = V D² Vᵀ,  so the columns of V are t
           why: "The same reason PCA kept noise columns in 5.1: after standardising, noise has the variance of signal."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: PCA fitted before the train–test split",
+      body: [
+        { t: "p", text: "**Symptom.** A model using principal components scored worse after the pipeline was rebuilt properly." },
+        { t: "p", text: "**Mechanism.** PCA had been fitted on all rows, so the components reflected the test data's structure. The improvement was small but real, and it was leakage." },
+        { t: "p", text: "**Fix.** PCA is a step inside the pipeline, fitted on the training fold only." }
+      ] }
   ],
 
   takeaways: [

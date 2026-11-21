@@ -244,6 +244,17 @@ SELECT COUNT(*) - 1 FROM sub;`,
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "A recursive CTE with no depth guard",
+
+      body: [
+
+        { t: "p", text: "A tree terminates on its own; real data that should be a tree sometimes contains a cycle — two employees who manage each other — and the recursion then runs until it exhausts resources." },
+
+        { t: "p", text: "Carry a depth counter and the path of visited ids in every recursive CTE, and stop on revisit or a maximum depth." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A category tree, a bill of materials, and a cycle report",
@@ -324,7 +335,14 @@ SELECT path FROM walk WHERE is_cycle;
           why: "The working set is the last round's output. If the name referred to the accumulated result, every round would re-derive every earlier level and the recursion would never produce an empty round."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a recursive query that never returned",
+      body: [
+        { t: "p", text: "**Symptom.** An org-chart query hung and was killed after consuming a database worker for an hour." },
+        { t: "p", text: "**Mechanism.** A data-entry error made two employees each other's manager. The recursive CTE followed the cycle indefinitely, because a graph with a cycle does not terminate on its own." },
+        { t: "p", text: "**Fix.** The recursive member carries a depth counter with a limit and the path of visited ids, stopping when it revisits one. A check constraint prevents an employee being their own manager." }
+      ] }
   ],
 
   takeaways: [

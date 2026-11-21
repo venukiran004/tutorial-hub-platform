@@ -282,7 +282,14 @@ the heavy-tailed q lets moderately-distant points sit far apart in the map, whic
           why: "Read the asymmetry of the KL divergence and every artefact is predicted."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a t-SNE plot read as clusters of different sizes",
+      body: [
+        { t: "p", text: "**Symptom.** A product team concluded from a t-SNE plot that one user group was much larger and more spread out than the others." },
+        { t: "p", text: "**Mechanism.** t-SNE preserves neighbourhoods, not distances or sizes. Cluster size and spacing in the plot depend on the perplexity setting, not on the data." },
+        { t: "p", text: "**Fix.** t-SNE and UMAP are used only to explore neighbourhoods, and group sizes and separations are measured in the original space." }
+      ] }
   ],
 
   takeaways: [

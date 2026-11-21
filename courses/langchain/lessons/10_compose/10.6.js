@@ -100,7 +100,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "Two tests, then re-running the first",
       code: "test_a -> ['double', 'small']\ntest_b -> ['double', 'small']\n\nre-invoking test_a's thread: ['double', 'small', 'double', 'small']",
       caption: "The second run **appended** to the first." },
-    { t: "callout", kind: "warn", title: "A shared saver plus a shared thread_id gives order-dependent tests", body: [
+    { t: "callout", kind: "trap", title: "A shared saver plus a shared thread_id gives order-dependent tests", body: [
       { t: "p", text: "9.4's mechanism is the cause: the reducer appends to the persisted state, so re-invoking a thread continues it. In a test suite that means one test's state reaches another, and the failure is invisible until someone reorders or parallelises the suite." },
       { t: "p", text: "The rules are mechanical: a **fresh** `InMemorySaver` per test rather than a module-level one, a unique `thread_id` per test \u2014 ideally the test's own name \u2014 and assertions on `get_state()` rather than only on the `invoke()` return." }
     ] },

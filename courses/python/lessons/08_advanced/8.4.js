@@ -95,7 +95,7 @@ isinstance(some_object, Closeable)     # only with @runtime_checkable
       caption: "**The protocol lives with the consumer, not the implementations.** That inverts the dependency: your function declares what it needs, and anything meeting it qualifies — including classes written before your protocol existed (Lesson 4.6)."
     },
 
-    { t: "callout", kind: "warn", title: "`runtime_checkable` checks names, not signatures", body: [
+    { t: "callout", kind: "trap", title: "`runtime_checkable` checks names, not signatures", body: [
       { t: "code", lang: "python", title: "what isinstance actually verifies", numbered: false, code: `
 @runtime_checkable
 class Reader(Protocol):

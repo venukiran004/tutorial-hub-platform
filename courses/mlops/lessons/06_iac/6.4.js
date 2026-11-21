@@ -155,6 +155,11 @@ def gitops_model(events, period=5):
 
     { t: "exercise", kind: "practice", title: "Find the drift and write the procedure", difficulty: "core", minutes: 25,
       prompt: "For a cluster you deploy to, establish two things. First, whether the repository currently matches the cluster: if you use GitOps, list applications that are OutOfSync or suspended and for how long; if you deploy by push, diff a live Deployment against the manifest in git and count the fields that differ. Second, write the break-glass procedure down — which of the three options your team would use, who can approve it, and how the change gets back into the repository afterwards. Then check for ownership conflicts: does anything in the repository specify a field that an autoscaler or an operator also writes?",
+      requirements: [
+        "List applications that are OutOfSync or suspended, or diff a live Deployment against git",
+        "Write the break-glass procedure: the option, the approver and how the change returns to the repository",
+        "Find fields in the repository that an autoscaler or operator also writes"
+      ],
       hints: [
         "Under push, `kubectl get deploy -o yaml` against the manifest usually finds several differences, and replica count is the most common.",
         "A suspended application is the one to look for first — it is the push model reintroduced, and nothing alerts on it.",
@@ -165,8 +170,14 @@ def gitops_model(events, period=5):
           { t: "p", text: "Under push, the diff almost always finds something: a replica count changed during an incident, an annotation added by a tool, a resource limit raised. None of it is recorded anywhere, which is the point — the repository was a description of one past apply." },
           { t: "p", text: "The break-glass answer that works is *commit it*, with an approval path that takes a minute rather than a day. Every team that relies on suspending sync eventually leaves something suspended, and an alert on suspension duration is the cheapest control for that." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the emergency scale-up that kept reverting",
+      body: [
+        { t: "p", text: "**Symptom.** During an incident an engineer scaled a model service from four to twelve replicas by hand. Within a minute it was back at four. They scaled again; it reverted again. The incident lasted forty minutes longer than it needed to." },
+        { t: "p", text: "**Mechanism.** The cluster ran Argo CD with `selfHeal` on, and the replica count was in the repository. The controller saw drift from the declared state and corrected it, exactly as configured. Nothing told the engineer what was undoing the change." },
+        { t: "p", text: "**Fix.** The replica count was removed from the manifest because the autoscaler owns it, and the break-glass procedure is written down: suspend auto-sync for the application with a recorded reason, make the change, and land it in the repository before resuming. The procedure was rehearsed in a game day." }
+      ] }
   ],
 
   takeaways: [

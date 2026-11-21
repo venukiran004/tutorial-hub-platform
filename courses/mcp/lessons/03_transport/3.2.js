@@ -31,17 +31,23 @@ if __name__ == "__main__":
     mcp.run(transport="streamable-http")        # host/port from the constructor
 
 # The useful way: take the ASGI app and mount it.
+import contextlib
 from starlette.applications import Starlette
 from starlette.routing import Mount, Route
+
+@contextlib.asynccontextmanager
+async def lifespan(app):
+    async with mcp.session_manager.run():         # required once mounted: without it every MCP request is a 500
+        yield
 
 app = Starlette(routes=[
     Route("/healthz", healthz),                  # your own routes
     Route("/metrics", metrics),
     Mount("/", app=mcp.streamable_http_app()),   # the MCP endpoint, at /mcp
-])
+], lifespan=lifespan)
 
 # uvicorn your_module:app --host 0.0.0.0 --port 8000`,
-      caption: "`streamable_http_app()` returns a mountable ASGI app — `sse_app()` is the equivalent for the older transport. **Once it is mounted, every tool you already use for an HTTP service applies:** your own health check, your metrics, your middleware, your logging, your deployment." },
+      caption: "`streamable_http_app()` returns a mountable ASGI app — `sse_app()` is the equivalent for the older transport. **When you mount it, start its session manager in your app's lifespan**: `mcp.run()` does that for you, a mounted app does not, and without it every MCP request returns 500 while `/healthz` keeps answering 200. **Once it is mounted, every tool you already use for an HTTP service applies:** your own health check, your metrics, your middleware, your logging, your deployment." },
 
     { t: "callout", kind: "good", title: "Mount it under your own app, not the other way round",
       body: [
@@ -73,6 +79,7 @@ class RequireToken(BaseHTTPMiddleware):
 app = Starlette(
     routes=[Route("/healthz", healthz), Mount("/", app=mcp.streamable_http_app())],
     middleware=[Middleware(RequireToken)],
+    lifespan=lifespan,                               # the session-manager lifespan from above
 )`,
       caption: "**The rejection happens before any MCP message is parsed**, which is the property you want: an unauthenticated caller never reaches a tool, a schema, or even the handshake. Note the health-check exemption, which is the kind of hole worth writing deliberately rather than discovering." },
 
@@ -163,22 +170,113 @@ mcp = FastMCP(
 
     { t: "exercise", kind: "practice", title: "Expose it properly", difficulty: "advanced", minutes: 30,
       prompt: "Take an HTTP MCP server and mount it under your own Starlette app with a /healthz route. Add bearer-token middleware and confirm from curl that a request with no token gets 401 before any MCP message is parsed, while /healthz still answers. Then send a request with Origin: http://evil.example and confirm 403; add that origin to allowed_origins and confirm it now passes. Finally write a tool that reports progress for thirty seconds, call it through a reverse proxy with buffering on, and then with it off — and record the difference in when the updates arrive.",
+      requirements: [
+        "Mount an HTTP MCP server under your own Starlette app with a /healthz route",
+        "Add bearer-token middleware and confirm a request with no token gets 401 before any MCP message is parsed",
+        "Send Origin: http://evil.example and confirm 403, then allow that origin and confirm it passes",
+        "Call a thirty-second progress-reporting tool through a reverse proxy with buffering on, then off",
+        "Record when the progress updates arrive in each case"
+      ],
       hints: [
         "Check the 401 happens before the handshake by looking at what the server logged.",
         "curl -H 'Origin: http://evil.example' is enough to trigger the check.",
         "For the proxy test, nginx with proxy_buffering on is the default."
       ],
       solution: {
+        lang: "python", title: "solution.py  (run once, then with --allow-origin)",
+        code: `import contextlib, logging, sys, threading, time, warnings
+import httpx, uvicorn
+from starlette.applications import Starlette
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse, PlainTextResponse
+from starlette.routing import Mount, Route
+from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
+warnings.filterwarnings("ignore"); logging.getLogger("mcp").setLevel(logging.CRITICAL)
+
+TOKEN = "s3cret-token"
+ALLOW_ORIGIN = "--allow-origin" in sys.argv
+mcp = FastMCP("finance", transport_security=TransportSecuritySettings(
+    allowed_hosts=["127.0.0.1:8767"],
+    allowed_origins=["http://evil.example"] if ALLOW_ORIGIN else []))
+
+@mcp.tool()
+def ping() -> str:
+    """Liveness."""
+    return "pong"
+
+class RequireToken(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        if request.url.path.startswith("/healthz"):
+            return await call_next(request)
+        auth = request.headers.get("authorization", "")
+        if auth != f"Bearer {TOKEN}":
+            return JSONResponse({"error": "unauthorized"}, status_code=401)
+        return await call_next(request)
+
+@contextlib.asynccontextmanager
+async def lifespan(app):
+    async with mcp.session_manager.run():          # a mounted MCP app needs its session manager started here
+        yield
+
+async def healthz(request): return PlainTextResponse("ok")
+app = Starlette(routes=[Route("/healthz", healthz), Mount("/", app=mcp.streamable_http_app())],
+                middleware=[Middleware(RequireToken)], lifespan=lifespan)
+
+server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=8767, log_level="critical"))
+threading.Thread(target=server.run, daemon=True).start()
+while not server.started: time.sleep(0.1)
+
+INIT = {"jsonrpc": "2.0", "id": 1, "method": "initialize",
+        "params": {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "curl", "version": "1"}}}
+HDRS = {"accept": "application/json, text/event-stream", "content-type": "application/json"}
+def post(label, headers):
+    r = httpx.post("http://127.0.0.1:8767/mcp", json=INIT, headers={**HDRS, **headers})
+    print(f"  {label:<38} -> {r.status_code} {r.text[:70]!r}")
+
+print(f"allowed_origins = {mcp.settings.transport_security.allowed_origins}")
+print(f"  {'GET /healthz, no token':<38} -> {httpx.get('http://127.0.0.1:8767/healthz').status_code}")
+post("POST /mcp, no token", {})
+post("POST /mcp, wrong token", {"authorization": "Bearer nope"})
+post("POST /mcp, token", {"authorization": f"Bearer {TOKEN}"})
+post("POST /mcp, token, Origin evil.example", {"authorization": f"Bearer {TOKEN}", "origin": "http://evil.example"})
+server.should_exit = True
+
+# Not reproduced here: the proxy-buffering comparison needs a reverse proxy (nginx: proxy_buffering on/off)
+# in front of a tool that reports progress for thirty seconds; time the arrival of each update with buffering
+# on and off.`,
+        out: `allowed_origins = []
+  GET /healthz, no token                 -> 200
+  POST /mcp, no token                    -> 401 '{"error":"unauthorized"}'
+  POST /mcp, wrong token                 -> 401 '{"error":"unauthorized"}'
+  POST /mcp, token                       -> 200 'event: message\\r\\ndata: {"jsonrpc":"2.0","id":1,"result":{"protocolVersi'
+  POST /mcp, token, Origin evil.example  -> 403 'Invalid Origin header'
+
+allowed_origins = ['http://evil.example']
+  GET /healthz, no token                 -> 200
+  POST /mcp, no token                    -> 401 '{"error":"unauthorized"}'
+  POST /mcp, wrong token                 -> 401 '{"error":"unauthorized"}'
+  POST /mcp, token                       -> 200 'event: message\\r\\ndata: {"jsonrpc":"2.0","id":1,"result":{"protocolVersi'
+  POST /mcp, token, Origin evil.example  -> 200 'event: message\\r\\ndata: {"jsonrpc":"2.0","id":1,"result":{"protocolVersi'`,
+       
         notes: [
           { t: "p", text: "The ordering in the first part is the point: with middleware the rejection precedes any MCP parsing, so an unauthenticated caller never sees your tool list. A check inside each tool would have let them read every tool name and description first, which is reconnaissance you handed over for free." },
           { t: "p", text: "The proxy test is the one that is hard to believe until you watch it. With buffering on, thirty seconds of progress updates arrive together at the end, so the feature appears to work in development and does nothing in production — and no error is logged anywhere, by anything." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the MCP endpoint a port scan found first",
+      body: [
+        { t: "p", text: "**Symptom.** A security scan of a staging network reported an HTTP service that listed fourteen tools and executed them for any caller. One of the tools ran SQL with a read-write service account. The server had been reachable for eleven days." },
+        { t: "p", text: "**Mechanism.** The server was started with `host=\"0.0.0.0\"` so a colleague could try it, and it ran the SDK's own HTTP app directly. MCP has no authentication of its own, so the endpoint answered `initialize`, `tools/list` and `tools/call` for anyone who could reach the port, acting with the credentials in its environment. The per-tool permission checks the author planned to add would not have helped with discovery: by then the caller has every name and description." },
+        { t: "p", text: "**Why it was missed.** It worked for the people it was meant for, and the SDK's default Origin check made a browser-based test fail with a 403, which read as evidence that something was protecting it." },
+        { t: "p", text: "**Fix.** The app is now mounted under a Starlette application whose middleware rejects unauthenticated requests before any MCP message is parsed, with `/healthz` outside it for the load balancer, and the bind address is configuration that defaults to loopback. The checklist in section 05 became a deployment gate." }
+      ] }
   ],
 
   takeaways: [
-    "**`streamable_http_app()` returns a mountable ASGI app**, so the MCP endpoint becomes one route in an application you own, with your health check, metrics and middleware around it.",
+    "**`streamable_http_app()` returns a mountable ASGI app**, so the MCP endpoint becomes one route in an application you own, with your health check, metrics and middleware around it — provided the app's lifespan runs `mcp.session_manager.run()`, without which every MCP request is a 500.",
     "**Mount MCP under your own app rather than letting it run itself** — a load balancer needs a cheap liveness probe, and middleware is where authentication has to live.",
     "**An MCP endpoint with no middleware serves `tools/call` to anyone who can reach the port**, acting with whatever credentials the server process holds.",
     "**Authentication in middleware rejects before any MCP message is parsed**, so an unauthenticated caller never reaches a tool, a schema or the handshake.",

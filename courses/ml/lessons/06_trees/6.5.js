@@ -320,7 +320,14 @@ StackingRegressor(estimators=..., final_estimator=RidgeCV(),
           why: "A learned stack did better than the average (0.736) by weighting the logistic model 3.26 to 1.3, and still did not beat it alone."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a stack that trusted its most overfitted member",
+      body: [
+        { t: "p", text: "**Symptom.** A stacked ensemble scored worse than its best single model on new data." },
+        { t: "p", text: "**Mechanism.** The meta-learner was trained on base-model predictions made on the same rows the base models had trained on. The most overfitted model looked best and got the highest weight." },
+        { t: "p", text: "**Fix.** The meta-learner is trained on out-of-fold predictions, so each base model is judged on rows it did not see." }
+      ] }
   ],
 
   takeaways: [

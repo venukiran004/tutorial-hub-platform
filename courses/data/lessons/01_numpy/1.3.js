@@ -309,6 +309,17 @@ X_clean = clip_outliers(X_raw, -3, 3)
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Modifying a slice and expecting the original untouched",
+
+      body: [
+
+        { t: "p", text: "A basic slice is a view, so changing it changes the original array. Code that 'cleans' a slice in place corrupts the source data that other code still uses." },
+
+        { t: "p", text: "Call `.copy()` when you need an independent array, and use `np.shares_memory` to check when in doubt." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A row filter that does not corrupt its input",

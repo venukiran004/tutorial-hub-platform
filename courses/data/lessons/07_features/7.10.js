@@ -597,7 +597,14 @@ def test_min_df_drops_one_off_tokens():
           why: "The English stop list contains the most important sentiment tokens in the language. Use a custom list that keeps negations, or `max_df` to drop corpus-specific common words instead, or bigrams so 'not good' survives as its own term regardless."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a vocabulary fitted on the test set",
+      body: [
+        { t: "p", text: "**Symptom.** A text classifier's validation accuracy fell by several points when the team moved vectorisation inside the cross-validation loop." },
+        { t: "p", text: "**Mechanism.** The `TfidfVectorizer` had been fitted on all documents before splitting, so the vocabulary and document frequencies included validation documents. The earlier score was optimistic." },
+        { t: "p", text: "**Fix.** The vectoriser is the first step of the pipeline, fitted on training folds only, and the honest score became the baseline." }
+      ] }
   ],
 
   takeaways: [

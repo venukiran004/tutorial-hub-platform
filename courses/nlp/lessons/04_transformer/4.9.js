@@ -91,7 +91,7 @@ EC.receiveLesson({
 
 
     { t: "out", text:
-"d = 4, base 10000, so omega_0 = 1.0000 and omega_1 = 0.0100\n\n  pos=0: [0.000,  1.000, 0.000, 1.000]\n  pos=1: [0.841,  0.540, 0.010, 1.000]\n  pos=2: [0.909, -0.416, 0.020, 1.000]\n          fast pair swings         slow pair barely moves\n\nreference values reproduce exactly" },
+"d = 4, base 10000, so omega_0 = 1.0000 and omega_1 = 0.0100\n\n  pos=0: [0.000,  1.000, 0.000, 1.000]\n  pos=1: [0.841,  0.540, 0.010, 1.000]\n  pos=2: [0.909, -0.416, 0.020, 1.000]\n          fast pair swings         slow pair barely moves\n\nhand-computed values reproduce exactly" },
 
     { t: "p", text: "Lesson 4.2 established the frequency spectrum and verified the rotation property empirically. The derivation is the angle-addition identity applied to each pair:" },
 
@@ -133,7 +133,7 @@ EC.receiveLesson({
     { t: "math", tex: "\\langle \\tilde q_m, \\tilde k_n \\rangle = (R_m q)^{\\top}(R_n k) = q^{\\top} R_m^{\\top} R_n k = q^{\\top} R_{\\,n-m}\\, k" },
 
     { t: "out", text:
-"the d=2 check\n\n  q=[1,0] at m=2 -> [-0.4161,  0.9093]    reference [-0.416,  0.909]\n  k=[1,0] at n=5 -> [ 0.2837, -0.9589]    reference [ 0.284, -0.959]\n\n  <q~, k~> = -0.9900     cos(m - n) = cos(-3) = -0.9900" },
+"the d=2 check\n\n  q=[1,0] at m=2 -> [-0.4161,  0.9093]    by hand [-0.416,  0.909]\n  k=[1,0] at n=5 -> [ 0.2837, -0.9589]    by hand [ 0.284, -0.959]\n\n  <q~, k~> = -0.9900     cos(m - n) = cos(-3) = -0.9900" },
 
     { t: "out", text:
 "d = 64, same random q and k, same relative distance of 3\n\n  m=0     n=3       score 2.803810\n  m=10    n=13      score 2.803811\n  m=100   n=103     score 2.803815\n  m=5000  n=5003    score 2.804198\n\ndifferent distances give genuinely different scores\n  distance 0    -0.726951\n  distance 1     0.271698\n  distance 2     1.760896\n  distance 5     0.952095\n  distance 10   -0.492164" },
@@ -219,6 +219,17 @@ EC.receiveLesson({
         ["ALiBi", "Relative", "Linear logit bias", "0", "Best train-short to test-long", "BLOOM, MPT"]
       ] },
 
+    { t: "callout", kind: "trap", title: "Raising the context limit in the configuration",
+
+      body: [
+
+        { t: "p", text: "Increasing the maximum length without position interpolation or further training sends positions out of the range the model learned, and quality collapses." },
+
+        { t: "p", text: "Extend context with interpolation and training on longer sequences, and measure quality at each length." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Verify the schemes", difficulty: "stretch", minutes: 45,
       requirements: [
         "Demonstrate permutation equivariance on your own attention implementation, then add positional encoding and show it breaks.",
@@ -294,7 +305,14 @@ ALiBi head  slope      horizon (bias -5)
           { t: "p", text: "The decay is a property of aligned vectors. When query and key point the same way, the normalised score falls from 1.0 to 0.55 by distance 256, because the high-frequency pairs rotate out of phase. For random query–key pairs the average magnitude stays flat at about 6.2: no decay at all. Long-range decay in RoPE is a tendency on correlated content, not a built-in penalty." },
           { t: "p", text: "ALiBi's geometric slopes give the 8 heads horizons from 10 to 1,280 tokens, measured as the distance where the bias reaches −5. A few heads see locally and a few see far, with no learned parameters. Step 5 needs a RoPE language model and long evaluation text, so it is not run here." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: extending context by changing a number",
+      body: [
+        { t: "p", text: "**Symptom.** A team raised a model's maximum context length in its configuration and found quality collapsed on long inputs." },
+        { t: "p", text: "**Mechanism.** The model's rotary positions had never seen those distances. Changing the limit without position interpolation or further training sent it out of distribution." },
+        { t: "p", text: "**Fix.** Context is extended with position interpolation and a period of training on longer sequences, and quality is measured at each length." }
+      ] }
   ],
 
   takeaways: [

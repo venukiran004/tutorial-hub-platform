@@ -343,7 +343,14 @@ entry = [names[i] for i in np.argsort([np.argmax(np.abs(coefs[i]) > 0) for i in 
           why: "Geometrically the same fact is the diamond's corner; probabilistically it is the Laplace prior's spike at zero."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a lasso that dropped the feature the business cared about",
+      body: [
+        { t: "p", text: "**Symptom.** A marketing model's lasso fit set the coefficient on email frequency to zero, and a campaign planned around it was cancelled." },
+        { t: "p", text: "**Mechanism.** Email frequency was strongly correlated with app usage. The lasso picks one of a correlated pair more or less arbitrarily, so a zero did not mean no effect." },
+        { t: "p", text: "**Fix.** Correlated features are modelled with elastic net, and coefficients are interpreted with their stability across bootstrap fits rather than from one fit." }
+      ] }
   ],
 
   takeaways: [

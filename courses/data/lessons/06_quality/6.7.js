@@ -678,7 +678,14 @@ def test_clean_data_has_few_flags():
           why: "The mean and σ are computed from data that includes the outliers, and σ has breakdown point zero. The median and MAD have breakdown point 50%: they barely move at 15% contamination, and the robust z of 500 is around 60."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: outliers that hid each other",
+      body: [
+        { t: "p", text: "**Symptom.** A fraud check based on z-scores flagged nothing during a week when several very large fraudulent transactions occurred." },
+        { t: "p", text: "**Mechanism.** The large transactions inflated the standard deviation, so none of them was more than three standard deviations from the mean. The outliers masked each other." },
+        { t: "p", text: "**Fix.** Detection uses robust statistics — the median and the median absolute deviation — and the threshold is checked against known incidents." }
+      ] }
   ],
 
   takeaways: [

@@ -68,7 +68,7 @@ EC.receiveLesson({
       ["`updated`", "when it last changed", "freshness and staleness (7.5)"],
       ["doc type", "policy, runbook, FAQ", "weighting, and explaining the answer"]
     ] },
-    { t: "callout", kind: "warn", title: "Unrecoverable after the fact", body: [
+    { t: "callout", kind: "trap", title: "Unrecoverable after the fact", body: [
       { t: "p", text: "Every one of those is cheap while you still have the file handle and the directory structure, and effectively impossible to reconstruct from a block of text later. There is no way to look at a retrieved paragraph and determine which team owns it or whether it was public." },
       { t: "p", text: "So the cost of omitting them is not \u201cadd it later\u201d \u2014 it is re-ingesting the corpus, re-embedding everything, and rebuilding the index. That is why this is worth over-capturing at load time even when you have no filter in mind yet." }
     ] },

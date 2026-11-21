@@ -380,6 +380,17 @@ one c_i of 0.1, nine 0 : 0.000` },
 
 { t: "h2", n: "06", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Using a bound that assumes independence on dependent data",
+
+      body: [
+
+        { t: "p", text: "Hoeffding's inequality assumes independent observations. Applied to clustered or time-series data, it gives intervals far narrower than the truth." },
+
+        { t: "p", text: "Check the independence assumption, and use block or cluster methods — or McDiarmid's inequality where its conditions hold — when observations are dependent." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Size a canary that must not need distributional assumptions",

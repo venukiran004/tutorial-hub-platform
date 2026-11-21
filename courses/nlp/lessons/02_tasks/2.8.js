@@ -159,7 +159,8 @@ os.environ["HF_HUB_OFFLINE"] = "1"
 import numpy as np, torch
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering
 from sentence_transformers import SentenceTransformer
-from docs import DOCS
+from docs import DOCS   # docs.py is yours: DOCS = [six or more multi-sentence English passages]
+                        # the output shown is from the author's passages, so your figures will differ
 
 name = "deepset/roberta-base-squad2"
 tok = AutoTokenizer.from_pretrained(name); mod = AutoModelForQuestionAnswering.from_pretrained(name).eval()
@@ -244,7 +245,14 @@ retriever recall@20 = 6/6  over 36 passages`,
           { t: "p", text: "Every unanswerable question still produced a span, 'high' for the price and 'silicon' for the weight, because the span search always returns something. The margin over the null score separated the two groups here (lowest answerable +2.52, highest unanswerable −1.79). Threshold on that margin. A threshold on the best span's score alone would let these through." },
           { t: "p", text: "Without the span cap, a vague question returned a 19-word stretch across two sentences. The cap is a guard against the model's own scoring, not just a speed trick. The retriever check uses sentence-level passages from this corpus, not the 1,000 documents the exercise asks for. The pattern is the same: measure recall@k before tuning the reader, because a reader cannot answer from a passage it never saw." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: an answer to a question the passage did not cover",
+      body: [
+        { t: "p", text: "**Symptom.** A QA assistant answered 'What is the refund window?' with a date from an unrelated paragraph." },
+        { t: "p", text: "**Mechanism.** The extractive model always returned the best span, and the application ignored the no-answer score. Without that option, the model chose the least bad span." },
+        { t: "p", text: "**Fix.** The application compares the best span against the no-answer score with a calibrated margin, and says the answer is not in the document when no-answer wins." }
+      ] }
   ],
 
   takeaways: [

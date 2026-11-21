@@ -304,7 +304,7 @@ match point:
       caption: "Like `if/elif`, the first matching case wins and nothing falls through — no `break` needed. So specific patterns must come before general ones, and a bare `case _:` or a capture pattern must be last."
     },
 
-    { t: "callout", kind: "warn", title: "There is no exhaustiveness check at runtime", body: [
+    { t: "callout", kind: "trap", title: "There is no exhaustiveness check at runtime", body: [
       { t: "p", text: "If no case matches, the `match` statement does **nothing** — silently. There is no error and no default." },
       { t: "code", lang: "python", title: "the silent fall-through", numbered: false, code: `
 status = "cancelled"

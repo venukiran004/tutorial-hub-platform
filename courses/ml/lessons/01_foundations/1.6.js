@@ -294,6 +294,17 @@ permutation_importance(adv.fit(X, is_test), X, is_test, scoring="roc_auc")
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Fitting preprocessing before the split",
+
+      body: [
+
+        { t: "p", text: "Scaling, imputation, encoding or feature selection fitted on the whole dataset lets the validation rows influence training, and the score rises by an amount that looks like a genuine improvement." },
+
+        { t: "p", text: "Put every fitted step inside a Pipeline so it is refitted on each training fold." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Diagnose",
       title: "Five features, five verdicts",
@@ -353,7 +364,14 @@ permutation_importance(adv.fit(X, is_test), X, is_test, scoring="roc_auc")
           why: "Any transform fitted on the rows it will be evaluated on leaks; a transform that is a function of the label leaks the label. The fix is structural: the encoder is a Pipeline step."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: the feature that knew the outcome",
+      body: [
+        { t: "p", text: "**Symptom.** An insurance-claims model achieved 0.94 AUC offline. In production it performed close to chance." },
+        { t: "p", text: "**Mechanism.** One feature was the number of documents attached to a claim. Investigators attached documents after deciding a claim was suspicious, so the feature was a consequence of the label." },
+        { t: "p", text: "**Fix.** Every feature is checked for availability at prediction time, and a model that improves dramatically from one feature triggers a leakage review before anything else." }
+      ] }
   ],
 
   takeaways: [

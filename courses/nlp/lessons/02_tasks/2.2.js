@@ -154,19 +154,112 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Find where sentiment breaks", difficulty: "core", minutes: 35,
       prompt: "Run VADER, a classical TF-IDF classifier and a pretrained transformer on the same labelled sentiment set, and compare. Then hand-build a set of twenty adversarial examples — sarcasm, negation, litotes, comparatives, mixed aspects — and measure each approach on those specifically. Finally, implement simple aspect-based sentiment by splitting on conjunctions as well as full stops, and check it on reviews containing 'but'.",
+      requirements: [
+        "Compare VADER, a TF-IDF classifier and a transformer on one labelled set",
+        "Build twenty adversarial examples and score each approach on them",
+        "Implement aspect-based sentiment by splitting on conjunctions",
+        "Check it on reviews with mixed aspects"
+      ],
       hints: [
         "The adversarial set is where the approaches separate; on ordinary text they are closer than you expect.",
         "`but` is the single highest-value split point in review text.",
         "Label your own adversarial examples first, before running anything, so you are not grading on a curve."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import re
+import numpy as np
+from datasets import load_dataset
+from nltk.sentiment import SentimentIntensityAnalyzer      # needs nltk.download("vader_lexicon") once
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from transformers import pipeline, logging as hf_logging
+hf_logging.set_verbosity_error(); hf_logging.disable_progress_bar()
+
+sst = load_dataset("nyu-mll/glue", "sst2")
+val_X, val_y = sst["validation"]["sentence"], np.array(sst["validation"]["label"])
+vader = SentimentIntensityAnalyzer()
+vec = TfidfVectorizer(ngram_range=(1, 2), min_df=2)
+clf = LogisticRegression(max_iter=3000, C=4).fit(vec.fit_transform(sst["train"]["sentence"][:20000]), sst["train"]["label"][:20000])
+bert = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+
+predict = {
+    "VADER (no training)": lambda X: np.array([vader.polarity_scores(x)["compound"] >= 0 for x in X], dtype=int),
+    "TF-IDF + logistic":   lambda X: clf.predict(vec.transform(X)),
+    "DistilBERT SST-2":    lambda X: np.array([r["label"] == "POSITIVE" for r in bert(list(X), batch_size=32)], dtype=int),
+}
+print("caution: the DistilBERT checkpoint was fine-tuned on SST-2's training split, so on this validation set it is in-domain")
+print(f"\\n{'approach':<22} SST-2 validation")
+for name, f in predict.items(): print(f"{name:<22} {(f(val_X) == val_y).mean():.3f}")
+
+ADV = [  # (text, label 1 = positive, kind)
+ ("Oh great, another two hours of my life I will never get back.", 0, "sarcasm"),
+ ("Wow, what a masterpiece of tedium.", 0, "sarcasm"),
+ ("I just love waiting forty minutes for cold food.", 0, "sarcasm"),
+ ("Brilliant, the screen cracked on day one.", 0, "sarcasm"),
+ ("The film is not good.", 0, "negation"),
+ ("I would not say it was bad at all.", 1, "negation"),
+ ("Nothing about this hotel disappointed me.", 1, "negation"),
+ ("It never fails to make me smile.", 1, "negation"),
+ ("The service was not unpleasant.", 1, "litotes"),
+ ("Not the worst meal I have had this year.", 1, "litotes"),
+ ("The sequel is no small achievement.", 1, "litotes"),
+ ("Hardly a disaster, honestly.", 1, "litotes"),
+ ("The first film was far better than this one.", 0, "comparative"),
+ ("This is better than anything else they have made.", 1, "comparative"),
+ ("Less boring than I expected, which is not saying much.", 0, "comparative"),
+ ("Their old app was worse, but this is still clumsy.", 0, "comparative"),
+ ("The food was superb but the service was appalling and we will not return.", 0, "mixed aspects"),
+ ("The battery is weak, yet the camera is fantastic and that is what I bought it for.", 1, "mixed aspects"),
+ ("Great acting, terrible script, and the script is what matters.", 0, "mixed aspects"),
+ ("The plot drags in the middle, but the ending makes it all worthwhile.", 1, "mixed aspects"),
+]
+texts, labels, kinds = [t for t, _, _ in ADV], np.array([l for _, l, _ in ADV]), [k for _, _, k in ADV]
+print(f"\\n{'approach':<22} " + "  ".join(f"{k:>13}" for k in dict.fromkeys(kinds)) + "   all 20")
+for name, f in predict.items():
+    ok = f(texts) == labels
+    print(f"{name:<22} " + "  ".join(f"{ok[[k == kk for k in kinds]].sum():>11}/4" for kk in dict.fromkeys(kinds)) + f"   {ok.sum():>5}/20")
+
+def aspects(review):
+    parts = re.split(r"[.!?;]+|,?\\s+\\b(?:but|yet|although|though|however|whereas)\\b\\s+", review)
+    return [(p.strip(), "pos" if vader.polarity_scores(p)["compound"] >= 0 else "neg") for p in parts if p and p.strip()]
+print("\\naspect-level sentiment by splitting on contrastive conjunctions (VADER per clause):")
+for r in ["The food was superb but the service was appalling.", "The battery is weak, yet the camera is fantastic.",
+          "Lovely staff. The room was tiny though the view was stunning."]:
+    print(f"  {r}\\n    -> {aspects(r)}")`,
+        out: `caution: the DistilBERT checkpoint was fine-tuned on SST-2's training split, so on this validation set it is in-domain
+
+approach               SST-2 validation
+VADER (no training)    0.625
+TF-IDF + logistic      0.781
+DistilBERT SST-2       0.911
+
+approach                     sarcasm       negation        litotes    comparative  mixed aspects   all 20
+VADER (no training)              0/4            2/4            2/4            3/4            3/4      10/20
+TF-IDF + logistic                2/4            0/4            0/4            3/4            3/4       8/20
+DistilBERT SST-2                 3/4            3/4            4/4            3/4            3/4      16/20
+
+aspect-level sentiment by splitting on contrastive conjunctions (VADER per clause):
+  The food was superb but the service was appalling.
+    -> [('The food was superb', 'pos'), ('the service was appalling', 'neg')]
+  The battery is weak, yet the camera is fantastic.
+    -> [('The battery is weak', 'neg'), ('the camera is fantastic', 'pos')]
+  Lovely staff. The room was tiny though the view was stunning.
+    -> [('Lovely staff', 'pos'), ('The room was tiny', 'pos'), ('the view was stunning', 'pos')]`,
+       
         notes: [
-          { t: "p", text: "On ordinary review text the three approaches are often within a few points, which is the surprise — VADER with no training at all is a serious baseline for informal text. The adversarial set is where they separate sharply: the transformer handles negation and comparatives that VADER gets backwards, and sarcasm defeats everything, which is worth confirming rather than assuming a big enough model fixes it." },
+          { t: "p", text: "How far apart the three land depends on the text. On short, informal posts VADER with no training is a serious baseline; on SST-2's movie-review sentences the reference run measured VADER at 0.625, TF-IDF with logistic regression at 0.781 and an SST-2 fine-tuned DistilBERT at 0.911 — the last in-domain, which flatters it. The adversarial set is the more useful comparison. On twenty hand-built cases the transformer got 16 right, VADER 10 and the TF-IDF model 8, which missed every negation and litotes case because a bag of n-grams sees `not` and `good` without their relationship. Sarcasm is worth testing rather than assuming: the transformer caught three of four sarcastic sentences here, and the one it missed — `Oh great, another two hours of my life I will never get back` — carries its complaint in an idiom after a positive opener." },
           { t: "p", text: "Splitting on `but` is the cheapest large improvement in aspect-based sentiment, because English uses it to mark a contrast and the two sides very often carry opposite sentiment about different aspects. Splitting only on full stops leaves 'the food was excellent but the service was terrible' as one unit, which averages to nothing useful." },
           { t: "p", text: "Writing your own adversarial examples and labelling them before running anything is worth the discipline. It is easy to look at a model's output on a tricky sentence and rationalise the score it gave, and pre-committing to the label removes that. It is also how you discover that some of your examples are genuinely ambiguous, which is itself informative about what the task can achieve." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: sarcastic reviews counted as praise",
+      body: [
+        { t: "p", text: "**Symptom.** A brand-monitoring tool reported a surge in positive sentiment during a product failure." },
+        { t: "p", text: "**Mechanism.** Customers wrote sarcastically — 'great, it broke again'. A lexicon-based model scored the positive words and missed the meaning." },
+        { t: "p", text: "**Fix.** Sentiment is measured with a model fine-tuned on in-domain labelled data, evaluated on an adversarial set including sarcasm and negation." }
+      ] }
   ],
 
   takeaways: [

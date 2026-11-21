@@ -726,7 +726,14 @@ WHERE  o.status = 'paid' AND c.region = 'north'
           why: "`NULL <> 'north'` and `NULL = 'north'` are both unknown, not false. The two filters that look complementary miss every NULL row. `IS NULL` is the third case, always, and `COUNT(*) - COUNT(region)` is how many there are."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an extract that silently dropped unpaid orders",
+      body: [
+        { t: "p", text: "**Symptom.** A data scientist's training set had no unpaid orders, though the business knew about thousands." },
+        { t: "p", text: "**Mechanism.** The extract query filtered `WHERE payment_status <> 'failed'`. Unpaid orders had a NULL payment status, the comparison was unknown, and those rows were dropped." },
+        { t: "p", text: "**Fix.** The filter became `payment_status IS DISTINCT FROM 'failed'`, and the extract reports its row count by status so a missing category is visible." }
+      ] }
   ],
 
   takeaways: [

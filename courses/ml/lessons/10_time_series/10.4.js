@@ -291,7 +291,14 @@ ARIMA(y, order=(0, 1, 1)).fit().params[0]                  # θ = −0.571;  the
           { t: "p", text: "(c) is the pattern the store shows on every method: forms that model the season are close to each other and far from forms that do not, and the remaining bias points at the component still missing." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: Holt's method extrapolated a trend for ever",
+      body: [
+        { t: "p", text: "**Symptom.** A demand forecast using Holt's linear trend predicted continued growth for two years and drove excess stock purchases." },
+        { t: "p", text: "**Mechanism.** Holt's method projects the last trend indefinitely. A short growth period at the end of the data became a long-term forecast." },
+        { t: "p", text: "**Fix.** The model uses a damped trend, and forecasts beyond a few seasons are reviewed against business plans." }
+      ] }
   ],
 
   takeaways: [

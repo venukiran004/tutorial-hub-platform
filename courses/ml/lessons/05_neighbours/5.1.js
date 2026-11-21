@@ -271,6 +271,17 @@ index = faiss.IndexHNSWFlat(8, 32); index.add(Z); index.search(z_query, k=15)`,
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "KNN on unscaled features",
+
+      body: [
+
+        { t: "p", text: "Euclidean distance is dominated by the feature with the largest units, so an unscaled KNN is a nearest-neighbour search on one column." },
+
+        { t: "p", text: "Scale features inside the pipeline, and choose the metric to suit the features." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Investigate",
       title: "Votes by hand, then a curse you must cure correctly",
@@ -340,7 +351,14 @@ index = faiss.IndexHNSWFlat(8, 32); index.add(Z); index.search(z_query, k=15)`,
           why: "The nearest-neighbour differences per feature (tenure 0.83, discount 0.00) show which columns the distance was actually matching on."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a KNN model that was slow at every request",
+      body: [
+        { t: "p", text: "**Symptom.** A recommendation endpoint built on k-nearest neighbours slowed to seconds per request as the catalogue grew." },
+        { t: "p", text: "**Mechanism.** KNN has no training step; every query computes distances to every stored row. Latency grew linearly with the catalogue." },
+        { t: "p", text: "**Fix.** The service uses an approximate nearest-neighbour index, rebuilt when the catalogue changes, and query latency is monitored against catalogue size." }
+      ] }
   ],
 
   takeaways: [

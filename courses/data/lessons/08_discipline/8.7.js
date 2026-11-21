@@ -360,6 +360,17 @@ assert np.array_equal(p1, p2), "two runs from one card disagree: an unseeded ste
 
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Reviewing the model before the split",
+
+      body: [
+
+        { t: "p", text: "A review that starts with hyperparameters and features can spend days on numbers that a leaky split has already invalidated." },
+
+        { t: "p", text: "Review in the order of what invalidates the most: reproduce, split, fits, label, time, score, metric." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Review",
       title: "Review this before it ships",
@@ -502,7 +513,14 @@ print(f"threshold {t_star:.2f}: precision {precision_score(y[scored], yhat):.2f}
           why: "Order by what invalidates the most. A target-leak column makes the score meaningless regardless of how the split or the imputation is done. Fixing the others first turns 0.96 into 0.9 and still says nothing."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a model review that started in the wrong place",
+      body: [
+        { t: "p", text: "**Symptom.** A review spent two days tuning a model's hyperparameters before discovering its validation split leaked customers." },
+        { t: "p", text: "**Mechanism.** The review started with the model and worked back. The split invalidated every number the tuning had produced, so the effort was wasted." },
+        { t: "p", text: "**Fix.** Reviews follow a fixed order — reproduce, split, fits, label, time, score, metric — and stop at the first fault that makes later numbers unreadable." }
+      ] }
   ],
 
   takeaways: [

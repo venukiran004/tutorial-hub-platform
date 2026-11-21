@@ -211,6 +211,17 @@ HAVING COUNT(DISTINCT date_trunc('month', placed_at)) =
 
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Writing the query before stating the tie policy",
+
+      body: [
+
+        { t: "p", text: "Interview questions about rankings and top-N almost always hide a tie. Writing ROW_NUMBER first and discovering the tie afterwards gives an answer that is wrong on the interviewer's follow-up data." },
+
+        { t: "p", text: "Ask how ties should be handled, then choose ROW_NUMBER, RANK or DENSE_RANK to match the answer." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Drill",
       title: "Twelve in forty minutes",
@@ -288,7 +299,14 @@ SELECT DISTINCT customer_id FROM (SELECT customer_id, grp, COUNT(*) AS run FROM 
           why: "The subquery form is tie-safe by construction. Saying so, and naming the ROW_NUMBER failure, is the point of the question."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: the interview answer that failed on ties",
+      body: [
+        { t: "p", text: "**Symptom.** A candidate's 'second-highest salary' query passed the interviewer's example and returned the wrong person on the team's real data." },
+        { t: "p", text: "**Mechanism.** It used `ROW_NUMBER() = 2`. With two people tied for the highest salary, the second row is the other top earner, not the second-highest salary." },
+        { t: "p", text: "**Fix.** The query uses `DENSE_RANK() = 2` or `MAX(salary) WHERE salary < (SELECT MAX(salary) ...)`, and the candidate is expected to state the tie policy before writing anything." }
+      ] }
   ],
 
   takeaways: [

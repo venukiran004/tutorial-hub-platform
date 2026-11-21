@@ -155,7 +155,14 @@ runner = Runner(agent=root, app_name="app",
     raise, because a query with no identity must never run. The credential is the
     application's; the *authority* is still the user's, and the enforcement is in the
     query, not in the agent.`,
-        notes: [{ t: "p", text: "(c) is the case people get wrong: they connect with a powerful service account and rely on the agent's instruction to restrict what it asks for. That is not a control. The identity has to reach the data layer — row-level security, a filtered view, or an explicit user predicate in every query — so the enforcement does not depend on the model's cooperation." }] } }
+        notes: [{ t: "p", text: "(c) is the case people get wrong: they connect with a powerful service account and rely on the agent's instruction to restrict what it asks for. That is not a control. The identity has to reach the data layer — row-level security, a filtered view, or an explicit user predicate in every query — so the enforcement does not depend on the model's cooperation." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a calendar tool that read every user's calendar",
+      body: [
+        { t: "p", text: "**Symptom.** During a review, a tester asked an assistant to show a colleague's meetings and it did." },
+        { t: "p", text: "**Mechanism.** The calendar tool used a domain-wide service account and took `user_email` as a parameter. The model filled the parameter from the conversation, and the service account could read anyone's calendar." },
+        { t: "p", text: "**Fix.** The tool acts with the user's own OAuth credential obtained through `request_credential`, takes no user parameter, and the service account's domain-wide access was revoked. Whose authority a tool acts with is decided before what it does." }
+      ] }
   ],
 
   takeaways: [

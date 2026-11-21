@@ -44,7 +44,7 @@ EC.receiveLesson({
       code: 'def billing_agent(state):\n    if state["hops"] >= 2:\n        return {"messages": [AIMessage(content="Escalating to a human.",\n                                        name="billing")],\n                "trace": ["billing: hop budget spent, escalating"]}\n    return Command(goto="tech", update={"hops": 1, ...})',
       out: "    billing -> tech\n    tech -> billing\n    billing: hop budget spent, escalating\n\n  hops: 2",
       caption: "The budget is in the state, not in an agent." },
-    { t: "callout", kind: "warn", title: "It cannot be per-agent", body: [
+    { t: "callout", kind: "trap", title: "It cannot be per-agent", body: [
       { t: "p", text: "No single agent knows how many hops have happened \u2014 an agent counting its own handoffs cannot see the other's. So the counter has to be in the **shared state**, which every agent increments and every agent reads." },
       { t: "p", text: "And the escalation path is the swarm's give-up node (11.3): without it, exhausting the budget is an exception rather than an answer. Here it escalates to a human, which is both a usable outcome and the right one \u2014 two agents that cannot place a request is exactly the case a person should see." }
     ] },

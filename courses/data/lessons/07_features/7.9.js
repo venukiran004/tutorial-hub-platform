@@ -450,6 +450,17 @@ print(feat.describe().T[["mean", "min", "max"]].round(2))`,
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Group statistics that include the row itself",
+
+      body: [
+
+        { t: "p", text: "A feature such as 'spend relative to the region's average' leaks when the average includes the row's own value and outcome, and when it is computed across the whole dataset rather than from the past." },
+
+        { t: "p", text: "Compute group statistics out of fold and from data before each row's as-of date." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A feature block for an event stream, with its leaks caught",
@@ -710,7 +721,14 @@ def test_linear_needs_ratio_and_interaction_tree_needs_ratio_only():
           why: "A group aggregate of a *feature* is safe: the feature is known at prediction time. A group aggregate of the *target* includes the row's own label. Out-of-fold with smoothing fixes it on i.i.d. data; on event data, an expanding mean shifted by one is causal and out-of-fold at once."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a 'spend versus region average' feature that included the answer",
+      body: [
+        { t: "p", text: "**Symptom.** A model predicting whether a customer would upgrade relied heavily on a ratio feature and failed in production." },
+        { t: "p", text: "**Mechanism.** The region average was computed over all customers, including whether they upgraded and the spending that followed. Each row's own future contributed to its group statistic." },
+        { t: "p", text: "**Fix.** Group aggregates are computed from data before each row's as-of date, out of fold for training, and the feature is checked by recomputing a sample from raw events." }
+      ] }
   ],
 
   takeaways: [

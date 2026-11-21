@@ -102,7 +102,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "Scoring each query against its own top-1 document",
       code: "answerable mean  -6.737\nunanswerable mean -10.333\n\nworst answerable : -11.014   'I forgot my password'\nbest unanswerable:  -8.950   'how do I integrate with Salesforce'",
       caption: "The worst answerable query scores below **every** unanswerable one." },
-    { t: "callout", kind: "warn", title: "It would refuse exactly the queries dense answers correctly", body: [
+    { t: "callout", kind: "trap", title: "It would refuse exactly the queries dense answers correctly", body: [
       { t: "p", text: "`I forgot my password` scores \u221211.014 \u2014 lower than all five unanswerable queries. That is 6.7's demotion appearing again: the cross-encoder penalises the vocabulary-mismatch class, because the relevant document says *\u201ccredential recovery \u2026 signed recovery link\u201d* and the query does not." },
       { t: "p", text: "So a cross-encoder guard would refuse precisely the queries dense retrieval handles correctly. It is still worth considering as **one** input, because it is a second model and its errors are not perfectly correlated with the retriever's \u2014 but it cannot be the guard on its own, and an ensemble of two models that fail on the same query class is not an ensemble." }
     ] },

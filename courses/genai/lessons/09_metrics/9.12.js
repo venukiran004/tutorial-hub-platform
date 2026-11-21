@@ -48,7 +48,7 @@ step 2 \u2014 chance agreement (from the margins)
 step 3 \u2014 kappa
   kappa = (0.80 - 0.5192) / (1 - 0.5192) = 0.2808 / 0.4808 = 0.5840`,
       hl: [5, 6, 10],
-      caption: "Every figure matches the reference. Step 2 is the one worth understanding." },
+      caption: "Every figure matches the hand calculation. Step 2 is the one worth understanding." },
 
     { t: "callout", kind: "insight", title: "Chance agreement is the product of the margins, summed over labels",
       body: [

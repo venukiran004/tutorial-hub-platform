@@ -149,21 +149,151 @@ async def convert(amount: float, frm: str, to: str, ctx: Context) -> Conversion:
         { t: "p", text: "Which is why lesson 1.1's advice stands: if the capability has one consumer and you own both ends, a shared library has none of these obligations. **Publish when the consumers are genuinely on other stacks or in other teams**, and when the interface has settled enough that you would not be embarrassed to freeze it for a deprecation window." }
       ] },
 
+    { t: "callout", kind: "trap", title: "Renaming an argument as a refactor",
+
+      body: [
+
+        { t: "p", text: "Argument names, tool names and required fields are your consumers' API. Renaming one is a breaking change that surfaces as validation errors inside other teams' model calls, often unnoticed." },
+
+        { t: "p", text: "Treat names as public, add new names alongside old ones, deprecate in the description with a date, and remove only after your logs show no callers." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Write the operational half", difficulty: "advanced", minutes: 30,
       prompt: "Take a server with three tools. Add: a version set through the private attribute, a one-line-per-call log with named fields, a per-caller rate limit, and a result-size cap on whichever tool can return the most. Then run a deprecation: add a replacement tool, mark the old one deprecated in its description with a removal date, make it delegate, and confirm your log distinguishes calls to each. Finally write the changelog entry for a description-only change, and explain in one sentence why it needs one.",
+      requirements: [
+        "Set a version through the private attribute and add a one-line-per-call log with named fields",
+        "Add a per-caller rate limit and a result-size cap on the tool that can return the most",
+        "Deprecate a tool: add its replacement, mark the old one in its description with a removal date, and make it delegate",
+        "Confirm your log distinguishes calls to the old tool from calls to the new one",
+        "Write the changelog entry for a description-only change and say why it needs one"
+      ],
       hints: [
         "The rate limit needs a caller identity to be per-caller — global is a different control.",
         "Make the deprecated tool delegate rather than duplicating the logic.",
         "The last part is the point of the lesson."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import functools, json, logging, sys, time, warnings
+from collections import defaultdict, deque
+import anyio
+from mcp import types
+from mcp.server.fastmcp import Context, FastMCP
+from mcp import ClientSession
+from mcp.shared.memory import create_client_server_memory_streams, create_connected_server_and_client_session
+warnings.filterwarnings("ignore"); logging.getLogger("mcp").setLevel(logging.CRITICAL)
+calls_log = logging.getLogger("calls"); calls_log.addHandler(logging.StreamHandler(sys.stdout)); calls_log.setLevel(logging.INFO); calls_log.propagate = False
+
+mcp = FastMCP("orders")
+mcp._mcp_server.version = "2.3.0"                     # FastMCP has no version parameter
+
+WINDOW_S, MAX_CALLS, MAX_CHARS = 10, 5, 2000
+recent = defaultdict(deque)                            # caller -> timestamps of recent calls
+
+def operated(fn):
+    """One log line per call with named fields, a per-caller rate limit and a result-size cap."""
+    @functools.wraps(fn)
+    async def wrapper(*args, ctx: Context, **kwargs):
+        caller = ctx.session.client_params.clientInfo.name if ctx.session.client_params else "unknown"
+        now, q = time.monotonic(), recent[caller]
+        while q and now - q[0] > WINDOW_S: q.popleft()
+        t0 = time.perf_counter(); outcome, size = "ok", 0
+        try:
+            if len(q) >= MAX_CALLS:
+                outcome = "rate_limited"
+                return {"error": f"rate limit: {MAX_CALLS} calls per {WINDOW_S}s", "retryable": True}
+            q.append(now)
+            result = await fn(*args, ctx=ctx, **kwargs)
+            text = json.dumps(result); size = len(text)
+            if size > MAX_CHARS:
+                outcome = "truncated"
+                return {"items": result["items"][: max(1, len(result["items"]) * MAX_CHARS // size)], "truncated": True}
+            return result
+        finally:
+            calls_log.info(f"tool={fn.__name__} caller={caller} outcome={outcome} chars={size} ms={(time.perf_counter() - t0) * 1000:.1f}")
+    return wrapper
+
+@mcp.tool()
+@operated
+async def search_orders(customer_id: str, ctx: Context) -> dict:
+    """Find a customer's orders."""
+    return {"items": [{"order_id": f"O-{i}", "customer": customer_id, "note": "x" * 40} for i in range(200)]}
+
+@mcp.tool()
+@operated
+async def get_order(order_id: str, ctx: Context) -> dict:
+    """Fetch one order by id. Use this instead of lookup_order."""
+    return {"items": [{"order_id": order_id, "status": "shipped"}]}
+
+@mcp.tool()
+@operated
+async def lookup_order(order_id: str, ctx: Context) -> dict:
+    """DEPRECATED: use get_order. Will be removed on 2027-03-01. Fetch one order by id."""
+    return await get_order.__wrapped__(order_id, ctx=ctx)   # delegate; the log still records which name was called
+
+CHANGELOG = """\\
+## 2.3.1 - 2026-11-20
+### Changed
+- \`search_orders\`: description now says when to use it rather than \`get_order\`. No schema or behaviour change.
+  Descriptions are part of every consumer's prompt, so this can change which tool a model picks."""
+
+async def server_info(server):
+    """The serverInfo a client receives at initialise (the session object keeps only the capabilities)."""
+    async with create_client_server_memory_streams() as ((c_read, c_write), (s_read, s_write)):
+        async with anyio.create_task_group() as tg:
+            tg.start_soon(lambda: server._mcp_server.run(s_read, s_write, server._mcp_server.create_initialization_options()))
+            async with ClientSession(c_read, c_write) as s:
+                info = (await s.initialize()).serverInfo
+            tg.cancel_scope.cancel()
+    return info
+
+async def main():
+    info = await server_info(mcp); print(f"server seen by client: {info.name} {info.version}")
+    async with create_connected_server_and_client_session(mcp, client_info=types.Implementation(name="agent-a", version="1")) as a, \\
+               create_connected_server_and_client_session(mcp, client_info=types.Implementation(name="agent-b", version="1")) as b:
+        r = await a.call_tool("search_orders", {"customer_id": "C-1"})
+        print("search_orders ->", json.loads(r.content[0].text).get("truncated"), "\\n")
+        for i in range(5): await a.call_tool("get_order", {"order_id": f"O-{i}"})
+        await b.call_tool("lookup_order", {"order_id": "O-9"})          # another caller has its own budget
+        tools = {t.name: t.description for t in (await a.list_tools()).tools}
+        print("\\nlookup_order description:", tools["lookup_order"])
+    print("\\n" + CHANGELOG)
+
+anyio.run(main)`,
+        out: `server seen by client: orders 2.3.0
+tool=search_orders caller=agent-a outcome=truncated chars=18701 ms=0.6
+search_orders -> True 
+
+tool=get_order caller=agent-a outcome=ok chars=53 ms=0.0
+tool=get_order caller=agent-a outcome=ok chars=53 ms=0.0
+tool=get_order caller=agent-a outcome=ok chars=53 ms=0.0
+tool=get_order caller=agent-a outcome=ok chars=53 ms=0.0
+tool=get_order caller=agent-a outcome=rate_limited chars=0 ms=0.0
+tool=lookup_order caller=agent-b outcome=ok chars=53 ms=0.0
+
+lookup_order description: DEPRECATED: use get_order. Will be removed on 2027-03-01. Fetch one order by id.
+
+## 2.3.1 - 2026-11-20
+### Changed
+- \`search_orders\`: description now says when to use it rather than \`get_order\`. No schema or behaviour change.
+  Descriptions are part of every consumer's prompt, so this can change which tool a model picks.`,
+       
         notes: [
           { t: "p", text: "The log that distinguishes the two tools is what makes the deprecation finishable. Without it the removal date is a guess, and the two available options are both bad: break whoever is still calling, or keep the tool forever because you cannot prove nobody is." },
           { t: "p", text: "The changelog answer is the one to get right. A description change produces no error anywhere and still changes your consumers' behaviour, because the description is text in their model's context — so it is a behaviour change that is invisible to every form of monitoring they have, which is exactly why it has to be announced." },
           { t: "p", text: "The rate limit is where identity earns its place a second time. Without a caller to key on, the only available limit is global, which means one consumer's looping agent degrades your server for every other consumer — and you will not be able to tell them which one it was." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the renamed argument nobody was told about",
+      body: [
+        { t: "p", text: "**Symptom.** A reporting agent that had run unattended for five months started producing empty weekly summaries. Its owners found out from a director who noticed the numbers were missing." },
+        { t: "p", text: "**Mechanism.** The analytics server renamed a tool argument from `start` to `start_date` for clarity. The agent's model still emitted `start` some of the time — from cached few-shot examples in its prompt — and each such call failed validation with `isError: True`. The agent treated a failed lookup as *no data* and wrote the summary anyway. The server team could not have warned the consumer: they did not know it existed." },
+        { t: "p", text: "**Why it was missed.** From the server's side this was a tidy rename with passing tests. There is no dependency graph for MCP consumers, and a validation error inside someone else's model call raises no alert on either side." },
+        { t: "p", text: "**Fix.** The old name was restored as an accepted alias, with a deprecation notice and removal date in the tool description, which is the one channel that reaches the model choosing the tool. The server now logs caller, tool and argument names per call, so the team can see who still uses the old form before removing it, and publishes a version consumers can pin and alert on." }
+      ] }
   ],
 
   takeaways: [

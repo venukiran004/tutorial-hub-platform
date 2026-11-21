@@ -313,7 +313,14 @@ SELECT name, CASE WHEN country IS NULL THEN 'unknown' ELSE country END FROM cust
           why: "One NULL in a NOT IN list makes the whole predicate unknown for every row. Add `AND category IS NOT NULL` inside the subquery, or rewrite as NOT EXISTS, which compares nothing with NULL."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: the exclusion list that excluded everyone",
+      body: [
+        { t: "p", text: "**Symptom.** A marketing export filtered out unsubscribed customers with `WHERE id NOT IN (SELECT customer_id FROM unsubscribes)`. One morning it returned zero rows and the campaign went to nobody." },
+        { t: "p", text: "**Mechanism.** A new import had written one unsubscribe row with a NULL `customer_id`. `x NOT IN (..., NULL)` is unknown for every x, and WHERE drops unknown, so every customer vanished. Nothing errored." },
+        { t: "p", text: "**Fix.** The filter became `NOT EXISTS`, which is unaffected by NULLs, the column gained a NOT NULL constraint, and the export alerts when its row count falls by more than half." }
+      ] }
   ],
 
   takeaways: [

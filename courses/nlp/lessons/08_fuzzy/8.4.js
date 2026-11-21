@@ -105,6 +105,17 @@ EC.receiveLesson({
 
     { t: "p", text: "The dividing question is whether your true matches **share characters**. Typos, abbreviations and reorderings do, and TF-IDF over n-grams handles them. *IBM* and *International Business Machines* do not, and no surface method will ever connect them — that needs either an embedding or, more reliably, an alias table. In practice a lookup table of known aliases outperforms an embedding for the specific entities you care about, and the embedding is for the long tail." },
 
+    { t: "callout", kind: "trap", title: "TF-IDF matching dominated by boilerplate",
+
+      body: [
+
+        { t: "p", text: "Shared legal suffixes such as 'Corporation Limited' can outweigh the one token that identifies a company, ranking a different company above an abbreviation of the right one." },
+
+        { t: "p", text: "Normalise boilerplate before vectorising, and validate on known matching pairs." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Build a matcher", difficulty: "core", minutes: 35,
       requirements: [
         "Fit a TF-IDF vectoriser on your own records and print the ten lowest-idf tokens. Consider whether each should be stripped.",
@@ -176,7 +187,14 @@ query 'Zeta Foods'             -> 1 candidates of 15: ['Zeta Foods Limited']
           { t: "p", text: "With a typo-ridden query, `char_wb` 3-grams found 'Acme Corp Ltd' first (0.64), while plain `char` 3-grams ranked 'Beta Corporation Limited' above it. `char_wb` builds n-grams within word boundaries, so 'Corporation' and 'Limited' contribute fewer cross-word fragments and the distinctive word counts for more." },
           { t: "p", text: "An inverted index over tokens that appear in at most two records returned one or two candidates per query out of 15, so scoring runs on a handful instead of the whole table. 'IBM' against 'International Business Machines' scores 0.0 on word TF-IDF, because there is no shared token. Abbreviations need an alias table. An embedding model may also help, but it must be tested, because it can equally match 'IBM' to any large technology company." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a different company ranked above an abbreviation",
+      body: [
+        { t: "p", text: "**Symptom.** A supplier matcher ranked 'Beta Corporation Limited' above 'Acme Corp Ltd' as the best match for 'Acme Corporation Limited'." },
+        { t: "p", text: "**Mechanism.** Shared boilerplate words dominated the TF-IDF similarity, outweighing the one token that identified the business." },
+        { t: "p", text: "**Fix.** Legal suffixes and boilerplate are normalised before vectorising, and matching is validated on known pairs." }
+      ] }
   ],
 
   takeaways: [

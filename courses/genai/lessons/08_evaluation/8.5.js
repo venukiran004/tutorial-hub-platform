@@ -116,7 +116,7 @@ elo_hw = hw * 400 / (math.log(10) * p_true * (1 - p_true))   # chain rule`,
     { t: "h2", n: "03", id: "limits", text: "What preference measures",
       sub: "Holistic quality, and not correctness" },
 
-    { t: "callout", kind: "warn", title: "Preference is not correctness, and the bias direction is known",
+    { t: "callout", kind: "trap", title: "Preference is not correctness, and the bias direction is known",
       body: [
         { t: "p", text: "Human voters favour confident, well-formatted, longer answers. 7.11 catalogued exactly these as reward hacks \u2014 length bias, formatting tics, confident hallucination \u2014 and an arena is a reward model made of people, so it has the same exploitable directions." },
         { t: "p", text: "8.3 measured the sharpest version on automatic metrics: a factually inverted sentence scored a perfect ROUGE-1 while a correct paraphrase scored 0.2581. Human preference does not fail that way, but it does reliably prefer a fluent wrong answer to a hedged correct one." },

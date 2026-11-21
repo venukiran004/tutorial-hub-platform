@@ -168,6 +168,13 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Set your own limits from measurement", difficulty: "core", minutes: 30,
       prompt: "For a model service, produce four numbers rather than four guesses. Run the container under realistic load and record the working-set memory at steady state and at peak — set the request at the former and the limit above the latter, then check which QoS class that gives you. Check `container_cpu_cfs_throttled_seconds_total`: if it is non-zero, your CPU limit is costing you latency invisibly. Compute your own HPA reaction time by adding your scrape interval, sync period, image pull on a cold node, measured boot time and readiness delay. Then ask whether your scaling metric measures occupancy or merely correlates with it, and work out the utilisation your target implies using W = S / (1 − ρ) with your measured service time.",
+      requirements: [
+        "Record working-set memory at steady state and at peak, and set request and limit from them",
+        "State the resulting QoS class",
+        "Check the CPU throttling metric",
+        "Compute your HPA reaction time from its components",
+        "Work out the utilisation your scaling target implies from your measured service time"
+      ],
       hints: [
         "A model whose imports dominate residency — scipy was 43% of the floor here — has a memory profile almost independent of request volume.",
         "If your HPA reaction time exceeds the duration of your typical spike, the HPA is not what is handling your spikes; baseline replicas are.",
@@ -178,8 +185,14 @@ EC.receiveLesson({
           { t: "p", text: "The usual findings are a memory limit set to a round number nobody measured and a QoS class nobody knew they had. The round number is often fine and occasionally four megabytes short, which is the 256 MB case here: a crash loop with exit code 137 and no application log." },
           { t: "p", text: "The reaction-time calculation is the one that changes behaviour, because it reframes autoscaling as a tool for sustained load and makes the baseline replica count the thing that actually absorbs bursts." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: OOMKilled before the first request",
+      body: [
+        { t: "p", text: "**Symptom.** A model service entered a crash loop immediately after its memory limit was tightened to save cost. The limit had been set from the model file's size plus a margin." },
+        { t: "p", text: "**Mechanism.** The limit was 256 MB. Importing the scientific stack alone takes the process to about 261 MB resident before any model is loaded or any request served. The kernel killed it with exit code 137 during startup, and the restart repeated the same sequence." },
+        { t: "p", text: "**Fix.** Limits are derived from resident memory measured under load, not from package or artifact sizes, with the request at the steady-state figure. The change went through a canary that had to serve traffic before the old replicas were removed." }
+      ] }
   ],
 
   takeaways: [

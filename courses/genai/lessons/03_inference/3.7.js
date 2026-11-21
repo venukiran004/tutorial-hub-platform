@@ -235,6 +235,17 @@ llm.generate(["Summarise this ticket:"], SamplingParams(max_tokens=200))
       caption: "**The engine is built for one model, one precision, one shape and one GPU generation, and it is not portable** — which is the real decision here. TensorRT-LLM wins the benchmarks on NVIDIA hardware and turns \u201cdeploy a new model\u201d into a CI build, so it pays off for a fixed model served at scale and gets in the way everywhere else." },
     { t: "p", text: "**`max_batch_size` and `max_input_len` being fixed at build time is the constraint that catches teams out:** a request longer than the compiled sequence length is rejected rather than handled, so the shape has to be chosen from traffic you have measured. vLLM and TGI decide those at request time and give up some throughput for it, which is usually the right trade until the model stops changing." },
 
+    { t: "callout", kind: "trap", title: "Setting gpu_memory_utilization for the weights alone",
+
+      body: [
+
+        { t: "p", text: "The setting decides how much GPU memory the server may claim, and most of what it buys is KV cache — the room for concurrent requests. Setting it low to 'leave headroom' quietly caps concurrency; setting it to the maximum on a shared GPU starves the other process." },
+
+        { t: "p", text: "Size it from the KV cache your target concurrency and context length need, and verify by load-testing at that concurrency rather than with a single request." }
+
+      ] },
+
+
     { t: "exercise", kind: "analysis", title: "Work out when prefix caching stops mattering", difficulty: "core", minutes: 20,
       body: "Prefix caching saved 84.8% of prefill tokens on eight requests sharing a 251-token prefix. But prefill is only part of a request: the decode phase is untouched by it. Work out the saving as a share of total request cost, for a short answer and a long one, and find the point where prefix caching stops being the lever worth pulling.",
       requirements: [

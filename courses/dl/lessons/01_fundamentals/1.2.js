@@ -238,7 +238,14 @@ print(s * (1 - s))              # tensor([0.2500, 0.1966, 0.0452])
 print(0.25 ** 5, 1.0 ** 5)      # 0.0009765625 1.0
 # (a) 0.25  (b) 0.25^5 ≈ 0.001  (c) tanh' ≤ 1, so ≤ 1 — but only exactly at z = 0
 # (d) ReLU' = 1 wherever the unit is active, so the factor is 1 at any depth`,
-        notes: [{ t: "p", text: "Five sigmoid layers scale a gradient by at most a thousandth before the weights even get involved; five ReLU layers scale it by exactly 1 along any path of active units. That single comparison is most of the story of why ReLU made deep networks trainable." }] } }
+        notes: [{ t: "p", text: "Five sigmoid layers scale a gradient by at most a thousandth before the weights even get involved; five ReLU layers scale it by exactly 1 along any path of active units. That single comparison is most of the story of why ReLU made deep networks trainable." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: half the network stopped learning",
+      body: [
+        { t: "p", text: "**Symptom.** A ReLU network's validation accuracy stalled early, and later inspection found that about half its hidden units output zero for every input." },
+        { t: "p", text: "**Mechanism.** A high learning rate pushed many units' biases negative in the first steps. A ReLU with negative input has zero gradient, so those units never recovered." },
+        { t: "p", text: "**Fix.** The learning rate was lowered with warm-up, He initialisation was used, and the fraction of dead units per layer is logged during training (lesson 7.2)." }
+      ] }
   ],
 
   takeaways: [

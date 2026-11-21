@@ -158,6 +158,12 @@ print([m.value for m in ContentCapturingMode])` },
 
     { t: "exercise", kind: "practice", title: "Instrument a multi-agent system", difficulty: "advanced", minutes: 28,
       prompt: "Take a coordinator with two specialists, one of which has tools. Write one plugin that emits a log line per turn with user, invocation, root agent and duration; counts model calls and total tokens per agent; and records tool failures by tool name. Run several turns including one that fails, then answer from your telemetry alone: which agent was most expensive, which tool failed, and how many model calls the worst turn took. Finally, make the plugin raise deliberately and confirm what happens to the conversation.",
+      requirements: [
+        "Write one plugin logging user, invocation, root agent and duration per turn",
+        "Count model calls and tokens per agent and tool failures by name",
+        "Answer from telemetry alone: the most expensive agent, the failing tool, the worst turn's model calls",
+        "Make the plugin raise and confirm what happens to the conversation"
+      ],
       hints: [
         "`callback_context.agent_name` attributes model calls; `tool.name` attributes failures.",
         "Answer the three questions without reading the transcript — that is the test.",
@@ -168,8 +174,14 @@ print([m.value for m in ContentCapturingMode])` },
           { t: "p", text: "Answering the three questions from telemetry alone is the acceptance test for an observability layer, and the usual failure is discovering you logged that something happened but not which agent it happened in. Attribution by agent name is what turns a flat stream of model calls into something you can act on." },
           { t: "p", text: "The deliberate raise fails the turn, which is the point of doing it. An exception in a hook propagates like any other, so a tracing backend timing out takes your agent down — and that is a worse outcome than losing the traces. Every hook body gets a try block that swallows and, at most, logs locally." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a metrics plugin that took down the agent",
+      body: [
+        { t: "p", text: "**Symptom.** When the metrics backend had an outage, every conversation with the agent failed." },
+        { t: "p", text: "**Mechanism.** The observability plugin sent metrics synchronously and let exceptions propagate. A plugin runs inside the turn, so its failure became the turn's failure." },
+        { t: "p", text: "**Fix.** The plugin buffers metrics and drops them on error, wrapping every hook body so it can never raise into the turn. Telemetry may be lost; conversations may not." }
+      ] }
   ],
 
   takeaways: [

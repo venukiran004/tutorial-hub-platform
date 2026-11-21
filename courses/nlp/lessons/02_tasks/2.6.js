@@ -236,7 +236,8 @@ os.environ["HF_HUB_OFFLINE"] = "1"
 import numpy as np, torch
 from sklearn.feature_extraction.text import TfidfVectorizer
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-from docs import DOCS
+from docs import DOCS   # docs.py is yours: DOCS = [six or more multi-sentence English passages]
+                        # the output shown is from the author's passages, so your figures will differ
 
 split = lambda t: [s.strip() for s in re.split(r"(?<=[.!?])\\s+", t) if s.strip()]
 
@@ -305,7 +306,14 @@ summary to fact-check by hand: The software release fixes a memory leak in the e
           { t: "p", text: "BART copied every word on all six documents, with verbatim runs of 12 to 24 words. That is why the length correlation is reported as undefined, not as a number: with constant copy rate there is nothing to correlate. On short, clean news-like text this model is an extractive system that writes like an abstractive one. Run the same loop on long transcripts before you conclude it never composes." },
           { t: "p", text: "Step 5 cannot be automated honestly. The printed summary is the one to check by hand against its source. Time yourself. Even a fully copied summary needs the check, because selection can change meaning: dropping 'Users should back up their projects' changes the advice a reader takes away." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a summary that ended mid-sentence",
+      body: [
+        { t: "p", text: "**Symptom.** A meeting-notes product delivered summaries that stopped partway through a sentence for long meetings." },
+        { t: "p", text: "**Mechanism.** The transcript exceeded the model's input limit and was truncated silently, and the output hit its own length cap before a sentence ended. Nothing checked either." },
+        { t: "p", text: "**Fix.** Long inputs are chunked and summarised hierarchically, generation length is set from the input, and outputs are checked for a complete final sentence." }
+      ] }
   ],
 
   takeaways: [

@@ -126,6 +126,12 @@ def pipeline(as_of: str):
 
     { t: "exercise", kind: "practice", title: "Price the boundaries in your own pipeline", difficulty: "intro", minutes: 25,
       prompt: "Take your retraining pipeline and write down, per step, two numbers: how long it runs, and what its startup overhead would be as a separate container — image pull if cold, pod scheduling, interpreter and imports. Use lesson 2.1's 2.82 seconds as a floor for the import-and-load part. Then compute the overhead as a fraction of total runtime, and identify any step whose boundary exists only for tidiness. Separately, list every input each step reads and mark the ones that are not declared parameters — those are the inputs that would make content-keyed caching lie to you.",
+      requirements: [
+        "Record each step's runtime and its startup overhead as a separate container",
+        "Compute the overhead as a fraction of total runtime",
+        "Identify any step whose boundary exists only for tidiness",
+        "List every input a step reads that is not a declared parameter"
+      ],
       hints: [
         "A step reading 'the latest partition' rather than an as_of parameter is the classic undeclared input.",
         "Environment variables and the current date are inputs too, and neither is in a cache key.",
@@ -136,8 +142,14 @@ def pipeline(as_of: str):
           { t: "p", text: "The usual finding is that two or three steps are seconds of work wrapped in a container start, and merging them loses nothing — the boundary was drawn for readability, which a function already provides." },
           { t: "p", text: "The undeclared-input list is the more valuable output. Each entry is a case where a re-run can silently reuse a stale artifact, and the fix is the same one lesson 1.3 argued for: identify the data by content or by an explicit as-of parameter, never by 'latest'." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the cached step that trained on last month's data",
+      body: [
+        { t: "p", text: "**Symptom.** A managed pipeline reported a successful nightly retrain for three weeks. The model in the registry had not changed in that time." },
+        { t: "p", text: "**Mechanism.** The training step was cached on its declared inputs, and its only declared input was a table name. The table's contents changed every night; the name did not. The cache key was identical, so the platform skipped the step and reused the old output, exactly as designed." },
+        { t: "p", text: "**Fix.** The step now takes the data's content hash or partition date as a parameter, so new data means a new key. Any step that reads something it does not declare is treated as uncacheable. Content-keyed caching is only as honest as the key." }
+      ] }
   ],
 
   takeaways: [

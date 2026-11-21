@@ -30,7 +30,7 @@ EC.receiveLesson({
     { t: "p", text: "Start with `Q = K = V = X`, so a token's query, key and value are all just the token's own vector. This keeps the arithmetic minimal while every other step stays real." },
 
     { t: "out", text:
-"step 4a — raw scores Q K^T\n\n              the     cat     sat\n  the   [   4.0000  4.3917  3.5129 ]\n  cat   [   4.3917  5.1006  3.5259 ]\n  sat   [   3.5129  3.5259  4.9863 ]\n\nreference: 4.00 4.39 3.51 / 4.39 5.10 3.52 / 3.51 3.52 4.98" },
+"step 4a — raw scores Q K^T\n\n              the     cat     sat\n  the   [   4.0000  4.3917  3.5129 ]\n  cat   [   4.3917  5.1006  3.5259 ]\n  sat   [   3.5129  3.5259  4.9863 ]\n\nby hand:   4.00 4.39 3.51 / 4.39 5.10 3.52 / 3.51 3.52 4.98" },
 
     { t: "p", text: "Entry `[i][j]` is how relevant token `j` is to token `i` — rows are the token doing the looking, columns the token being looked at. The matrix is symmetric here precisely *because* `Q = K`; that symmetry is an artefact of the simplification and disappears in section 04." },
 
@@ -38,13 +38,13 @@ EC.receiveLesson({
 "step 4b — scale by sqrt(d_k) = sqrt(4) = 2\n\n  the   [ 2.0000  2.1959  1.7565 ]\n  cat   [ 2.1959  2.5503  1.7629 ]\n  sat   [ 1.7565  1.7629  2.4932 ]\n\nstep 4c — causal mask: future cells to -inf\n\n  the   [ 2.0000    -inf    -inf  ]\n  cat   [ 2.1959  2.5503    -inf  ]\n  sat   [ 1.7565  1.7629  2.4932 ]" },
 
     { t: "out", text:
-"step 4d — softmax each row\n\n  the   [ 1.0000  0.0000  0.0000 ]\n  cat   [ 0.4123  0.5877  0.0000 ]\n  sat   [ 0.2442  0.2458  0.5101 ]\n\nreference: 1.000/0/0 · 0.412/0.588/0 · 0.244/0.246/0.510  — reproduces exactly" },
+"step 4d — softmax each row\n\n  the   [ 1.0000  0.0000  0.0000 ]\n  cat   [ 0.4123  0.5877  0.0000 ]\n  sat   [ 0.2442  0.2458  0.5101 ]\n\nby hand:   1.000/0/0 · 0.412/0.588/0 · 0.244/0.246/0.510  — reproduces exactly" },
 
     { t: "callout", kind: "insight", title: "The first row is forced, and that is informative",
       body: [{ t: "p", text: "*the* is the first token, so after masking it has exactly one option and its weight is **1.0000** by necessity — not because the model decided anything. This is worth noticing whenever you inspect attention maps: early positions have few choices, so their distributions look confident for structural reasons rather than semantic ones. It is the same caution as the attention sinks in lesson 4.4, where apparent confidence turned out to be mass with nowhere else to go." }] },
 
     { t: "out", text:
-"step 4e — blend the values\n\n  attn_sat = 0.2442 * z_the + 0.2458 * z_cat + 0.5101 * z_sat\n\n    dim0: 0.2442*1.0000 + 0.2458*0.8415 + 0.5101*1.9093 = 1.4248\n    dim1: 0.2442*1.0000 + 0.2458*1.5403 + 0.5101*0.5839 = 0.9205\n    dim2: 0.2442*1.0000 + 0.2458*1.0100 + 0.5101*0.0200 = 0.5026\n    dim3: 0.2442*1.0000 + 0.2458*1.0000 + 0.5101*0.9998 = 0.9999\n\n  attn_sat = [1.4248, 0.9205, 0.5026, 0.9999]\n  reference: [1.42, 0.92, 0.50, 1.00]" },
+"step 4e — blend the values\n\n  attn_sat = 0.2442 * z_the + 0.2458 * z_cat + 0.5101 * z_sat\n\n    dim0: 0.2442*1.0000 + 0.2458*0.8415 + 0.5101*1.9093 = 1.4248\n    dim1: 0.2442*1.0000 + 0.2458*1.5403 + 0.5101*0.5839 = 0.9205\n    dim2: 0.2442*1.0000 + 0.2458*1.0100 + 0.5101*0.0200 = 0.5026\n    dim3: 0.2442*1.0000 + 0.2458*1.0000 + 0.5101*0.9998 = 0.9999\n\n  attn_sat = [1.4248, 0.9205, 0.5026, 0.9999]\n  by hand:   [1.42, 0.92, 0.50, 1.00]" },
 
     { t: "callout", kind: "trap", title: "With Q = K, a token mostly attends to itself",
       body: [{ t: "p", text: "*sat* gave **0.5101** to itself and roughly a quarter each to the others. That is not a discovered relationship — it is arithmetic. When `Q = K`, the score of token `i` against token `j` is `z_i · z_j`, and a vector's dot product with itself is its squared norm, which is the largest entry in its row unless some other vector is both longer and well aligned. **Self-attention with identity projections is mostly self-similarity.** That is precisely the limitation the next section removes." }] },
@@ -68,7 +68,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Version two: real projections", id: "real" },
 
-    {"kind": "trace", "title": "Now 'sat' attends to 'cat' instead of to itself", "caption": "The same token now has three different vectors — **`q_sat ≠ k_sat ≠ v_sat`** — and `d_k` is **2, not 4**, because the head projects down. The scores change the outcome: **`score(sat→cat) = 3.4322` is now the highest, against `sat→sat` at 2.2297**, so the degenerate self-attention of §01 is gone. Scaling by `sqrt(2)` and softmaxing gives **[0.2651, 0.5149, 0.2200]**, matching the reference's [0.266, 0.516, 0.219].", "left": "step", "codeW": 150, "vars": ["-> the", "-> cat", "-> sat"], "steps": [{"code": "raw score", "state": ["2.4932", "3.4322", "2.2297"], "tone": "good", "note": "cat is highest now"}, {"code": "scaled by sqrt(2)", "state": ["1.7630", "2.4270", "1.5766"], "changed": [0, 1, 2], "tone": "good"}, {"code": "exp", "state": ["5.8297", "11.3245", "4.8386"], "changed": [0, 1, 2], "tone": "good"}, {"code": "weights (sum 21.9927)", "state": ["0.2651", "0.5149", "0.2200"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-6_2-03-2"},
+    {"kind": "trace", "title": "Now 'sat' attends to 'cat' instead of to itself", "caption": "The same token now has three different vectors — **`q_sat ≠ k_sat ≠ v_sat`** — and `d_k` is **2, not 4**, because the head projects down. The scores change the outcome: **`score(sat→cat) = 3.4322` is now the highest, against `sat→sat` at 2.2297**, so the degenerate self-attention of §01 is gone. Scaling by `sqrt(2)` and softmaxing gives **[0.2651, 0.5149, 0.2200]**, matching the hand calculation's [0.266, 0.516, 0.219].", "left": "step", "codeW": 150, "vars": ["-> the", "-> cat", "-> sat"], "steps": [{"code": "raw score", "state": ["2.4932", "3.4322", "2.2297"], "tone": "good", "note": "cat is highest now"}, {"code": "scaled by sqrt(2)", "state": ["1.7630", "2.4270", "1.5766"], "changed": [0, 1, 2], "tone": "good"}, {"code": "exp", "state": ["5.8297", "11.3245", "4.8386"], "changed": [0, 1, 2], "tone": "good"}, {"code": "weights (sum 21.9927)", "state": ["0.2651", "0.5149", "0.2200"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-6_2-03-2"},
 
 
 
@@ -78,7 +78,7 @@ EC.receiveLesson({
     { t: "p", text: "Same token, three different vectors — `q_sat ≠ k_sat ≠ v_sat`. Note `d_k` is now **2**, not 4, because the head projects down." },
 
     { t: "out", text:
-"scores for the 'sat' query\n\n  score(sat -> the) = [1.9093, 0.5839] . [1.0000, 1.0000] = 2.4932\n  score(sat -> cat) = [1.9093, 0.5839] . [1.5403, 0.8415] = 3.4322   highest\n  score(sat -> sat) = [1.9093, 0.5839] . [0.5839, 1.9093] = 2.2297\n\n  scaled by sqrt(2) = 1.4142:  [1.7630, 2.4270, 1.5766]\n  exp:                         [5.8297, 11.3245, 4.8386]   sum 21.9927\n  weights:                     [0.2651, 0.5149, 0.2200]\n\nreference: 2.49 / 3.43 / 2.22, weights [0.266, 0.516, 0.219]" },
+"scores for the 'sat' query\n\n  score(sat -> the) = [1.9093, 0.5839] . [1.0000, 1.0000] = 2.4932\n  score(sat -> cat) = [1.9093, 0.5839] . [1.5403, 0.8415] = 3.4322   highest\n  score(sat -> sat) = [1.9093, 0.5839] . [0.5839, 1.9093] = 2.2297\n\n  scaled by sqrt(2) = 1.4142:  [1.7630, 2.4270, 1.5766]\n  exp:                         [5.8297, 11.3245, 4.8386]   sum 21.9927\n  weights:                     [0.2651, 0.5149, 0.2200]\n\nby hand:   2.49 / 3.43 / 2.22, weights [0.266, 0.516, 0.219]" },
 
     { t: "callout", kind: "crit", title: "The verb found its subject, and only because the matrices differ",
       body: [{ t: "p", text: "*sat* now puts **51.49%** of its attention on *cat* — the noun it is the verb of — 26.5% on *the* and only 22.0% on itself. Compare the identity version, where the same token gave 51.0% to itself and the two others a quarter each. The entire difference is that `W_K` **swaps dimensions 0 and 1** while `W_Q` leaves them in order, so a query's dimension 0 meets a key's dimension 1. That asymmetry is what lets a token look for something *other than a copy of itself*. In a real model these matrices are learned, and this subject-verb link is exactly the kind of structure training discovers — lesson 4.4 found a clean previous-token head in BERT the same way." }] },
@@ -90,7 +90,7 @@ EC.receiveLesson({
 
 
     { t: "out", text:
-"out_sat = 0.2651 * v_the + 0.5149 * v_cat + 0.2200 * v_sat\n\n  dim0: 0.2651*1.0000 + 0.5149*1.0100 + 0.2200*0.0200 = 0.7895\n  dim1: 0.2651*1.0000 + 0.5149*1.0000 + 0.2200*0.9998 = 1.0000\n\n  out_sat = [0.7895, 1.0000]\n  reference: [0.79, 1.00]" },
+"out_sat = 0.2651 * v_the + 0.5149 * v_cat + 0.2200 * v_sat\n\n  dim0: 0.2651*1.0000 + 0.5149*1.0100 + 0.2200*0.0200 = 0.7895\n  dim1: 0.2651*1.0000 + 0.5149*1.0000 + 0.2200*0.9998 = 1.0000\n\n  out_sat = [0.7895, 1.0000]\n  by hand:   [0.79, 1.00]" },
 
     { t: "callout", kind: "insight", title: "The separation of keys from values is the point",
       body: [{ t: "p", text: "The blend uses `V` — not `X` and not `K`. That separation is what makes attention more than similarity search: a token advertises one thing in its key and delivers a different thing in its value. Here `W_V` reads dimensions **2 and 3** while `W_K` reads **0 and 1**, so the features used to *find* a token are disjoint from the features it *contributes*. In a real model that means a word can be findable by its grammatical role while contributing its semantic content, which a single shared representation could not do." }] },
@@ -98,7 +98,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "The output projection", id: "wo" },
 
     { t: "out", text:
-"the head produced a d_k = 2 vector, but the residual stream is d_model = 4\n\n              | 1  0  1  0 |\n  [0.7895, 1.0000]  x  | 0  1  0  1 |  = [0.7895, 1.0000, 0.7895, 1.0000]\n\n  reference: [0.79, 1.00, 0.79, 1.00]" },
+"the head produced a d_k = 2 vector, but the residual stream is d_model = 4\n\n              | 1  0  1  0 |\n  [0.7895, 1.0000]  x  | 0  1  0  1 |  = [0.7895, 1.0000, 0.7895, 1.0000]\n\n  by hand:   [0.79, 1.00, 0.79, 1.00]" },
 
     { t: "p", text: "`W_O` maps the head's output back to `d_model` so it can be added to the residual stream. With one head that looks like bookkeeping; with many heads it is where their separate conclusions are mixed — as lesson 4.4 showed, each head produces an independent view and `W_O` learns how to combine them." },
 
@@ -216,7 +216,14 @@ head output for 'sat', W_V on dims 2,3: [0.7896 0.9999]  on dims 0,1: [1.1184 1.
           { t: "p", text: "Swapping W_Q and W_K changed nothing here, and the reason is specific to these matrices. W_K is W_Q with its two columns swapped, so Q·Kᵀ = X W_Q P W_Qᵀ Xᵀ, where P is the swap. P is its own transpose, so the swapped version gives the same scores. With general learned matrices, swapping query and key transposes the score matrix and changes who attends to whom." },
           { t: "p", text: "Setting W_K = W_Q makes every score a dot product of a token with itself or a same-space neighbour, and 'sat' returns to attending mostly to itself (0.589). Separate query and key matrices are what let a token look for something other than itself. Pointing W_V at dimensions 0–1 changed the head's output for 'sat' from [0.79, 1.00] to [1.12, 1.19]: the attention pattern is unchanged, but the content it delivers is different." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: attention that looked only at itself",
+      body: [
+        { t: "p", text: "**Symptom.** A simplified attention implementation in a teaching notebook produced tokens that attended mostly to themselves." },
+        { t: "p", text: "**Mechanism.** It used the same matrix for queries and keys, so each token's query matched its own key best." },
+        { t: "p", text: "**Fix.** Queries and keys use separate projections, and the notebook shows both versions to make the reason visible." }
+      ] }
   ],
 
   takeaways: [

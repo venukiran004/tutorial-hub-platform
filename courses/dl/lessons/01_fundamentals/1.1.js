@@ -286,6 +286,17 @@ total 235,146   first layer share 200,960 / 235,146 = 85.5%` },
       { level: "Senior", label: "Where the memory goes", lang: "text", code: "params × 4 bytes (float32) + optimiser state (Adam: ×3) + activations per batch", note: "235,146 parameters is under 1 MB of weights; the activations for a batch of 128 are what fill the memory in a large model." }
     ] },
 
+    { t: "callout", kind: "trap", title: "Assuming a network that can represent a function will learn it",
+
+      body: [
+
+        { t: "p", text: "The universal approximation theorem says a wide enough network can represent a function; it says nothing about whether training will find those weights, or how many units and examples it needs." },
+
+        { t: "p", text: "Treat it as an existence result, and judge an architecture by whether it trains well on the data you have." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Count, then check", difficulty: "foundation", minutes: 12,
       body: [{ t: "p", text: "Using only the formula, count the parameters of the network [3072, 512, 256, 10] — a CIFAR-10 image (32 × 32 × 3 = 3072) flattened into two hidden layers. Say what fraction sits in the first layer. Then check the count in PyTorch." }],
       requirements: [
@@ -302,7 +313,14 @@ counts = [i * o + o for i, o in layers]
 print(counts, sum(counts))                      # [1573376, 131328, 2570] 1707274
 print(sum(p.numel() for p in net.parameters()))  # 1707274
 print(f"{counts[0] / sum(counts):.1%}")           # 92.2%`,
-        notes: [{ t: "p", text: "1,573,376 + 131,328 + 2,570 = 1,707,274 parameters, 92.2 % of them in the first layer. Flattening an image into a dense layer is expensive in exactly the place where a convolution would share weights." }] } }
+        notes: [{ t: "p", text: "1,573,376 + 131,328 + 2,570 = 1,707,274 parameters, 92.2 % of them in the first layer. Flattening an image into a dense layer is expensive in exactly the place where a convolution would share weights." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a network that could not learn a curve",
+      body: [
+        { t: "p", text: "**Symptom.** A team's first neural network for a non-linear pricing curve performed exactly like linear regression, however many layers they added." },
+        { t: "p", text: "**Mechanism.** The layers had no activation functions between them. A stack of linear maps is one linear map, so depth added parameters and nothing else." },
+        { t: "p", text: "**Fix.** A ReLU follows each hidden layer, and a unit test checks that the model can fit XOR, which no linear model can." }
+      ] }
   ],
 
   takeaways: [

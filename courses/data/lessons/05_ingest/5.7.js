@@ -113,7 +113,7 @@ df = pd.read_sql(text("SELECT ..."), engine,
       caption: "**A region called `O'Brien's` breaks a formatted query before any attacker does.** The apostrophe ends the string. Parameters make the value data and never SQL — there is no situation in which formatting a value into a query is correct."
     },
 
-    { t: "callout", kind: "warn", title: "Formatting a value into SQL is always wrong", body: [
+    { t: "callout", kind: "trap", title: "Formatting a value into SQL is always wrong", body: [
       { t: "p", text: "Not \"risky\" — wrong. It breaks on an apostrophe, it breaks on a percent sign in a LIKE, it breaks on a backslash, and it is the mechanism of every SQL injection. The parameterised form is shorter and handles all of them." },
       { t: "p", text: "**Identifiers — table and column names — are the one exception**, because they cannot be bound. Validate them against an allowlist that your code controls, then format. The value must never have come from outside." },
       { t: "p", text: "A code review that finds an f-string building SQL should reject it on sight, regardless of where the value comes from today." }
@@ -728,7 +728,14 @@ def build_features(engine, as_of):
           why: "Most drivers pull the whole result across the network before pandas sees the first row. `execution_options(stream_results=True)` opens a server-side cursor so the database sends pieces on request — and even then, if the rows are only needed for an aggregate, the aggregate belongs in the query."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a notebook that pulled fifty million rows to compute one number",
+      body: [
+        { t: "p", text: "**Symptom.** A daily metric calculation took forty minutes and occasionally ran the analysis machine out of memory." },
+        { t: "p", text: "**Mechanism.** The code ran `pd.read_sql('SELECT * FROM orders')` and computed a sum in pandas. Every row crossed the network to produce a number the database could compute in seconds." },
+        { t: "p", text: "**Fix.** The aggregation runs in SQL and pandas receives the result. Large reads that are genuinely needed use `chunksize` and filtered, parameterised queries." }
+      ] }
   ],
 
   takeaways: [

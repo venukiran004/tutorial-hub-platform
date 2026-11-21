@@ -589,7 +589,14 @@ def test_clean_data_has_no_warning():
           why: "The reconciliation gap is the tell. `groupby` excludes NaN keys by default and the 50 of revenue with no region leaves the report silently. `dropna=False` keeps it as a NaN group, and asserting group-total-equals-column-total makes the omission impossible to ship."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: product categories with no sales vanished from the report",
+      body: [
+        { t: "p", text: "**Symptom.** A weekly category report omitted categories that had no sales that week, and the business read the gap as categories being discontinued." },
+        { t: "p", text: "**Mechanism.** Grouping by a column dropped groups with no rows, and a NaN category was dropped by default as well. The report showed what existed in the data, not every category that should be reported." },
+        { t: "p", text: "**Fix.** The category column is categorical with the full list of categories, the groupby uses `observed=False, dropna=False`, and missing weeks report zero explicitly." }
+      ] }
   ],
 
   takeaways: [

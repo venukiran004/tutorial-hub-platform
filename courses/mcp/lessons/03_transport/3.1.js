@@ -72,7 +72,7 @@ for k in ("host", "port", "streamable_http_path", "sse_path", "message_path",
 
     { t: "h2", n: "03", text: "What changes over HTTP", id: "http" },
 
-    {"kind": "trace", "title": "Different session ids, the same pid", "caption": "**Compare with stdio's 10152 and 22540: the isolation has moved from the operating system to a string in a header.** Everything that was free is now your responsibility — and the lifespan row is the one that breaks previously-correct code. A single database connection or a mutable cache that was per-caller under stdio now serves everyone, producing concurrency bugs that are load-dependent and absent from every test that connects one client.", "left": "concern", "codeW": 170, "vars": ["stdio", "streamable HTTP"], "steps": [{"code": "who can reach it", "state": ["only the spawner", "anyone who reaches the port"], "tone": "crit"}, {"code": "isolation", "state": ["separate processes", "a session id, in ONE process"], "changed": [0, 1], "tone": "crit"}, {"code": "measured", "state": ["pid 10152 and 22540", "pid 7116 for BOTH clients"], "changed": [0, 1], "tone": "crit"}, {"code": "authentication", "state": ["not applicable", "yours to add"], "changed": [0, 1], "tone": "warn"}, {"code": "a lifespan's scope", "state": ["one caller", "ALL callers - a pool, not a connection"], "changed": [0, 1], "tone": "crit"}, {"code": "shared in-memory state", "state": ["per caller, safely", "shared by everyone - usually a bug"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_1-03-2"},
+    {"kind": "trace", "title": "Different session ids, the same pid", "caption": "**Compare with stdio's 10152 and 22540: the isolation has moved from the operating system to a string in a header.** Everything that was free is now your responsibility — and state ownership is what breaks previously-correct code. A module-level database connection or cache that was per caller under stdio now serves everyone, producing concurrency bugs that are load-dependent and absent from every test that connects one client. The FastMCP lifespan moves the other way: measured on SDK 1.28.1 it runs once per session, and once per request with `stateless_http=True`.", "left": "concern", "codeW": 170, "vars": ["stdio", "streamable HTTP"], "steps": [{"code": "who can reach it", "state": ["only the spawner", "anyone who reaches the port"], "tone": "crit"}, {"code": "isolation", "state": ["separate processes", "a session id, in ONE process"], "changed": [0, 1], "tone": "crit"}, {"code": "measured", "state": ["pid 10152 and 22540", "pid 7116 for BOTH clients"], "changed": [0, 1], "tone": "crit"}, {"code": "authentication", "state": ["not applicable", "yours to add"], "changed": [0, 1], "tone": "warn"}, {"code": "a lifespan's scope", "state": ["one caller", "one SESSION (one request if stateless)"], "changed": [0, 1], "tone": "crit"}, {"code": "module-level state", "state": ["per caller, safely", "shared by everyone - usually a bug"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_1-03-2"},
 
 
     { t: "p", text: "The same server, the same tools, `transport=\"streamable-http\"` instead. Two clients connecting concurrently:" },
@@ -97,15 +97,16 @@ await asyncio.gather(one("client A"), one("client B"))`,
         ["Isolation between callers", "Separate processes", "A session id, in one process"],
         ["Authentication", "Not applicable", "**Yours to add** — see lesson 3.2"],
         ["Identity of the caller", "Whoever launched it", "Unknown unless you carry it"],
-        ["A lifespan's scope", "One caller", "**All callers** — so a pool, not a connection"],
+        ["A lifespan's scope", "One caller", "**One session** — one request when `stateless_http=True`"],
+        ["Module-level state", "One caller", "**All callers** — so one deliberate pool, not a global connection"],
         ["Horizontal scaling", "Not applicable", "Needs stateless mode or sticky routing"],
         ["Shared in-memory state", "Per caller, safely", "Shared by everyone — usually a bug"]
       ] },
 
-    { t: "callout", kind: "warn", title: "The lifespan row is the one that breaks working code",
+    { t: "callout", kind: "warn", title: "State ownership is what breaks working code",
       body: [
-        { t: "p", text: "A server written and tested over stdio can hold a single database connection, a mutable cache or a per-user context in its lifespan and be entirely correct. **Switch the transport and that same code is serving every caller from one object**, and the bugs it produces are concurrency bugs: intermittent, load-dependent, and absent from every test that connects one client." },
-        { t: "p", text: "The fix is mechanical once you are looking for it — a connection pool instead of a connection, nothing mutable keyed by anything but the session, and per-request state taken from the request rather than from `self`. The hard part is remembering that changing one argument changed the concurrency model." }
+        { t: "p", text: "A server written and tested over stdio can keep a database connection, a cache or a per-user context anywhere — at module scope or in its lifespan — and be entirely correct, because each caller has its own process. **Switch the transport and module-level objects are serving every caller from one process**, and the bugs that produces are concurrency bugs: intermittent, load-dependent, and absent from every test that connects one client. The lifespan changes in the opposite direction. Measured on SDK 1.28.1, FastMCP opens it once per session over streamable HTTP and once per request with `stateless_http=True`, so a connection opened there is multiplied by your session count, and anything you meant to keep between calls in stateless mode is rebuilt on every one." },
+        { t: "p", text: "The fix is mechanical once you are looking for it — one pool created once for the process instead of a connection, nothing mutable at module scope keyed by anything but the session, and per-request state taken from the request rather than from `self`. The hard part is remembering that changing one argument changed the concurrency model." }
       ] },
 
     { t: "h2", n: "04", text: "Stateful or stateless", id: "stateless" },
@@ -158,19 +159,107 @@ stateless -> session id : None`,
     { t: "p", text: "The last row is worth taking literally. **Nothing about a tool's implementation changes between transports** — the decorators, the schemas, the error handling are identical, and the transport is one argument to `mcp.run`. Writing a server over stdio and moving it to HTTP later is a small change, provided you remember the lifespan row in section 03." },
 
     { t: "exercise", kind: "practice", title: "Move one server across all three", difficulty: "core", minutes: 28,
-      prompt: "Take a two-tool server with a lifespan that holds a counter. Run it over stdio and confirm two connections give two independent counters. Run the same code over streamable HTTP and confirm two clients share one counter and one pid, with different session ids. Then set stateless_http=True and confirm the session id is None. Finally, start it with host='0.0.0.0', find your machine's address, and connect from a second device or a container — then put it back to 127.0.0.1 and explain in one sentence what you just exposed.",
+      prompt: "Take a two-tool server with a lifespan that holds a counter. Run it over stdio and confirm two connections give two independent counters. Run the same code over streamable HTTP and confirm two clients share one pid with different session ids — then check whether they share the lifespan counter, and compare a module-level counter. Then set stateless_http=True, confirm the session id is None, and watch what happens to the lifespan counter. Finally, start it with host='0.0.0.0', find your machine's address, and connect from a second device or a container — then put it back to 127.0.0.1 and explain in one sentence what you just exposed.",
+      requirements: [
+        "Run a two-tool server with a counter in its lifespan over stdio and confirm two connections give independent counters",
+        "Run the same code over streamable HTTP and compare the pid, the session ids, a lifespan counter and a module-level counter for two clients",
+        "Set stateless_http=True and confirm the session id is None",
+        "Start it on 0.0.0.0, connect from a second device or container, then return it to 127.0.0.1",
+        "Explain in one sentence what you exposed, and with whose credentials"
+      ],
       hints: [
-        "The counter is the whole experiment: independent under stdio, shared under HTTP.",
+        "The counters are the whole experiment: put one in the lifespan and one at module scope, and compare them under each transport.",
         "get_session_id() is the third value yielded by streamablehttp_client.",
         "The last step is the point of the lesson — describe who could reach the server and with whose credentials."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `"""python 3.1.py runs the experiment; it starts itself as the server with \`serve <transport> [stateless]\`."""
+import json, os, subprocess, sys, time
+from contextlib import asynccontextmanager
+MODULE = {"calls": 0}                      # module-level state: per process
+OPENS = {"lifespans": 0}
+
+def build(stateless=False):
+    from mcp.server.fastmcp import Context, FastMCP
+    @asynccontextmanager
+    async def lifespan(server):
+        OPENS["lifespans"] += 1
+        yield {"calls": 0}                 # lifespan state: per stdio connection / HTTP session / stateless request
+    mcp = FastMCP("counter", lifespan=lifespan, host="127.0.0.1", port=8765, stateless_http=stateless)
+    @mcp.tool()
+    def bump(ctx: Context) -> dict:
+        """Increment the shared counter and report the server process."""
+        st = ctx.request_context.lifespan_context; st["calls"] += 1; MODULE["calls"] += 1
+        return {"lifespan": st["calls"], "module": MODULE["calls"], "lifespans_opened": OPENS["lifespans"], "pid": os.getpid()}
+    @mcp.tool()
+    def ping() -> str:
+        """Liveness."""
+        return "pong"
+    return mcp
+
+async def run_clients():
+    import anyio, logging, warnings
+    warnings.filterwarnings("ignore"); logging.getLogger("mcp").setLevel(logging.CRITICAL); logging.getLogger("httpx").setLevel(logging.WARNING)
+    from mcp import ClientSession, StdioServerParameters
+    from mcp.client.stdio import stdio_client
+    from mcp.client.streamable_http import streamablehttp_client
+
+    print("stdio: each connection spawns its own process")
+    for i in range(2):
+        p = StdioServerParameters(command=sys.executable, args=[__file__, "serve", "stdio"])
+        async with stdio_client(p) as (r, w), ClientSession(r, w) as s:
+            await s.initialize()
+            for _ in range(2): res = json.loads((await s.call_tool("bump", {})).content[0].text)
+            print(f"  client {i}: {res}")
+
+    for stateless in [False, True]:
+        srv = subprocess.Popen([sys.executable, __file__, "serve", "http"] + (["stateless"] if stateless else []),
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            time.sleep(4)
+            print(f"\\nstreamable HTTP{' (stateless_http=True)' if stateless else ''}: one process, many clients")
+            for i in range(2):
+                async with streamablehttp_client("http://127.0.0.1:8765/mcp") as (r, w, get_id), ClientSession(r, w) as s:
+                    await s.initialize()
+                    for _ in range(2): res = json.loads((await s.call_tool("bump", {})).content[0].text)
+                    print(f"  client {i}: {res}  session id: {get_id()}")
+        finally:
+            srv.terminate(); srv.wait()
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "serve":
+        mcp = build(stateless="stateless" in sys.argv)
+        mcp.run(transport="stdio" if sys.argv[2] == "stdio" else "streamable-http")
+    else:
+        import anyio; anyio.run(run_clients)
+        # host="0.0.0.0" would bind every interface: anyone on the network could then call these tools,
+        # with no authentication, so keep 127.0.0.1 unless the server sits behind auth (lesson 3.2).`,
+        out: `stdio: each connection spawns its own process
+  client 0: {'lifespan': 2, 'module': 2, 'lifespans_opened': 1, 'pid': 21408}
+  client 1: {'lifespan': 2, 'module': 2, 'lifespans_opened': 1, 'pid': 16364}
+
+streamable HTTP: one process, many clients
+  client 0: {'lifespan': 2, 'module': 2, 'lifespans_opened': 1, 'pid': 1428}  session id: 9b5afb47b6aa451fa43c000e4e6fc334
+  client 1: {'lifespan': 2, 'module': 4, 'lifespans_opened': 2, 'pid': 1428}  session id: 4493136777c64580b1b2d1ec7854d408
+
+streamable HTTP (stateless_http=True): one process, many clients
+  client 0: {'lifespan': 1, 'module': 2, 'lifespans_opened': 5, 'pid': 21660}  session id: None
+  client 1: {'lifespan': 1, 'module': 4, 'lifespans_opened': 10, 'pid': 21660}  session id: None`,
+       
         notes: [
-          { t: "p", text: "The shared counter is the finding, and it is the bug class in miniature. Under stdio the counter is per caller and correct; under HTTP it is global and almost certainly wrong, and nothing in the code changed. Any mutable thing in a lifespan deserves the same examination." },
+          { t: "p", text: "The counters are the finding. Under stdio both are per caller. Under streamable HTTP the module-level counter is shared by every caller in the process, while the FastMCP lifespan counter is per session — the reference run measured two sessions, two lifespan openings and one pid — and with `stateless_http=True` the lifespan opens on every request, so its counter never passes 1. Shared module state is the concurrency bug; a per-session or per-request lifespan is the resource bug. Any mutable thing at module scope, and any expensive thing in a lifespan, deserves the same examination." },
           { t: "p", text: "The `0.0.0.0` step is deliberately uncomfortable. What you exposed is every tool on the server, to everyone who can route to that port, acting with whatever credentials the server process holds — with no authentication, because the protocol has none. That is the sentence lesson 3.2 is written to answer." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the database transaction two customers shared",
+      body: [
+        { t: "p", text: "**Symptom.** After a server moved from stdio to streamable HTTP, a small number of users saw rows belonging to someone else's half-finished operation, and occasionally a commit failed with a transaction-state error. It appeared only when two people used the agent at the same moment." },
+        { t: "p", text: "**Mechanism.** The server opened one database connection at module scope, when it was imported, and every tool used it. Under stdio that was correct by construction: one process per connection, so one caller per database handle. Under HTTP one process serves every session — the measured single pid with two session ids — so two callers were now interleaving statements on one connection and one transaction." },
+        { t: "p", text: "**Why it was missed.** The code did not change. Switching transport was one argument to `mcp.run`, and the test suite ran one client at a time, where a shared handle and a private one are indistinguishable." },
+        { t: "p", text: "**Fix.** The connection became a pool, created once for the process, and each tool call takes its own connection from it. It deliberately does not live in the FastMCP lifespan, which runs per session — per request when stateless — and would have opened a pool per conversation. A concurrency test with two simultaneous clients was added, and the transport change went into the review checklist as a state-ownership change rather than a deployment detail." }
+      ] }
   ],
 
   takeaways: [
@@ -181,11 +270,11 @@ stateless -> session id : None`,
     "**Its cost is that it cannot cross a machine**, which rules out a shared service or anything behind a load balancer.",
     "**Configuring a stdio server is telling your host to run a command** — the same trust decision as a dependency, and never built from user-supplied input.",
     "**Over HTTP, two clients shared pid 7116 and were separated only by session ids.** The isolation moved from the operating system to a string in a header.",
-    "**The lifespan row is what breaks working code:** a single connection or mutable cache that was correct under stdio now serves every caller, producing load-dependent bugs absent from any single-client test.",
+    "**State ownership is what breaks working code:** a module-level connection or cache that was correct under stdio serves every caller over HTTP, while the FastMCP lifespan runs per session (per request when stateless). Measure both before moving.",
     "**Stateful mode issues a session id; stateless mode returns None** and keeps nothing, which is what makes horizontal scaling straightforward.",
     "**Stateless rules out server-initiated messages** — progress notifications, `tools_changed`, resource subscriptions all need the session.",
     "**Choose stateless plus `json_response` unless you need the session**, because most servers are request-response and that deployment behaves like every other service you run.",
-    "**Start with stdio when unsure.** It is the cheapest to write and the easiest to move, as long as you revisit the lifespan."
+    "**Start with stdio when unsure.** It is the cheapest to write and the easiest to move, as long as you revisit where state lives."
   ],
 
   quiz: {
@@ -193,9 +282,9 @@ stateless -> session id : None`,
     questions: [
       {
         stem: "Two clients connect concurrently to one streamable-HTTP server. The tool reports pid 7116 for both, with different session ids. What follows for the server's design?",
-        options: ["Nothing, because session ids provide full isolation between callers", "One process serves both, so mutable lifespan state is now shared", "The server must be restarted between clients to stay correct", "Each session gets its own event loop inside the shared process"],
+        options: ["Nothing, because session ids provide full isolation between callers", "One process serves both, so module state is shared between callers", "The server must be restarted between clients to stay correct", "Each session gets its own event loop inside the shared process"],
         answer: 1,
-        why: "Under stdio the same code was correct, because each connection was its own process — measured as pids 10152 and 22540. Changing one argument to mcp.run changed the concurrency model, and the resulting bugs are load-dependent and absent from any test that connects one client."
+        why: "Under stdio the same code was correct, because each connection was its own process — measured as pids 10152 and 22540. Changing one argument to mcp.run changed the concurrency model, and the resulting bugs are load-dependent and absent from any test that connects one client. The FastMCP lifespan itself runs once per session on SDK 1.28.1, so the shared objects are the ones at module scope."
       },
       {
         stem: "What does `stateless_http=True` change?",
@@ -240,9 +329,9 @@ stateless -> session id : None`,
       {
         level: "advanced",
         q: "A server works perfectly over stdio and misbehaves intermittently over HTTP. Where do you look?",
-        strong: "Anything mutable shared across callers, starting with the lifespan. Under stdio each connection is its own process, so one database connection or one cache is per caller and correct; over HTTP two clients share one process — I measured the same pid for both — so that same object serves everyone. The symptoms are load-dependent and invisible to any test with one client. The fix is a pool rather than a connection, and per-request state taken from the request.",
+        strong: "Anything mutable shared across callers. Under stdio each connection is its own process, so a module-level database connection or cache is per caller and correct; over HTTP two clients share one process — I measured the same pid for both — so that object serves everyone. The FastMCP lifespan is the subtle part: it runs once per session, and per request when stateless, so it multiplies resources rather than sharing them. The symptoms are load-dependent and invisible to any test with one client. The fix is one deliberately shared pool for the process, and per-request state taken from the request.",
         answer: [
-          { t: "p", text: "Going straight to the lifespan is right, and having the pid measurement makes the reasoning concrete rather than a guess about threading." },
+          { t: "p", text: "Going straight to state ownership is right, and having the pid and counter measurements makes the reasoning concrete rather than a guess about threading." },
           { t: "p", text: "Noting that a single-client test cannot reproduce it is the detail that explains why this ships: everything passes until there is traffic." },
           { t: "p", text: "The best answers mention that the session id is now the only isolation boundary, which raises the question of what is keyed by it — and that nothing in MCP carries the caller's identity, so the session id is not a user." }
         ]

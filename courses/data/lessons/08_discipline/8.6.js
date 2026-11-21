@@ -239,7 +239,7 @@ print(ap(rf, Xs, ys))                                                      # 0.9
       caption: "**Weights 0.25, SMOTE inside the fold 0.23, no resampling 0.24 — noise. SMOTE before the split: 0.97.** The last number is the one that ends up on a slide. The `imblearn` pipeline runs the sampler during `fit` only, so the validation fold is scored at its natural balance with no synthetic relatives in training."
     },
 
-    { t: "callout", kind: "warn", title: "Never evaluate on a resampled set", body: [
+    { t: "callout", kind: "trap", title: "Never evaluate on a resampled set", body: [
       { t: "p", text: "Precision, average precision, expected cost and the threshold all depend on the base rate. A test set balanced to 50 % reports a precision the real population will never deliver, and a threshold chosen on it is wrong by the same factor. **Resampling, if used at all, touches the training rows of each fold and nothing else.** The validation and test rows keep the base rate the deployment will see." }
     ]},
 
@@ -408,7 +408,14 @@ print("imbalance: threshold first, weights second, resampling inside the fold or
           why: "Weighting a well-specified model reparametrises the intercept, not the ordering of rows. That is why AUC and AP hold; the probabilities now describe a population that is one-third positive, and must be recalibrated before they are used as probabilities."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: SMOTE before the split",
+      body: [
+        { t: "p", text: "**Symptom.** A fraud model reported a recall of 0.95 in validation and caught a fraction of that in production." },
+        { t: "p", text: "**Mechanism.** Synthetic minority samples were generated with SMOTE before splitting. Synthetic points created from validation rows ended up in training, and the model was evaluated on near-copies of what it had trained on." },
+        { t: "p", text: "**Fix.** Resampling happens only inside the training fold, evaluation uses the original class balance, and the decision threshold is chosen on validation data." }
+      ] }
   ],
 
   takeaways: [

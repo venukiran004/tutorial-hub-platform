@@ -723,7 +723,14 @@ def test_label_encoded_correlation_is_meaningless():
           why: "Both coefficients measure monotonic association. A perfect U has both at zero. \"Uncorrelated\" is not \"independent\", and a feature-selection rule based on correlation drops exactly the features that have a non-monotonic effect."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a feature dropped because its correlation was zero",
+      body: [
+        { t: "p", text: "**Symptom.** A team removed a feature with near-zero Pearson correlation to the target. The model's accuracy fell." },
+        { t: "p", text: "**Mechanism.** The relationship was U-shaped — risk was high at both ends of the range — so Pearson correlation, which measures linear association, was close to zero. A tree model had been using it heavily." },
+        { t: "p", text: "**Fix.** Feature screening uses mutual information or Spearman correlation and a plot of the relationship, and removal is decided by a validation run with and without the feature." }
+      ] }
   ],
 
   takeaways: [

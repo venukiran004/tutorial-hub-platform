@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "11.7",
 
-  lede: "A worked bill makes the levers obvious. 8,000 input tokens and 400 output at $5/$15 per million is **$0.046 a call**, or **$46,000 a month** at a million calls \u2014 and 87% of that is input. The reference then walks four changes down to $13,800, a 70% saving with **no model change and no quality loss**. Rebuilding the table from its own line items reproduces every figure but one: the rerank step gives **4,250 tokens, not 4,450**, and the 200-token slip is inherited by everything after it.",
+  lede: "A worked bill makes the levers obvious. 8,000 input tokens and 400 output at $5/$15 per million is **$0.046 a call**, or **$46,000 a month** at a million calls \u2014 and 87% of that is input. The commonly published version of this bill then walks four changes down to $13,800, a 70% saving with **no model change and no quality loss**. Rebuilding the table from its own line items reproduces every figure but one: the rerank step gives **4,250 tokens, not 4,450**, and the 200-token slip is inherited by everything after it.",
 
   objectives: [
     "Decompose a monthly bill into the line items that caused it",
@@ -217,7 +217,7 @@ for label, tin in steps:
 print()
 print("the 8->3 rerank step does not follow from the numbers:")
 print("  8 chunks = 3,200 tokens, so 400 each; keeping 3 removes 5 x 400 = 2,000")
-print("  6,250 - 2,000 = 4,250, not 4,450. the reference is 200 tokens high.")
+print("  6,250 - 2,000 = 4,250, not 4,450. the published figure is 200 tokens high.")
 print("  it then computes cost from 4,450, so everything downstream inherits it.")
 
 print()
@@ -241,7 +241,7 @@ for label, tin in steps:
 print("  -> input dominates at the start and the LEVERS ERODE THEIR OWN PREMISE:")
 print("     by the end output is a third of the bill, so the next lever is max_tokens.")`,
         out: `==========================================================================
-A -- THE COST TABLE, REBUILT FROM THE REFERENCE'S OWN LINE ITEMS
+A -- THE COST TABLE, REBUILT FROM THE PUBLISHED LINE ITEMS
 ==========================================================================
 baseline input breakdown:
   system prompt + instructions      600
@@ -257,7 +257,7 @@ at 1,000,000 calls/month -> $46,000/month
 
 derived: 250 tokens per few-shot example, 400 tokens per RAG chunk
 
-change                      derived  reference      delta    cost/call    monthly
+change                      derived  published      delta    cost/call    monthly
 Baseline                       8000       8000         +0      0.04600     46,000
 Trim few-shot 10->3            6250       6250         +0      0.03725     37,250
 Rerank chunks 8->3             4250       4450       -200      0.02725     27,250  <-- MISMATCH
@@ -265,7 +265,7 @@ Summarize history              3200       3400       -200      0.02200     22,00
 
 the 8->3 rerank step does not follow from the numbers:
   8 chunks = 3,200 tokens, so 400 each; keeping 3 removes 5 x 400 = 2,000
-  6,250 - 2,000 = 4,250, not 4,450. the reference is 200 tokens high.
+  6,250 - 2,000 = 4,250, not 4,450. the published figure is 200 tokens high.
   it then computes cost from 4,450, so everything downstream inherits it.
 
 corrected chain:
@@ -292,7 +292,7 @@ the headline 70%% total saving survives: with the corrected
           { t: "p", text: "**The saving on the first row is 19.0%, not the stated 20%.** That one is defensible: using the rounded $37,000 against $46,000 gives 19.6%, which rounds to 20%. Computing from unrounded figures gives 19.0%. Both are \u2018right\u2019 and the difference is whether you round before or after dividing." },
           { t: "p", text: "**The input-share table is the finding worth carrying forward.** Input is 87.0% of the bill at baseline and 72.7% after the three input levers, so the advice to attack input first is correct *and* self-limiting \u2014 each lever has a smaller share to work on than the last, and the sequence has a natural end." },
           { t: "p", text: "**Output never changed by a single token** and went from 13.0% to 27.3% of the bill. That is the clearest argument for `max_tokens` being the next lever rather than a further input trim." },
-          { t: "p", text: "The 450-token summary figure is my inference rather than the reference\u2019s: it is the value its own 3,400 total implies. I kept it so the chain is reproducible, but it is a parameter you would measure rather than assume." }
+          { t: "p", text: "The 450-token summary figure is my inference rather than a published figure: it is the value the published 3,400 total implies. I kept it so the chain is reproducible, but it is a parameter you would measure rather than assume." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",

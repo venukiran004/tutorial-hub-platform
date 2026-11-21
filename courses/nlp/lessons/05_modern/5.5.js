@@ -60,7 +60,7 @@ EC.receiveLesson({
     { t: "out", text:
 "RuntimeError: view size is not compatible with input tensor's size and\nstride (at least one dimension spans across two contiguous subspaces).\nUse .reshape(...) instead." },
 
-    { t: "callout", kind: "warn", title: "Bug 1: `targets.view(-1)` fails on the standard target slice",
+    { t: "callout", kind: "trap", title: "Bug 1: `targets.view(-1)` fails on the standard target slice",
       body: [{ t: "p", text: "The universal way to build next-token targets is `targets = seq[:, 1:]`, and that slice is **non-contiguous** — it shares storage with `seq` but skips the first column, so its stride does not permit a flat view. `view` refuses; `reshape` copies when it must and succeeds. The fix is `targets.reshape(-1)`. This is not an exotic case: every language-model training loop produces exactly this tensor, so the code as written cannot train at all." }] },
 
     { t: "out", text:
@@ -221,7 +221,14 @@ output step  needs source pos  strongest head on it
           { t: "p", text: "The mechanism is visible. For every output step, a head in layer 0 puts 0.99–1.00 of its weight on exactly the source position it must copy. Heads 1 and 3 split the job between them. The last layer did not track it, so search every layer, not only the final one." },
           { t: "p", text: "Removing ln_f made no lasting difference on this two-layer model; both runs reached about 1.03 by step 600. The final norm matters for deep models, where the un-normalised residual stream grows with depth (lesson 4.6). A two-layer toy is too shallow to show it." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: training that crashed on the first batch",
+      body: [
+        { t: "p", text: "**Symptom.** A from-scratch GPT implementation failed immediately with a view error." },
+        { t: "p", text: "**Mechanism.** `targets.view(-1)` was called on a non-contiguous slice. The code had worked in a simpler test where the tensor happened to be contiguous." },
+        { t: "p", text: "**Fix.** The code uses `reshape(-1)`, and the training loop is tested on a realistic batch before any long run." }
+      ] }
   ],
 
   takeaways: [

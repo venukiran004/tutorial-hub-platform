@@ -92,7 +92,7 @@ def redact(text: str) -> str:
 
     { t: "callout", kind: "insight", title: "Two real limits, and one I expected that is not there",
       body: [
-        { t: "p", text: "**Names and addresses pass straight through** \u2014 \u201cMy name is Venu Kiran and I live at 14 Mill Lane, Bristol\u201d is unredacted. The reference flags this and points at an NER model, and it matters because names are the most common PII in support traffic by a wide margin." },
+        { t: "p", text: "**Names and addresses pass straight through** \u2014 \u201cMy name is Venu Kiran and I live at 14 Mill Lane, Bristol\u201d is unredacted. The standard design flags this and points at an NER model, and it matters because names are the most common PII in support traffic by a wide margin." },
         { t: "p", text: "**An internal ticket number of SSN shape is redacted anyway.** \u201cReference 123-45-6789 is our internal ticket number\u201d becomes \u201cReference [SSN]\u201d, which silently removes the thing the model needed to answer the question. A redactor\u2019s false positives are invisible: the model just gets less information." },
         { t: "p", text: "I expected the phone pattern to shadow the SSN pattern, since it is tried first, and **it does not** \u2014 `\\d{3}[-.]?\\d{3}` needs three digits after the first separator and an SSN has two, so they do not overlap. That is luck rather than design: the two patterns are disjoint by accident of the formats, not because anyone checked." }
       ] },

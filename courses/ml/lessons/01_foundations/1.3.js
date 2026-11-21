@@ -269,6 +269,17 @@ for d in [1, 2, 3, 5, 7, 9, 12]:
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Buying more data for a high-bias model",
+
+      body: [
+
+        { t: "p", text: "More data reduces variance. A model whose training and validation errors are both high and close together is bias-limited, and more rows will not move it." },
+
+        { t: "p", text: "Draw a learning curve before collecting data; if it has flattened with a small gap, change the model or the features instead." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Decompose a decision tree",
@@ -337,7 +348,14 @@ print("bagged", decompose(lambda: BaggingRegressor(DecisionTreeRegressor(), n_es
           why: "Training error is a measurement of memorisation past the noise floor. Only a held-out measurement, or the variance across fits, shows the cost."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: more data that did not help",
+      body: [
+        { t: "p", text: "**Symptom.** A team spent a month collecting twice as much labelled data for a poorly performing model. The validation score did not move." },
+        { t: "p", text: "**Mechanism.** The model was a linear classifier on a problem with strong non-linear structure. Its error was bias, and more data reduces variance, not bias." },
+        { t: "p", text: "**Fix.** A learning curve was drawn first: training and validation scores were both low and close together. A gradient-boosted model on the original data then beat the linear model on twice the data." }
+      ] }
   ],
 
   takeaways: [

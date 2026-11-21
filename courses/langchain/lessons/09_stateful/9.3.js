@@ -107,7 +107,7 @@ EC.receiveLesson({
 
 
     { t: "p", text: "The orchestrator decides **how many** workers at runtime, which a fixed fan-out cannot \u2014 it needs 8.7's list-returning router. In the measured run the orchestrator produced three sections, so three workers ran; a statically wired fan-out would have had to guess that number." },
-    { t: "callout", kind: "warn", title: "The first pattern you cannot enumerate by reading", body: [
+    { t: "callout", kind: "trap", title: "The first pattern you cannot enumerate by reading", body: [
       { t: "p", text: "The execution graph depends on what the model planned, so cost and latency become **distributions rather than numbers**. That is the point at which capacity planning changes character: you are reasoning about a p99 rather than a count." },
       { t: "p", text: "Which also means the plan needs a bound. An orchestrator that decides to spawn two hundred workers is a correct implementation of a bad plan, and nothing downstream will question it \u2014 so the cap belongs in the orchestrator node, not in the worker." }
     ] },

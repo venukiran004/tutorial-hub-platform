@@ -136,6 +136,17 @@ lsh.query(signature(new_doc))  # candidates above ~0.8, in sub-linear time
       caption: "**The signature agreement estimates Jaccard, with an error of roughly one over the square root of the permutation count** — so 128 permutations give about plus or minus 0.09, which is fine for a 0.8 cut-off and useless for telling 0.78 from 0.82. The threshold passed to LSH tunes where the probability curve rises, not a hard filter: pairs just under it sometimes come back and pairs just over it are sometimes missed." },
     { t: "p", text: "**The shingle size is the other decision, and it is the one that decides what \u201csimilar\u201d means.** Character shingles of four or five catch near-duplicate text through typos and reformatting; word shingles catch reuse of phrasing and ignore spelling. For near-duplicate detection at corpus scale this pair — MinHash for the signature, LSH for the lookup — is the standard answer, and the exact re-score on the shortlist is what makes it precise." },
 
+    { t: "callout", kind: "trap", title: "Word-level Jaccard on misspelled names",
+
+      body: [
+
+        { t: "p", text: "Word-level Jaccard counts exact shared tokens, so a single typo in each word gives zero similarity." },
+
+        { t: "p", text: "Use character n-grams for names, which tolerate typos." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Measure both families", difficulty: "core", minutes: 30,
       requirements: [
         "Compute word Jaccard and 3-gram Jaccard on 50 known-match pairs from your data and compare the distributions.",
@@ -224,7 +235,14 @@ containment 'chris evans' in 'chris evans jr': Jaccard 0.667, cosine 0.816`,
           { t: "p", text: "The two families disagree completely on reorderings. 'John Smith'/'Smith, John' (a match) and 'North Bank'/'Bank North' (different banks) both get word Jaccard 1.0 and edit similarity 0.0. No metric can tell them apart, because the evidence that distinguishes them is not in the strings. That is a case for a reference table or a human, not a better threshold. For containment, cosine rates 'acme' in 'acme corporation limited' at 0.58 against Jaccard's 0.33. Cosine is kinder to a short name inside a long one, which is right for abbreviations and wrong for 'Chris Evans' against 'Chris Evans Jr'." },
           { t: "p", text: "The 30 labelled pairs stand in for 'your data'. They were written to include each failure family, so treat the accuracies as a demonstration of the method, not as a benchmark." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a matcher that failed on every typo",
+      body: [
+        { t: "p", text: "**Symptom.** A word-level Jaccard matcher scored 'Jon Smyth' and 'John Smith' as completely different." },
+        { t: "p", text: "**Mechanism.** Word-level Jaccard counts shared tokens, and the misspellings meant no tokens were shared exactly." },
+        { t: "p", text: "**Fix.** Character n-grams are used for names, which tolerate typos, and the two families are combined for different kinds of difference." }
+      ] }
   ],
 
   takeaways: [

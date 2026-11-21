@@ -612,7 +612,14 @@ def test_ddof_choice_is_visible():
           why: "Axes 1 and 2 are struck out, leaving `(32, 3)` — the mean colour of each image in the batch. Reading the shape and removing the named axes works identically at any number of dimensions, which is why it beats memorising \"rows and columns\"."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: normalised features that were normalised the wrong way",
+      body: [
+        { t: "p", text: "**Symptom.** A clustering model performed far worse after a feature-scaling step was added, and the scaled values looked reasonable." },
+        { t: "p", text: "**Mechanism.** The scaling divided by `X.std(axis=1)`, the standard deviation of each row, rather than `axis=0`, each feature. The test data had been square, so the shapes matched and broadcasting succeeded either way." },
+        { t: "p", text: "**Fix.** The reduction uses `axis=0, keepdims=True`, the function asserts the result has one value per column, and the tests use rectangular data with a different number of rows and columns." }
+      ] }
   ],
 
   takeaways: [

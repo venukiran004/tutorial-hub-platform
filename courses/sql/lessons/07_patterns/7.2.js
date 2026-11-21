@@ -271,6 +271,17 @@ FROM   grid g ORDER BY 1, 2;`,
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "An as-of join with less-than-or-equal",
+
+      body: [
+
+        { t: "p", text: "Using `<= as_of` to pick feature values includes events at the exact moment of the outcome, which are often caused by it. The feature leaks the label for those rows." },
+
+        { t: "p", text: "Use strictly-before (`< as_of`) for features, and at-or-after for labels." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Product-level features with a price as-of",
@@ -352,7 +363,14 @@ ORDER BY l.order_id, l.product_id;`,
           why: "The executed check showed 2 events at or after order 108's timestamp, one of them the checkout event itself. Half-open windows, strictly before the as-of time."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a churn model trained on its own outcome",
+      body: [
+        { t: "p", text: "**Symptom.** A churn model reached an AUC no one believed, and performed close to random once deployed." },
+        { t: "p", text: "**Mechanism.** A feature counted support tickets with `ticket_date <= churn_date`. Tickets raised on the day of cancellation — often the cancellation itself — were included, so the feature contained the label." },
+        { t: "p", text: "**Fix.** Features use strictly earlier data, `< as_of`, built by an as-of join, and a check recomputes a sample of feature rows from raw events at their own as-of times." }
+      ] }
   ],
 
   takeaways: [

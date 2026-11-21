@@ -274,6 +274,17 @@ heapq.nlargest(k, tasks, key=lambda t: t.priority)   # WITH a key`,
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Using a list as a queue",
+
+      body: [
+
+        { t: "p", text: "`list.pop(0)` shifts every remaining element, so a breadth-first search built on a list is quadratic in the number of nodes. It passes small tests and times out on large inputs." },
+
+        { t: "p", text: "Use `collections.deque` with `popleft()` for queues, and `heapq` for priority queues." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Challenge",
       title: "Sliding window maximum",

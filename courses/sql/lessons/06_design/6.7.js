@@ -190,6 +190,17 @@ CREATE INDEX products_colour_idx ON products (colour);`,
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Integer division that differs between engines",
+
+      body: [
+
+        { t: "p", text: "`7 / 2` is 3 on PostgreSQL and SQL Server and 3.5 on MySQL and some warehouses. A ratio query moved between engines changes its answer without any error." },
+
+        { t: "p", text: "Cast one operand to a decimal type in every division so the result means the same on every engine." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Diagnose",
       title: "Port a query across three engines",
@@ -261,7 +272,14 @@ ORDER BY ym, who;`,
           why: "Integer division is the standard's behaviour and DuckDB's departure from it; an explicit decimal operand is unambiguous everywhere and is why every ratio in this course is written 100.0 * x / y."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a query that changed meaning when it moved engines",
+      body: [
+        { t: "p", text: "**Symptom.** A ratio computed in DuckDB during analysis came out different when the same SQL ran on the production PostgreSQL warehouse." },
+        { t: "p", text: "**Mechanism.** The query divided two integer columns. One engine returned a decimal, the other truncated to an integer, and both did so without a warning." },
+        { t: "p", text: "**Fix.** Divisions cast one side explicitly, and queries that move between engines are run against a small fixed dataset on both with the outputs compared." }
+      ] }
   ],
 
   takeaways: [

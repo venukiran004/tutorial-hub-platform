@@ -122,18 +122,107 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Measure a model change", difficulty: "advanced", minutes: 28,
       prompt: "Take an agent with four or five tools and an evaluation set including routing cases. Run the set against two models — ideally a large and a small one from the same family. Record trajectory and response scores, model calls per turn, latency and token usage for each. Then look specifically at the cases the smaller model got wrong and decide whether better tool descriptions would fix them. Finally, pick which agents in a multi-agent version of this system could use the smaller model.",
+      requirements: [
+        "Run an evaluation set with routing cases against a large and a small model",
+        "Record trajectory and response scores, model calls, latency and tokens",
+        "Decide whether better tool descriptions would fix the small model's failures",
+        "Pick which agents in a multi-agent version could use the small model"
+      ],
       hints: [
-        "Trajectory scores are the ones that move; response scores often barely change.",
-        "Wrong-tool errors usually cluster on the two most similarly-described tools.",
+        "Look at what the small model called, not only whether it passed: no tool, the wrong tool and too few tools have different fixes.",
+        "Wrong-tool errors tend to cluster on the two most similarly-described tools; no-tool errors point at the model, not the descriptions.",
         "A classifier or an extractor is almost always safe to downgrade."
       ],
       solution: {
+        lang: "python", title: "model_change.py",
+        code: `"""Measure a model change: the same agent and evaluation set on a larger and a smaller model of one family.
+Reference run: Qwen2.5-3B vs Qwen2.5-0.5B on CPU via local_llm.py. With Gemini, compare two Gemini sizes the same way."""
+import asyncio, logging, statistics, time, warnings
+warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+from google.adk.agents import LlmAgent
+from google.adk.runners import InMemoryRunner
+from google.genai import types
+from local_llm import LocalLlm
+
+def get_order(order_id: str) -> dict:
+    """Look up one order by its id (for example A-77): status and carrier."""
+    return {"order_id": order_id, "status": "shipped", "carrier": "DPD"}
+def find_customer(email: str) -> dict:
+    """Find a customer by email address; returns their order ids."""
+    return {"email": email, "orders": ["A-77"]}
+def refund_policy() -> str:
+    """The refund policy: how long customers have to return items."""
+    return "Refunds within 14 days of delivery."
+def store_hours(city: str) -> str:
+    """Opening hours of the shop in a city."""
+    return f"{city}: 9am-6pm, closed Sunday"
+def escalate(reason: str) -> str:
+    """Hand the conversation to a human agent. Use for complaints, legal threats or anything you cannot answer."""
+    return "escalated"
+
+# (question, expected tool trajectory, a word the answer must contain)
+CASES = [("Where is order A-77?", ["get_order"], "shipped"),
+         ("How long do I have to return something?", ["refund_policy"], "14"),
+         ("When does the Leeds shop open?", ["store_hours"], "9"),
+         ("I want to speak to a manager, this is outrageous.", ["escalate"], ""),
+         ("What orders does jo@example.com have?", ["find_customer"], "A-77"),
+         ("Is my order A-77 shipped yet, and how long would I have to return it?", ["get_order", "refund_policy"], "14")]
+INSTR = "You are a customer-service agent. Use the tools to answer; do not guess facts the tools can provide."
+
+async def evaluate(model_name):
+    rows = []
+    for q, expected, must in CASES:
+        llm = LocalLlm(model=model_name)
+        runner = InMemoryRunner(agent=LlmAgent(name="desk", model=llm, instruction=INSTR,
+                                               tools=[get_order, find_customer, refund_policy, store_hours, escalate]), app_name="d")
+        sid = (await runner.session_service.create_session(app_name="d", user_id="u")).id
+        calls, answer, t0 = [], "", time.perf_counter()
+        async for e in runner.run_async(user_id="u", session_id=sid, new_message=types.Content(role="user", parts=[types.Part(text=q)])):
+            for p in (e.content.parts if e.content else []):
+                if p.function_call: calls.append(p.function_call.name)
+                if p.text: answer = p.text
+        rows.append(dict(q=q, expected=expected, calls=calls, traj=float(sorted(calls) == sorted(expected)),
+                         resp=float(must.lower() in answer.lower()), model_calls=llm.calls, secs=time.perf_counter() - t0,
+                         tokens=llm.prompt_tokens + llm.output_tokens))
+    return rows
+
+async def main():
+    results = {m: await evaluate(m) for m in ["local-qwen-3b", "local-qwen-0.5b"]}
+    print(f"{'model':<16} {'trajectory':>10} {'response':>9} {'calls/turn':>11} {'median s':>9} {'tokens/turn':>12}")
+    for m, rows in results.items():
+        print(f"{m:<16} {statistics.mean(r['traj'] for r in rows):10.2f} {statistics.mean(r['resp'] for r in rows):9.2f} "
+              f"{statistics.mean(r['model_calls'] for r in rows):11.1f} {statistics.median(r['secs'] for r in rows):9.1f} "
+              f"{statistics.mean(r['tokens'] for r in rows):12.0f}")
+    print("\\ncases the smaller model got wrong:")
+    for r in results["local-qwen-0.5b"]:
+        if r["traj"] < 1 or r["resp"] < 1:
+            print(f"  {r['q'][:58]:<58} expected {r['expected']}  called {r['calls']}")
+
+asyncio.run(main())`,
+        out: `model            trajectory  response  calls/turn  median s  tokens/turn
+local-qwen-3b          0.83      1.00         2.2     145.4         1219
+local-qwen-0.5b        0.17      0.33         1.3       6.4          718
+
+cases the smaller model got wrong:
+  Where is order A-77?                                       expected ['get_order']  called []
+  How long do I have to return something?                    expected ['refund_policy']  called []
+  When does the Leeds shop open?                             expected ['store_hours']  called []
+  I want to speak to a manager, this is outrageous.          expected ['escalate']  called []
+  Is my order A-77 shipped yet, and how long would I have to expected ['get_order', 'refund_policy']  called ['get_order']`,
+       
         notes: [
-          { t: "p", text: "The usual finding is that the smaller model's failures are concentrated rather than spread: it handles most routing fine and then confuses the two tools whose descriptions overlap. That is a description problem the large model was papering over, and fixing it often improves both — which is the argument for evaluating on a small model even when you intend to ship the large one." },
+          { t: "p", text: "Read the failure list before the scores. The 0.5B model never chose the wrong tool: on four of six cases it called **no tool at all** and answered from nothing, and on the two-part question it called one of the two. Its response score fell from 1.00 to 0.33 with it, because an agent that does not call `get_order` cannot know the order shipped. Better descriptions would not fix this — the model is not confusing tools, it is not using them — so the answer here is that this model is too small for a tool-routing role." },
+          { t: "p", text: "The failure you should expect between closer sizes, say two production tiers of one family, is subtler: most routing is fine and the misses cluster on the two tools whose descriptions overlap. That *is* a description problem the large model was papering over, and fixing it often improves both models. The cost side is real either way: the 0.5B model was over twenty times faster per turn on this CPU (6.4 s against 145 s median) and used fewer tokens — the 3B's extra tokens are mostly the second model call that turns a tool result into an answer, which the 0.5B mostly skipped." },
           { t: "p", text: "The multi-agent question is where the money is. A system where a coordinator and four specialists all use the strongest model is paying premium rates for classification and formatting. Moving the deterministic-shaped agents — the classifier with a `Literal` schema, the extractor, the formatter — to a smaller model typically changes the bill substantially and the evaluation scores not at all." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a cheaper model that called the wrong tools",
+      body: [
+        { t: "p", text: "**Symptom.** To cut cost, a team switched every agent to a smaller model. Within a day, the support agent was opening tickets for questions it should have answered from documentation." },
+        { t: "p", text: "**Mechanism.** Tool selection is the capability every agent depends on, and the smaller model was less reliable at it on this toolset. The switch was made from price, without running the evaluation set." },
+        { t: "p", text: "**Fix.** Model changes go through the evaluation set, and the switch was made per agent: the router and classifier moved to the small model, the tool-using agent stayed." }
+      ] }
   ],
 
   takeaways: [

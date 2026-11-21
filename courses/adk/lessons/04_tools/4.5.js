@@ -171,7 +171,14 @@ def scale_service(service: str, replicas: int, tool_context: ToolContext) -> dic
         payload={"service": service, "replicas": replicas,
                  "current": current_replicas(service), "requested_by": tool_context.user_id})
     ...`,
-        notes: [{ t: "p", text: "(b) needs a durable queue and a worker that can deliver a result back against the ticket — not a background task in the agent process, which a deploy would lose. The payload in (c) matters as much as the pause: an approver who has to go and look up the current replica count will approve blindly instead." }] } }
+        notes: [{ t: "p", text: "(b) needs a durable queue and a worker that can deliver a result back against the ticket — not a background task in the agent process, which a deploy would lose. The payload in (c) matters as much as the pause: an approver who has to go and look up the current replica count will approve blindly instead." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the database restore that was lost on deploy",
+      body: [
+        { t: "p", text: "**Symptom.** A long-running restore tool returned 'pending' and promised a result later. Restores started shortly before a deployment never reported completion." },
+        { t: "p", text: "**Mechanism.** The tool started the restore as a background task inside the agent process and held its handle in memory. A deploy restarted the process and the task with it; the pending call was recorded in the session, but nothing remained to finish it." },
+        { t: "p", text: "**Fix.** The tool now submits the restore to a durable job system and stores the job id in state; a separate worker reports completion back into the session. Long-running work must live somewhere that outlives the process that requested it." }
+      ] }
   ],
 
   takeaways: [

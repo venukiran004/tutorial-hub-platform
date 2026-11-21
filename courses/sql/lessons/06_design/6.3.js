@@ -173,7 +173,7 @@ CREATE TRIGGER customers_audit AFTER UPDATE OR DELETE ON customers FOR EACH ROW 
       caption: "The partial unique index is the detail people miss: a plain UNIQUE (email) would refuse a new sign-up with a soft-deleted account's address. The trigger is the only way to guarantee the audit covers every path, including the DBA's console."
     },
 
-    { t: "callout", kind: "warn", title: "ON DELETE CASCADE deletes what you did not look at", body: [
+    { t: "callout", kind: "trap", title: "ON DELETE CASCADE deletes what you did not look at", body: [
       { t: "p", text: "A foreign key declared `ON DELETE CASCADE` makes deleting a customer delete their orders, whose cascade deletes their items, whose cascade deletes whatever references those. Correct for true ownership — an order's items cannot exist without the order. **Wrong for anything that is merely related**: deleting a product should not delete the historical orders that contained it. Default to `ON DELETE RESTRICT` (the error you saw in 6.1) and cascade only along ownership edges, deliberately (6.4)." }
     ]},
 
@@ -309,7 +309,14 @@ COMMIT;`,
           why: "The measured numbers were 41,599 ms against 372 ms. Everything after that — executemany, multi-row VALUES, COPY — is a further 1.5× at most."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a price feed that duplicated products",
+      body: [
+        { t: "p", text: "**Symptom.** After a supplier resent a day's file, the product table contained two rows for hundreds of products with different prices." },
+        { t: "p", text: "**Mechanism.** The load used plain INSERT, and the natural key — the supplier's SKU — had no unique constraint. Re-delivering the file inserted every row again." },
+        { t: "p", text: "**Fix.** A unique constraint covers the SKU and the load uses `INSERT ... ON CONFLICT (sku) DO UPDATE ... WHERE ... IS DISTINCT FROM ...`, so re-delivery updates only changed rows." }
+      ] }
   ],
 
   takeaways: [

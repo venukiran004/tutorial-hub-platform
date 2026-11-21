@@ -346,7 +346,14 @@ CalibratedClassifierCV(SVC(), method="isotonic", cv=5)
           why: "A decision function that is constant has an AUC of 0.5 plus noise; 0.629 was noise."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an SVM that predicted the majority class for everyone",
+      body: [
+        { t: "p", text: "**Symptom.** An SVM trained on a 5% positive class had a respectable accuracy and caught no positives." },
+        { t: "p", text: "**Mechanism.** With the penalty spread over all violations, the cheapest solution was to put every point on the majority side. The class imbalance made giving up optimal." },
+        { t: "p", text: "**Fix.** The SVM uses `class_weight='balanced'`, inputs are scaled, and evaluation uses recall and precision on the minority class." }
+      ] }
   ],
 
   takeaways: [

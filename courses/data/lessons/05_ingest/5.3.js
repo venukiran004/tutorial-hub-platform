@@ -673,7 +673,14 @@ def test_empty_feed():
           why: "`record_path` yields one row per array element; zero elements is zero rows. That is correct for \"revenue per line\" and wrong for \"how many orders\". Keep a separate orders frame, or use `explode`, which keeps the empty case as a NaN row."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: product tags split into single letters",
+      body: [
+        { t: "p", text: "**Symptom.** A tag-frequency report listed 'a', 'e' and 's' as the most common tags." },
+        { t: "p", text: "**Mechanism.** Most rows held tags as a list, but some held a single tag as a plain string. `explode` expanded lists into rows and also iterated over strings character by character." },
+        { t: "p", text: "**Fix.** Tags are normalised so every value is a list before exploding, and a check asserts that the column's values are all lists." }
+      ] }
   ],
 
   takeaways: [

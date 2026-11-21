@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "5.2",
 
-  lede: "**EXPLAIN shows what the planner decided; EXPLAIN AnalysE shows what happened. The distance between the two columns of numbers on each line is the diagnosis.** A plan is a tree of a dozen operator types, each with an estimated row count and — with AnalysE — an actual one, a time, and a loop count that silently multiplies both. This lesson is how to read one: the operators, the numbers, the three things to look at first, and the two traps that make a fast-looking plan slow.",
+  lede: "**EXPLAIN shows what the planner decided; EXPLAIN ANALYZE shows what happened. The distance between the two columns of numbers on each line is the diagnosis.** A plan is a tree of a dozen operator types, each with an estimated row count and — with ANALYZE — an actual one, a time, and a loop count that silently multiplies both. This lesson is how to read one: the operators, the numbers, the three things to look at first, and the two traps that make a fast-looking plan slow.",
 
   objectives: [
     "Read a PostgreSQL plan tree: indentation, arrows, and bottom-up evaluation",
@@ -20,15 +20,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The shape of a plan", id: "shape" },
 
-    {"kind": "matrix", "title": "The four numbers on every plan line", "caption": "EXPLAIN gives you the first two — what the planner believed. EXPLAIN AnalysE adds the second two — what happened. The distance between `rows=` and `actual rows=` is the diagnosis: when they differ by orders of magnitude, every join choice above that line was made on a false premise.", "cols": ["Means", "Read it for"], "rows": ["cost=a..b", "rows=, width=", "actual time=a..b", "actual rows=, loops="], "cells": [["startup cost .. total cost", "relative, not milliseconds"], [{"text": "the estimate", "tone": "accent"}, "what the planner believed"], ["first row .. all rows, per loop", "where the time actually went"], [{"text": "the truth, times the loops", "tone": "good"}, "the real row count: multiply them"]], "t": "diagram", "id": "dg-5_2-01-0"},
+    {"kind": "matrix", "title": "The four numbers on every plan line", "caption": "EXPLAIN gives you the first two — what the planner believed. EXPLAIN ANALYZE adds the second two — what happened. The distance between `rows=` and `actual rows=` is the diagnosis: when they differ by orders of magnitude, every join choice above that line was made on a false premise.", "cols": ["Means", "Read it for"], "rows": ["cost=a..b", "rows=, width=", "actual time=a..b", "actual rows=, loops="], "cells": [["startup cost .. total cost", "relative, not milliseconds"], [{"text": "the estimate", "tone": "accent"}, "what the planner believed"], ["first row .. all rows, per loop", "where the time actually went"], [{"text": "the truth, times the loops", "tone": "good"}, "the real row count: multiply them"]], "t": "diagram", "id": "dg-5_2-01-0"},
 
 
 
 
 
-    { t: "p", text: "PostgreSQL prints the tree with the root first and children indented beneath it, each introduced by `->`. Two children under a join are its outer (first) and inner (second) inputs. **Execution starts at the deepest leaves and rows flow up**; the top line's actual time is the whole query. Every line carries `(cost=start..total rows=N width=W)` from the planner, and with AnalysE `(actual time=start..total rows=N loops=L)` from the run." },
+    { t: "p", text: "PostgreSQL prints the tree with the root first and children indented beneath it, each introduced by `->`. Two children under a join are its outer (first) and inner (second) inputs. **Execution starts at the deepest leaves and rows flow up**; the top line's actual time is the whole query. Every line carries `(cost=start..total rows=N width=W)` from the planner, and with ANALYZE `(actual time=start..total rows=N loops=L)` from the run." },
 
-    { t: "code", lang: "sql", title: "One EXPLAIN AnalysE, annotated line by line (PostgreSQL 16 form)",
+    { t: "code", lang: "sql", title: "One EXPLAIN ANALYZE, annotated line by line (PostgreSQL 16 form)",
       hl: [3, 5, 8, 12, 15],
       code: `EXPLAIN (ANALYZE, BUFFERS)
 SELECT c.country, COUNT(*) FROM orders o JOIN customers c ON c.customer_id = o.customer_id WHERE o.status = 'refunded' GROUP BY c.country;
@@ -124,7 +124,7 @@ SELECT c.country, COUNT(*) FROM orders o JOIN customers c ON c.customer_id = o.c
 
     { t: "h2", n: "03", text: "Three things to look at first", id: "first" },
 
-    {"kind": "steps", "title": "Three things to look at first in a long plan", "caption": "A fifty-line plan has one or two lines that matter. This order finds them without reading the rest.", "items": [{"label": "The widest node", "desc": "largest actual rows x loops: this is where the work is", "code": "1", "tone": "crit"}, {"label": "The worst estimate", "desc": "rows= against actual rows=; a 1000x miss explains the plan shape", "code": "2", "tone": "warn"}, {"label": "The scan type under it", "desc": "a Seq Scan on the inner side of a Nested Loop runs per outer row", "code": "3", "tone": "accent"}, {"label": "Only then change something", "desc": "an index, a rewrite, or AnalysE to refresh the statistics", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-5_2-03-1"},
+    {"kind": "steps", "title": "Three things to look at first in a long plan", "caption": "A fifty-line plan has one or two lines that matter. This order finds them without reading the rest.", "items": [{"label": "The widest node", "desc": "largest actual rows x loops: this is where the work is", "code": "1", "tone": "crit"}, {"label": "The worst estimate", "desc": "rows= against actual rows=; a 1000x miss explains the plan shape", "code": "2", "tone": "warn"}, {"label": "The scan type under it", "desc": "a Seq Scan on the inner side of a Nested Loop runs per outer row", "code": "3", "tone": "accent"}, {"label": "Only then change something", "desc": "an index, a rewrite, or ANALYZE to refresh the statistics", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-5_2-03-1"},
 
 
 
@@ -174,8 +174,8 @@ EXPLAIN QUERY PLAN SELECT order_id, placed_at FROM orders ORDER BY placed_at, or
       caption: "`SCAN` versus `SEARCH` is nine-tenths of what an EXPLAIN tells you on any engine. `USE TEMP B-TREE FOR ORDER BY` is SQLite's spelling of a Sort node — and the two-second line is a sort of 400,000 rows to serve a page of twenty."
     },
 
-    { t: "callout", kind: "production", title: "EXPLAIN AnalysE runs the query", body: [
-      { t: "p", text: "With AnalysE, the statement is executed — an `EXPLAIN ANALYZE DELETE` deletes. Wrap it in `BEGIN … ROLLBACK` for anything that writes. And a plan taken on the console with a literal can differ from the plan the application's prepared statement uses (5.1): to see the application's plan, `PREPARE` the statement and `EXPLAIN ANALYZE EXECUTE` it, or enable `auto_explain` to log slow plans as they actually ran." }
+    { t: "callout", kind: "production", title: "EXPLAIN ANALYZE runs the query", body: [
+      { t: "p", text: "With ANALYZE, the statement is executed — an `EXPLAIN ANALYZE DELETE` deletes. Wrap it in `BEGIN … ROLLBACK` for anything that writes. And a plan taken on the console with a literal can differ from the plan the application's prepared statement uses (5.1): to see the application's plan, `PREPARE` the statement and `EXPLAIN ANALYZE EXECUTE` it, or enable `auto_explain` to log slow plans as they actually ran." }
     ]},
 
     { t: "ladder", lang: "text",
@@ -194,13 +194,24 @@ EXPLAIN QUERY PLAN SELECT order_id, placed_at FROM orders ORDER BY placed_at, or
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Reading per-loop time as total time",
+
+      body: [
+
+        { t: "p", text: "`EXPLAIN ANALYZE` reports time per loop for an inner node. A node showing 0.05 ms with `loops=10000` costs half a second, and it is easy to skip past." },
+
+        { t: "p", text: "Multiply time by loops for every inner node, and start from the node with the largest gap between estimated and actual rows." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Debug",
       title: "Four plans, four diagnoses",
       difficulty: "advanced",
       minutes: 30,
       body: [
-        { t: "p", text: "Each fragment below is from an EXPLAIN AnalysE. For each, name the problem, the line that reveals it, and the fix — index, AnalysE, rewrite, memory, or nothing." },
+        { t: "p", text: "Each fragment below is from an EXPLAIN ANALYZE. For each, name the problem, the line that reveals it, and the fix — index, ANALYZE, rewrite, memory, or nothing." },
         { t: "code", lang: "sql", code: `-- A
 ->  Seq Scan on events e  (cost=0.00..91234.00 rows=12 width=16) (actual time=0.02..812.4 rows=2140000 loops=1)
       Filter: (occurred_at >= '2025-12-01')
@@ -267,11 +278,18 @@ EXPLAIN QUERY PLAN SELECT order_id, placed_at FROM orders ORDER BY placed_at, or
           why: "Everything under a Nested Loop reports per-loop figures. Multiply by loops before judging the node; a cheap operation repeated millions of times is the most common slow query there is."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: the inner node that ran ten thousand times",
+      body: [
+        { t: "p", text: "**Symptom.** A query's plan showed an inner index scan taking 0.05 ms, and the query still took five seconds." },
+        { t: "p", text: "**Mechanism.** The node's time was per loop, and `loops=10000`. The reader looked at the per-loop figure and not the multiplier, and spent a day tuning the wrong part of the query." },
+        { t: "p", text: "**Fix.** Plans are read with time multiplied by loops, starting from the node with the largest gap between estimated and actual rows. The team's runbook states that rule first." }
+      ] }
   ],
 
   takeaways: [
-    "**EXPLAIN is the planner's intent; EXPLAIN AnalysE is what happened** — and AnalysE really executes the statement.",
+    "**EXPLAIN is the planner's intent; EXPLAIN ANALYZE is what happened** — and ANALYZE really executes the statement.",
     "**Read the tree from the leaves up**; the top line's time is the whole query and the least useful line.",
     "**`rows=` is the estimate, `actual rows=` the truth; the gap is the diagnosis** and the node with the biggest gap is where the plan went wrong.",
     "**Multiply by loops.** Per-loop time and rows under a Nested Loop hide the total.",
@@ -291,7 +309,7 @@ EXPLAIN QUERY PLAN SELECT order_id, placed_at FROM orders ORDER BY placed_at, or
         stem: "What is the difference between `EXPLAIN` and `EXPLAIN ANALYZE`?",
         options: ["ANALYZE refreshes the statistics before planning", "EXPLAIN plans; ANALYZE also runs it, writes and all", "ANALYZE shows the plan's costs in milliseconds", "There is no difference between them in PostgreSQL"],
         answer: 1,
-        why: "The estimate-versus-actual comparison is the whole point of AnalysE. The price is that the query really runs: wrap writes in a transaction you roll back."
+        why: "The estimate-versus-actual comparison is the whole point of ANALYZE. The price is that the query really runs: wrap writes in a transaction you roll back."
       },
       {
         stem: "A Hash node shows `Batches: 16`. What does that mean?",
@@ -326,7 +344,7 @@ EXPLAIN QUERY PLAN SELECT order_id, placed_at FROM orders ORDER BY placed_at, or
     questions: [
       {
         level: "core",
-        q: "How do you read an EXPLAIN AnalysE output?",
+        q: "How do you read an EXPLAIN ANALYZE output?",
         strong: "As a tree, from the leaves up, with two sets of numbers per node: the planner's estimate — cost, rows — and the run's actuals — time, rows, loops. I look for three things first. The widest node, meaning the largest actual rows times loops, because that is where the work is. The worst estimate, meaning the node where rows and actual rows differ by the most, because every choice above it was made on that number. And anything that touched disk — external merge sorts, hash batches above one, buffers read rather than hit. Then I ask whether the fix is a statistic, an index, a rewrite or memory, in that order.",
         answer: [
           { t: "p", text: "The three-things-first discipline, with loops multiplied, is what distinguishes reading a plan from staring at it." }

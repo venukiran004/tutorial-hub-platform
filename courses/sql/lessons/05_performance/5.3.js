@@ -232,6 +232,17 @@ CREATE INDEX CONCURRENTLY orders_placed_brin ON orders USING BRIN (placed_at);  
 
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "A composite index in the wrong column order",
+
+      body: [
+
+        { t: "p", text: "An index on `(created_at, customer_id)` cannot serve a filter on `customer_id` alone, because a B-tree serves only its leftmost prefix. The index exists and is never used for that query." },
+
+        { t: "p", text: "Put equality columns first and the range or ORDER BY column last, and check the plan after creating the index." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Design",
       title: "Indexes from the query list",
@@ -300,7 +311,14 @@ ALTER TABLE events ADD CONSTRAINT events_type_lower CHECK (event_type = LOWER(ev
           why: "A composite B-tree is sorted by its first column, then the second within it. Without a condition on the first, the second column's values are not contiguous, so there is no range to seek — the leftmost-prefix rule."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an index that was never used",
+      body: [
+        { t: "p", text: "**Symptom.** A team added an index on `(created_at, customer_id)` to speed up a per-customer lookup. Nothing changed." },
+        { t: "p", text: "**Mechanism.** The query filtered on `customer_id` alone. A composite B-tree serves its leftmost prefix, and `customer_id` was the second column, so the index could not be seeked." },
+        { t: "p", text: "**Fix.** The index was rebuilt as `(customer_id, created_at)` — equality first, range last — and unused indexes are reviewed monthly, because each one costs every write." }
+      ] }
   ],
 
   takeaways: [

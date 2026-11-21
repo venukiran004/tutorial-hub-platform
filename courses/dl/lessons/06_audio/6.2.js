@@ -25,7 +25,7 @@ EC.receiveLesson({
   overlap = 240 samples = 15 ms
   n_fft=512 -> 257 bins, spacing 31.25 Hz` },
 
-    { t: "p", text: "Every number matches the reference. **100 frames per second** is the figure every speech paper assumes, and it comes directly from the 10 ms hop. The windows overlap by 15 ms, so consecutive frames share most of their samples — which smooths the feature sequence and means a 1-second utterance gives 100 frames rather than 40." },
+    { t: "p", text: "Every number matches the hand calculation. **100 frames per second** is the figure every speech paper assumes, and it comes directly from the 10 ms hop. The windows overlap by 15 ms, so consecutive frames share most of their samples — which smooths the feature sequence and means a 1-second utterance gives 100 frames rather than 40." },
 
     { t: "diagram", kind: "timeline", title: "Overlapping frames",
       caption: "A 25 ms window advancing 10 ms at a time. The overlap is what makes the feature sequence smooth rather than blocky.",
@@ -72,12 +72,12 @@ EC.receiveLesson({
 
     { t: "math", tex: "\\text{mel}(f) = 2595 \\log_{10}\\!\\left(1 + \\frac{f}{700}\\right)" },
 
-    { t: "out", text: `  mel(  100) =   150.49   reference   150.49   match=True
-  mel(  200) =   283.23   reference   283.23   match=True
-  mel(  400) =   509.38   reference   509.38   match=True
-  mel( 1000) =   999.99   reference   999.99   match=True
-  mel( 4000) =  2146.06   reference  2146.06   match=True
-  mel( 8000) =  2840.02   reference  2840.02   match=True` },
+    { t: "out", text: `  mel(  100) =   150.49   expected    150.49   match=True
+  mel(  200) =   283.23   expected    283.23   match=True
+  mel(  400) =   509.38   expected    509.38   match=True
+  mel( 1000) =   999.99   expected    999.99   match=True
+  mel( 4000) =  2146.06   expected   2146.06   match=True
+  mel( 8000) =  2840.02   expected   2840.02   match=True` },
 
     { t: "callout", kind: "trap", title: "The octave framing contradicts its own table",
       body: [{ t: "p", text: "The prose says the gap from 100 to 200 Hz 'sounds far bigger' than the gap from 4,000 to 8,000 Hz, since both are one octave. But its own table gives those spans as **132.74 mel and 693.96 mel** — the high octave is more than five times larger in mel units, not smaller. The mel scale is not a pure logarithm; it is close to *linear* below about 1 kHz and logarithmic above, so octaves are not equal steps on it. What is actually true, and what the filterbank depends on, is resolution **per hertz**: low frequencies get 1.3274 mel per Hz against 0.1735 at the top, a factor of **7.7**. Forty times the bandwidth yields only 5.2 times the mel. That is the correct statement of the same underlying idea." }] },
@@ -119,6 +119,12 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Build the front end and probe it", difficulty: "intermediate", minutes: 40,
       prompt: "Compute a log-mel spectrogram from a speech recording with 25 ms windows and 10 ms hop, and verify you get 100 frames per second. Then vary the window from 10 ms to 100 ms and compare the spectrograms — identify which resolves individual pitch pulses and which resolves formants. Compute the same spectrogram with a rectangular window and with Hann, and measure the off-peak energy for a pure tone placed off a bin centre. Finally, apply a gain of 10× and confirm the log-mel difference is a constant equal to `ln(100)`.",
+      requirements: [
+        "Compute a log-mel spectrogram with 25 ms windows and 10 ms hop and confirm 100 frames per second",
+        "Vary the window from 10 to 100 ms and identify pitch and formant resolution",
+        "Compare rectangular and Hann windows for an off-bin tone",
+        "Apply 10× gain and confirm the log-mel difference is ln(100)"
+      ],
       hints: [
         "Use a tone at something like 1000.7 Hz, not 1000 Hz, or leakage will not appear.",
         "Short windows show vertical striations (pitch pulses); long windows show horizontal bands (formants).",
@@ -130,8 +136,14 @@ EC.receiveLesson({
           { t: "p", text: "The off-bin-centre detail is what makes the leakage experiment work. A tone at exactly 1000 Hz with these parameters contains close to whole cycles within the frame, so the rectangular window's discontinuity is small and leakage barely appears — you can conclude windowing is unnecessary from a badly chosen test. At 1000.7 Hz I measured 1.23 % of energy more than ten bins from the peak un-windowed against effectively zero with Hann." },
           { t: "p", text: "The gain check should give a constant to about seven decimal places. It is worth confirming element-wise rather than on the mean, because that is what justifies cepstral mean normalisation: the effect is identical in every band and every frame, so a single subtraction removes it completely. If your measurement shows variance, you probably have an epsilon floor inside the log clipping quiet bins — which is a real implementation detail worth knowing about, since it breaks the identity exactly where the signal is weakest." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: features computed with different windows in training and serving",
+      body: [
+        { t: "p", text: "**Symptom.** A speech model's accuracy dropped in production though the audio sounded the same." },
+        { t: "p", text: "**Mechanism.** The serving front end used a different window length and hop from training, so the model received spectrograms with a different time–frequency resolution." },
+        { t: "p", text: "**Fix.** The front-end parameters are saved with the model and loaded by the serving code, and a test compares features on the same clip." }
+      ] }
   ],
 
   takeaways: [

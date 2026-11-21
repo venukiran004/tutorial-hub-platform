@@ -149,7 +149,7 @@ print("int8 perplexity : %.4f" % perplexity(qmodel))`,
     fp32 forward    : 378.7 ms
     int8 forward    : 224.4 ms  (1.69x)`,
       hl: [8, 9],
-      caption: "**1.69× faster and perplexity up by a factor of 549.** The speedup is real and so is the destruction — this configuration produces a model that generates nothing useful." },
+      caption: "**1.69× faster and perplexity up by a factor of 549.** The speedup is real and so is the destruction — this configuration produces a model that generates nothing useful. On torch 2.10 `torch.ao.quantization` (and its `torch.quantization` alias) emits a deprecation warning pointing to `torchao`; the call still works." },
 
     { t: "callout", kind: "trap", title: "The speedup is real and the quality number is the one that matters",
       body: [

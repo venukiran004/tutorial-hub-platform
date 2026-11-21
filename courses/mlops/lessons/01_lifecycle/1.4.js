@@ -224,6 +224,12 @@ vector = store.get_online_features(
 
     { t: "exercise", kind: "practice", title: "Audit one feature's clock", difficulty: "core", minutes: 30,
       prompt: "Take the strongest feature in a model you work on and establish three timestamps for it: when the underlying data is written, when the feature value is computed, and when the label becomes known. Then find the query that builds it and look specifically at the window predicate — is it relative to the row's event time, or to the time the job ran? If you have an event table, pick ten training rows and recompute their features as of their own decision timestamps, then diff against what is in the training set. Finally, retrain with a temporal split instead of a random one and record both AUCs.",
+      requirements: [
+        "Establish when the feature's data is written, when its value is computed and when the label is known",
+        "Read the window predicate and say whether it is relative to the row's event time or the job's run time",
+        "Recompute ten training rows as of their own decision timestamps and diff them against the training set",
+        "Retrain with a temporal split and record both AUCs"
+      ],
       hints: [
         "'When is the data written' is often the surprise: a status column updated in place has no history at all, so its past values are unrecoverable.",
         "A dimension table that is overwritten rather than appended cannot be joined point-in-time, and no store can fix that.",
@@ -234,8 +240,14 @@ vector = store.get_online_features(
           { t: "p", text: "The frequent discovery is a mutable dimension table: a customer `segment` or `status` column that is updated in place, so the training set joins today's value onto a two-year-old decision. There is no window predicate to fix, because the history was never kept — the fix is to start appending, and until then the feature cannot be used honestly." },
           { t: "p", text: "The second frequent discovery is that the random and temporal splits differ substantially. That is worth separating carefully: a leak and real non-stationarity both produce the gap, and the recompute-ten-rows check is what distinguishes them." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the best model the team ever trained",
+      body: [
+        { t: "p", text: "**Symptom.** A credit-risk candidate beat the incumbent by 2.6 AUC points offline and was promoted. In production it underperformed the model it replaced." },
+        { t: "p", text: "**Mechanism.** Its strongest feature counted late payments over `CURRENT_DATE - 90`. That window is relative to the day the training set was built, so for every historical row it reached past the decision date and counted payments that were a consequence of the outcome being predicted. At serving time the same query could only see the past, so the feature carried far less signal. Model selection preferred the leak because the leak wins the comparison it is judged by." },
+        { t: "p", text: "**Fix.** Features are now built by one function taking an entity and a timestamp, used by both training and serving, and the promotion gate evaluates on a temporal split. A candidate that improves implausibly triggers the ten-row as-of recomputation before anyone celebrates." }
+      ] }
   ],
 
   takeaways: [

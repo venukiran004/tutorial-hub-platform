@@ -315,6 +315,17 @@ search = GridSearchCV(pipe, grid, cv=cv, scoring="average_precision")   # tunes 
 
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Splitting rows when the model will meet new entities",
+
+      body: [
+
+        { t: "p", text: "A random row split puts the same customer in training and test, so the score measures how well the model remembers customers. In production it meets new ones." },
+
+        { t: "p", text: "Split by entity with group folds when the model will score unseen entities, and by time when it will score the future." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "The split that matches the deployment",
@@ -431,7 +442,14 @@ print("report the estimate from the split that matches the deployment; the shuff
           why: "Who will be scored: customers already seen. When: later. So the split holds out time, not customers. A group split answers a different question — new customers — and would understate performance; a shuffled split lets next month's row train this month's and overstates it."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a model that had already met every test customer",
+      body: [
+        { t: "p", text: "**Symptom.** A recommendation model scored well in testing and poorly on customers who joined after launch." },
+        { t: "p", text: "**Mechanism.** The data was split randomly by row, so most customers had rows in both training and test. The model learned individual customers' preferences and the test set rewarded it." },
+        { t: "p", text: "**Fix.** The split is by customer with `GroupKFold`, and by time where the model will score the future, so the test matches how the model will be used." }
+      ] }
   ],
 
   takeaways: [

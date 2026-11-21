@@ -88,7 +88,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "One document split at 80 characters",
       code: "'Cancelling an order. Open the order from the Orders list and choose Cancel'\n'Order. This is only possible before the order has shipped. Once an order'\n'has shipped you must start a return instead, which is a separate process.'",
       caption: "The second chunk never says what it is about." },
-    { t: "callout", kind: "warn", title: "A retrieved chunk has to be interpretable alone", body: [
+    { t: "callout", kind: "trap", title: "A retrieved chunk has to be interpretable alone", body: [
       { t: "p", text: "The second chunk says an action is *\u201conly possible before the order has shipped\u201d* without naming the action. Retrieved on its own and placed in a prompt, the model has to guess what \u201cthis\u201d refers to \u2014 and it will guess, fluently." },
       { t: "p", text: "No retrieval metric sees this. Recall counts whether the chunk was returned, and it was. The damage happens after retrieval, in a model reading a fragment that has lost its subject, which is why chunk size is a **generation** decision as much as a retrieval one." }
     ] },

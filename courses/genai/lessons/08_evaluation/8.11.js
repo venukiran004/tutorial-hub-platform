@@ -49,7 +49,7 @@ EC.receiveLesson({
         { t: "p", text: "7.12 made the related point from the training side: production thumbs-down data is often orders of magnitude larger than any commissioned pair set and sits unused because the tooling wants pairs. Implicit signals are larger again, and the same argument applies \u2014 KTO-style methods can consume them." }
       ] },
 
-    { t: "callout", kind: "warn", title: "But implicit signals are proxies, and the mapping needs checking",
+    { t: "callout", kind: "trap", title: "But implicit signals are proxies, and the mapping needs checking",
       body: [
         { t: "p", text: "A copy might mean \u201cthis is right\u201d or \u201cI will paste this somewhere to fix it\u201d. An abandonment might mean the answer was bad or that it was so good the user was done. The sign of the correlation is an assumption until you check it against something." },
         { t: "p", text: "8.1\u2019s rule applies: the cheapest method that still **correlates**. The way to establish the correlation is to label a sample of sessions by hand once and measure how each implicit signal relates to a human judgement \u2014 the same calibration 8.6 demanded of a judge." },

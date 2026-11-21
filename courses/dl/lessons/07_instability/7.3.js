@@ -130,19 +130,102 @@ for batch in loader:
 
     { t: "exercise", kind: "practice", title: "Break mixed precision deliberately", difficulty: "advanced", minutes: 40,
       prompt: "Train a model in fp32, fp16 with a GradScaler, and bf16, comparing final accuracy and wall-clock time. Log the loss scale every step for the fp16 run and plot it — note when it halves. Then force an overflow by scaling one layer's output up by 1e4 and observe how each precision responds. Finally, remove the `scaler.unscale_` call before clipping and measure what the clip threshold effectively becomes.",
+      requirements: [
+        "Train in fp32, fp16 with GradScaler and bf16 and compare accuracy and time",
+        "Log and plot the loss scale for the fp16 run",
+        "Force an overflow by scaling one layer's output by 1e4 and observe each precision",
+        "Remove scaler.unscale_ before clipping and measure the effective threshold"
+      ],
       hints: [
         "bf16 needs no scaler — `autocast('cuda', dtype=torch.bfloat16)`.",
         "The loss scale halving is visible as a sawtooth if you plot it on a log axis.",
         "Without unscaling, the effective clip threshold is the real one divided by the current scale."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import time
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from sklearn.datasets import load_digits
+
+# CPU run: autocast("cpu") supports float16 and bfloat16. Most CPUs have no fast fp16 arithmetic, so the
+# fp16 timing below is emulation cost; on a GPU with tensor cores fp16 and bf16 are both faster than fp32.
+X, y = load_digits(return_X_y=True)
+X = torch.tensor(X / 16.0, dtype=torch.float32); y = torch.tensor(y)
+Xtr, ytr, Xva, yva = X[:1500], y[:1500], X[1500:], y[1500:]
+
+class Net(nn.Module):
+    def __init__(self, boost=1.0):
+        super().__init__(); self.boost = boost
+        self.a, self.b, self.c = nn.Linear(64, 512), nn.Linear(512, 512), nn.Linear(512, 10)
+    def forward(self, x):
+        h = F.relu(self.a(x)) * self.boost                 # boost=1e4 forces an overflow in fp16
+        return self.c(F.relu(self.b(h)))
+
+def run(dtype, boost=1.0, unscale=True, steps=300):
+    torch.manual_seed(0); m = Net(boost); opt = torch.optim.SGD(m.parameters(), 0.05, momentum=0.9)
+    scaler = torch.amp.GradScaler("cpu", enabled=(dtype == torch.float16))
+    scales, clipped, t0 = [], 0, time.perf_counter()
+    for step in range(steps):
+        idx = torch.randint(0, 1500, (64,))
+        with torch.autocast("cpu", dtype=dtype, enabled=(dtype != torch.float32)):
+            loss = F.cross_entropy(m(Xtr[idx]), ytr[idx])
+        opt.zero_grad(); scaler.scale(loss).backward()
+        if unscale: scaler.unscale_(opt)
+        norm = nn.utils.clip_grad_norm_(m.parameters(), 1.0)
+        clipped += norm.item() > 1.0
+        scaler.step(opt); scaler.update(); scales.append(scaler.get_scale() if scaler.is_enabled() else 1.0)
+    with torch.no_grad(): acc = (m(Xva).argmax(1) == yva).float().mean().item()
+    return acc, time.perf_counter() - t0, scales, clipped / steps, loss.item()
+
+print("precision    val acc   seconds")
+for name, dt in [("fp32", torch.float32), ("fp16+scaler", torch.float16), ("bf16", torch.bfloat16)]:
+    acc, sec, scales, _, _ = run(dt)
+    print(f"{name:<12} {acc:7.3f}   {sec:7.2f}")
+    if dt == torch.float16:
+        drops = [i for i in range(1, len(scales)) if scales[i] < scales[i - 1]]
+        print(f"             loss scale: start {scales[0]:.0f}, end {scales[-1]:.0f}, halved at steps {drops[:8]}")
+
+print("\\nforced overflow (one activation x 1e4)")
+for name, dt in [("fp32", torch.float32), ("fp16+scaler", torch.float16), ("bf16", torch.bfloat16)]:
+    acc, _, scales, _, last = run(dt, boost=1e4, steps=100)
+    extra = f"  final loss scale {scales[-1]:.3g}" if dt == torch.float16 else ""
+    print(f"{name:<12} val acc {acc:.3f}  last loss {last:.3g}{extra}")
+
+print("\\nclipping at 1.0 with and without scaler.unscale_ (fp16)")
+for unscale in [True, False]:
+    acc, _, scales, frac, _ = run(torch.float16, unscale=unscale)
+    print(f"unscale_ {'called ' if unscale else 'skipped'}: steps clipped {frac:.0%}  val acc {acc:.3f}"
+          + ("" if unscale else f"  -> effective threshold 1.0 / {scales[-1]:.0f} = {1.0 / scales[-1]:.1e}"))`,
+        out: `precision    val acc   seconds
+fp32           0.916      0.91
+fp16+scaler    0.916     26.71
+             loss scale: start 65536, end 65536, halved at steps []
+bf16           0.916      2.00
+
+forced overflow (one activation x 1e4)
+fp32         val acc 0.818  last loss 9.98
+fp16+scaler  val acc 0.872  last loss 5.09  final loss scale 16
+bf16         val acc 0.872  last loss 0
+
+clipping at 1.0 with and without scaler.unscale_ (fp16)
+unscale_ called : steps clipped 19%  val acc 0.916
+unscale_ skipped: steps clipped 100%  val acc 0.098  -> effective threshold 1.0 / 65536 = 1.5e-05`,
+       
         notes: [
           { t: "p", text: "The loss-scale plot is the most informative artefact. A healthy fp16 run shows the scale ramping up early and then sitting near a stable value with occasional halvings — a sawtooth where the teeth are rare. A run in trouble halves repeatedly and never recovers a high scale, which tells you overflow is structural rather than occasional, and you should be looking upstream at activations rather than tuning the scaler." },
           { t: "p", text: "Removing the unscale before clipping is worth measuring because the effect is so counter-intuitive. With a loss scale of 65,536, clipping at a threshold of 1.0 on scaled gradients is effectively clipping at 1/65,536 of the intended value — almost every step gets crushed, the model trains at a tiny effective learning rate, and nothing anywhere reports a problem. And because the scale moves during training, the effective threshold moves with it, so the behaviour is not even consistent." },
           { t: "p", text: "The three-way accuracy comparison usually shows fp32 and bf16 essentially tied, with fp16 also matching when the scaler is working. Where it gets interesting is the forced overflow: bf16 handles a value of 1e4 without noticing, fp16 goes to infinity, and the scaler detects it and skips the step. Watching the skip counter rise is what makes concrete that a mixed-precision run can be silently discarding a large share of its updates." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: clipping applied to scaled gradients",
+      body: [
+        { t: "p", text: "**Symptom.** A mixed-precision run barely learned, though its full-precision version trained fine." },
+        { t: "p", text: "**Mechanism.** Gradient clipping was applied before the gradient scaler unscaled the gradients, so the threshold was compared with values thousands of times larger and clipped almost everything." },
+        { t: "p", text: "**Fix.** The loop calls `scaler.unscale_` before clipping, and the clip threshold is checked against logged unscaled norms." }
+      ] }
   ],
 
   takeaways: [

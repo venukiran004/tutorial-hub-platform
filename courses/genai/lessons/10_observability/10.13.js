@@ -107,7 +107,7 @@ EC.receiveLesson({
   cohort B accuracy 86% -> 21%                  60.0%  (-26.0 pts)
   total                                         -35.0 pts`,
       hl: [2, 4],
-      caption: "Reproduces exactly. The reference concludes \u201c3 points are not a regression at all\u201d." },
+      caption: "Reproduces exactly. The usual reading concludes \u201c3 points are not a regression at all\u201d." },
 
     { t: "callout", kind: "trap", title: "But that is one of six orderings, and the most favourable one",
       body: [
@@ -207,7 +207,7 @@ EC.receiveLesson({
   <rect x="450" y="34" width="173" height="13" rx="2" class="s-fill" style="stroke:var(--crit)" stroke-width="1.4"/>
   <text x="629" y="44" class="s-mono" style="font-size:8px">-26.0</text>
   <text x="640" y="58" class="s-mono" style="font-size:8px;fill:var(--crit)">cohortB</text>
-  <text x="16" y="58" class="s-sub">&#8592; the reference</text>
+  <text x="16" y="58" class="s-sub">&#8592; the usual reading</text>
 
   <text x="16" y="80" class="s-mono" style="font-size:9px">MBA</text>
   <rect x="140" y="70" width="20" height="13" rx="2" class="s-fill" style="stroke:var(--accent)" stroke-width="1.2"/>
@@ -264,7 +264,7 @@ EC.receiveLesson({
     { t: "exercise", kind: "analyse", title: "Decompose the drop, then test whether your conclusion survives", difficulty: "advanced", minutes: 40,
       body: "Reproduce the decomposition, then compute it under all six orderings and the Shapley attribution. Decide which of the conclusions survive the order-dependence and which do not, and write the version you would actually put in an incident report.",
       requirements: [
-        "The sequential decomposition, reproducing the reference",
+        "The sequential decomposition in the usual order",
         "All six orderings, with each factor's contribution",
         "The Shapley attribution as the mean over orderings",
         "The interaction term computed explicitly, and where it gets assigned",
@@ -291,7 +291,7 @@ print("baseline %.1f%%   today %.1f%%   drop %.1f points"
       % (base * 100, now * 100, (base - now) * 100))
 
 print()
-print("THE REFERENCE'S DECOMPOSITION -- ONE ORDER")
+print("THE USUAL DECOMPOSITION -- ONE ORDER")
 print("=" * 70)
 prev = base
 for label, S in (("traffic mix 90/10 -> 60/40", "M"),
@@ -395,7 +395,7 @@ print("cohort B at 21% +/- 8.9 pts = [12.1%, 29.9%] --")
 print("  precise enough to act on, not precise enough to quote.")`,
         out: `baseline 95.0%   today 60.0%   drop 35.0 points
 
-THE REFERENCE'S DECOMPOSITION -- ONE ORDER
+THE USUAL DECOMPOSITION -- ONE ORDER
 ======================================================================
   traffic mix 90/10 -> 60/40         92.0%  (-3.0 pts)
   cohort A accuracy 96% -> 86%       86.0%  (-6.0 pts)

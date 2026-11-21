@@ -690,7 +690,14 @@ def test_smoothing_pulls_singletons_toward_prior():
           why: "The validation fold's rows contributed their labels to the category means they are then encoded with. CV cannot catch a leak that happened before the split. The encoding must run inside the fold loop, out-of-fold, so no row's label ever reaches its own feature."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a target-encoded feature that knew every answer",
+      body: [
+        { t: "p", text: "**Symptom.** A model using target-encoded merchant ids scored almost perfectly in cross-validation and poorly on new data." },
+        { t: "p", text: "**Mechanism.** The encoding was computed on the full dataset before the split. Each row's own label contributed to its merchant's mean, and merchants with one transaction had the label itself as their feature." },
+        { t: "p", text: "**Fix.** Target encoding is fitted out of fold inside the pipeline, smoothed toward the global mean, so a row's own label never contributes to its feature." }
+      ] }
   ],
 
   takeaways: [

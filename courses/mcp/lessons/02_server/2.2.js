@@ -184,19 +184,145 @@ content[0].text   : '{\\n  "amount": 117.0,\\n  "currency": "EUR",\\n  "rate": 1
 
     { t: "exercise", kind: "practice", title: "Measure your own tools", difficulty: "core", minutes: 28,
       prompt: "Take a tool you have written with a Google-style docstring. Print its inputSchema from a client and count how many parameters carry a description — expect zero. Then convert it to Annotated with Field, add a Literal for anything your code branches on, and bounds for anything numeric, and print the schema again. Give it a Pydantic return type and confirm an outputSchema appears and structuredContent is populated. Finally, rewrite the description to answer 'when would I call this rather than something else' and count the tokens before and after.",
+      requirements: [
+        "Print a tool's inputSchema and count how many parameters carry a description",
+        "Convert the parameters to Annotated with Field, with a Literal for anything the code branches on and bounds on numbers",
+        "Give the tool a Pydantic return type and confirm outputSchema and structuredContent appear",
+        "Rewrite the description to say when to call this tool rather than another, and count its tokens before and after"
+      ],
       hints: [
         "json.dumps the inputSchema and look for the word description.",
         "A Literal with three options should appear as an enum in the schema.",
         "The token count matters because every description is in every request."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import json, logging, warnings
+from typing import Annotated, Literal
+import anyio, tiktoken
+from pydantic import BaseModel, Field
+from mcp.server.fastmcp import FastMCP
+from mcp.shared.memory import create_connected_server_and_client_session
+warnings.filterwarnings("ignore"); logging.getLogger("mcp").setLevel(logging.CRITICAL)
+
+before = FastMCP("before")
+@before.tool()
+def search_orders(customer_id: str, status: str = "any", limit: int = 20) -> list:
+    """Search orders.
+
+    Args:
+        customer_id: The customer's id, e.g. C-1042.
+        status: open, shipped, cancelled or any.
+        limit: Maximum number of orders to return.
+    """
+    return []
+
+class Order(BaseModel):
+    order_id: str
+    status: Literal["open", "shipped", "cancelled"]
+    total_gbp: float
+
+class OrderList(BaseModel):
+    orders: list[Order]
+    truncated: bool
+
+after = FastMCP("after")
+@after.tool()
+def search_orders(
+    customer_id: Annotated[str, Field(description="Customer id, e.g. C-1042", pattern=r"^C-\\d+$")],
+    status: Annotated[Literal["open", "shipped", "cancelled", "any"], Field(description="Filter by order status")] = "any",
+    limit: Annotated[int, Field(ge=1, le=100, description="Maximum orders to return (1-100)")] = 20,
+) -> OrderList:
+    """Find one customer's orders when you already have their customer id. Use this for order history or status
+    questions; use lookup_customer first if you only have a name or email. Returns at most \`limit\` orders, newest first."""
+    return OrderList(orders=[Order(order_id="O-1", status="open", total_gbp=42.0)], truncated=False)
+
+enc = tiktoken.get_encoding("o200k_base")
+async def inspect(server, label):
+    async with create_connected_server_and_client_session(server) as s:
+        t = (await s.list_tools()).tools[0]
+        props = t.inputSchema["properties"]
+        described = sum("description" in p for p in props.values())
+        print(f"--- {label}: {described}/{len(props)} parameters carry a description")
+        print(json.dumps(t.inputSchema["properties"], indent=1)[:600])
+        print("outputSchema:", "present" if t.outputSchema and "orders" in json.dumps(t.outputSchema) else t.outputSchema and "generic wrapper")
+        r = await s.call_tool("search_orders", {"customer_id": "C-1042"})
+        print("structuredContent:", r.structuredContent)
+        print(f"description: {len(enc.encode(t.description))} tokens; whole tool definition: "
+              f"{len(enc.encode(t.model_dump_json(exclude_none=True)))} tokens\\n")
+
+async def main():
+    await inspect(before, "Google-style docstring")
+    await inspect(after, "Annotated + Field + Literal + Pydantic return")
+anyio.run(main)`,
+        out: `--- Google-style docstring: 0/3 parameters carry a description
+{
+ "customer_id": {
+  "title": "Customer Id",
+  "type": "string"
+ },
+ "status": {
+  "default": "any",
+  "title": "Status",
+  "type": "string"
+ },
+ "limit": {
+  "default": 20,
+  "title": "Limit",
+  "type": "integer"
+ }
+}
+outputSchema: None
+structuredContent: None
+description: 44 tokens; whole tool definition: 123 tokens
+
+--- Annotated + Field + Literal + Pydantic return: 3/3 parameters carry a description
+{
+ "customer_id": {
+  "description": "Customer id, e.g. C-1042",
+  "pattern": "^C-\\\\d+$",
+  "title": "Customer Id",
+  "type": "string"
+ },
+ "status": {
+  "default": "any",
+  "description": "Filter by order status",
+  "enum": [
+   "open",
+   "shipped",
+   "cancelled",
+   "any"
+  ],
+  "title": "Status",
+  "type": "string"
+ },
+ "limit": {
+  "default": 20,
+  "description": "Maximum orders to return (1-100)",
+  "maximum": 100,
+  "minimum": 1,
+  "title": "Limit",
+  "type": "integer"
+ }
+}
+outputSchema: present
+structuredContent: {'orders': [{'order_id': 'O-1', 'status': 'open', 'total_gbp': 42.0}], 'truncated': False}
+description: 47 tokens; whole tool definition: 318 tokens`,
+       
         notes: [
           { t: "p", text: "The zero is the finding. People generally believe their docstrings are doing something, and the measurement is what changes the habit — nothing else does, because the docstring version looks careful and reads well in the editor." },
           { t: "p", text: "The `Literal` conversion is the highest-value single change, because an enum removes a class of error instead of reporting it. If your code has an `if value == … elif … else: raise`, that is a `Literal` waiting to be written, and the provider will enforce it for you." },
           { t: "p", text: "The token count usually goes *down* while the schema gets richer, because the `Args` block leaves the description and the per-parameter text moves into fields that were previously empty. That is the pleasant version of this change: a better contract that is also cheaper per request." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the refund tool that was called with amounts in pence",
+      body: [
+        { t: "p", text: "**Symptom.** A payments server's `refund` tool began issuing refunds a hundred times too small — £0.45 where £45.00 was owed. It affected roughly one call in six and depended on how the customer had phrased the amount." },
+        { t: "p", text: "**Mechanism.** The parameter was `amount: float`, documented in a careful Google-style `Args:` block as *amount in pounds*. That block is not parsed: the docstring became the tool description as one string and the parameter itself reached the model with a title and a type and nothing else. When a conversation mentioned pence, the model had no schema-level statement of the unit and sometimes carried the wrong one across." },
+        { t: "p", text: "**Why it was missed.** The function was well documented by every ordinary standard, and the unit tests called it with correct values. Nobody had looked at the generated schema, which is the only thing the model sees." },
+        { t: "p", text: "**Fix.** The parameter became `Annotated[Decimal, Field(description=\"Refund amount in pounds, e.g. 45.00\", gt=0, le=5000)]`, the currency became a `Literal`, and a test now asserts that every parameter of every tool carries a description (lesson 4.3). The schema is the prompt; the docstring is a comment." }
+      ] }
   ],
 
   takeaways: [

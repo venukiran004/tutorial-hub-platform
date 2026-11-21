@@ -25,7 +25,7 @@ EC.receiveLesson({
     { t: "out", text: `  max pool 2x2 s=2:
  [[5. 4.]
  [3. 4.]]
-  reference says [[5,4],[3,4]] -> True
+  expected [[5,4],[3,4]] -> match True
   avg pool 2x2 s=2:
  [[2.75 1.75]
  [1.25 2.5 ]]` },
@@ -156,6 +156,12 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Compute the field, then change it", difficulty: "core", minutes: 24,
       prompt: "Take the five-stage backbone from section 04 and compute the receptive field at the end of each stage using the formula. Then verify it empirically: feed a zero image, set one pixel of the final feature map's gradient to 1, backpropagate to the input, and measure the size of the non-zero region. Compare with your arithmetic. Then replace all 3×3 kernels with 5×5, recompute both the receptive field and the parameter count, and say what you gained and lost.",
+      requirements: [
+        "Compute the receptive field at the end of each stage of the five-stage backbone",
+        "Verify it by back-propagating a single-pixel gradient to the input",
+        "Compare the measured region with your arithmetic",
+        "Replace 3×3 kernels with 5×5 and recompute the field and parameter count"
+      ],
       hints: [
         "`RF += (k-1) * product of strides so far` — track the running stride product separately.",
         "`x.requires_grad_(True)` then `out[0,0,i,j].backward()`; the non-zero region of `x.grad` is the receptive field.",
@@ -166,8 +172,14 @@ EC.receiveLesson({
           { t: "p", text: "The gradient trick is the satisfying part, because it measures the receptive field rather than computing it: whatever the input gradient is non-zero over is exactly what influenced that output. It also catches mistakes the formula hides, like forgetting that pooling layers contribute — a 2×2 pool adds to the field and multiplies the stride product, and leaving it out understates the answer badly in a deep stack." },
           { t: "p", text: "Swapping to 5×5 grows the field faster and costs far more: parameters go up by about 2.8× per layer for the same channel counts, and you lose a non-linearity at every substitution. The comparison makes the VGG argument concrete rather than received — the pair of 3×3s is not a convention, it is strictly better on both axes that matter." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a defect detector that could not see the whole part",
+      body: [
+        { t: "p", text: "**Symptom.** A defect-detection CNN missed defects that were only visible as a pattern across the whole part." },
+        { t: "p", text: "**Mechanism.** The network's receptive field at its final layer covered only a fraction of the image, so no unit could see the pattern." },
+        { t: "p", text: "**Fix.** The receptive field was computed for each stage and the architecture was given more downsampling, so the final layer sees the full part." }
+      ] }
   ],
 
   takeaways: [

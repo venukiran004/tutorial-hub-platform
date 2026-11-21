@@ -96,7 +96,7 @@ EC.receiveLesson({
       ["failures are correlated across a burst", "the burst is smoothed"],
       ["retry storms are possible", "no storm to have"]
     ] },
-    { t: "callout", kind: "warn", title: "The correlated-failure row is the one that matters", body: [
+    { t: "callout", kind: "trap", title: "The correlated-failure row is the one that matters", body: [
       { t: "p", text: "Exceeding a rate limit does not fail one request \u2014 it fails **every request in the burst**. And then their retries arrive together, which is how a brief spike becomes a sustained outage rather than a blip." },
       { t: "p", text: "2.6 made the case for scoping retries; this is the other half. A retry policy and a rate limiter solve adjacent problems, and a system with retries but no limiter has built an amplifier." }
     ] },

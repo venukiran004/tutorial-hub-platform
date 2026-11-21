@@ -156,19 +156,94 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Build the detection post-processing yourself", difficulty: "advanced", minutes: 40,
       prompt: "Implement IoU and greedy NMS from scratch and verify both against `torchvision.ops.box_iou` and `torchvision.ops.nms` on random box sets. Then implement AP: given predictions with confidences and ground-truth boxes, match predictions to ground truths greedily by confidence at a given IoU threshold, build the precision-recall curve and integrate it. Compute AP at IoU 0.5 and averaged over 0.5:0.95 for a synthetic set where you control the localisation quality, and confirm the strict metric falls as you jitter the boxes while the lenient one does not.",
+      requirements: [
+        "Implement IoU and greedy NMS and verify them against torchvision",
+        "Implement AP by matching predictions to ground truth by confidence",
+        "Compute AP at IoU 0.5 and averaged over 0.5:0.95 on a synthetic set",
+        "Jitter boxes and confirm the strict metric falls while the lenient one does not"
+      ],
       hints: [
         "Clamp the intersection width and height at zero, or disjoint boxes give negative area.",
         "In AP, each ground truth can only be matched once — a second prediction on the same object is a false positive.",
         "Jitter the predicted boxes by a few pixels and plot both metrics against the jitter magnitude."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+from torchvision.ops import box_iou, nms
+
+def iou(a, b):                                   # a: (N,4), b: (M,4), xyxy
+    x1 = torch.max(a[:, None, 0], b[None, :, 0]); y1 = torch.max(a[:, None, 1], b[None, :, 1])
+    x2 = torch.min(a[:, None, 2], b[None, :, 2]); y2 = torch.min(a[:, None, 3], b[None, :, 3])
+    inter = (x2 - x1).clamp(min=0) * (y2 - y1).clamp(min=0)   # the clamp is the classic bug
+    area = lambda r: (r[:, 2] - r[:, 0]) * (r[:, 3] - r[:, 1])
+    return inter / (area(a)[:, None] + area(b)[None, :] - inter)
+
+def greedy_nms(boxes, scores, thr):
+    order, keep = scores.argsort(descending=True), []
+    while order.numel():
+        i = order[0]; keep.append(i.item())
+        order = order[1:][iou(boxes[i:i+1], boxes[order[1:]])[0] <= thr]
+    return torch.tensor(keep)
+
+def rand_boxes(n, g):
+    xy = torch.rand(n, 2, generator=g) * 400; wh = torch.rand(n, 2, generator=g) * 60 + 60
+    return torch.cat([xy, xy + wh], 1)
+
+g = torch.Generator().manual_seed(0)
+b1, b2 = rand_boxes(200, g), rand_boxes(150, g)
+print("IoU max abs diff vs torchvision:", f"{(iou(b1, b2) - box_iou(b1, b2)).abs().max():.1e}")
+scores = torch.rand(200, generator=g)
+print("NMS identical to torchvision:", torch.equal(greedy_nms(b1, scores, 0.5), nms(b1, scores, 0.5)))
+
+def average_precision(preds, scores, gts, thr):
+    order = scores.argsort(descending=True); used = torch.zeros(len(gts), dtype=torch.bool); tp = []
+    ious = iou(preds, gts)
+    for i in order:
+        j = ious[i].clone(); j[used] = -1
+        best = j.argmax()
+        hit = j[best] >= thr
+        if hit: used[best] = True
+        tp.append(float(hit))
+    tp = torch.tensor(tp); ctp = tp.cumsum(0)
+    prec, rec = ctp / torch.arange(1, len(tp) + 1), ctp / len(gts)
+    prec = torch.flip(torch.cummax(torch.flip(prec, [0]), 0).values, [0])   # monotone envelope
+    rec = torch.cat([torch.zeros(1), rec])
+    return float(((rec[1:] - rec[:-1]) * prec).sum())
+
+gts = rand_boxes(100, g)
+print("\\njitter(px)  AP@0.5  AP@0.5:0.95")
+for jit in [0, 2, 4, 8, 12, 16, 24]:
+    preds = gts + torch.randn(gts.shape, generator=g) * jit
+    sc = torch.rand(100, generator=g)
+    ap50 = average_precision(preds, sc, gts, 0.5)
+    apc = sum(average_precision(preds, sc, gts, t) for t in torch.arange(0.5, 0.96, 0.05)) / 10
+    print(f"{jit:>10}  {ap50:6.3f}  {apc:11.3f}")`,
+        out: `IoU max abs diff vs torchvision: 0.0e+00
+NMS identical to torchvision: True
+
+jitter(px)  AP@0.5  AP@0.5:0.95
+         0   1.000        1.000
+         2   1.000        0.879
+         4   1.000        0.723
+         8   1.000        0.495
+        12   0.927        0.297
+        16   0.542        0.159
+        24   0.266        0.049`,
+       
         notes: [
           { t: "p", text: "The clamping is the classic bug: without `max(0, x2 - x1)` two disjoint boxes produce a negative intersection and an IoU that can come out positive or even greater than one. It only shows up on non-overlapping pairs, which are exactly the cases people skip when testing by hand." },
           { t: "p", text: "The jitter experiment is the point of the exercise. mAP@0.5 stays flat as you perturb boxes by a few pixels and then falls off a cliff when they cross the threshold, while mAP@0.5:0.95 degrades smoothly from the first pixel of error. That is why COCO's metric is the one people optimise against — it gives a gradient of feedback on localisation quality where the single-threshold metric gives a step function. It also explains why a model can look excellent on the VOC metric and mediocre on COCO without anything having changed." },
           { t: "p", text: "For matching, greedy assignment by descending confidence with each ground truth consumable once is what the COCO evaluator does. Getting this wrong — allowing two predictions to claim the same object — inflates AP substantially and is a common source of a too-good-to-be-true offline number." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a detector that reported each object three times",
+      body: [
+        { t: "p", text: "**Symptom.** A detection service returned several overlapping boxes for each object, and a counting feature over-counted badly." },
+        { t: "p", text: "**Mechanism.** Non-maximum suppression had been disabled during a refactor, so every anchor that fired on an object produced a box." },
+        { t: "p", text: "**Fix.** NMS is part of the exported model's post-processing, and a test counts boxes on images with a known number of objects." }
+      ] }
   ],
 
   takeaways: [

@@ -293,6 +293,17 @@ x.mean(), gmean(x)                    # 4.0, 2.783
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Assuming a convex loss after adding a non-convex piece",
+
+      body: [
+
+        { t: "p", text: "Logistic regression's loss is convex; add a neural-network feature map, a non-convex penalty or a constraint and the guarantee is gone. Results then depend on initialisation even though the outer loss looks familiar." },
+
+        { t: "p", text: "Check convexity of the whole objective, and when it is not convex, run several initialisations and compare results." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Challenge",
       title: "Decide whether a result is real or seed noise",

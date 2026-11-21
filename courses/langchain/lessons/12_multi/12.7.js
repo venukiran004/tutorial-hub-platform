@@ -187,7 +187,7 @@ task state:  submitted -> working -> completed
         { t: "p", text: "The failure mode to avoid is adopting it inside a single team because it sounds like the future. Every failure mode in 12.8 gets harder across a process boundary, not easier, and none of them is solved by the wire format." }
       ] },
 
-    { t: "callout", kind: "warn", title: "A remote agent is an untrusted input twice over",
+    { t: "callout", kind: "trap", title: "A remote agent is an untrusted input twice over",
       body: [
         { t: "p", text: "Its card is text that goes into your prompt, and its answers are text that goes into your state. Both come from a process you do not run, and a compromised or merely careless agent on the other end is placing content directly into your model's context. **Treat a fetched card the way you treat a fetched document** — as data, delimited, never as instructions — and keep the policy that decides what your side is allowed to do in your own code, where the far side cannot argue with it." }
       ] },

@@ -210,6 +210,17 @@ WHERE  NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id AN
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "NOT IN with a subquery that can return NULL",
+
+      body: [
+
+        { t: "p", text: "`WHERE id NOT IN (SELECT customer_id FROM ...)` returns no rows at all if the subquery returns a single NULL. It works until the first NULL appears in the other table." },
+
+        { t: "p", text: "Write anti-joins with `NOT EXISTS`, which is unaffected by NULLs, or filter NULLs out of the subquery explicitly." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Six questions that are not joins",
@@ -296,7 +307,14 @@ ORDER  BY 1;
           why: "A join multiplies. The SELECT list uses no column from orders, which is the sign that orders' rows are not wanted — only whether any exist. EXISTS answers that once per customer and stops at the first match."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a 'customers who ordered' list with duplicates",
+      body: [
+        { t: "p", text: "**Symptom.** A loyalty mailing sent some customers three or four identical emails." },
+        { t: "p", text: "**Mechanism.** The list was built with `JOIN orders` to find customers who had ordered, which returns one row per order. Customers with several orders appeared several times, and the mailing system did not de-duplicate." },
+        { t: "p", text: "**Fix.** The list uses `WHERE EXISTS (SELECT 1 FROM orders ...)`, a semi join that returns each customer once, and the mailing system rejects duplicate addresses in a batch." }
+      ] }
   ],
 
   takeaways: [

@@ -152,6 +152,13 @@ volumes:
 
     { t: "exercise", kind: "practice", title: "Break and fix a startup race", difficulty: "intro", minutes: 25,
       prompt: "Write a two-service Compose file where the application connects to a database at import time, with a plain `depends_on`. Run `docker compose down -v` to remove the volume, then `up`, and observe the crash. Run `up` again and observe it working — that difference is the bug's signature. Now fix it twice: add a healthcheck to the database and `condition: service_healthy`, confirming the first-run crash disappears; then change the application to connect lazily with backoff, and confirm it survives `docker compose restart db` while running. Note which of the two fixes would also work in Kubernetes.",
+      requirements: [
+        "Write a two-service Compose file where the app connects at import time with a plain depends_on",
+        "Remove the volume, start it, and observe the crash and then the second-run success",
+        "Fix it with a database healthcheck and condition: service_healthy",
+        "Fix it again with lazy connection and backoff, and confirm it survives a database restart",
+        "Say which fix also works in Kubernetes"
+      ],
       hints: [
         "`down -v` is the important part — without removing the volume the database starts too fast to lose the race.",
         "`pg_isready -U <user>` is the standard Postgres healthcheck and takes a second to start passing on a fresh volume.",
@@ -162,8 +169,14 @@ volumes:
           { t: "p", text: "The point of doing both fixes is that they solve different problems. `service_healthy` solves the startup ordering, which is a Compose-only concern. The lazy connect with retry solves the dependency being unavailable at any point in the service's life, which is the only version of the problem that exists in production." },
           { t: "p", text: "The `restart db` test makes that concrete: a service that connected at import is dead afterwards even though the database came back, while one that connects lazily recovers on the next request. That is also what lets it report unready rather than crash-loop, which is lesson 5.2's readiness gate." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: it only failed on a clean machine",
+      body: [
+        { t: "p", text: "**Symptom.** A new engineer could not start the local stack: the model service crashed on first `up`. Everyone else's worked, and so did theirs on the second attempt." },
+        { t: "p", text: "**Mechanism.** `depends_on` waits for the database container to be started, not for the database to accept connections. On an existing volume Postgres is ready almost immediately; on a fresh one it initialises for several seconds, and the service connected at import time and died. The same race existed in CI, where it showed up as an intermittent failure." },
+        { t: "p", text: "**Fix.** The service connects lazily with backoff, which also survives a database restart in production, and the Compose file adds a healthcheck with `condition: service_healthy` for a clean first start." }
+      ] }
   ],
 
   takeaways: [

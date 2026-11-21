@@ -182,18 +182,105 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
 
     { t: "exercise", kind: "practice", title: "Measure all three numbers on your own model", difficulty: "core", minutes: 35,
       prompt: "Take a model you serve and produce a four-row table: baseline, ONNX, a simpler model class, and a quantised version if it is a network. For each row record size on disk, latency on a fixed batch, accuracy, AUC, the fraction of decisions that differ from the baseline, and the maximum and p99 absolute probability difference. Then answer two questions with the numbers in front of you. Given the latency split you measured in 2.1, what does the fastest row actually buy end to end? And does the simplest model class row make the others irrelevant?",
+      requirements: [
+        "Build a table with baseline, ONNX, a simpler model class, and a quantised version if it is a network",
+        "Record size, latency on a fixed batch, accuracy, AUC and the fraction of decisions that differ",
+        "Record the maximum and p99 absolute probability difference",
+        "Say what the fastest row buys end to end given your latency split",
+        "Decide whether the simplest model class makes the others irrelevant"
+      ],
       hints: [
         "skl2onnx needs a typed sample input to trace shapes, and zipmap: False to get an array instead of a list of dicts.",
         "Decision agreement and probability deltas are the acceptance test; accuracy is too coarse to see a 0.045 shift.",
         "Fit the simple model first. If it wins, you can stop."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import io, pickle, time, warnings
+import numpy as np, onnxruntime as ort, torch, torch.nn as nn
+from sklearn.datasets import fetch_california_housing
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+warnings.filterwarnings("ignore")   # incl. the torch.ao.quantization deprecation notice (torchao is its successor)
+
+X, y_cont = fetch_california_housing(return_X_y=True)
+y = (y_cont > np.median(y_cont)).astype(int)                 # "expensive house" as a binary target
+X = X.astype(np.float32)
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.25, random_state=0)
+batch = Xte[:1000]
+
+def latency(fn, reps=50):
+    fn(batch); t0 = time.perf_counter()
+    for _ in range(reps): fn(batch)
+    return (time.perf_counter() - t0) / reps * 1000
+
+rows = []
+def record(name, size, predict_proba):
+    p = predict_proba(Xte); rows.append((name, size, latency(predict_proba), p))
+
+# 1. baseline: a small neural network (so that quantisation applies)
+torch.manual_seed(0)
+net = nn.Sequential(nn.Linear(8, 128), nn.ReLU(), nn.Linear(128, 128), nn.ReLU(), nn.Linear(128, 1))
+mu, sd = Xtr.mean(0), Xtr.std(0); norm = lambda a: torch.tensor((a - mu) / sd)
+opt = torch.optim.Adam(net.parameters(), 1e-3)
+for _ in range(60):
+    for i in range(0, len(Xtr), 256):
+        loss = nn.functional.binary_cross_entropy_with_logits(net(norm(Xtr[i:i+256])).squeeze(1), torch.tensor(ytr[i:i+256], dtype=torch.float32))
+        opt.zero_grad(); loss.backward(); opt.step()
+net.eval()
+def torch_proba(m): return lambda a: torch.sigmoid(m(norm(a))).squeeze(1).detach().numpy()
+buf = io.BytesIO(); torch.save(net.state_dict(), buf); record("baseline (PyTorch MLP)", buf.tell(), torch_proba(net))
+
+# 2. the same network exported to ONNX
+onnx_buf = io.BytesIO()
+torch.onnx.export(net, norm(Xte[:1]), onnx_buf, input_names=["x"], output_names=["logit"], dynamic_axes={"x": {0: "n"}}, dynamo=False)
+sess = ort.InferenceSession(onnx_buf.getvalue())
+record("ONNX Runtime", len(onnx_buf.getvalue()), lambda a: 1 / (1 + np.exp(-sess.run(None, {"x": norm(a).numpy()})[0][:, 0])))
+
+# 3. dynamic int8 quantisation of the Linear layers
+q = torch.ao.quantization.quantize_dynamic(net, {nn.Linear}, dtype=torch.qint8)
+buf = io.BytesIO(); torch.save(q.state_dict(), buf); record("int8 dynamic quantised", buf.tell(), torch_proba(q))
+# Dynamic quantisation picks ONE activation scale per batch. This dataset has rows with |z| up to ~186, so one
+# outlier in a batch crushes the precision of every other row. Clipping inputs to a sane range fixes it.
+clip = lambda a: torch.sigmoid(q(norm(a).clamp(-5, 5))).squeeze(1).detach().numpy()
+record("int8, inputs clipped |z|<=5", buf.tell(), clip)
+
+# 4. simpler model classes
+lr = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000)).fit(Xtr, ytr)
+record("logistic regression", len(pickle.dumps(lr)), lambda a: lr.predict_proba(a)[:, 1])
+gb = HistGradientBoostingClassifier(random_state=0).fit(Xtr, ytr)
+record("gradient boosting", len(pickle.dumps(gb)), lambda a: gb.predict_proba(a)[:, 1])
+
+base = rows[0][3]
+print(f"{'model':<28}{'size KB':>8} {'ms/1000':>8} {'acc':>6} {'AUC':>6} {'decisions differ':>17} {'max |dp|':>9} {'p99 |dp|':>9}")
+for name, size, ms, p in rows:
+    d = np.abs(p - base)
+    print(f"{name:<28} {size / 1024:8.1f} {ms:8.2f} {((p > .5) == yte).mean():6.3f} {roc_auc_score(yte, p):6.3f} "
+          f"{((p > .5) != (base > .5)).mean():16.2%} {d.max():9.4f} {np.quantile(d, .99):9.4f}")`,
+        out: `model                        size KB  ms/1000    acc    AUC  decisions differ  max |dp|  p99 |dp|
+baseline (PyTorch MLP)           72.1     0.30  0.870  0.948            0.00%    0.0000    0.0000
+ONNX Runtime                     70.1     0.39  0.870  0.948            0.00%    0.0000    0.0000
+int8 dynamic quantised           22.7     0.70  0.628  0.687           34.19%    0.9945    0.9814
+int8, inputs clipped |z|<=5      22.7     0.72  0.870  0.946            2.36%    0.9967    0.1656
+logistic regression               1.3     0.24  0.822  0.908           13.14%    0.8415    0.5763
+gradient boosting               364.9     3.56  0.902  0.965            7.83%    0.8685    0.5447`,
+       
         notes: [
           { t: "p", text: "ONNX usually comes out as it did here — smaller, faster, numerically identical — because it is a format change rather than an approximation. That makes it the one step worth doing unconditionally, and the versioning benefit outlasts the speed benefit." },
           { t: "p", text: "The simple-model row is the one that surprises people. It will not always win, and when it loses you have learned that the capacity is doing real work and compression is a genuine trade. Either way the afternoon was worth it, and it is the only step that can make the whole project unnecessary." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: accuracy unchanged, and four hundred customers declined",
+      body: [
+        { t: "p", text: "**Symptom.** A quantised credit model shipped with accuracy within 0.001 of the original. Within a day, complaints arrived from applicants who had been approved in a pre-check and declined at submission." },
+        { t: "p", text: "**Mechanism.** Aggregate accuracy hides which decisions moved. Quantisation shifted probabilities by small amounts, and for applicants near the threshold a small shift is a different decision. About as many flipped each way, so accuracy barely changed while several hundred individual outcomes did." },
+        { t: "p", text: "**Fix.** The acceptance test for a compressed model is now decision agreement with the baseline and the largest probability difference, with a cap on flips near the threshold. The team also measured a logistic regression first, which matched the teacher at a fraction of the size and made quantisation unnecessary." }
+      ] }
   ],
 
   takeaways: [

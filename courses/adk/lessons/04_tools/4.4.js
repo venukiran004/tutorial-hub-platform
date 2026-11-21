@@ -142,7 +142,14 @@ analyst = LlmAgent(name="analyst", model="gemini-4-carbon",
 
 (d) BuiltInCodeExecutor or VertexAiCodeExecutor: chart code is self-contained and the
     inputs are already in the conversation. Blast radius: the sandbox.`,
-        notes: [{ t: "p", text: "The pattern in (b) is the general rule: when model-written code would need credentials, the right design is a tool with a narrow interface rather than an executor with broad access. The model's flexibility is exactly what makes credentialed execution unsafe." }] } }
+        notes: [{ t: "p", text: "The pattern in (b) is the general rule: when model-written code would need credentials, the right design is a tool with a narrow interface rather than an executor with broad access. The model's flexibility is exactly what makes credentialed execution unsafe." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the code executor that could read the host",
+      body: [
+        { t: "p", text: "**Symptom.** A public demo agent with code execution printed the server's environment variables, including an API key, when a visitor asked it to \"show the system configuration\"." },
+        { t: "p", text: "**Mechanism.** The demo used `UnsafeLocalCodeExecutor`, which runs model-generated code in the agent's own process with its permissions. Anything the process could read, the generated code could read." },
+        { t: "p", text: "**Fix.** The demo uses the model provider's built-in sandbox, and the key was rotated. The unsafe executor is now rejected by a startup check outside local development." }
+      ] }
   ],
 
   takeaways: [

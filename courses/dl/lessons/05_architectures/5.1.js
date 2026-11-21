@@ -109,19 +109,89 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Induce every failure mode deliberately", difficulty: "intermediate", minutes: 40,
       prompt: "Take a working dense network on any dataset and break it six ways, one at a time, recording the exact symptom each produces: remove all activations; set the learning rate to 10; set it to 1e-8; feed unscaled inputs; remove all regularisation and train far past convergence; and initialise all weights to zero. For each, write down what you would see in the loss curve and what would distinguish it from the others.",
+      requirements: [
+        "Break a working network six ways: no activations, learning rate 10, learning rate 1e-8, unscaled inputs, no regularisation, zero initialisation",
+        "Record the symptom of each",
+        "Describe what each looks like in the loss curve",
+        "Say what distinguishes each from the others"
+      ],
       hints: [
         "Removing activations makes the model exactly a linear map — compare against `LinearRegression`.",
         "All-zero initialisation has a specific failure: think about what happens to the gradients of units in the same layer.",
         "Keep the loss curves so you can compare their shapes side by side."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from sklearn.datasets import fetch_california_housing
+from sklearn.linear_model import LinearRegression
+
+X, y = fetch_california_housing(return_X_y=True)
+X, y = torch.tensor(X, dtype=torch.float32), torch.tensor(y, dtype=torch.float32)
+Xtr, ytr, Xva, yva = X[:15000], y[:15000], X[15000:], y[15000:]
+mu, sd = Xtr.mean(0), Xtr.std(0)
+lin = LinearRegression().fit((Xtr - mu) / sd, ytr)
+print(f"linear-regression baseline val MSE: {F.mse_loss(torch.tensor(lin.predict((Xva - mu) / sd), dtype=torch.float32), yva):.3f}\\n")
+
+def model(act=True, zero=False, dropout=0.1):
+    layers = []
+    for i, o in [(8, 128), (128, 128)]:
+        layers += [nn.Linear(i, o)] + ([nn.ReLU()] if act else []) + ([nn.Dropout(dropout)] if dropout else [])
+    m = nn.Sequential(*layers, nn.Linear(128, 1))
+    if zero:
+        for p in m.parameters(): nn.init.zeros_(p)
+    return m
+
+def run(name, lr=1e-3, scale=True, epochs=30, **kw):
+    torch.manual_seed(0); m = model(**kw); opt = torch.optim.Adam(m.parameters(), lr, weight_decay=0 if kw.get("dropout") == 0 else 1e-4)
+    xtr, xva = ((Xtr - mu) / sd, (Xva - mu) / sd) if scale else (Xtr, Xva)
+    curve = []
+    for ep in range(epochs):
+        m.train()
+        for i in range(0, 15000, 256):
+            loss = F.mse_loss(m(xtr[i:i+256]).squeeze(1), ytr[i:i+256]); opt.zero_grad(); loss.backward(); opt.step()
+        m.eval()
+        with torch.no_grad(): curve.append((F.mse_loss(m(xtr).squeeze(1), ytr).item(), F.mse_loss(m(xva).squeeze(1), yva).item()))
+    pick = [0, 4, 14, epochs - 1]
+    extra = ""
+    if kw.get("zero"):
+        w = m[0].weight; extra = f"  first-layer rows identical: {bool((w - w[0]).abs().max() == 0)}"
+    print(f"{name:<24} " + "  ".join(f"ep{p+1}: {curve[p][0]:.3g}/{curve[p][1]:.3g}" for p in pick) + extra)
+
+print("train/val MSE at epochs 1, 5, 15, last")
+run("healthy")
+run("no activations", act=False)
+run("learning rate 10", lr=10)
+run("learning rate 1e-8", lr=1e-8)
+run("unscaled inputs", scale=False)
+run("no regularisation, long", dropout=0, epochs=150)
+run("zero initialisation", zero=True)`,
+        out: `linear-regression baseline val MSE: 0.602
+
+train/val MSE at epochs 1, 5, 15, last
+healthy                  ep1: 1.03/1.99  ep5: 0.58/0.953  ep15: 0.373/0.496  ep30: 0.323/0.482
+no activations           ep1: 0.652/0.825  ep5: 0.633/1.03  ep15: 0.574/0.663  ep30: 0.566/0.645
+learning rate 10         ep1: 6.17e+13/7.48e+14  ep5: 1.38e+07/7.6e+06  ep15: 6.72e+04/3.58e+05  ep30: 7.93e+03/1.17e+04
+learning rate 1e-8       ep1: 4.91/6.32  ep5: 4.91/6.32  ep15: 4.9/6.32  ep30: 4.9/6.31
+unscaled inputs          ep1: 47/42.9  ep5: 9.17/10.5  ep15: 2.11/2.93  ep30: 1.97/2.72
+no regularisation, long  ep1: 1.02/1.9  ep5: 0.553/0.9  ep15: 0.363/0.498  ep150: 0.234/0.501
+zero initialisation      ep1: 4.97/6.46  ep5: 4.2/5.55  ep15: 2.8/3.87  ep30: 1.73/2.47  first-layer rows identical: True`,
+       
         notes: [
           { t: "p", text: "The all-zeros initialisation is the one worth doing if you only do one. Every unit in a layer receives an identical gradient, so they stay identical forever — the layer has the expressive power of a single unit no matter how wide it is. The model trains, the loss falls somewhat, and nothing indicates anything is wrong. It is the cleanest demonstration of why symmetry breaking is a requirement rather than a convention." },
           { t: "p", text: "Removing the activations gives a network that trains fine and plateaus at exactly linear-regression performance, because a composition of linear maps is a linear map. The useful diagnostic habit it teaches is to compare against a linear baseline: if your deep network matches it exactly, suspect a missing non-linearity rather than a hard problem." },
           { t: "p", text: "The two learning-rate failures look completely different, which is why they are easy to tell apart in practice. Too high gives a loss that spikes or goes to NaN within a few steps; too low gives a loss that decreases smoothly but far too slowly, looking almost flat over the window you are watching. Once you have seen both shapes you can diagnose a learning rate from the curve alone, which saves a lot of sweeping." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a network initialised to zero",
+      body: [
+        { t: "p", text: "**Symptom.** A dense network trained for hours with no change in loss." },
+        { t: "p", text: "**Mechanism.** Every weight was initialised to zero, so all units in a layer computed the same thing and received the same gradient; they never differentiated." },
+        { t: "p", text: "**Fix.** Weights are initialised randomly with He or Xavier scaling, and a check confirms units in a layer differ after one step." }
+      ] }
   ],
 
   takeaways: [

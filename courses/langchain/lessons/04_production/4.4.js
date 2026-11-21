@@ -122,6 +122,12 @@ EC.receiveLesson({
       code: 'with a 2000-token input budget:\n  fixed cost (system + question) : 30 tokens\n  per chunk                      : 61 tokens\n  chunks that fit                : 32',
       caption: "Count, decide, drop the rest \u2014 before sending rather than after failing." },
     { t: "p", text: "The point is not the number, it is that it is **computed**. A system that counts before sending can refuse an over-long request with a useful message, drop the lowest-scoring chunks deliberately, or summarise instead \u2014 and a system that does not count discovers the limit as a provider error, which 3.5 showed is unrecoverable mid-conversation." },
+    { t: "callout", kind: "trap", title: "Estimating tokens at four characters each for structured data",
+      body: [
+        { t: "p", text: "The four-characters-per-token rule holds for English prose. JSON, code and identifiers run much denser — 2.23 characters per token in the lesson's measurement — so a budget built on the rule undercounts precisely the inputs that are most often large: tool results and retrieved records." },
+        { t: "p", text: "Count with the provider's tokeniser or token-counting endpoint before sending, and budget from measured counts of your own payloads." }
+      ] },
+
     { t: "exercise", kind: "build", title: "Count, attribute, budget",
       difficulty: "core", minutes: 26,
       body: "Count tokens locally for four kinds of content and report the characters-per-token ratio for each. Explain why they differ and which direction the common rule of thumb errs in. Then attribute the input tokens of a RAG request to its parts and report each part's share. Finally, compute how many retrieved chunks fit inside a fixed input budget.",

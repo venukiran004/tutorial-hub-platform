@@ -723,7 +723,14 @@ def test_one_hot_weekday_sums_to_one():
           why: "A tree can express `hour >= 22 or hour <= 2` in two splits and is usually fine on the raw integer. A linear model fits one slope across the wrap and a KNN measures the wrap as the maximum distance. Sine and cosine of `2π·hour/24` put every adjacent hour the same distance apart, including 23 → 0."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a 'days since signup' feature that drifted every day",
+      body: [
+        { t: "p", text: "**Symptom.** A model's predictions for the same customer changed from one day to the next with no new data." },
+        { t: "p", text: "**Mechanism.** The feature was computed as `datetime.now() - signup_date` inside the feature code. Training used the date of the training run, and scoring used each day's date, so the feature's meaning shifted." },
+        { t: "p", text: "**Fix.** Elapsed-time features are computed relative to an explicit as-of date passed into the pipeline, which is the event date in training and the scoring date in production." }
+      ] }
   ],
 
   takeaways: [

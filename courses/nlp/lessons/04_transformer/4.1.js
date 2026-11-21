@@ -149,6 +149,17 @@ EC.receiveLesson({
 
     { t: "p", text: "The striking thing is the convergence. Three architectural families branched immediately from the 2017 paper, and by 2023 the decoder-only line had absorbed most of the attention and most of the funding — not because encoder-only models are worse at what they do, but because next-token prediction turned out to be a training objective that scales without needing labelled data. Lesson 5.1 covers what each family is still genuinely better at." },
 
+    { t: "callout", kind: "trap", title: "Expecting attention to be faster at inference",
+
+      body: [
+
+        { t: "p", text: "The transformer's advantage is parallel training. At inference on a CPU with long sequences, attention's quadratic cost can make it slower than an LSTM." },
+
+        { t: "p", text: "Measure latency at your sequence lengths and hardware before replacing a model for speed." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Measure the crossover yourself", difficulty: "core", minutes: 35,
       requirements: [
         "Reproduce the LSTM-against-attention benchmark on your hardware and find the sequence length where they cross.",
@@ -213,7 +224,14 @@ mean L2 norm: word embeddings 1.401, position embeddings 0.437`,
           { t: "p", text: "The backward-pass result is the opposite of what the exercise predicts, and it shows where that prediction applies. At 32 tokens attention's forward-plus-backward was 3.2 times faster than the LSTM's. From 256 tokens upward the LSTM was faster, because attention's backward pass is quadratic as well. The 'gap widens in attention's favour' claim is about GPUs, where the LSTM's sequential steps leave the hardware idle and attention's matrix multiplications fill it. On a CPU with four threads there is little idle capacity to fill." },
           { t: "p", text: "BERT-base's feed-forward block holds exactly twice the attention block's parameters (4.72M against 2.36M), because d_ff is 4 × d_model. Its position embeddings have a mean norm about a third of the word embeddings' (0.44 against 1.40). BERT learns positions rather than adding a fixed sinusoid, so the 'scale embeddings by √d' step from the original paper is not done explicitly here." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: replacing an LSTM made inference slower",
+      body: [
+        { t: "p", text: "**Symptom.** A team replaced an LSTM text model with a small transformer expecting faster inference, and CPU latency rose." },
+        { t: "p", text: "**Mechanism.** On long sequences on CPU, attention's quadratic cost exceeded the LSTM's sequential cost. The transformer's speed advantage is in parallel training on accelerators." },
+        { t: "p", text: "**Fix.** Latency was measured on the deployment hardware at real sequence lengths before the switch, and the transformer was kept for its accuracy with inputs truncated." }
+      ] }
   ],
 
   takeaways: [

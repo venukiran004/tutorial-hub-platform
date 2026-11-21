@@ -220,6 +220,12 @@ def corrupt_dupes(df):      # a retry duplicates 20% of rows. Every value is val
 
     { t: "exercise", kind: "practice", title: "Find the check you do not have", difficulty: "core", minutes: 30,
       prompt: "Take the input to a model you run and write down the four classes of check it currently has, honestly — most pipelines have schema and nothing else. Then take the six corruptions from this lesson and, for each, work out whether your pipeline would notice: a column arriving as a string, a join losing 12% of rows, a unit change, a -1 sentinel, a half-sd population shift, and a re-delivered file. For each one you would miss, write the check and decide block or warn. Then do the measurement that justifies the decision: apply the corruption to a real batch, score it, and record what it does to your predictions and your approval or conversion rate.",
+      requirements: [
+        "List the classes of check your input currently has",
+        "Work through the six corruptions and say which your pipeline would notice",
+        "Write the missing check for each and decide block or warn",
+        "Apply one corruption to a real batch and record what it does to predictions and to the approval or conversion rate"
+      ],
       hints: [
         "The re-delivered file is the one almost nobody checks, and the easiest to test: concatenate yesterday's batch onto today's and see whether anything complains.",
         "Derive range bounds from quantiles of the training data rather than typing them, or they will be stale within a quarter.",
@@ -230,8 +236,14 @@ def corrupt_dupes(df):      # a retry duplicates 20% of rows. Every value is val
           { t: "p", text: "Two findings are near-universal. The pipeline has a schema check — because the warehouse enforces one — and no range or volume checks at all, which is precisely the inverted ordering this lesson measured: the check that exists catches the harmless corruption." },
           { t: "p", text: "The other is that nobody can say what the expected row count is, because it was never written down. That makes the duplicate and partial-file cases undetectable, and it is a one-line fix: record the count per batch, alert on a deviation from the trailing median." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: income in thousands",
+      body: [
+        { t: "p", text: "**Symptom.** A lender's approval rate fell from about 45% to under 4% overnight. No job failed, no alert on nulls or types fired, and the model service reported healthy." },
+        { t: "p", text: "**Mechanism.** An upstream team changed the income column from pounds to thousands of pounds. The values were numeric, non-null and present in every row, so schema and null checks passed. The model received 57 where it expected 57,000 and scored almost everyone as high risk. A trained estimator raises nothing on an implausible value." },
+        { t: "p", text: "**Fix.** A range check derived from training-data quantiles now blocks the batch, and the spec is versioned with the model under the same data hash. The approval rate became a paging signal with a tight band. Coercion steps were removed from ingestion, because coercion is what turns a loud failure into a quiet one." }
+      ] }
   ],
 
   takeaways: [

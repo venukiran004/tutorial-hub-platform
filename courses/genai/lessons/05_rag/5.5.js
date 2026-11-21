@@ -295,6 +295,17 @@ store.similarity_search("refund policy", k=5,
       caption: "**The `VectorStore` interface makes the store a one-line swap, and the two things you most want to change are the two that do not port: the metadata filter dialect and hybrid search.** So a migration that looks like a one-line change is really a rewrite of every filtered query, which is worth knowing before the first one is written." },
     { t: "p", text: "`as_retriever(search_type=\"mmr\")` is the setting worth knowing at this layer: maximal marginal relevance fetches `fetch_k` candidates and then picks `k` that are relevant *and* mutually different, which is the cheapest fix for the failure where the top five chunks are five copies of the same paragraph." },
 
+    { t: "callout", kind: "trap", title: "Reaching for approximate search before you need it",
+
+      body: [
+
+        { t: "p", text: "An HNSW index over a few tens of thousands of vectors buys no speed over exact search and costs recall: the lesson measured exact search on 200,000 vectors in 240 ms, and HNSW at default settings returned the right neighbour 62% of the time." },
+
+        { t: "p", text: "Use exact search until latency measurements say otherwise, and when you move to an approximate index, measure its recall against exact search on your own queries." }
+
+      ] },
+
+
     { t: "exercise", kind: "lab", title: "Measure the recall-latency trade on your own index", difficulty: "advanced", minutes: 35,
       body: "Build exact, IVF and HNSW indexes over the same vectors and measure build time, search latency and recall against exact search as ground truth. Sweep the runtime parameters \u2014 nprobe and efSearch \u2014 and find the operating point that meets your latency budget at acceptable recall. Report the memory each index adds on top of the vectors.",
       requirements: [

@@ -118,18 +118,77 @@ for t in range(T):
 
     { t: "exercise", kind: "practice", title: "Implement and verify an RNN", difficulty: "intermediate", minutes: 30,
       prompt: "Implement the RNN recurrence from the equations and verify it against `nn.RNN` to at least 1e-6, being careful about PyTorch's two separate bias vectors. Then confirm the parameter count does not change with sequence length, and build a many-to-one classifier on a toy task: decide whether a sequence contains a particular token. Vary where in the sequence that token appears — beginning, middle, end — and measure accuracy for each position at sequence lengths 10, 30 and 100.",
+      requirements: [
+        "Implement the recurrence and verify it against nn.RNN to 1e-6",
+        "Confirm the parameter count does not change with length",
+        "Build a many-to-one classifier for 'contains token X'",
+        "Measure accuracy with the token at the start, middle and end at lengths 10, 30 and 100"
+      ],
       hints: [
         "PyTorch stores `bias_ih_l0` and `bias_hh_l0` separately; sum them.",
         "`weight_ih_l0` is stored as (hidden, input), so you need the transpose for `x @ W.T`.",
         "Generate the data so the token's position is controlled, not random, or you cannot separate the effects."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+torch.manual_seed(0)
+
+# 1. The recurrence by hand, against nn.RNN (note the two bias vectors)
+rnn = nn.RNN(input_size=8, hidden_size=16, batch_first=True)
+x = torch.randn(4, 12, 8)
+h = torch.zeros(4, 16); outs = []
+for t in range(x.shape[1]):
+    h = torch.tanh(x[:, t] @ rnn.weight_ih_l0.T + rnn.bias_ih_l0 + h @ rnn.weight_hh_l0.T + rnn.bias_hh_l0)
+    outs.append(h)
+ref, _ = rnn(x)
+print(f"max diff vs nn.RNN: {(torch.stack(outs, 1) - ref).abs().max():.1e}")
+print("parameters:", sum(p.numel() for p in rnn.parameters()), "(independent of sequence length)")
+
+# 2. Many-to-one: does the sequence contain token 1? Tokens 2..9 are filler.
+class Clf(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.emb, self.rnn, self.head = nn.Embedding(10, 16), nn.RNN(16, 32, batch_first=True), nn.Linear(32, 2)
+    def forward(self, x):
+        _, h = self.rnn(self.emb(x)); return self.head(h[-1])
+
+def batch(n, T, pos=None):
+    x = torch.randint(2, 10, (n, T)); y = torch.randint(0, 2, (n,))
+    p = torch.randint(0, T, (n,)) if pos is None else torch.full((n,), pos)
+    x[y == 1, p[y == 1]] = 1
+    return x, y
+
+print("\\nlength  start  middle  end")
+for T in [10, 30, 100]:
+    torch.manual_seed(0); m = Clf(); opt = torch.optim.Adam(m.parameters(), 1e-2)
+    for _ in range(1500):
+        x, y = batch(64, T); loss = nn.functional.cross_entropy(m(x), y)
+        opt.zero_grad(); loss.backward(); nn.utils.clip_grad_norm_(m.parameters(), 1.0); opt.step()
+    with torch.no_grad():
+        acc = [(m(xb).argmax(1) == yb).float().mean().item() for xb, yb in (batch(2000, T, p) for p in [0, T // 2, T - 1])]
+    print(f"{T:>6}  {acc[0]:.2f}   {acc[1]:.2f}    {acc[2]:.2f}")`,
+        out: `max diff vs nn.RNN: 8.9e-08
+parameters: 416 (independent of sequence length)
+
+length  start  middle  end
+    10  1.00   1.00    1.00
+    30  0.50   0.50    0.94
+   100  0.50   0.51    0.74`,
+       
         notes: [
           { t: "p", text: "The position experiment is the important half. At length 10 the RNN should detect the token anywhere. At length 100, accuracy for tokens near the end stays high while accuracy for tokens near the beginning collapses towards chance — the model genuinely cannot see them. That is not a capacity problem and more hidden units will not fix it; it is the vanishing gradient, which lesson 3.3 measures directly. Seeing it as a curve of accuracy against token position is more convincing than any amount of theory." },
           { t: "p", text: "On the verification, the bias detail catches most people. PyTorch keeps `bias_ih` and `bias_hh` as separate vectors for CuDNN compatibility even though they are mathematically redundant — the sum is the only thing that matters. Forgetting one gives a small constant offset that looks like a subtle numerical issue rather than a missing term." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a sequence classifier that ignored the beginning",
+      body: [
+        { t: "p", text: "**Symptom.** A many-to-one RNN classifying support tickets ignored information in the first sentences." },
+        { t: "p", text: "**Mechanism.** Only the final hidden state fed the classifier, and the vanilla RNN's state retained little from early in long sequences." },
+        { t: "p", text: "**Fix.** The model pools over all hidden states, and accuracy is measured separately for signals placed at the start, middle and end." }
+      ] }
   ],
 
   takeaways: [

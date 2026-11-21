@@ -392,6 +392,17 @@ rate(B) @ mix                      # 0.779
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Reading zero correlation as independence",
+
+      body: [
+
+        { t: "p", text: "Correlation measures linear association. A variable can determine another completely — y = x² over a symmetric range — with correlation exactly zero, so dropping a feature for zero correlation can remove a strong signal." },
+
+        { t: "p", text: "Plot the relationship, and use mutual information or a non-linear model when you need to test dependence." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Debug",
       title: "Explain a hiring rate that reverses under aggregation",

@@ -88,7 +88,7 @@ EC.receiveLesson({
       out: 'input uncached $0.03157   cached $0.00383   saved 87.9%',
       caption: "87.9% off the input line, 31.9% off the whole call, with no behaviour change at all." },
 
-    { t: "callout", kind: "warn", title: "One line of prompt can destroy all of it",
+    { t: "callout", kind: "trap", title: "One line of prompt can destroy all of it",
       body: [
         { t: "p", text: "Caching requires a byte-identical prefix, so a timestamp, a turn counter, a request id or a randomised instruction order at the **top** of the prompt invalidates the cache on every call. There is no error, no warning, and no symptom other than a cache hit rate near zero \u2014 which nobody is looking at." },
         { t: "p", text: "Everything volatile goes after the stable system prompt and history. 13.7 made the same point for speculative prefill, where a turn may prefill the same prefix several times, so voice is doubly exposed to this mistake." }

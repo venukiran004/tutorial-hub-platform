@@ -692,7 +692,14 @@ def test_empty_input():
       { t: "p", text: "**Use pandas or Polars** the moment you have named heterogeneous columns, or text, or missing values with meaning — a frame is a set of arrays plus the metadata NumPy deliberately does not carry." },
       { t: "p", text: "**Use Arrow or Parquet** for anything nested, variable-length, or crossing a process boundary. Column pruning frequently turns a size problem into a non-problem." },
       { t: "p", text: "**Use a database** when the data already lives in one. Pulling 40 GB into pandas to compute a group-by that SQL would do in the storage engine is the most expensive way to get that number." }
-    ]}
+    ]},
+
+    { t: "callout", kind: "scenario", title: "Incident: the array that was slower than the list it replaced",
+      body: [
+        { t: "p", text: "**Symptom.** A text-processing step was 'optimised' by converting a list of token lists into a NumPy array, and became three times slower and used more memory." },
+        { t: "p", text: "**Mechanism.** The token lists had different lengths, so NumPy created an `object` array of pointers to Python lists. Every operation still ran in Python, with an extra layer of indirection." },
+        { t: "p", text: "**Fix.** Ragged data stays as Python lists or is flattened into one array with an offsets array. A check on any array created from external data asserts that its dtype is not `object`." }
+      ] }
   ],
 
   takeaways: [

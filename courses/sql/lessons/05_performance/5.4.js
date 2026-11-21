@@ -176,6 +176,17 @@ ORDER  BY placed_at, order_id LIMIT 20;
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Paginating with OFFSET",
+
+      body: [
+
+        { t: "p", text: "`OFFSET 100000` reads and discards 100,000 rows before returning a page, so deep pages get steadily slower and the database works hardest for the least-used pages." },
+
+        { t: "p", text: "Paginate with a keyset — `WHERE (created_at, id) < (:last_ts, :last_id) ORDER BY created_at DESC, id DESC LIMIT 50` — which reads only the page." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Debug",
       title: "Eight predicates to make seekable",
@@ -253,7 +264,14 @@ ORDER  BY placed_at, order_id LIMIT 20;
           why: "Sargability is about the column being bare. The half-open range compares the stored timestamps directly against two constants, which is a contiguous slice of the index."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a date filter that read every row",
+      body: [
+        { t: "p", text: "**Symptom.** A daily report slowed from seconds to minutes as the events table reached hundreds of millions of rows." },
+        { t: "p", text: "**Mechanism.** The filter was `DATE(event_ts) = '2025-03-14'`. Wrapping the column in a function made the predicate unsargable, so the index on `event_ts` could not be used and every row was read." },
+        { t: "p", text: "**Fix.** The filter became a half-open range on the bare column — `event_ts >= '2025-03-14' AND event_ts < '2025-03-15'` — and the report reads one day's slice of the index." }
+      ] }
   ],
 
   takeaways: [
@@ -328,7 +346,7 @@ ORDER  BY placed_at, order_id LIMIT 20;
       {
         level: "advanced",
         q: "A predicate is sargable, the index exists, and the planner still scans. What do you check?",
-        strong: "Selectivity first: if the predicate keeps a large fraction of the table, the scan is the right plan and the planner is doing its job — I check the estimate against the actual in EXPLAIN AnalysE. Then statistics: a stale histogram can make a selective range look wide. Then the shape match: an expression index must match the query's expression exactly, a partial index's WHERE must be implied by the query's, a composite index must be used from its leftmost column, and a collation can stop a prefix LIKE from being a range. Then the join context: a predicate that is sargable in isolation may be evaluated after a join rather than pushed down, if it references a column the outer join padded with NULLs. And finally whether the index is bloated or invalid — a failed CONCURRENTLY build leaves an index the planner will not use.",
+        strong: "Selectivity first: if the predicate keeps a large fraction of the table, the scan is the right plan and the planner is doing its job — I check the estimate against the actual in EXPLAIN ANALYZE. Then statistics: a stale histogram can make a selective range look wide. Then the shape match: an expression index must match the query's expression exactly, a partial index's WHERE must be implied by the query's, a composite index must be used from its leftmost column, and a collation can stop a prefix LIKE from being a range. Then the join context: a predicate that is sargable in isolation may be evaluated after a join rather than pushed down, if it references a column the outer join padded with NULLs. And finally whether the index is bloated or invalid — a failed CONCURRENTLY build leaves an index the planner will not use.",
         answer: [
           { t: "p", text: "Starting from 'maybe the scan is right' and working through estimate, shape and validity is the disciplined answer." }
         ]

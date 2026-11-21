@@ -334,7 +334,14 @@ for name, (yy, XX) in versions.items():
           why: "Diagnostics point at causes. The honest standard error on a wrong model would have been the wrong repair."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: p-values that were wrong because the errors were not",
+      body: [
+        { t: "p", text: "**Symptom.** A study reported a highly significant effect of tenure on spend that later analysis could not reproduce." },
+        { t: "p", text: "**Mechanism.** The residual variance was far larger for new customers than for long-standing ones. Ordinary standard errors assumed constant variance and were too small." },
+        { t: "p", text: "**Fix.** The model reports heteroscedasticity-robust standard errors, and residual diagnostics are part of every regression report." }
+      ] }
   ],
 
   takeaways: [

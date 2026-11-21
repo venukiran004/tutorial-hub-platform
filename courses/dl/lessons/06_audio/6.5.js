@@ -50,10 +50,10 @@ EC.receiveLesson({
    a b -   0.7 x 0.5 x 0.4 = 0.1400
    a b b   0.7 x 0.5 x 0.5 = 0.1750
   ----------------------------------
-   P(target) = 0.5100   (reference says 0.5100)
+   P(target) = 0.5100   (by hand: 0.5100)
    matches: True` },
 
-    { t: "p", text: "Of the 27 possible three-frame paths, exactly five collapse to `ab`. Their probabilities sum to 0.5100, matching the reference. Note that all five are counted — CTC does not pick the best alignment, it credits every valid one in proportion to its probability." },
+    { t: "p", text: "Of the 27 possible three-frame paths, exactly five collapse to `ab`. Their probabilities sum to 0.5100, matching the hand calculation. Note that all five are counted — CTC does not pick the best alignment, it credits every valid one in proportion to its probability." },
 
     { t: "h2", n: "03", text: "The forward lattice", id: "lattice" },
 
@@ -69,11 +69,11 @@ EC.receiveLesson({
   frame 3       0.0240   0.0240   0.1560   0.3700   0.1400
 
   P(target) = 0.1400 + 0.3700 = 0.5100
-  CTC loss  = -ln(0.5100) = 0.6733   (reference says 0.6733)
+  CTC loss  = -ln(0.5100) = 0.6733   (by hand: 0.6733)
   brute force and lattice agree exactly: True` },
 
     { t: "callout", kind: "insight", title: "Every published cell reproduces exactly",
-      body: [{ t: "p", text: "All fifteen lattice values match the reference to four decimal places, and the two totals agree to machine precision. That is the point of the exercise: **the lattice is not an approximation**, it is the same sum computed in `O(T · S)` instead of `O(3^T)`. The dynamic program works because the probability of reaching a given state at a given frame depends only on the states reachable at the previous frame — so you accumulate column by column, reusing the summed probability of every path that reached each state rather than re-walking them." }] },
+      body: [{ t: "p", text: "All fifteen lattice values match the hand-computed lattice to four decimal places, and the two totals agree to machine precision. That is the point of the exercise: **the lattice is not an approximation**, it is the same sum computed in `O(T · S)` instead of `O(3^T)`. The dynamic program works because the probability of reaching a given state at a given frame depends only on the states reachable at the previous frame — so you accumulate column by column, reusing the summed probability of every path that reached each state rather than re-walking them." }] },
 
     { t: "h2", n: "04", text: "The three rules", id: "rules" },
 
@@ -130,21 +130,107 @@ EC.receiveLesson({
 
     { t: "p", text: "At a realistic 300 frames the enumeration is **1.4 × 10¹⁴³ paths** — more than the number of atoms in the observable universe by a vast margin — while the lattice needs 1,500 cells. And the vocabulary here is three symbols; a real character set makes the exponential base far larger. This is why CTC was a practical contribution and not merely a formulation." },
 
+    { t: "callout", kind: "trap", title: "Computing CTC in probability space",
+
+      body: [
+
+        { t: "p", text: "Multiplying probabilities across hundreds of frames underflows to zero, so a probability-space implementation returns infinite loss on long utterances." },
+
+        { t: "p", text: "Compute the forward algorithm in log space with log-sum-exp." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Implement the lattice", difficulty: "advanced", minutes: 45,
       prompt: "Implement the CTC forward algorithm from the three rules and verify it against brute-force enumeration on small examples, then against `torch.nn.CTCLoss` on larger ones. Test the doubled-letter case explicitly — target `aa` should give a different probability than target `ab` for the same emissions, and you should be able to explain why from the skip rule. Then convert your implementation to log space and confirm it still matches at sequence lengths where the probability-space version underflows.",
+      requirements: [
+        "Implement the CTC forward algorithm and verify it against brute force and CTCLoss",
+        "Test targets 'aa' and 'ab' on the same emissions",
+        "Explain the difference from the skip rule",
+        "Convert to log space and confirm it matches where the probability version underflows"
+      ],
       hints: [
         "Extend the target with blanks: `- a - b -` for target `ab`.",
         "The skip is allowed only into a real label that differs from the label two states back.",
         "In log space, use `logsumexp` for the additions."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import itertools, math
+import torch
+
+BLANK = 0
+
+def ctc_prob(probs, target):                 # probs: (T, C) per-frame probabilities
+    ext = [BLANK]
+    for s in target: ext += [s, BLANK]
+    S, T = len(ext), probs.shape[0]
+    a = torch.zeros(T, S, dtype=probs.dtype)
+    a[0, 0] = probs[0, BLANK]; a[0, 1] = probs[0, ext[1]]
+    for t in range(1, T):
+        for s in range(S):
+            v = a[t-1, s] + (a[t-1, s-1] if s >= 1 else 0)
+            if s >= 2 and ext[s] != BLANK and ext[s] != ext[s-2]:    # the skip rule
+                v = v + a[t-1, s-2]
+            a[t, s] = v * probs[t, ext[s]]
+    return a[-1, -1] + a[-1, -2]
+
+def ctc_logprob(logp, target):               # same lattice in log space
+    ext = [BLANK]
+    for s in target: ext += [s, BLANK]
+    S, T, NEG = len(ext), logp.shape[0], -math.inf
+    a = torch.full((T, S), NEG, dtype=torch.float64)
+    a[0, 0] = logp[0, BLANK]; a[0, 1] = logp[0, ext[1]]
+    for t in range(1, T):
+        for s in range(S):
+            terms = [a[t-1, s]] + ([a[t-1, s-1]] if s >= 1 else [])
+            if s >= 2 and ext[s] != BLANK and ext[s] != ext[s-2]: terms.append(a[t-1, s-2])
+            a[t, s] = torch.logsumexp(torch.stack(terms), 0) + logp[t, ext[s]]
+    return torch.logsumexp(a[-1, -2:], 0)
+
+def collapse(path):
+    out = [k for k, _ in itertools.groupby(path)]
+    return [c for c in out if c != BLANK]
+
+def brute(probs, target):
+    T, C = probs.shape
+    return sum(math.prod(probs[t, c].item() for t, c in enumerate(p))
+               for p in itertools.product(range(C), repeat=T) if collapse(p) == list(target))
+
+torch.manual_seed(0)
+probs = torch.softmax(torch.randn(5, 3, dtype=torch.float64), 1)     # 5 frames, blank + 'a'(1) + 'b'(2)
+for tgt, name in [([1, 1], "aa"), ([1, 2], "ab")]:
+    print(f"target {name}: lattice {ctc_prob(probs, tgt):.6f}  brute force {brute(probs, tgt):.6f}")
+
+T, C, tgt = 60, 6, [1, 2, 2, 3, 4, 1, 5]
+logp = torch.log_softmax(torch.randn(T, C, dtype=torch.float64), 1)
+ref = torch.nn.functional.ctc_loss(logp[:, None], torch.tensor([tgt]), [T], [len(tgt)], reduction="sum")
+print(f"\\nT=60: -log p  log-space {-ctc_logprob(logp, tgt):.6f}   CTCLoss {ref:.6f}")
+
+T = 800
+logp = torch.log_softmax(torch.randn(T, C, dtype=torch.float64), 1)
+p = ctc_prob(logp.exp(), tgt)                       # even float64 underflows (minimum ~1e-308)
+ref = torch.nn.functional.ctc_loss(logp[:, None], torch.tensor([tgt]), [T], [len(tgt)], reduction="sum")
+print(f"T=800: probability space {p.item():.3e}   log space -log p {-ctc_logprob(logp, tgt):.4f}   CTCLoss {ref:.4f}")`,
+        out: `target aa: lattice 0.140854  brute force 0.140854
+target ab: lattice 0.080363  brute force 0.080363
+
+T=60: -log p  log-space 73.975900   CTCLoss 73.975900
+T=800: probability space 0.000e+00   log space -log p 1578.0602   CTCLoss 1578.0602`,
+       
         notes: [
           { t: "p", text: "The doubled-letter test is the one that exercises the rule most people get wrong. For target `aa` the skip into the second `a` is blocked, so fewer paths are valid and the probability is lower than for `ab` with identical emissions. If your implementation gives the same answer for both, your skip condition is checking only that the state is a real label and not that it differs from the one two back." },
           { t: "p", text: "The log-space conversion is not optional for real use. In probability space the alpha values are products of hundreds of numbers below 1, so they underflow float32 within perhaps forty frames and float64 within a few hundred — and the failure is silent, giving zero probability and infinite loss. Working in log space with `logsumexp` for the additions is what every production implementation does, and comparing the two at a length where the direct version still works is a good way to confirm your log version is right before you rely on it." },
           { t: "p", text: "Verifying against `torch.nn.CTCLoss` catches more than arithmetic. It confirms your blank index matches, your tensor layout is `(T, B, C)` rather than batch-first, and that you understand the reduction being applied. I matched it to 1.11e-16, which is float64 round-off — anything much larger than that indicates a real discrepancy rather than numerical noise." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a CTC loss that underflowed on long utterances",
+      body: [
+        { t: "p", text: "**Symptom.** A custom CTC implementation returned infinite loss on long recordings." },
+        { t: "p", text: "**Mechanism.** Probabilities multiplied across hundreds of frames underflowed to zero. The computation needed to be done in log space." },
+        { t: "p", text: "**Fix.** The forward algorithm runs in log space with log-sum-exp, and it is tested against the framework's CTCLoss on long sequences." }
+      ] }
   ],
 
   takeaways: [

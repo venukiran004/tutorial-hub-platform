@@ -236,7 +236,14 @@ nucleus p=0.9  repeated 4-grams:   0   ' a new pilot project that would use park
           { t: "p", text: "How many candidates the two truncation methods keep depends heavily on the prompt. On the uncertain prompt, top-p 0.9 kept 1,503 tokens, far more than top-k's fixed 50. On 'The United States of' it kept 1, while top-k still kept 50. Top-p adapts to the model's confidence and top-k does not." },
           { t: "p", text: "Over 120 tokens, greedy decoding repeated 42 four-grams and beam search 69, because beam search picks the most probable continuation, and repetition is highly probable. Nucleus sampling repeated none. Beam search suits short, constrained outputs such as translation, not open-ended text." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: greedy decoding that never reached the answer",
+      body: [
+        { t: "p", text: "**Symptom.** A factual-completion feature using greedy decoding answered fluently and wrongly." },
+        { t: "p", text: "**Mechanism.** The most likely first token led away from the answer, and greedy decoding committed to it. The correct token was ranked fifth at the first step." },
+        { t: "p", text: "**Fix.** The feature scores candidate answers by their full sequence probability, and generation settings were chosen by evaluation on a factual set." }
+      ] }
   ],
 
   takeaways: [

@@ -157,6 +157,17 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Simplicity and scaling, not superiority at every task",
       body: [{ t: "p", text: "Decoder-only won because one stack trained on one objective scales cleanly, prompt and output share a single sequence, and **in-context learning emerged** — one model performs any task described in the prompt, with no head to train. That removed an entire engineering category. But it did not win on every axis. Encoder-only models remain better and far cheaper for embeddings and reranking, where you want one bidirectional representation rather than a generation. Encoder-decoder still wins where a distinct source needs a clean bidirectional read before any output is produced, which is why Whisper is encoder-decoder and why translation systems often still are." }] },
 
+    { t: "callout", kind: "trap", title: "Using an encoder model to generate text",
+
+      body: [
+
+        { t: "p", text: "BERT-style models predict masked tokens independently and cannot choose their output length, so they produce fragments when asked to generate." },
+
+        { t: "p", text: "Use decoder or encoder–decoder models for generation, and encoders for classification and embeddings." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Probe the families yourself", difficulty: "core", minutes: 40,
       requirements: [
         "Extract attention weights from an encoder and a decoder on the same sentence and confirm the future-attention maximum is 0 for one and not the other.",
@@ -174,7 +185,8 @@ import numpy as np, torch
 from transformers import (AutoTokenizer, AutoModel, AutoModelForMaskedLM, GPT2LMHeadModel, GPT2TokenizerFast,
                           T5ForConditionalGeneration, T5TokenizerFast)
 from sentence_transformers import SentenceTransformer
-from docs import DOCS
+from docs import DOCS   # docs.py is yours: DOCS = [six or more multi-sentence English passages]
+                        # the output shown is from the author's passages, so your figures will differ
 
 s = "The engineer fixed the server before the outage spread."
 bt = AutoTokenizer.from_pretrained("bert-base-uncased"); gt = GPT2TokenizerFast.from_pretrained("gpt2")
@@ -252,7 +264,14 @@ GPT-2 mean-pooled (124M)  recall@1 0/6   embedding time 1.54s`,
           { t: "p", text: "One GPT-2 forward pass returned 6 × 50,257 logits, a next-token distribution after every prefix, all from a single call. That is what makes teacher-forced training parallel. T5 handled translation, summarisation and an acceptability judgement with identical weights and code; only the prefix changed." },
           { t: "p", text: "For retrieval, the 22M-parameter MiniLM encoder found 5 of 6 answers, while mean-pooled GPT-2 states found none, in a tenth of the time. A decoder's hidden states are trained to predict the next token, not to place similar meanings near each other. Without contrastive training they are poor embeddings, whatever the model size." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: using an encoder to generate",
+      body: [
+        { t: "p", text: "**Symptom.** A prototype tried to generate product descriptions with a BERT model and produced fragments." },
+        { t: "p", text: "**Mechanism.** BERT predicts masked tokens independently and cannot choose its output length; it is not a generator." },
+        { t: "p", text: "**Fix.** Generation uses a decoder or encoder–decoder model, and BERT is kept for classification and embeddings." }
+      ] }
   ],
 
   takeaways: [

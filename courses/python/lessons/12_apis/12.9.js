@@ -93,7 +93,7 @@ print(estimate(dau=300_000_000, actions_per_user_per_day=2, bytes_per_action=300
         ["Cost", "over- and under-fetching", "tooling, browser support", "N+1 on the server, caching is harder"]
       ] },
 
-    { t: "p", text: "Two details the reference flags as interview-critical. **Idempotency**: a client that retries a POST must not create two orders; accept an `Idempotency-Key` header, store the key with the first response, and replay that response for a repeat (lesson 12.1). **Pagination**: offset pagination (`?page=50&size=20`) makes the database skip a thousand rows and drifts when rows are inserted; cursor pagination (`?after=<last id>`) is O(1) per page and stable, at the cost of not jumping to page 50 (lesson 12.6)." },
+    { t: "p", text: "Two details are interview-critical. **Idempotency**: a client that retries a POST must not create two orders; accept an `Idempotency-Key` header, store the key with the first response, and replay that response for a repeat (lesson 12.1). **Pagination**: offset pagination (`?page=50&size=20`) makes the database skip a thousand rows and drifts when rows are inserted; cursor pagination (`?after=<last id>`) is O(1) per page and stable, at the cost of not jumping to page 50 (lesson 12.6)." },
 
     { t: "callout", kind: "trap", title: "A cursor on a non-unique column skips rows", body: [
       { t: "p", text: "Cursor pagination is stable only if the sort key is unique. **Page on `created_at` alone and every row that shares the boundary timestamp is skipped by `>` or duplicated by `>=`.** A batch import that writes 300 orders in the same millisecond is exactly the case, and the missing rows vanish from every client that pages through, with no error anywhere." },

@@ -313,6 +313,17 @@ lo, mid, hi = torch.quantile(samples[0].float(),
     , caption: "**Nothing is fitted, which is the whole proposition: a forecast for a series with no history, in an afternoon.** The output is a sample of futures rather than a point, so the intervals come from the samples directly instead of needing the conformal machinery from lesson 10.7." },
     { t: "p", text: "**The limitation is the one that decides whether it ships: there is nowhere to put a covariate.** Your promotion calendar, price changes and stockouts are the information that actually moves the series, and a zero-shot model has never seen them. That makes these models an excellent cold-start baseline and a poor final answer — which is the same verdict the competition results give, and the reason to benchmark one against `SeasonalNaive` before believing anything about it." },
 
+    { t: "callout", kind: "trap", title: "Forecasting levels with trees",
+
+      body: [
+
+        { t: "p", text: "Tree models cannot predict values outside the range they have seen, so a growing series is forecast as flat at the historical maximum." },
+
+        { t: "p", text: "Forecast differences or ratios to a trend, and compare against a linear trend baseline." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "A reshape by hand, recursive versus direct on store B, and a falling trend",
@@ -355,7 +366,14 @@ lo, mid, hi = torch.quantile(samples[0].float(),
           { t: "p", text: "(c) is the blind spot in the other direction; the ratio target lets the level fall with the rolling mean, and the hybrid recovers the slope to three decimals." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a boosted forecast that could not see growth",
+      body: [
+        { t: "p", text: "**Symptom.** A gradient-boosted forecast flattened at the highest value in the training data while sales kept rising." },
+        { t: "p", text: "**Mechanism.** Trees predict constants within leaves and cannot extrapolate beyond the target values they have seen." },
+        { t: "p", text: "**Fix.** The model forecasts differences or ratios to a trend rather than levels, and forecasts are compared with a linear trend baseline." }
+      ] }
   ],
 
   takeaways: [

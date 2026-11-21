@@ -24,7 +24,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Before any of the rest works, the agent must not hear itself. If the microphone picks up the speaker output \u2014 which it does, on a laptop, a phone handset, a speakerphone and a car \u2014 then the voice activity detector sees speech the entire time the agent is talking, and barge-in fires immediately and continuously. The agent interrupts itself, stops, hears the tail of its own audio in the buffer, interrupts again, and the call collapses into stuttering." },
 
-    { t: "callout", kind: "warn", title: "The symptom is unmistakable once you have seen it",
+    { t: "callout", kind: "trap", title: "The symptom is unmistakable once you have seen it",
       body: [
         { t: "p", text: "The agent speaks two or three words, cuts out, starts again, cuts out. Nobody is talking to it. On headphones everything works perfectly, which is why it survives development and dies in the first real demo \u2014 the developer wore headphones and the demo room did not." },
         { t: "p", text: "Acoustic echo cancellation solves it by subtracting a filtered copy of the known output signal from the microphone input. You do not implement this yourself; it lives in WebRTC, in the telephony stack, in the OS audio layer and in the device firmware. What you must do is make sure it is **enabled and correctly fed the reference signal**, which is the part that gets missed when audio is routed through a custom pipeline." }

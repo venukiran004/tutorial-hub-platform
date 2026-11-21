@@ -176,6 +176,17 @@ EC.receiveLesson({
       caption: "**Five workflows and one agent, and the line between them is whether *you* drew the edge or the model chose it** \u2014 everything in the numbered list has a fixed, testable path, and that is what makes it debuggable. The names matter because they are the vocabulary the literature and the interview use for patterns this module built under its own headings." },
     { t: "p", text: "**Evaluator-optimiser is the one most often confused with a retry:** a retry sends the same request again, while this sends the output to a *separate* critic with its own prompt and feeds the critique back as input. That is the difference between hoping for a better sample and telling the model what was wrong \u2014 and it is why the pattern needs a stopping rule, because a critic will always find something." },
 
+    { t: "callout", kind: "trap", title: "Choosing a pattern by what it can do rather than what the task needs",
+
+      body: [
+
+        { t: "p", text: "Architecture reviews often favour the most capable pattern — a multi-agent design, reflection — because it can handle cases the simpler one cannot. Those cases are rarely the ones the system will see, and the cost and unpredictability are paid on every request." },
+
+        { t: "p", text: "Start from the least agentic pattern that solves the task, measure where it fails, and add exactly the capability those failures need." }
+
+      ] },
+
+
     { t: "exercise", kind: "analysis", title: "Compare the patterns on one task",
       difficulty: "core", minutes: 30,
       body: "Tabulate the patterns on model calls, number of paths, whether they can loop, and whether their cost is predictable. Give a decision tree based on where the control sits. Identify which patterns are modifiers rather than alternatives. Then list the guards every pattern needs, noting where each lives and how many the framework provides. Finally run the same task through several patterns, report the model calls, and state the rule with the reasoning behind it.",

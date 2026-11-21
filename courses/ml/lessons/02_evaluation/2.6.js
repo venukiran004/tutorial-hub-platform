@@ -274,6 +274,17 @@ for k in (2, 3, 4, 5, 6):
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Auditing fairness on the aggregate only",
+
+      body: [
+
+        { t: "p", text: "A model can have identical overall accuracy across groups and very different false-positive rates, which is what an applicant experiences. An aggregate check passes a model that treats one group worse." },
+
+        { t: "p", text: "Report error rates per group — false positives and false negatives separately — and set a threshold for investigating differences." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Three metric families, one afternoon",
@@ -349,7 +360,14 @@ t.groupby("plan").apply(lambda s: pd.Series({"n": len(s), "base": s.y.mean(), "f
           why: "The executed east/west rows gave 0.444 against 0.228 from nearly equal TPR and FPR. The audit must choose which criterion to satisfy."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a fair-looking model that rejected one region far more often",
+      body: [
+        { t: "p", text: "**Symptom.** A loan model passed an overall accuracy review and later drew a complaint that applicants from one region were refused at twice the rate of others." },
+        { t: "p", text: "**Mechanism.** No one had computed rates by group. The model's false-positive rate differed sharply between regions because one region's applicants were under-represented in training." },
+        { t: "p", text: "**Fix.** Approval, false-positive and false-negative rates are reported per region on every release, with a threshold for investigation, and training data was rebalanced by region." }
+      ] }
   ],
 
   takeaways: [

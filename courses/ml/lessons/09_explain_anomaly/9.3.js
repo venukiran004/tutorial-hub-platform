@@ -227,6 +227,17 @@ head_view(attentions, tokens)        # per-head attention, layer by layer`,
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Reading attention weights as explanations",
+
+      body: [
+
+        { t: "p", text: "Attention shows where the model looked, not which inputs changed the prediction. A token with high attention can have little effect on the output." },
+
+        { t: "p", text: "Use gradient-based attribution such as integrated gradients, and validate explanations by perturbing the inputs they highlight." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Investigate",
       title: "Plant a shortcut, find it two ways, fix it, and design the monitor",
@@ -289,7 +300,14 @@ head_view(attentions, tokens)        # per-head attention, layer by layer`,
           why: "After the fix the heatmap still lit the patch while the behaviour showed the model no longer decided on it — saliency and reliance are different things."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an X-ray model that read the hospital's label",
+      body: [
+        { t: "p", text: "**Symptom.** A chest X-ray classifier performed well on validation and poorly at a new hospital." },
+        { t: "p", text: "**Mechanism.** Saliency maps showed the model attending to a text marker in the image corner that identified the hospital, and one hospital treated more severe cases. The model had learned the shortcut." },
+        { t: "p", text: "**Fix.** Images were cropped to remove markers, the model was retrained, and saliency checks became part of validation for every imaging model." }
+      ] }
   ],
 
   takeaways: [

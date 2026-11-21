@@ -86,11 +86,17 @@ EC.receiveLesson({
       ["Keyword spotting", "Neither — a small always-on classifier, covered in lesson 6.8."]
     ] },
 
-    { t: "callout", kind: "warn", title: "Whisper hallucinates on silence and noise",
+    { t: "callout", kind: "trap", title: "Whisper hallucinates on silence and noise",
       body: [{ t: "p", text: "Because an attention decoder is a language model conditioned on audio, it can continue producing fluent, plausible text when the audio contains nothing to transcribe — subtitle-style boilerplate, repeated phrases, or invented sentences during long silences. This is a well-documented and widely reproduced failure, and it is structural rather than a bug: the decoder's language modelling is what makes it accurate and is also what lets it run free. In production you guard against it with voice activity detection to avoid decoding silence at all, and by checking the average token log-probability and no-speech probability that the model reports." }] },
 
     { t: "exercise", kind: "practice", title: "Compare the three on the same audio", difficulty: "advanced", minutes: 45,
       prompt: "Take a pretrained wav2vec 2.0 CTC model and Whisper, and transcribe the same set of recordings with both. Compare word error rate, latency to first token, and behaviour on two adversarial inputs: thirty seconds of silence, and audio with heavy background noise. Then decode the CTC model's output twice, greedily and with an n-gram language model, and measure how much the language model buys.",
+      requirements: [
+        "Transcribe the same recordings with a wav2vec 2.0 CTC model and Whisper",
+        "Compare WER and latency to first token",
+        "Test thirty seconds of silence and heavy background noise",
+        "Decode the CTC output greedily and with an n-gram language model"
+      ],
       hints: [
         "`torchaudio.pipelines.WAV2VEC2_ASR_BASE_960H` gives a CTC model with a decoder.",
         "For the silence test, feed actual silence — what each model outputs is the interesting part.",
@@ -102,8 +108,14 @@ EC.receiveLesson({
           { t: "p", text: "The language model comparison typically shows a large improvement for CTC — often several points of word error rate — because CTC's conditional independence assumption means it genuinely has no notion of which word sequences are likely. The same experiment on an attention model shows much less gain, since the decoder already is a language model. That asymmetry is the practical consequence of the conditional independence assumption, and it is worth measuring once so the architecture table stops being abstract." },
           { t: "p", text: "On latency, an attention model cannot produce any output until the encoder has processed the whole utterance, so its time to first token scales with utterance length. A streaming CTC or RNN-T system emits as it goes. If your application is interactive, that difference dominates every accuracy consideration — users notice a two-second delay far more than a one-point word error rate difference." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: Whisper transcribed silence",
+      body: [
+        { t: "p", text: "**Symptom.** A meeting transcription product produced invented sentences during long silences." },
+        { t: "p", text: "**Mechanism.** Whisper is a sequence-to-sequence model trained on weakly supervised data. Given silence, it sometimes generated plausible text rather than nothing." },
+        { t: "p", text: "**Fix.** Audio passes through voice activity detection first, so only speech reaches the model, and transcripts are checked for repeated or implausible text." }
+      ] }
   ],
 
   takeaways: [

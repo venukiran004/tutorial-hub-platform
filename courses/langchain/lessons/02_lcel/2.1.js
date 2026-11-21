@@ -141,6 +141,12 @@ EC.receiveLesson({
       out: "upper.map().invoke(['a','b','c']) -> ['A', 'B', 'C']",
       caption: "Identical results, different things entirely." },
     { t: "p", text: "`.map()` returns a **Runnable whose input is a list**, so it composes into a chain: `retriever | summarise.map() | join` is a valid pipeline. `.batch()` is a **method you call**, not a step you compose. Reach for map when the list is flowing through the chain, and batch when you have many separate inputs to run." },
+    { t: "callout", kind: "trap", title: "Implementing invoke and expecting batch to be parallel",
+      body: [
+        { t: "p", text: "A custom Runnable that implements only `invoke` gets a `batch` for free, and the free one runs your `invoke` in a thread pool. If `invoke` is CPU-bound Python, or calls a client that is not thread-safe, `batch` is no faster than a loop — or it fails intermittently under load." },
+        { t: "p", text: "Override `batch` (and `abatch`) when the underlying service has a real batch endpoint, and test `batch` on its own rather than assuming it inherits the behaviour you want." }
+      ] },
+
     { t: "exercise", kind: "analysis", title: "Check the protocol on five objects",
       difficulty: "core", minutes: 22,
       body: "Take a prompt template, a chat model, a parser, a lambda and a complete chain, and confirm which of the six protocol methods each exposes. Do the same for the composition helpers. Then implement a Runnable with only invoke and confirm what the base class derives. Finally show the difference between map and batch.",

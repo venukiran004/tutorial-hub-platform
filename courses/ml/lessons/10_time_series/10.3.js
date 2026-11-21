@@ -326,6 +326,17 @@ report(MASE, WAPE, bias, by=["h", "weekday", "store"], spread="sd across origins
         }
       ] },
 
+    { t: "callout", kind: "trap", title: "Skipping the naive baselines",
+
+      body: [
+
+        { t: "p", text: "A forecasting model that does not beat the seasonal naive forecast is not adding value, and without the baseline nobody knows." },
+
+        { t: "p", text: "Compute the four baselines on the same backtest first, and require a model to beat the best of them." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Metrics by hand with a zero, a store-B backtest, and the gap measured",
@@ -371,7 +382,14 @@ report(MASE, WAPE, bias, by=["h", "weekday", "store"], spread="sd across origins
           { t: "p", text: "(c) is the gap computed rather than assumed." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a complex forecast that lost to last year",
+      body: [
+        { t: "p", text: "**Symptom.** A machine-learning forecast was deployed with great effort and later found to be worse than repeating last year's sales." },
+        { t: "p", text: "**Mechanism.** No seasonal naive baseline had been computed. The model's error looked acceptable in isolation." },
+        { t: "p", text: "**Fix.** Every forecasting project begins with the four baselines on the same backtest, and a model must beat the best of them to be considered." }
+      ] }
   ],
 
   takeaways: [

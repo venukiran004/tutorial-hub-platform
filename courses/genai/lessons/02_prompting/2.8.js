@@ -246,6 +246,12 @@ final    = call(f"Improve the answer based on this critique: {critique}")`,
     { t: "p", text: "The honest test is the same as 2.5's: if you can draw the flowchart, the steps are real and belong in code. If you are splitting a call because the prompt got long, you are moving the complexity rather than reducing it — and adding two more places for it to fail." },
 
     /* ============================================================ exercise */
+    { t: "callout", kind: "trap", title: "Decomposing without checking each step's accuracy",
+      body: [
+        { t: "p", text: "A chain of steps that are each 90% reliable is about 66% reliable over four steps, because errors compound. Teams often split a task, find the pipeline worse than the single call it replaced, and conclude decomposition does not work." },
+        { t: "p", text: "Measure each step on its own before chaining, put a validation check between steps that can fail, and decompose only where a step is reliably better than the single call." }
+      ] },
+
     { t: "exercise", kind: "Challenge", title: "Find the chain length that maximises end-to-end accuracy",
       difficulty: "core", minutes: 25,
       body: [

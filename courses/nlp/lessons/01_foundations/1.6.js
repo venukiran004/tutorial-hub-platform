@@ -188,21 +188,143 @@ EC.receiveLesson({
       code: 'from gensim.models import Word2Vec\n\nmodel = Word2Vec(sentences, vector_size=100, window=5,\n                 min_count=5, sg=1, negative=5, epochs=5)\n\nmodel.wv["cat"]                      # the vector\nmodel.wv.most_similar("cat", topn=3) # [(\'dog\', 0.81), ...]\nmodel.wv.similarity("cat", "dog")\n\n# and the analogy, with the three inputs excluded by default:\nmodel.wv.most_similar(positive=["king", "woman"], negative=["man"])',
       caption: "`sg=1` is skip-gram and `sg=0` is CBOW; `negative=5` is §03’s `K`." },
     { t: "p", text: "Every argument here is a decision this lesson measured. `vector_size` is the dimension, `window` is the context width, `negative` is the number of sampled negatives, and **`min_count=5` silently discards every word appearing fewer than five times** — which is the distributional hypothesis admitting it needs repetition to work. And note the last line: **`most_similar` with `positive` and `negative` excludes the three input words by default**, which is exactly the exclusion §06 says the famous result depends on." },
+    { t: "callout", kind: "trap", title: "Treating embedding similarity as synonymy",
+      body: [
+        { t: "p", text: "Words that appear in the same contexts — including opposites such as 'cheap' and 'expensive' — get similar vectors, so nearest neighbours are related words, not necessarily equivalent ones." },
+        { t: "p", text: "Validate any use of embedding neighbours on the task, and filter with a curated list where meaning must be preserved." }
+      ] },
+
     { t: "exercise", kind: "practice", title: "Train embeddings and probe what they learned", difficulty: "core", minutes: 45,
       prompt: "Train skip-gram with negative sampling from scratch on a corpus of your own and measure within-group against across-group cosine for any categories you know exist. Then sweep the window size from 1 to 10 and see how the nearest neighbours change — small windows and large windows capture different relationships. Test the analogy with and without excluding the input words. Finally, compare against a pretrained GloVe or FastText model on the same words.",
+      requirements: [
+        "Train skip-gram with negative sampling and compare within-group and across-group cosine",
+        "Sweep the window size from 1 to 10 and observe how neighbours change",
+        "Test the analogy with and without excluding the input words",
+        "Compare against pretrained GloVe vectors"
+      ],
       hints: [
         "Sample negatives from `freq^0.75`, not from the raw frequency.",
         "Small windows favour syntactic similarity; large windows favour topical similarity.",
         "For the analogy, rank all candidates and note where the input words land."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import json, re
+from collections import Counter
+import numpy as np
+import torch
+import torch.nn.functional as F
+from huggingface_hub import hf_hub_download
+from safetensors.torch import load_file
+from sklearn.datasets import fetch_20newsgroups
+
+text = " ".join(fetch_20newsgroups(subset="all", remove=("headers", "footers", "quotes")).data).lower()
+tokens = re.findall(r"[a-z]+", text)
+counts = Counter(tokens); vocab = [w for w, c in counts.most_common(8000)]; w2i = {w: i for i, w in enumerate(vocab)}
+ids = torch.tensor([w2i[t] for t in tokens if t in w2i])
+freq = torch.tensor([counts[w] for w in vocab], dtype=torch.float)
+keep_p = ((1e-4 * freq.sum() / freq).sqrt()).clamp(max=1.0)          # subsample frequent words (Mikolov et al.)
+noise = freq ** 0.75; noise /= noise.sum()                           # negative-sampling distribution
+print(f"{len(ids):,} tokens, vocabulary {len(vocab):,}")
+
+def train_sgns(window, dim=100, epochs=3, neg=5, batch=512):
+    torch.manual_seed(0); V = len(vocab)
+    W_in, W_out = torch.nn.Embedding(V, dim), torch.nn.Embedding(V, dim)
+    torch.nn.init.uniform_(W_in.weight, -0.5 / dim, 0.5 / dim); torch.nn.init.zeros_(W_out.weight)
+    opt = torch.optim.Adam(list(W_in.parameters()) + list(W_out.parameters()), 3e-3)
+    for _ in range(epochs):
+        seq = ids[torch.rand(len(ids)) < keep_p[ids]]
+        offsets = torch.cat([torch.arange(-window, 0), torch.arange(1, window + 1)])
+        for start in range(window, len(seq) - window, batch):      # one update per 512 centre words
+            centre_pos = torch.arange(start, min(start + batch, len(seq) - window))
+            off = offsets[torch.randint(0, len(offsets), (len(centre_pos),))]
+            c, o = seq[centre_pos], seq[centre_pos + off]
+            negs = torch.multinomial(noise, len(c) * neg, replacement=True).view(len(c), neg)
+            vc = W_in(c)
+            loss = -(F.logsigmoid((vc * W_out(o)).sum(1)).mean() + F.logsigmoid(-(W_out(negs) @ vc[:, :, None]).squeeze(2)).sum(1).mean())
+            opt.zero_grad(); loss.backward(); opt.step()
+    E = W_in.weight.detach(); return E / E.norm(dim=1, keepdim=True)
+
+def neighbours(E, w, k=6, idx=w2i, words=vocab):
+    sims = E @ E[idx[w]]; return [words[i] for i in sims.argsort(descending=True)[1:k + 1].tolist()]
+
+GROUPS = {"sport": ["hockey", "baseball", "team", "game", "player", "season"], "space": ["nasa", "orbit", "launch", "shuttle", "moon", "satellite"],
+          "computing": ["windows", "software", "disk", "drive", "memory", "file"]}
+def group_cosines(E, idx):
+    vec = {g: torch.stack([E[idx[w]] for w in ws]) for g, ws in GROUPS.items()}
+    within = np.mean([float((v @ v.T)[~torch.eye(len(v), dtype=torch.bool)].mean()) for v in vec.values()])
+    across = np.mean([float((vec[a] @ vec[b].T).mean()) for a in vec for b in vec if a < b])
+    return within, across
+
+models = {}
+for window in [1, 2, 5, 10]:
+    E = train_sgns(window); models[window] = E
+    wi, ac = group_cosines(E, w2i)
+    print(f"\\nwindow {window:>2}: within-group cosine {wi:.3f}, across-group {ac:.3f}")
+    for w in ["windows", "car", "good"]: print(f"   {w:<8} -> {', '.join(neighbours(E, w))}")
+
+def analogy(E, a, b, c, idx, words, exclude=True):          # a is to b as c is to ?
+    q = E[idx[b]] - E[idx[a]] + E[idx[c]]; sims = E @ (q / q.norm())
+    for i in sims.argsort(descending=True).tolist():
+        if not exclude or words[i] not in (a, b, c): return words[i]
+E = models[5]
+for a, b, c in [("man", "king", "woman"), ("windows", "microsoft", "mac")]:
+    if all(w in w2i for w in (a, b, c)):
+        print(f"\\n{a}:{b} :: {c}:?   excluding inputs -> {analogy(E, a, b, c, w2i, vocab)}   not excluding -> {analogy(E, a, b, c, w2i, vocab, exclude=False)}")
+
+REPO = "sentence-transformers/average_word_embeddings_glove.6B.300d"
+G = load_file(hf_hub_download(REPO, "0_WordEmbeddings/model.safetensors"))["emb_layer.weight"]
+gv = json.load(open(hf_hub_download(REPO, "0_WordEmbeddings/whitespacetokenizer_config.json"), encoding="utf-8"))["vocab"]
+g2i = {w: i for i, w in enumerate(gv)}; G = G / G.norm(dim=1, keepdim=True).clamp(min=1e-8)
+wi, ac = group_cosines(G, g2i)
+print(f"\\nGloVe 6B-300d: within-group cosine {wi:.3f}, across-group {ac:.3f}")
+for w in ["windows", "car", "good"]: print(f"   {w:<8} -> {', '.join(neighbours(G, w, idx=g2i, words=gv))}")
+print(f"GloVe man:king :: woman:?  excluding inputs -> {analogy(G, 'man', 'king', 'woman', g2i, gv)}   not excluding -> {analogy(G, 'man', 'king', 'woman', g2i, gv, exclude=False)}")`,
+        out: `3,342,296 tokens, vocabulary 8,000
+
+window  1: within-group cosine 0.449, across-group 0.088
+   windows  -> dos, apps, os, aspi, microsoft, sunview
+   car      -> tire, garage, gear, toyota, pickup, brake
+   good     -> bad, great, tough, meaningful, confusing, useful
+
+window  2: within-group cosine 0.518, across-group 0.087
+   windows  -> microsoft, desqview, dos, os, apps, borland
+   car      -> cars, toyota, bmw, motorcycle, garage, convertible
+   good     -> meaningful, skills, leaf, contribution, fun, replacing
+
+window  5: within-group cosine 0.563, across-group 0.077
+   windows  -> microsoft, desqview, dos, decwindows, apps, autoexec
+   car      -> nissan, gasoline, tires, bike, brakes, steering
+   good     -> meaningless, buck, lucky, bright, wasted, favorite
+
+window 10: within-group cosine 0.585, across-group 0.060
+   windows  -> microsoft, dos, apps, desktop, font, paste
+   car      -> brake, tires, cars, wheels, convertible, seats
+   good     -> feel, besides, prefer, luck, isn, happy
+
+man:king :: woman:?   excluding inputs -> trial   not excluding -> king
+
+windows:microsoft :: mac:?   excluding inputs -> appletalk   not excluding -> mac
+
+GloVe 6B-300d: within-group cosine 0.439, across-group 0.119
+   windows  -> window, xp, microsoft, doors, desktop, browser
+   car      -> cars, vehicle, truck, driver, driving, vehicles
+   good     -> better, really, always, you, well, excellent
+GloVe man:king :: woman:?  excluding inputs -> queen   not excluding -> king`,
+       
         notes: [
           { t: "p", text: "The window sweep produces the most interesting result. A window of 1 or 2 gives neighbours that are syntactically substitutable — other words that could occupy the same grammatical slot — while a window of 8 or 10 gives topically related words that co-occur in the same documents but are not interchangeable. Neither is more correct; they answer different questions, and knowing which one your task needs is a real decision rather than a default." },
           { t: "p", text: "The category measurement is worth making quantitative rather than eyeballing neighbours. On a corpus with known structure I measured within-group cosine around 0.99 against across-group near 0.27 — a gap of 0.72. Having that number lets you tell whether more training or a bigger dimension actually helped, which a list of nearest neighbours does not." },
           { t: "p", text: "On the analogy, including the input words in the candidate set is the honest version, and it frequently returns one of the inputs rather than the intended answer. That does not make the geometric structure fake — the relation vector really is roughly consistent — but it does mean the classic demonstration depends on an exclusion rule that is rarely mentioned. Worth seeing once so you can describe the result accurately." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: synonyms that were really antonyms",
+      body: [
+        { t: "p", text: "**Symptom.** A query-expansion feature built on word embeddings expanded 'cheap' to include 'expensive', and search results got worse." },
+        { t: "p", text: "**Mechanism.** Words that appear in the same contexts get similar vectors, and antonyms share contexts — 'a cheap hotel', 'an expensive hotel'. The embeddings captured relatedness, not equivalence." },
+        { t: "p", text: "**Fix.** Expansion candidates are filtered with a curated synonym list and validated on search relevance before they are used." }
+      ] }
   ],
 
   takeaways: [

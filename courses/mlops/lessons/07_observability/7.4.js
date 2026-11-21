@@ -146,18 +146,76 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Convert one alert to a burn rate", difficulty: "core", minutes: 30,
       prompt: "Take a static-threshold alert you own and redo it. Write down the SLO it implies, convert the budget to a request count at your traffic rate, and compute the burn rate at three observed bad rates — a mild elevation, a real incident and an outage — then say how long each takes to exhaust the budget. Replace the rule with a multi-window pair: 14x over an hour and 6x over six hours, each paired with a short window so it clears after recovery. Then check two things: does a histogram bucket boundary sit exactly on your latency threshold, and does your alert carry a runbook link that states the first action.",
+      requirements: [
+        "Write down the SLO a static alert implies and convert the budget to a request count",
+        "Compute burn rate and time to exhaustion at three observed bad rates",
+        "Replace the rule with a multi-window pair, each with a short confirming window",
+        "Check for a bucket boundary on the latency threshold and a runbook link with a first action"
+      ],
       hints: [
         "If you cannot state the SLO, that is the first finding — a static threshold is an SLO nobody wrote down.",
         "The mild-elevation row is the one that justifies the change: it is usually well under the static threshold and exhausts the budget inside the window.",
         "Without a boundary on the threshold, the ratio comes from an interpolated quantile that lesson 7.2 measured 25.7% wrong at p95."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `SLO = 0.999                    # the static rule "alert if error rate > 1% for 5 minutes" implies far less; write the real one
+RPS = 120                      # traffic
+WINDOW_DAYS = 30
+budget_fraction = 1 - SLO
+budget_requests = budget_fraction * RPS * 86400 * WINDOW_DAYS
+print(f"SLO {SLO:.1%} over {WINDOW_DAYS} days at {RPS} req/s: error budget = {budget_requests:,.0f} failed requests")
+
+print("\\nobserved bad rate   burn rate   budget exhausted in")
+for label, bad in [("mild elevation", 0.002), ("real incident", 0.02), ("outage", 0.5)]:
+    burn = bad / budget_fraction
+    hours = WINDOW_DAYS * 24 / burn
+    print(f"{label:<15} {bad:>6.1%}   {burn:8.1f}x   {hours:8.1f} h ({hours / 24:.1f} days)")
+
+print("""
+multi-window, multi-burn-rate rule (Prometheus):
+  - alert: ErrorBudgetFastBurn        # 2% of the monthly budget in 1 hour
+    expr: (sum(rate(predict_requests_total{outcome="error"}[1h])) / sum(rate(predict_requests_total[1h]))) > 14.4 * 0.001
+      and (sum(rate(predict_requests_total{outcome="error"}[5m])) / sum(rate(predict_requests_total[5m]))) > 14.4 * 0.001
+    labels: {severity: page}
+  - alert: ErrorBudgetSlowBurn        # 10% of the monthly budget in 3 days
+    expr: (sum(rate(predict_requests_total{outcome="error"}[3d])) / sum(rate(predict_requests_total[3d]))) > 1 * 0.001
+      and (sum(rate(predict_requests_total{outcome="error"}[6h])) / sum(rate(predict_requests_total[6h]))) > 1 * 0.001
+    labels: {severity: ticket}""")
+print("the short window in each pair makes the alert stop soon after the problem does; the long one stops it flapping")
+print(f"the old static rule (>1% for 5 minutes) never fires on the mild elevation, which alone would spend the budget in "
+      f"{WINDOW_DAYS * 24 / (0.002 / budget_fraction) / 24:.0f} days")`,
+        out: `SLO 99.9% over 30 days at 120 req/s: error budget = 311,040 failed requests
+
+observed bad rate   burn rate   budget exhausted in
+mild elevation    0.2%        2.0x      360.0 h (15.0 days)
+real incident     2.0%       20.0x       36.0 h (1.5 days)
+outage           50.0%      500.0x        1.4 h (0.1 days)
+
+multi-window, multi-burn-rate rule (Prometheus):
+  - alert: ErrorBudgetFastBurn        # 2% of the monthly budget in 1 hour
+    expr: (sum(rate(predict_requests_total{outcome="error"}[1h])) / sum(rate(predict_requests_total[1h]))) > 14.4 * 0.001
+      and (sum(rate(predict_requests_total{outcome="error"}[5m])) / sum(rate(predict_requests_total[5m]))) > 14.4 * 0.001
+    labels: {severity: page}
+  - alert: ErrorBudgetSlowBurn        # 10% of the monthly budget in 3 days
+    expr: (sum(rate(predict_requests_total{outcome="error"}[3d])) / sum(rate(predict_requests_total[3d]))) > 1 * 0.001
+      and (sum(rate(predict_requests_total{outcome="error"}[6h])) / sum(rate(predict_requests_total[6h]))) > 1 * 0.001
+    labels: {severity: ticket}
+the short window in each pair makes the alert stop soon after the problem does; the long one stops it flapping
+the old static rule (>1% for 5 minutes) never fires on the mild elevation, which alone would spend the budget in 15 days`,
+       
         notes: [
           { t: "p", text: "The usual outcome is discovering that the static threshold implies an SLO nobody chose, and that it is both too lax for a slow burn and too coarse for a severe one — which is the pair of failures measured in this lesson." },
           { t: "p", text: "The budget-as-a-count conversion is the part that changes conversations beyond alerting. Once a month's budget is 51,840 requests, a canary costing 2,282 of them is a priced decision rather than an argument, and so is a deploy that sheds a few hundred." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the budget that drained without an alert",
+      body: [
+        { t: "p", text: "**Symptom.** At the monthly review a model service was found to have breached its 99.9% objective. Nobody had been paged all month." },
+        { t: "p", text: "**Mechanism.** The alert fired above 1% bad requests. A degraded dependency had produced about 0.2% bad requests for two weeks — below the threshold every minute, and enough to consume the whole month's budget. A static threshold measures intensity, not cumulative harm." },
+        { t: "p", text: "**Fix.** The alerts now page on burn rate: a fast window catches outages, and a slow window at a lower multiple catches a sustained elevation like this one. Each alert links a runbook whose first line is the first action." }
+      ] }
   ],
 
   takeaways: [

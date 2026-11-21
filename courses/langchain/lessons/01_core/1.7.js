@@ -181,7 +181,7 @@ EC.receiveLesson({
 
 
 
-    { t: "callout", kind: "warn", title: "A list met a function expecting a string",
+    { t: "callout", kind: "trap", title: "A list met a function expecting a string",
       body: [
         { t: "p", text: "`TruncateWords` expects a string. It received a list of three strings, called `str()` on it, split the repr on spaces and returned the first two words of a Python list literal: `\"['ALPHA', 'BETA',\"`. The chain completed successfully." },
         { t: "p", text: "Nothing raised because the pipe only requires that both sides are Runnables \u2014 not that the output type of one matches the input type of the next. That is the cost of the uniformity that makes everything compose, and it is a real cost rather than a footnote." }

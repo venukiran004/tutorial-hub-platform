@@ -326,7 +326,14 @@ for name, hide in versions.items():
           why: "No imputer can write a number it has no information about. The indicator turns the missingness mechanism into a feature, which is the only move available under MNAR."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: the imputation that made a feature look useless",
+      body: [
+        { t: "p", text: "**Symptom.** A feature for 'number of support tickets' showed almost no relationship with churn after imputation." },
+        { t: "p", text: "**Mechanism.** Basic-plan customers had no ticket field, so the value was missing for structural reasons, and those customers churned at a different rate. Filling with the median erased the signal in the missingness." },
+        { t: "p", text: "**Fix.** A missingness indicator is kept alongside the imputed value, and the imputer is fitted on training folds only." }
+      ] }
   ],
 
   takeaways: [

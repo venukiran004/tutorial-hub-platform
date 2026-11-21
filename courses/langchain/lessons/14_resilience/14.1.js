@@ -69,7 +69,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "So, counting the nine",
       code: "RAISES   the model call, the graph looping, the process dying      3\nSILENT   the state boundary, the sub-agent, retrieval, the\n         context strategy, cost                                     5\nBOTH     the tool, split by whose fault it is                       1",
       caption: "**Five of nine** are silent and a sixth is half silent." },
-    { t: "callout", kind: "warn", title: "Which is the actual finding of this lesson", body: [
+    { t: "callout", kind: "trap", title: "Which is the actual finding of this lesson", body: [
       { t: "p", text: "Most agentic failure does not raise. The surfaces that raise \u2014 the model call, the loop, the crash \u2014 are the **easy** ones: something tells you, and you write a handler. The other five produce a **wrong answer** rather than an error." },
       { t: "p", text: "So the instinct to start with try/except and retries covers three of nine surfaces. The remaining six need instruments, and an instrument you did not build does not fail \u2014 it is simply absent, which is why a checklist (14.10) is the only thing that catches a missing one." }
     ] },

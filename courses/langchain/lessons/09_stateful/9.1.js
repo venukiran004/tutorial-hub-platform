@@ -79,7 +79,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "A model that always asks for a tool",
       code: "recursion_limit=8:\n  RAISED GraphRecursionError: Recursion limit of 8 reached without\n  hitting a stop condition.",
       caption: "With the default limit of 10007 that would be thousands of model calls first." },
-    { t: "callout", kind: "warn", title: "A production agent needs a step budget in the state", body: [
+    { t: "callout", kind: "trap", title: "A production agent needs a step budget in the state", body: [
       { t: "p", text: "8.9 established that relying on the recursion limit makes an exception your normal failure path, so you cannot distinguish a long legitimate run from a runaway. For an agent that matters more than for a pure-computation graph, because each superstep is a paid model call." },
       { t: "p", text: "The shape is an iteration counter in the state, incremented in the agent node, and a router that returns `END` when it reaches a budget. Then \u201cgave up\u201d is a state you can route on, record and return to the caller \u2014 and the recursion limit catches only the case where that logic itself failed." }
     ] },

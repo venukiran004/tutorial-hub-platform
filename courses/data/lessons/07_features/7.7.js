@@ -369,6 +369,17 @@ coverage
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Coercing a messy column to numeric",
+
+      body: [
+
+        { t: "p", text: "`pd.to_numeric(errors='coerce')` turns every value with a unit, a currency symbol or a range into NaN, silently discarding most of the information in a mixed column." },
+
+        { t: "p", text: "Extract the parts with a regular expression into separate columns, and report how many rows failed to parse." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A property-listing parser that reports what it could not parse",
@@ -629,7 +640,14 @@ def test_fit_free_and_row_independent():
           why: "An unrecognised unit is a finding, not a case to default. GiB is 1.074 GB, which someone can add to the table once they know it appears; a guessed multiplier produces a plausible number with no marker that it was guessed."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: rents of '£1,250/month' parsed as missing",
+      body: [
+        { t: "p", text: "**Symptom.** A housing model ignored most rental listings because their price was NaN." },
+        { t: "p", text: "**Mechanism.** `pd.to_numeric(errors='coerce')` turned every price with a currency symbol, a comma or a period suffix into NaN, silently." },
+        { t: "p", text: "**Fix.** Prices are decomposed with a regular expression into an amount and a period, normalised to a monthly figure, and the step reports how many rows failed to parse." }
+      ] }
   ],
 
   takeaways: [

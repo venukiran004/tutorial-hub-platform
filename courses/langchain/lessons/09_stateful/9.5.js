@@ -83,7 +83,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "Two users, both with thread_id=\u201cdefault\u201d",
       code: "HumanMessage('user one secret')\nAIMessage('you said: user one secret')\nHumanMessage('user two question')\nAIMessage('you said: user two question')",
       caption: "User two's model call saw user one's message." },
-    { t: "callout", kind: "warn", title: "A cross-user leak produced by a sensible-looking default", body: [
+    { t: "callout", kind: "trap", title: "A cross-user leak produced by a sensible-looking default", body: [
       { t: "p", text: "`thread_id=\"default\"` is what you write while developing, and it works. It is also a single shared conversation for every user of the system, so one user's private message is in the next user's prompt." },
       { t: "p", text: "This is 7.6's lesson in a different place: the context window is the trust boundary, and anything that reaches it reaches the model. Here the leak is not an injection \u2014 it is a dictionary key with a careless value." }
     ] },

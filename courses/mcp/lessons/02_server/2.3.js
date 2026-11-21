@@ -166,7 +166,7 @@ async def lookup(order_id: str) -> dict:
       ["The system behind the tool", "The last line and the only real one. A tool that checks a caller's permission in Python and then issues a query with an admin credential has not enforced anything — the database must also refuse."]
     ] },
 
-    { t: "callout", kind: "warn", title: "Validation in the tool is not authorisation",
+    { t: "callout", kind: "trap", title: "Validation in the tool is not authorisation",
       body: [
         { t: "p", text: "It is worth separating the two now because the protocol encourages conflating them. **A schema constraint stops a malformed call; it does not stop a well-formed call that should not be allowed.** `order_id` matching a pattern says nothing about whether this caller may read that order, and nothing in MCP carries who the caller is (lesson 4.2)." },
         { t: "p", text: "So keep the layers straight: the schema is for shape, the body is for business rules, and the database or downstream service is for permission. The third is the only one an attacker cannot talk their way past." }
@@ -174,19 +174,124 @@ async def lookup(order_id: str) -> dict:
 
     { t: "exercise", kind: "practice", title: "Reproduce all five, then make them good", difficulty: "core", minutes: 26,
       prompt: "Build a server with a working tool and a tool that raises. From a client, reproduce all five failure paths and record isError and the content for each — confirm nothing raises client-side. Then: replace the raising tool's unguarded exception with a caught version returning a sentence plus a reference id, and confirm the real exception is in your logs and not in the client's result. Add a retryable flag to every error your tools return. Finally, move one body-level validation into a Field constraint and confirm the rejection now happens before your function runs.",
+      requirements: [
+        "Reproduce all five failure paths from a client and record isError and the content for each",
+        "Confirm that none of the five raises on the client",
+        "Catch the raising tool's exception, return a sentence plus a reference id, and confirm the real exception is only in your logs",
+        "Add a retryable flag to every error your tools return",
+        "Move one body-level validation into a Field constraint and confirm rejection happens before the function runs"
+      ],
       hints: [
         "Have the raising tool include a hostname in its message, so the disclosure is visible.",
         "Check isError before and after you add the catch — it flips to False.",
         "For the last part, print the schema and confirm the constraint is in it."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import logging, sys, uuid, warnings
+from typing import Annotated
+import anyio
+from pydantic import Field
+from mcp.server.fastmcp import FastMCP
+from mcp.shared.memory import create_connected_server_and_client_session
+warnings.filterwarnings("ignore")
+log = logging.getLogger("fx"); logging.basicConfig(level=logging.WARNING, format="    SERVER LOG %(message)s", stream=sys.stdout)
+logging.getLogger("mcp").setLevel(logging.CRITICAL)                 # keep the SDK's own request logging out of the way
+
+RATES = {("GBP", "EUR"): 1.17, ("EUR", "GBP"): 0.85}
+
+def error(message, retryable):                                    # one shape for every error a tool returns itself
+    return {"error": message, "retryable": retryable}
+
+def build(fixed: bool):
+    mcp = FastMCP("fx")
+
+    if fixed:
+        @mcp.tool()
+        def convert(amount: Annotated[float, Field(gt=0, description="Amount to convert, greater than zero")],
+                    frm: str, to: str) -> dict:
+            """Convert an amount between currencies."""
+            if (frm, to) not in RATES: return error(f"no rate for {frm}->{to}", retryable=False)
+            return {"amount": round(amount * RATES[(frm, to)], 2), "retryable": False}
+
+        @mcp.tool()
+        def explode() -> dict:
+            """Fetch from the upstream rate service."""
+            try:
+                raise ConnectionError("connect to rates-db-07.internal.corp:5432 timed out")
+            except ConnectionError:
+                ref = uuid.uuid4().hex[:8]
+                log.exception("explode failed ref=%s", ref)            # the detail stays on the server
+                return error(f"The rate service did not respond. Try again shortly (ref {ref}).", retryable=True)
+    else:
+        @mcp.tool()
+        def convert(amount: float, frm: str, to: str) -> dict:
+            """Convert an amount between currencies."""
+            if amount <= 0: return error("amount must be positive", retryable=False)   # body-level validation
+            if (frm, to) not in RATES: return error(f"no rate for {frm}->{to}", retryable=False)
+            return {"amount": round(amount * RATES[(frm, to)], 2)}
+
+        @mcp.tool()
+        def explode() -> dict:
+            """Fetch from the upstream rate service."""
+            raise ConnectionError("connect to rates-db-07.internal.corp:5432 timed out")
+    return mcp
+
+async def show(s, label, name, args):
+    try:
+        r = await s.call_tool(name, args)
+        print(f"  {label:<28} isError={r.isError!s:<5} {r.content[0].text[:95]!r}")
+    except Exception as e:
+        print(f"  {label:<28} RAISED {type(e).__name__}: {e}")
+
+async def main():
+    for fixed in [False, True]:
+        print("FIXED server" if fixed else "ORIGINAL server")
+        async with create_connected_server_and_client_session(build(fixed)) as s:
+            await show(s, "tool does not exist", "nope", {})
+            await show(s, "required argument missing", "convert", {"amount": 1})
+            await show(s, "wrong argument type", "convert", {"amount": "lots", "frm": "GBP", "to": "EUR"})
+            await show(s, "tool body raises", "explode", {})
+            await show(s, "tool returns an error dict", "convert", {"amount": 1, "frm": "GBP", "to": "XXX"})
+            await show(s, "amount = -5", "convert", {"amount": -5, "frm": "GBP", "to": "EUR"})
+        print()
+
+anyio.run(main)`,
+        out: `ORIGINAL server
+  tool does not exist          isError=True  'Unknown tool: nope'
+  required argument missing    isError=True  'Error executing tool convert: 2 validation errors for convertArguments\\nfrm\\n  Field required [ty'
+  wrong argument type          isError=True  'Error executing tool convert: 1 validation error for convertArguments\\namount\\n  Input should be '
+  tool body raises             isError=True  'Error executing tool explode: connect to rates-db-07.internal.corp:5432 timed out'
+  tool returns an error dict   isError=False '{\\n  "error": "no rate for GBP->XXX",\\n  "retryable": false\\n}'
+  amount = -5                  isError=False '{\\n  "error": "amount must be positive",\\n  "retryable": false\\n}'
+
+FIXED server
+  tool does not exist          isError=True  'Unknown tool: nope'
+  required argument missing    isError=True  'Error executing tool convert: 2 validation errors for convertArguments\\nfrm\\n  Field required [ty'
+  wrong argument type          isError=True  'Error executing tool convert: 1 validation error for convertArguments\\namount\\n  Input should be '
+    SERVER LOG explode failed ref=925d51d7
+Traceback (most recent call last):
+  File "solution.py", line 31, in explode
+    raise ConnectionError("connect to rates-db-07.internal.corp:5432 timed out")
+ConnectionError: connect to rates-db-07.internal.corp:5432 timed out
+  tool body raises             isError=False '{\\n  "error": "The rate service did not respond. Try again shortly (ref 925d51d7).",\\n  "retryabl'
+  tool returns an error dict   isError=False '{\\n  "error": "no rate for GBP->XXX",\\n  "retryable": false\\n}'
+  amount = -5                  isError=True  'Error executing tool convert: 1 validation error for convertArguments\\namount\\n  Input should be '`,
+       
         notes: [
           { t: "p", text: "Seeing the hostname arrive in the client's result is the part that changes behaviour. It is obviously fine on a laptop and obviously not fine the moment the server is reachable by anyone else, and the catch costs four lines." },
           { t: "p", text: "The `isError` flip is worth noticing and not worth worrying about. You have deliberately converted an execution failure into a semantic one, which is the right trade for a published server — but it means your consumers cannot rely on the flag, which is exactly why the error shape has to be documented and consistent." },
           { t: "p", text: "Moving validation into the schema is the one that compounds. The rejection is earlier, the message is better than anything you would have written, and the constraint is visible to the model before it calls — so the best outcome is that the bad call is never attempted." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the internal hostname in a customer-facing answer",
+      body: [
+        { t: "p", text: "**Symptom.** A customer asked a support agent why their export had failed. The agent replied, accurately, that the export service at `exports-db-02.internal:5432` had refused the connection for user `svc_export`. The customer posted a screenshot." },
+        { t: "p", text: "**Mechanism.** The tool raised, and a raised exception's message crosses the MCP boundary verbatim as the content of an `isError: True` result. The agent had been told to explain failures helpfully, so it relayed what it was given. Nothing malfunctioned: the server disclosed, the protocol carried, and the model summarised." },
+        { t: "p", text: "**Why it was missed.** In development an unguarded exception is the most useful thing a tool can return, and the server had started life with a single internal consumer. It was published to a customer-facing agent later, and nobody revisited the error path when the audience changed." },
+        { t: "p", text: "**Fix.** Published tools now catch at the boundary, log the real exception with a reference id, and return a sentence, the reference and a `retryable` flag. The agent's prompt was changed too, but that is the weaker control — the fix that holds is the server not handing over the text in the first place." }
+      ] }
   ],
 
   takeaways: [

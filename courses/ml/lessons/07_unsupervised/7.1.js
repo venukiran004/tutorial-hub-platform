@@ -314,7 +314,14 @@ s = silhouette_samples(Z, labels); pd.Series(s).groupby(labels).mean()
           why: "Monotone descent guarantees convergence, not the destination."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: customer segments that were really income bands",
+      body: [
+        { t: "p", text: "**Symptom.** A k-means customer segmentation produced segments that differed only in income." },
+        { t: "p", text: "**Mechanism.** Features were not scaled, so income dominated the squared-distance objective and the clusters were slices of the income range." },
+        { t: "p", text: "**Fix.** Features are standardised before clustering, and segments are described on every feature to confirm they differ in more than one." }
+      ] }
   ],
 
   takeaways: [

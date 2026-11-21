@@ -230,6 +230,17 @@ cal = CalibratedClassifierCV(rf, method="isotonic", cv=5)              # probabi
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Expecting more trees to fix correlated trees",
+
+      body: [
+
+        { t: "p", text: "Averaging reduces only the uncorrelated part of the variance. When one feature dominates every split, trees are highly correlated and adding more of them stops helping." },
+
+        { t: "p", text: "Lower `max_features` to decorrelate the trees, and judge the forest size from out-of-bag error." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "The variance formula by hand, OOB by hand, and an importance you must reconcile",
@@ -291,7 +302,14 @@ cal = CalibratedClassifierCV(rf, method="isotonic", cv=5)              # probabi
           why: "Bagging removes the uncorrelated variance; the random subset creates uncorrelated variance to remove."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a forest that stopped improving at fifty trees",
+      body: [
+        { t: "p", text: "**Symptom.** Adding trees to a random forest from 50 to 1,000 gave no improvement, and the team concluded the model was at its limit." },
+        { t: "p", text: "**Mechanism.** The trees were highly correlated because one feature dominated every split. Averaging correlated trees cannot reduce the shared part of the variance." },
+        { t: "p", text: "**Fix.** `max_features` was reduced so trees consider different features, which decorrelated them and improved the forest." }
+      ] }
   ],
 
   takeaways: [

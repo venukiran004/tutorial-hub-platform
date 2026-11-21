@@ -32,7 +32,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "Model calls",
       code: "generator calls: 3\ncritic calls   : 3\ntotal          : 6 model calls for one answer",
       caption: "A single call would have been **1**." },
-    { t: "callout", kind: "warn", title: "The token cost is worse than 6\u00d7", body: [
+    { t: "callout", kind: "trap", title: "The token cost is worse than 6\u00d7", body: [
       { t: "p", text: "Each generation carries the previous critique, and each critique carries the full draft. So the per-call token count grows with the round number \u2014 the sixth call is the most expensive one, not an equal sixth of the total." },
       { t: "p", text: "Which means the honest way to price reflection is in tokens rather than calls, and the growth is superlinear in rounds. A \u201cjust add one more round\u201d change is not a sixth more cost." }
     ] },

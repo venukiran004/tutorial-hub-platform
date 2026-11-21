@@ -167,6 +167,12 @@ partition key = (channel_id, 10-day bucket)
         { t: "p",
           text: "Every pattern above has a cost: shards make cross-shard queries hard, precomputation multiplies writes, cells add operational overhead. Each company adopted them only when a measured problem forced it, and often after running the simpler design for years. In an interview, cite the forcing problem with the pattern, and say what you would do before reaching that scale." }
       ] },
+    { t: "callout", kind: "trap", title: "Retrying a payment without an idempotency key",
+      body: [
+        { t: "p", text: "A client that retries a charge after a timeout cannot know whether the first attempt succeeded. Without an idempotency key, each retry can charge again." },
+        { t: "p", text: "Generate an idempotency key per logical operation on the client, send it with every retry, and have the server store the result per key." }
+      ] },
+
     { t: "exercise",
       kind: "Challenge",
       title: "Idempotency keys over a lossy network",

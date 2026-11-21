@@ -193,6 +193,17 @@ INSERT INTO load_runs (step, period, finished_at) VALUES ('daily_summary', :d, n
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Relying on autocommit for multi-statement work",
+
+      body: [
+
+        { t: "p", text: "Under autocommit each statement commits on its own, so an INSERT followed by a DELETE can leave rows deleted and never copied if the second step fails after the first succeeded — or the reverse." },
+
+        { t: "p", text: "Wrap statements that must succeed together in one explicit transaction, and make the job idempotent so a retry is safe." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A safe archive step",
@@ -260,7 +271,14 @@ COMMIT;
           why: "A transaction guarantees the unit of work; idempotency guarantees the unit of work can be repeated. Both are needed for a load step that will, sooner or later, be run twice."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an archive job that deleted without copying",
+      body: [
+        { t: "p", text: "**Symptom.** Rows disappeared from the orders table and did not appear in the archive after a job failed midway." },
+        { t: "p", text: "**Mechanism.** The job ran an INSERT into the archive and then a DELETE as separate statements under autocommit. The INSERT failed on a constraint after the job's error handling had already moved on to the DELETE." },
+        { t: "p", text: "**Fix.** Both statements run in one transaction, so either both happen or neither does, and the job is idempotent: re-running it copies only what is not already archived." }
+      ] }
   ],
 
   takeaways: [

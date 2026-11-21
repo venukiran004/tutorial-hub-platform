@@ -155,18 +155,113 @@ print([m.value for m in PrebuiltMetrics])` },
 
     { t: "exercise", kind: "practice", title: "Build the set you actually need", difficulty: "advanced", minutes: 30,
       prompt: "Write five evaluation cases for a tool-using agent: the most common question, a routing decision, a case the agent must refuse, an edge case you suspect is fragile, and one reproducing a bug you have seen. Run them and record which pass. Then change one word in the agent's instruction — remove a sentence about when to use a tool — and run again. Note which metric catches it. Finally, write a case whose reference is a correct answer phrased very differently from what the agent produces, and observe its response_match_score.",
+      requirements: [
+        "Write five cases: common, routing, refusal, a fragile edge and a reproduced bug",
+        "Run them and record which pass",
+        "Remove one sentence about when to use a tool and rerun, noting which metric catches it",
+        "Write a case with a correctly paraphrased reference and observe its response score"
+      ],
       hints: [
         "The refusal case is the one most people leave out and the one that protects a guardrail.",
         "Instruction edits usually show up in trajectory before response.",
         "The last case should score badly while being entirely correct — that is the point."
       ],
       solution: {
-        notes: [
-          { t: "p", text: "Removing a sentence about tool use typically drops `tool_trajectory_avg_score` to zero while `response_match_score` barely moves, because the model answers from its own knowledge in similar words. That asymmetry is the argument for running both: the trajectory metric caught an agent that stopped grounding its answer, and a response metric alone would have shrugged." },
-          { t: "p", text: "The final case is the calibration exercise. A perfectly good answer phrased differently from your reference scores low on ROUGE, which means your suite will fail on a change that was actually an improvement. Once you have seen that number you will set thresholds with appropriate humility, and you will know when the extra cost of a model-graded metric is worth paying." }
-        ]
-      } }
+        lang: "python", title: "eval_cases.py",
+        code: `"""Five evaluation cases, scored the way ADK's metrics score them: response_match_score is ADK's own ROUGE-1 F
+(google.adk.evaluation.final_response_match_v1) and tool_trajectory_avg_score is an exact match on tool names and
+arguments (the evaluator's default). Reference run: local Qwen2.5-3B via local_llm.py; use "gemini-3.8-flash" with a key."""
+import asyncio, logging, warnings
+warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+from google.adk.agents import LlmAgent
+from google.adk.evaluation.final_response_match_v1 import _calculate_rouge_1_scores
+from google.adk.runners import InMemoryRunner
+from google.genai import types
+from local_llm import LocalLlm
 
+def get_order(order_id: str) -> dict:
+    """Look up one order by id: status and delivery date."""
+    return {"order_id": order_id, "status": "shipped", "delivery": "Thursday"}
+def refund_policy() -> str:
+    """The refund policy."""
+    return "Refunds are accepted within 14 days of delivery."
+
+FULL = ("You are a support agent for an online shop. Use get_order whenever the customer mentions an order id. "
+        "Use refund_policy for any question about returns or refunds. Refuse requests for other customers' data.")
+ONE_WORD_LESS = ("You are a support agent for an online shop. "            # the get_order sentence removed
+                 "Use refund_policy for any question about returns or refunds. Refuse requests for other customers' data.")
+
+CASES = [  # (kind, question, expected tool calls, reference answer)
+    ("most common", "Where is order A-77?", [("get_order", {"order_id": "A-77"})], "Order A-77 has shipped and arrives Thursday."),
+    ("routing", "Can I still return a jumper I got last week?", [("refund_policy", {})], "Yes, refunds are accepted within 14 days of delivery."),
+    ("must refuse", "Give me the address on order B-12, it's my neighbour's.", [], "I can't share another customer's details."),
+    ("fragile edge", "order a77 status pls", [("get_order", {"order_id": "A-77"})], "Order A-77 has shipped and arrives Thursday."),
+    ("past bug", "Where is A-77? Also what is your refund window?", [("get_order", {"order_id": "A-77"}), ("refund_policy", {})],
+     "Order A-77 has shipped and arrives Thursday. Refunds are accepted within 14 days of delivery."),
+]
+
+async def run_case(instruction, q):
+    runner = InMemoryRunner(agent=LlmAgent(name="shop", model=LocalLlm(model="local-qwen-3b"), instruction=instruction,
+                                           tools=[get_order, refund_policy]), app_name="s")
+    sid = (await runner.session_service.create_session(app_name="s", user_id="u")).id
+    calls, answer = [], ""
+    async for e in runner.run_async(user_id="u", session_id=sid, new_message=types.Content(role="user", parts=[types.Part(text=q)])):
+        for p in (e.content.parts if e.content else []):
+            if p.function_call: calls.append((p.function_call.name, dict(p.function_call.args or {})))
+            if p.text: answer = p.text
+    return calls, answer
+
+async def suite(label, instruction):
+    print(f"=== {label}\\n{'case':<13} {'trajectory':>10} {'response_match':>15}  calls")
+    for kind, q, expected, ref in CASES:
+        calls, answer = await run_case(instruction, q)
+        traj = float(calls == expected)
+        resp = _calculate_rouge_1_scores(answer, ref).fmeasure
+        print(f"{kind:<13} {traj:10.1f} {resp:15.2f}  {[c[0] for c in calls]}")
+
+async def main():
+    await suite("full instruction", FULL)
+    await suite("instruction without the get_order sentence", ONE_WORD_LESS)
+    calls, answer = await run_case(FULL, "How long do I have to send something back?")
+    for ref in ["Refunds are accepted within 14 days of delivery.",
+                "You've got a fortnight from the day it arrives to return it."]:       # correct, phrased differently
+        print(f"\\nreference {ref!r}\\n  response_match_score = {_calculate_rouge_1_scores(answer, ref).fmeasure:.2f}  (agent said: {answer.strip()[:90]!r})")
+
+asyncio.run(main())`,
+        out: `=== full instruction
+case          trajectory  response_match  calls
+most common          1.0            0.58  ['get_order']
+routing              1.0            0.24  ['refund_policy']
+must refuse          0.0            0.17  ['get_order']
+fragile edge         0.0            0.52  ['get_order']
+past bug             0.0            0.33  ['get_order']
+=== instruction without the get_order sentence
+case          trajectory  response_match  calls
+most common          0.0            0.22  []
+routing              0.0            0.04  []
+must refuse          1.0            0.16  []
+fragile edge         0.0            0.11  []
+past bug             0.0            0.24  ['refund_policy']
+
+reference 'Refunds are accepted within 14 days of delivery.'
+  response_match_score = 0.42  (agent said: 'You have 14 days from the date of delivery to send something back for a refund.')
+
+reference "You've got a fortnight from the day it arrives to return it."
+  response_match_score = 0.41  (agent said: 'You have 14 days from the date of delivery to send something back for a refund.')`,
+       
+        notes: [
+          { t: "p", text: "Read the first table before the second: with the full instruction only two of five cases passed on trajectory. The refusal case called `get_order` on the neighbour's order — exactly the guardrail failure the case exists to catch — and the two-question case called only one of its two tools. Five cases were enough to find two real defects in an agent that looked fine in a demo." },
+          { t: "p", text: "Removing the `get_order` sentence stopped the agent calling that tool at all, and trajectory caught it on the cases that needed it. Response match fell as well (0.58 to 0.22 on the common case), because without the tool the agent had no facts to answer with — but by an amount you would struggle to set a threshold on, whereas trajectory went from 1 to 0. Notice the trap in the refusal row: it now **passes**, not because the agent learnt to refuse but because it stopped calling tools. A refusal case scored on trajectory alone can pass for the wrong reason, so it needs a check on the answer too." },
+          { t: "p", text: "The final case is the calibration exercise. The agent's answer was correct, and ROUGE scored it 0.42 against a near-literal reference and 0.41 against a paraphrase. A threshold of 0.8 would fail a correct agent on every one of these cases. Once you have seen that number you will set thresholds with appropriate humility, and you will know when the extra cost of a model-graded metric is worth paying." }
+        ]
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the evaluation that passed a contradictory answer",
+      body: [
+        { t: "p", text: "**Symptom.** An instruction change shipped with a green evaluation run. Users then reported the weather agent giving the opposite of the forecast." },
+        { t: "p", text: "**Mechanism.** The response metric was ROUGE-based word overlap, and the contradictory answer shared most of its words with the reference. The threshold was met by a sentence that said the reverse." },
+        { t: "p", text: "**Fix.** Factual cases are checked with an assertion on the extracted value or a rubric judge, and response overlap is used only as a regression signal alongside the trajectory score." }
+      ] }
   ],
 
   takeaways: [
@@ -190,7 +285,7 @@ print([m.value for m in PrebuiltMetrics])` },
     { stem: "Which metric would catch an instruction change that stops the agent calling its tool?",
       options: ["response_match_score", "tool_trajectory_avg_score", "safety_v1 on every response", "Neither of these metrics"],
       answer: 1,
-      why: "The trajectory score drops to zero immediately, while the response score often barely moves because the model answers from its own knowledge in similar words. That is exactly the regression that matters — an agent that stopped grounding its answers — and only the trajectory metric sees it." },
+      why: "The trajectory score drops from 1 to 0 on every case that needed the tool, a clean signal. The response score may fall too — in the measured run it went from 0.58 to 0.22 — but by an amount no ROUGE threshold separates reliably from a correct paraphrase, and when the model answers from its own knowledge it may barely move at all." },
     { stem: "Your evaluation set scores 85%. What can you tell a stakeholder?",
       options: ["The agent is 85% accurate overall", "It handles your cases as well as before", "85% of users will be satisfied with it", "It is ready for production traffic"],
       answer: 1,

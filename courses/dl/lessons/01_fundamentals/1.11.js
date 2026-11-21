@@ -237,7 +237,14 @@ for epoch in range(100):
         if counter >= patience: print(f"early stop at epoch {epoch}"); break
 model.load_state_dict(torch.load("best.pt")); model.eval()
 # expect: stops around epoch 19-25, restored val loss ≈ 0.15, test accuracy ≈ 0.96`,
-        notes: [{ t: "p", text: "The restored validation loss is lower than the 100-epoch run's final 0.18, and the test numbers are about the same — on this small, easy dataset the overfitting that early stopping prevents costs little in accuracy. On a harder task the gap between the best epoch and the last one is where early stopping earns its keep." }] } }
+        notes: [{ t: "p", text: "The restored validation loss is lower than the 100-epoch run's final 0.18, and the test numbers are about the same — on this small, easy dataset the overfitting that early stopping prevents costs little in accuracy. On a harder task the gap between the best epoch and the last one is where early stopping earns its keep." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the same network in two frameworks, two different results",
+      body: [
+        { t: "p", text: "**Symptom.** A model ported from Keras to PyTorch trained to a noticeably worse accuracy." },
+        { t: "p", text: "**Mechanism.** Keras's default batch-norm momentum and epsilon differ from PyTorch's, and the port used each framework's defaults. Small differences compounded over training." },
+        { t: "p", text: "**Fix.** Ports set every hyperparameter explicitly, including normalisation constants and initialisation, and compare outputs on the same weights before training." }
+      ] }
   ],
 
   takeaways: [

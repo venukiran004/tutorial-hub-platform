@@ -438,7 +438,14 @@ majority_vote(scores)  # the conservative one`,
           { t: "p", text: "(c) is the threshold as a capacity decision, made from the curve reviewers' verdicts produce." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a contamination setting that guaranteed alerts",
+      body: [
+        { t: "p", text: "**Symptom.** An Isolation Forest flagged exactly 1% of transactions every day, including days with no fraud at all." },
+        { t: "p", text: "**Mechanism.** `contamination=0.01` sets the threshold so that 1% of points are flagged regardless of the data. The model did not detect anomalies; it ranked transactions and cut at a fixed quantile." },
+        { t: "p", text: "**Fix.** The threshold is set from the score distribution on known-clean data and the investigators' capacity, and the alert rate is monitored instead of fixed." }
+      ] }
   ],
 
   takeaways: [

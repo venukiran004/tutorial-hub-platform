@@ -622,7 +622,14 @@ def test_empty_input():
           why: "The two disagree by exactly one whenever a missing value is present. `nunique(dropna=False)` matches `len(unique())`. It is a small inconsistency that becomes a wrong cardinality figure in a profiling report."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: drop_duplicates that deleted real orders",
+      body: [
+        { t: "p", text: "**Symptom.** Order volume in a cleaned dataset was several percent lower than in the source system." },
+        { t: "p", text: "**Mechanism.** `drop_duplicates(subset=['customer_id', 'amount'])` treated different orders with the same customer and amount as duplicates. The subset did not include the columns that defined an order's identity." },
+        { t: "p", text: "**Fix.** Deduplication uses the order id, or every column that defines identity, and the step reports how many rows it removed so an unexpected count is visible." }
+      ] }
   ],
 
   takeaways: [

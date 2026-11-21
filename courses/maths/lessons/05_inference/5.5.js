@@ -374,6 +374,17 @@ clt_adequate(rng.lognormal(0, 1.5, 20))       # False -- needs ~500` },
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Using Student's t-test by default",
+
+      body: [
+
+        { t: "p", text: "Student's test assumes equal variances. When the groups' variances differ — common with unequal sample sizes — its error rate departs from the nominal level, and checking variances first with another test adds its own errors." },
+
+        { t: "p", text: "Use Welch's test by default; it loses almost nothing when variances are equal." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Debug",
       title: "Fix an analysis function used across a company",

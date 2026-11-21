@@ -139,18 +139,111 @@ on it and continue the turn.
 
     { t: "exercise", kind: "practice", title: "Build the smallest honest RAG agent", difficulty: "advanced", minutes: 28,
       prompt: "Write a BaseRetrievalTool over five short documents with ids. Give the agent an instruction that requires answers to come from retrieved text and to name the source. Run three questions: one clearly answerable, one answerable only by combining two documents, and one with no answer in the corpus. Record what happens in each case, especially the third. Then remove the 'say when nothing matched' sentence from the instruction and run the third question again.",
+      requirements: [
+        "Write a retrieval tool over five short documents with ids",
+        "Instruct the agent to answer only from retrieved text and name the source",
+        "Run an answerable, a two-document and an unanswerable question",
+        "Remove the 'say when nothing matched' sentence and rerun the unanswerable one"
+      ],
       hints: [
         "Keep the retrieval deliberately dumb — you are testing the agent's behaviour, not your search.",
         "The two-document question is the one that motivates the next lesson.",
         "Run the third question several times; the failure is probabilistic, which is the point."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import asyncio, logging, os, re, warnings
+warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+from google.adk.agents import LlmAgent
+from google.adk.runners import InMemoryRunner
+from google.adk.tools.retrieval import BaseRetrievalTool
+from google.genai import types
+
+# Gemini when a key is set; otherwise a local Qwen2.5-3B through local_llm.py (a BaseLlm adapter, lesson 3.4).
+# The reference output below came from the local model.
+MODEL = "gemini-3.8-flash" if os.environ.get("GOOGLE_API_KEY") else __import__("local_llm").LocalLlm(model="local-qwen-3b")
+
+DOCS = {
+    "refund-policy": "Refunds are issued within 14 days of purchase. Digital goods are non-refundable once downloaded.",
+    "shipping": "Standard shipping takes 3 to 5 working days. Express shipping takes 1 working day and costs 9 pounds.",
+    "warranty": "Hardware carries a 2-year warranty covering manufacturing faults, not accidental damage.",
+    "returns-address": "Returns go to Unit 4, Riverside Park, Leeds LS10 1AB, with the order number inside the parcel.",
+    "support-hours": "Support is open Monday to Friday, 9am to 6pm UK time. There is no weekend support.",
+}
+
+class Corpus(BaseRetrievalTool):
+    def __init__(self):
+        super().__init__(name="search_docs", description="Searches the company's customer policy documents.")
+    async def run_async(self, *, args, tool_context):
+        words = set(re.findall(r"[a-z]+", args["query"].lower())) - {"the", "a", "is", "of", "to", "and", "how", "what", "do", "i", "my"}
+        hits = [f"[{k}] {v}" for k, v in DOCS.items() if words & set(re.findall(r"[a-z]+", (k + " " + v).lower()))]
+        return "\\n".join(hits) if hits else "No matching document found."
+
+BASE = ("You can call the search_docs tool yourself. For every question, first call search_docs with a short keyword "
+        "query, then answer only from what it returned, naming the document id in square brackets.")
+STRICT = BASE + " If nothing relevant was returned, say the documents do not cover it."
+LOOSE = BASE                                   # the same instruction without the 'say when nothing matched' sentence
+
+async def ask(instruction, q):
+    runner = InMemoryRunner(agent=LlmAgent(name="rag", model=MODEL, instruction=instruction, tools=[Corpus()]), app_name="rag")
+    sid = (await runner.session_service.create_session(app_name="rag", user_id="u")).id
+    queries, answer = [], ""
+    async for e in runner.run_async(user_id="u", session_id=sid, new_message=types.Content(role="user", parts=[types.Part(text=q)])):
+        for p in (e.content.parts if e.content else []):
+            if p.function_call: queries.append(p.function_call.args.get("query"))
+            if p.text: answer = p.text
+    return queries, answer
+
+QUESTIONS = ["How long do refunds take?",                                         # answerable
+             "If I return a broken laptop, where do I send it and is it covered?",  # needs two documents
+             "Do you price-match other retailers?"]                               # not in the corpus
+
+async def main():
+    for label, instr in [("with the 'say when nothing matched' sentence", STRICT), ("without it", LOOSE)]:
+        print(f"=== {label}")
+        for q in QUESTIONS:
+            queries, answer = await ask(instr, q)
+            print(f"Q: {q}\\n   searched: {queries}\\n   A: {answer.strip()[:260]}\\n")
+
+asyncio.run(main())`,
+        out: `=== with the 'say when nothing matched' sentence
+Q: How long do refunds take?
+   searched: ['refunds time']
+   A: [refund-policy] Refunds are issued within 14 days of purchase. Digital goods are non-refundable once downloaded. For support hours, it is open Monday to Friday, 9am to 6pm UK time. There is no weekend support.
+
+Q: If I return a broken laptop, where do I send it and is it covered?
+   searched: ['returning a broken laptop']
+   A: The documents do not cover this. Please provide more details or try another query.
+
+Q: Do you price-match other retailers?
+   searched: ['price matching other retailers']
+   A: The documents do not cover information about price-matching other retailers.
+
+=== without it
+Q: How long do refunds take?
+   searched: ['refunds']
+   A: [refund-policy] Refunds are issued within 14 days of purchase. Digital goods are non-refundable once downloaded.
+
+Q: If I return a broken laptop, where do I send it and is it covered?
+   searched: ['returning a broken laptop coverage location']
+   A: It seems that there is no direct document found for returning a broken laptop and checking for coverage and location. However, typically you should return a broken laptop to the store where you originally purchased it or to the manufacturer's authorized servic
+
+Q: Do you price-match other retailers?
+   searched: ['price matching other retailers']
+   A: It seems there are no documents directly addressing whether we price-match other retailers. Could you please provide more details or try a different query?`,
+       
         notes: [
           { t: "p", text: "The first question works and proves the wiring. The third is the one to dwell on: with the instruction, you should get an honest 'nothing in the documents covers that'; without it, you will fairly often get a confident answer drawn from the model's own knowledge, phrased exactly like the grounded one. That is the whole argument for evaluating groundedness rather than eyeballing answers — the two are indistinguishable by inspection." },
           { t: "p", text: "The two-document question usually exposes a single-retrieval agent's limit: one query returns one document's chunks, and the model answers from half the picture without noticing it had half. Nothing in the naive wiring encourages a second search, which is exactly what agentic RAG adds and what the next lesson measures." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a confident policy that did not exist",
+      body: [
+        { t: "p", text: "**Symptom.** A policy assistant told an employee they were entitled to a relocation allowance. No such policy existed." },
+        { t: "p", text: "**Mechanism.** Retrieval returned nothing relevant, and the tool returned an empty list without saying so. The model, instructed to be helpful, answered from general knowledge as though a document supported it." },
+        { t: "p", text: "**Fix.** The tool returns an explicit 'no matching documents' result, the instruction requires saying so and citing a source for every claim, and the evaluation set includes questions with no answer in the corpus." }
+      ] }
   ],
 
   takeaways: [

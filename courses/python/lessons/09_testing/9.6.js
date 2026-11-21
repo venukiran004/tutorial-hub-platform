@@ -326,6 +326,17 @@ class InvoiceRepository:
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Patching your way around a design problem",
+
+      body: [
+
+        { t: "p", text: "A test that needs several `@patch` decorators works, and it ties the test to the module's import paths: a refactor that moves an import breaks the test without changing behaviour. The patches are a symptom that the code builds its own dependencies." },
+
+        { t: "p", text: "Pass dependencies in — as parameters or constructor arguments — so tests supply fakes directly, and keep side effects at the edges." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Challenge",
       title: "Make an untestable function testable, without changing behaviour",

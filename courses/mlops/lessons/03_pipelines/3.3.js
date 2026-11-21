@@ -158,6 +158,12 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Size your own canary", difficulty: "core", minutes: 30,
       prompt: "For a model you deploy, work out the share rather than inheriting it. Take your real request rate and the signal you would actually gate on — almost certainly error rate or the prediction distribution, not accuracy. Compute the sample size for a change you would want to catch, then solve for the minimum share that reaches it inside the window your team is willing to wait. Compare that to the share you currently use. Then check the uncomfortable one: if your canary runs on a fixed timer, compute how many observations it actually accumulates and whether that reaches significance at all.",
+      requirements: [
+        "Take your real request rate and the signal you would gate on",
+        "Compute the sample size for a change you want to catch",
+        "Solve for the minimum share that reaches it inside the window you will wait",
+        "If the canary runs on a fixed timer, compute whether it reaches significance at all"
+      ],
       hints: [
         "If your canary gates on accuracy, find out when your labels arrive before anything else — it may make the canary decorative.",
         "Count independent observations: predictions within one user session are close to one observation, not many.",
@@ -168,8 +174,14 @@ EC.receiveLesson({
           { t: "p", text: "The common discovery is a 1% or 5% canary on a fixed timer that cannot reach significance — the promotion decision carries no information, and the subsequent full rollout is where the risk actually lands. Raising the share usually feels wrong and is correct." },
           { t: "p", text: "The other discovery is that the canary was nominally gating on model quality, which the label delay makes impossible. That is not a reason to remove the canary; it is a reason to add shadow mode for the quality question and let the canary do the job it can do in minutes." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the canary that passed in ten minutes",
+      body: [
+        { t: "p", text: "**Symptom.** A model that shifted the approval rate by five points went to full traffic after a clean ten-minute canary at 1%. The shift was noticed three days later by a finance report." },
+        { t: "p", text: "**Mechanism.** At 1% of twenty requests a second, ten minutes is about 120 observations; detecting a five-point move needs over two thousand. The canary could not have failed. It ran on a fixed timer, so the share decided whether it gathered evidence, and at that share it gathered none." },
+        { t: "p", text: "**Fix.** The canary now ends on sample size, not on a timer, and gates on error rate and the prediction distribution. The share was raised so the required sample arrives in minutes, which costs nothing in exposure because the number of users needed to detect a bad model is the same at any share." }
+      ] }
   ],
 
   takeaways: [

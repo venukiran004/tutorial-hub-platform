@@ -156,7 +156,7 @@ np.allclose(back["model"].predict_proba(golden_rows)[:, 1], golden_predictions) 
       caption: "A pickle reproduces the object exactly, in the same library versions; across versions it may load with silently different behaviour or not load at all, which is why the versions are *in* the artefact and why a golden set — a handful of rows with their expected outputs — is checked at every load. The one-row latency is the price of the DataFrame-and-pipeline path: fine for batch, wrong for a request path, and the reason the next block exists."
     },
 
-    { t: "callout", kind: "warn", title: "A pickle is code", body: [
+    { t: "callout", kind: "trap", title: "A pickle is code", body: [
       { t: "p", text: "`joblib.load` and `pickle.load` execute whatever the file tells them to. A model file from an untrusted source is a remote-code-execution vector, and a model file from a trusted source that has been tampered with is the same. Store artefacts where only the training pipeline can write, record the hash in the manifest and check it before loading, and never load a `.joblib` that arrived by e-mail. For sharing across trust boundaries — or languages — export to ONNX or another data-only format." }
     ]},
 
@@ -299,7 +299,14 @@ GridSearchCV(pipe, {"reg__alpha": [0.1, 1, 10], "clip__q_high": [0.99, 1.0]}, cv
           why: "The contract exists so that meta-estimators can rely on it; the check is the contract made executable."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: loading a model executed someone else's code",
+      body: [
+        { t: "p", text: "**Symptom.** A security review found that a model-loading endpoint accepted uploaded `.pkl` files." },
+        { t: "p", text: "**Mechanism.** A pickle can contain arbitrary code that runs on load. Anyone able to upload a model could run code on the server." },
+        { t: "p", text: "**Fix.** Uploaded models are not accepted; models come only from the internal registry with signatures, and portable formats such as ONNX are preferred for exchange." }
+      ] }
   ],
 
   takeaways: [

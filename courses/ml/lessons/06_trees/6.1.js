@@ -340,7 +340,14 @@ rf = RandomForestClassifier(500, min_samples_leaf=20).fit(X, y)                 
           why: "A leaf with one row emits a probability of exactly 0 or 1 — the log-loss of 1.80 is the same fact seen through the probabilities."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a feature ranked first that meant nothing",
+      body: [
+        { t: "p", text: "**Symptom.** A decision tree's impurity importance ranked customer id as the most important feature." },
+        { t: "p", text: "**Mechanism.** Id had a unique value per row, so it offered many split points and the tree used it to memorise the training data. Impurity importance rewards high-cardinality features." },
+        { t: "p", text: "**Fix.** Identifiers are removed before training, and importance is measured with permutation importance on held-out data." }
+      ] }
   ],
 
   takeaways: [

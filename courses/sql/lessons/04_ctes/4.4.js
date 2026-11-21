@@ -213,6 +213,17 @@ GROUP  BY c.name ORDER BY c.name;
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Hard-coding the pivot columns and forgetting new values",
+
+      body: [
+
+        { t: "p", text: "A pivot lists one column per known value. When a new category appears, its rows are silently left out, and the pivot's totals stop matching the source." },
+
+        { t: "p", text: "Add an 'other' column for unnamed values and check that the pivot's row totals equal the long table's." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "There and back",
@@ -301,7 +312,14 @@ SELECT 'invented by round trip', * FROM (SELECT * FROM unpivoted EXCEPT SELECT *
           why: "Result shape is a contract the planner and the caller rely on. DuckDB's PIVOT relaxes it for exploration; everywhere else the columns are named in the statement or in the code that generates it."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a new category missing from the pivot",
+      body: [
+        { t: "p", text: "**Symptom.** After a new product category launched, a monthly sales pivot showed totals that no longer matched the long table." },
+        { t: "p", text: "**Mechanism.** The pivot listed one conditional aggregate per known category. A query's columns are fixed when it is written, so the new category had no column and its sales were silently left out." },
+        { t: "p", text: "**Fix.** The pivot includes an 'other' column summing everything not named, and a check compares the pivot's row totals with the long table's. Adding a category now shows up as a non-zero 'other'." }
+      ] }
   ],
 
   takeaways: [

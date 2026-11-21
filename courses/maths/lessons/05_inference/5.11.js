@@ -416,6 +416,17 @@ block_bootstrap(series, np.mean, 30, 4000).std()         # 0.221
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Bootstrapping dependent or extreme statistics",
+
+      body: [
+
+        { t: "p", text: "The standard bootstrap treats rows as independent, so it understates uncertainty for time series and clustered data, and it fails for statistics such as the maximum that depend on the extremes of the sample." },
+
+        { t: "p", text: "Resample blocks or clusters for dependent data, and use a different method for extreme-value statistics." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Put an interval on a metric with no formula",

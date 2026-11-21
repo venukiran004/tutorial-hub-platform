@@ -118,7 +118,7 @@ call 3 -> {   "amount": 117.0,   "loaded_once": 1 }
 [server] lifespan: closing`,
       caption: "**One “opening”, three calls, one “closing”** — and `loaded_once` stays at 1, which is the proof that setup ran once rather than per request. The `finally` block is what guarantees the teardown, and it is the reason to use a context manager rather than a module-level global." },
 
-    { t: "p", text: "Note the prints go to **stderr**. Over stdio, standard output is the protocol channel, so a stray `print()` in a server corrupts the message stream — section 04 returns to this because it is the most common way a new stdio server breaks." },
+    { t: "p", text: "Note the prints go to **stderr**. Over stdio, standard output is the protocol channel, so a stray `print()` in a server puts text that is not a message into the stream — section 04 measures what that does, because it is the most common way a new stdio server breaks." },
 
     { t: "callout", kind: "good", title: "Lifespan is per connection, not per server",
       body: [
@@ -155,7 +155,7 @@ async def report(ctx: Context) -> str:
 
     { t: "h2", n: "04", text: "The two ways a new stdio server breaks", id: "breaks" },
 
-    {"kind": "flow", "title": "Two failures, one symptom, one diagnostic", "caption": "**Both present as “the client cannot talk to my server” and neither error message mentions printing or blocking.** A `print()` writes your text into the middle of a JSON-RPC stream, so the client's parser fails at a stream position that has nothing to do with the tool you were debugging — and a library logging to stdout, or a warning at import time, does identical damage. **The one-step diagnostic settles it:** run the server by hand and send nothing. It should sit silently on stdin, and anything on stdout before your first message is the bug.", "cols": 3, "nodes": [{"id": "p", "label": "print() in a tool", "sub": "or a library logging to stdout", "tone": "crit"}, {"id": "c", "label": "The stream is corrupted", "sub": "stdout IS the protocol channel", "tone": "crit"}, {"id": "b", "label": "A blocking call in a tool", "sub": "requests.get, a sync driver", "tone": "crit"}, {"id": "f", "label": "The whole connection freezes", "sub": "one event loop serves every request", "tone": "crit"}, {"id": "d", "label": "Run it by hand, send nothing", "sub": "any stdout output is the bug", "tone": "violet"}, {"id": "s", "label": "Log to stderr; await your IO", "sub": "asyncio.to_thread for sync libraries", "tone": "good"}], "edges": [["p", "c"], ["b", "f"], ["c", "d"], ["f", "d"], ["d", "s"]], "t": "diagram", "id": "dg-2_1-04-3"},
+    {"kind": "flow", "title": "Two failures, one symptom, one diagnostic", "caption": "**Both present as “the client cannot talk to my server” and neither error message mentions printing or blocking.** A `print()` writes your text into the middle of a JSON-RPC stream. The Python SDK's client logs a whole stray line as `Failed to parse JSONRPC message from server` and skips it, so calls can keep working while the log fills; output without a trailing newline fuses with the next message — usually a response — and that call hangs until it times out. Stricter hosts drop the connection at the first bad line. A library logging to stdout, or a warning at import time, does the same damage. **The one-step diagnostic settles it:** run the server by hand and send nothing. It should sit silently on stdin, and anything on stdout before your first message is the bug.", "cols": 3, "nodes": [{"id": "p", "label": "print() in a tool", "sub": "or a library logging to stdout", "tone": "crit"}, {"id": "c", "label": "The stream is corrupted", "sub": "stdout IS the protocol channel", "tone": "crit"}, {"id": "b", "label": "A blocking call in a tool", "sub": "requests.get, a sync driver", "tone": "crit"}, {"id": "f", "label": "The whole connection freezes", "sub": "one event loop serves every request", "tone": "crit"}, {"id": "d", "label": "Run it by hand, send nothing", "sub": "any stdout output is the bug", "tone": "violet"}, {"id": "s", "label": "Log to stderr; await your IO", "sub": "asyncio.to_thread for sync libraries", "tone": "good"}], "edges": [["p", "c"], ["b", "f"], ["c", "d"], ["f", "d"], ["d", "s"]], "t": "diagram", "id": "dg-2_1-04-3"},
 
 
     { t: "p", text: "Both are mechanical, both are silent, and between them they account for most of the time lost on a first server." },
@@ -177,7 +177,7 @@ def convert_ok(amount: float, frm: str, to: str) -> dict:
     """Converts an amount between two currencies."""
     log.info("converting %s %s->%s", amount, frm, to)
     ...`,
-      caption: "A `print()` writes a line of your text into the middle of a JSON-RPC stream. The client's parser then fails on something that is not a message, and the error it reports has nothing to do with the tool you were debugging. **Configure logging to stderr once, at the top of the file**, and never use `print` in a stdio server." },
+      caption: "A `print()` writes text into the middle of a JSON-RPC stream. Measured against the Python SDK 1.28.1 client: a complete line is logged as a parse failure and skipped; a fragment without a newline fuses with the next message, that response is lost, and the call hangs until it times out. Neither error names the tool you were debugging. **Configure logging to stderr once, at the top of the file**, and never use `print` in a stdio server." },
 
     { t: "dl", items: [
       ["A blocking call in an async tool", "The server is one event loop. A synchronous `requests.get` or a blocking database driver inside a tool freezes every other request on that connection, which looks like the server hanging rather than like a slow tool. Use an async client, or `await asyncio.to_thread(...)` for a library with no async version."],
@@ -191,18 +191,143 @@ def convert_ok(amount: float, frm: str, to: str) -> dict:
 
     { t: "exercise", kind: "practice", title: "Build it, then break it deliberately", difficulty: "core", minutes: 26,
       prompt: "Write a server with one tool, one concrete resource, one resource template and one prompt, and confirm all four appear from a client. Then add a lifespan that prints on open and close and holds a counter, call a tool three times, and confirm the counter proves setup ran once. Finally break it twice on purpose: add a print() to a tool and record exactly what the client reports, then put a time.sleep(5) in one tool and call two tools concurrently to see the second wait. Fix both.",
+      requirements: [
+        "Write a server with one tool, one concrete resource, one resource template and one prompt, and confirm all four from a client",
+        "Add a lifespan holding a counter, call a tool three times, and show setup ran once",
+        "Add a print() to a tool and record exactly what the client reports",
+        "Put a time.sleep(5) in one tool, call two tools concurrently, and observe the second wait",
+        "Fix both breakages"
+      ],
       hints: [
         "The template needs braces in the URI and a matching function parameter.",
         "Print to stderr with flush=True, or you will not see lifespan output in order.",
         "For the concurrency test, use asyncio.gather on two different tool calls."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `"""Run as \`python 2.1.py\` (the client). It starts itself as the server with \`python 2.1.py serve [mode]\`."""
+import sys, time
+from contextlib import asynccontextmanager
+
+def build_server(mode):
+    import anyio
+    from mcp.server.fastmcp import Context, FastMCP
+
+    @asynccontextmanager
+    async def lifespan(server):
+        state = {"calls": 0}
+        print("lifespan: open", file=sys.stderr, flush=True)          # stderr is safe; stdout is the protocol
+        try:
+            yield state
+        finally:
+            print("lifespan: close", file=sys.stderr, flush=True)
+
+    mcp = FastMCP("four-primitives", lifespan=lifespan)
+
+    @mcp.tool()
+    def count(ctx: Context) -> int:
+        """Increment and return the per-process call counter."""
+        state = ctx.request_context.lifespan_context; state["calls"] += 1
+        if mode == "print": print("debug: counting", flush=True)   # BREAK 1a: a whole line on stdout, the protocol stream
+        if mode == "print-no-newline": print("debug: ", end="", flush=True)   # BREAK 1b: glues onto the next message
+        return state["calls"]
+
+    @mcp.tool()
+    async def slow(seconds: float = 1.0) -> str:
+        """Wait, then return."""
+        if mode == "block": time.sleep(seconds)                     # BREAK 2: blocks the event loop
+        else: await anyio.sleep(seconds)                            # FIX: yields to other requests
+        return f"slept {seconds}s"
+
+    @mcp.tool()
+    async def fast() -> str:
+        """Return immediately."""
+        return "fast"
+
+    @mcp.resource("config://app")
+    def config() -> str:
+        """Static application config."""
+        return '{"region": "eu-west-1"}'
+
+    @mcp.resource("users://{user_id}/profile")
+    def profile(user_id: str) -> str:
+        """One user's profile."""
+        return f'{{"id": "{user_id}"}}'
+
+    @mcp.prompt()
+    def review(code: str) -> str:
+        """Ask for a code review."""
+        return f"Review this code:\\n{code}"
+    return mcp
+
+class ParseFailures:
+    """Collects the stdio client's 'Failed to parse JSONRPC message' log records instead of printing tracebacks."""
+    def __init__(self):
+        import logging
+        self.seen = []; h = logging.Handler(); h.emit = lambda r: self.seen.append(str(r.exc_info[1]).split("input_value=")[-1].split(", input_type")[0])
+        lg = logging.getLogger("mcp.client.stdio"); lg.handlers[:] = [h]; lg.propagate = False
+
+async def client(mode):
+    import anyio
+    failures = ParseFailures()
+    from mcp import ClientSession, StdioServerParameters
+    from mcp.client.stdio import stdio_client
+    params = StdioServerParameters(command=sys.executable, args=[__file__, "serve", mode])
+    async with stdio_client(params) as (r, w), ClientSession(r, w) as s:
+        await s.initialize()
+        if mode == "ok":
+            print("tools     :", [t.name for t in (await s.list_tools()).tools])
+            print("resources :", [str(x.uri) for x in (await s.list_resources()).resources])
+            print("templates :", [x.uriTemplate for x in (await s.list_resource_templates()).resourceTemplates])
+            print("prompts   :", [p.name for p in (await s.list_prompts()).prompts])
+        try:
+            with anyio.fail_after(5):
+                results = [(await s.call_tool("count", {})).structuredContent for _ in range(3)]
+            print(f"[{mode}] count x3 ->", results)
+        except Exception as e:
+            print(f"[{mode}] count -> {type(e).__name__}: {e}")
+        if mode in ("ok", "block"):
+            t0 = time.perf_counter(); done = {}
+            async def call(name, args):
+                await s.call_tool(name, args); done[name] = round(time.perf_counter() - t0, 1)
+            async with anyio.create_task_group() as tg:
+                tg.start_soon(call, "slow", {"seconds": 3}); await anyio.sleep(0.2); tg.start_soon(call, "fast", {})
+            print(f"[{mode}] fast finished at {done['fast']}s, slow at {done['slow']}s")
+    if failures.seen: print(f"[{mode}] client logged {len(failures.seen)} parse failure(s), e.g. {failures.seen[-1][:60]}")
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "serve":
+        build_server(sys.argv[2]).run()                             # stdio transport
+    else:
+        import anyio
+        for mode in ["ok", "print", "print-no-newline", "block"]:
+            anyio.run(client, mode)`,
+        out: `tools     : ['count', 'slow', 'fast']
+resources : ['config://app']
+templates : ['users://{user_id}/profile']
+prompts   : ['review']
+[ok] count x3 -> [{'result': 1}, {'result': 2}, {'result': 3}]
+[ok] fast finished at 0.2s, slow at 3.0s
+[print] count x3 -> [{'result': 1}, {'result': 2}, {'result': 3}]
+[print] client logged 3 parse failure(s), e.g. 'debug: counting\\r'
+[print-no-newline] count -> TimeoutError: 
+[print-no-newline] client logged 1 parse failure(s), e.g. 'debug: {"jsonrpc":"2.0",...:1},"isError":false}}\\r'
+[block] count x3 -> [{'result': 1}, {'result': 2}, {'result': 3}]
+[block] fast finished at 3.0s, slow at 3.0s`,
+       
         notes: [
-          { t: "p", text: "The print() failure is worth causing once because the error is so unhelpful. What you get is a parse failure from the client, naming a position in a stream rather than your tool — and once you have seen it, you will recognise it instantly the next time a server mysteriously stops working after someone adds a debug line." },
+          { t: "p", text: "The print() failure is worth causing in both forms, because neither error is helpful. A whole line produces a logged `Failed to parse JSONRPC message from server` while the call still succeeds, which is easy to miss; `print(..., end=\"\")` fuses with the tool's own response, and the call times out with nothing naming the tool. Once you have seen both, you will recognise them the next time a server mysteriously stops working after someone adds a debug line." },
           { t: "p", text: "The sleep test makes the single-event-loop point concrete: both calls go to one process, so the blocking one holds the loop and the other waits behind it even though they are unrelated. With `asyncio.sleep` instead, the two overlap. That is the whole argument for async tools, and it is the same argument as in any async service." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: one debug line that took a server offline",
+      body: [
+        { t: "p", text: "**Symptom.** A stdio server that had run for months began failing on connect for every user after a routine release. The host reported a JSON parse error during initialise and gave up; the server process itself was running and healthy." },
+        { t: "p", text: "**Mechanism.** The release added `print(\"loaded\", len(rates))` to help with an unrelated investigation. Over stdio, stdout is the protocol channel: every byte on it must be a JSON-RPC message. The stray line arrived ahead of the initialise response, the host tried to parse it as a message, and the connection was abandoned. The symptom named JSON, not the print." },
+        { t: "p", text: "**Why it was missed.** The developer ran the file directly, saw the line and a server that started, and concluded it worked. Nothing exercises the protocol channel until a real client connects." },
+        { t: "p", text: "**Fix.** Logging goes to stderr or through the `Context` logger, and a lint rule rejects `print(` in the server package. The durable change is one stdio smoke test in CI that launches the real file and completes a handshake (lesson 4.3) — the only kind of test that sees this class of failure." }
+      ] }
   ],
 
   takeaways: [
@@ -214,7 +339,7 @@ def convert_ok(amount: float, frm: str, to: str) -> dict:
     "**A `Context` parameter is filled by the SDK and never appears in the model's schema**, and it carries the lifespan context, the request id, the client's capabilities, logging and progress.",
     "**`clientInfo.name` is weak evidence** — the SDK's own client reports `mcp` by default, so it is not a basis for any decision about who is calling.",
     "**`ctx.info` and friends only reach the client if it declared the `logging` capability**; otherwise they go nowhere.",
-    "**Never `print()` in a stdio server.** stdout is the protocol channel, so a stray line corrupts the stream and the client's error names a stream position rather than your tool.",
+    "**Never `print()` in a stdio server.** stdout is the protocol channel, so a stray print is at best a logged parse error and at worst a lost response — and neither error names your tool.",
     "**A blocking call in a tool freezes the whole connection**, because the server is one event loop — it looks like a hang rather than a slow tool.",
     "**The one-step diagnostic:** run the server by hand and type nothing. Anything on stdout before you send a message is the bug."
   ],
@@ -223,7 +348,7 @@ def convert_ok(amount: float, frm: str, to: str) -> dict:
     title: "Knowledge check",
     questions: [
       {
-        stem: "A tool prints a debug line with `print()`. The client now fails with a parse error naming a stream position. Why?",
+        stem: "A tool prints a debug line with `print()`. The client logs JSON parse errors and one call hangs until it times out. Why?",
         options: ["The printed line made the response exceed the size limit", "On stdio, stdout is the JSON-RPC channel, so the print corrupts it", "print() is not thread-safe inside an async tool handler", "A tool that prints must return a string, not structured data"],
         answer: 1,
         why: "The error never mentions printing, which is what makes it expensive to debug. Configure logging to stderr at the top of the file, and remember that a library logging to stdout does exactly the same damage."

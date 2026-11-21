@@ -373,7 +373,14 @@ np.linalg.eigvalsh(Xu.T @ Xu / len(Xu))     # [0.083, 0.76, 6.1, 31.7, 84.3, 146
           why: "The same bound explains the crawl at 0.02: along λ = 0.34 the error shrinks by only (1 − 0.0068) per step. Condition number 70 means the safe step is seventy times too small for the flat direction."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: training that diverged after a feature was added",
+      body: [
+        { t: "p", text: "**Symptom.** Adding an annual-revenue feature made a neural network's loss go to NaN within a few steps." },
+        { t: "p", text: "**Mechanism.** The new feature was in the millions while the others were near one. The loss surface became badly conditioned, and a learning rate that had been stable was now far too large in the revenue direction." },
+        { t: "p", text: "**Fix.** Inputs are standardised in the pipeline before training, and a gradient-norm check stops training with a clear message when it explodes." }
+      ] }
   ],
 
   takeaways: [

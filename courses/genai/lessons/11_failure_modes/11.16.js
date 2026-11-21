@@ -141,6 +141,17 @@ Too strict -> blocks legitimate use, users leave   (false positives / over-refus
   <text x="28" y="302" class="s-mono" style="font-size:9px;fill:var(--good)">F1 WEIGHTS THE TWO ERRORS EQUALLY. THEY ARE NOT EQUAL. THIS IS A POLICY CHOICE.</text>
 </svg>` },
 
+    { t: "callout", kind: "trap", title: "Choosing the safety threshold by F1",
+
+      body: [
+
+        { t: "p", text: "F1 weighs harmful misses and over-refusals as if they cost the same. They rarely do, and an F1-optimal threshold can let through far more harm, or refuse far more legitimate users, than the product can accept." },
+
+        { t: "p", text: "Set the threshold from the costs of each error, measured on a harmful set and a benign-but-tricky set, and report both rates." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Sweep the threshold against both sets", difficulty: "advanced", minutes: 35,
       body: "Build a harmful set and a benign-but-tricky set, sweep a moderation threshold across both, and report block rate, harmful-miss rate, over-refusal rate and F1 at each point. Then state which point you would choose and why \u2014 the reasoning, not the number.",
       requirements: [

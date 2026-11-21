@@ -53,7 +53,7 @@ flops = 6 * N * D`,
       out: `  a 7B model, compute-optimal at 20 tokens/param
   D      = 20 x 7e9      = 1.4e+11 tokens
   FLOPs  = 6 x N x D     = 5.88e+21
-  reference says ~5.9e21 -> MATCHES`,
+  by hand ~5.9e21 -> MATCHES`,
       hl: [4],
       caption: "140 billion tokens and 5.88 \u00d7 10\u00b2\u00b9 FLOPs. The arithmetic is correct." },
 
@@ -89,7 +89,7 @@ flops = 6 * N * D`,
   tokens per parameter     = 1875
   Chinchilla-optimal would = 20
   ratio                    = 93.8x
-  reference says ~1,875 tokens/param and ~90x -> BOTH MATCH
+  by hand ~1,875 tokens/param and ~90x -> BOTH MATCH
 
   training FLOPs, Chinchilla-optimal 8B : 7.68e+21
   training FLOPs, as actually trained   : 7.2e+23

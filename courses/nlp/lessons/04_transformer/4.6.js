@@ -97,7 +97,7 @@ EC.receiveLesson({
     { t: "p", text: "Normalisation runs **across the feature dimension, per token** — not across the batch. That independence from batch statistics is what makes it safe with variable sequence lengths and at batch size 1, which BatchNorm is not." },
 
     { t: "out", text:
-"x = [2, 4, 4, 4, 5, 5, 7, 9],  d = 8\n\n  mu    = 5.0000                  reference says 5\n  var   = 4.0000   sigma = 2.0000  reference says 4 and 2\n  x_hat = [-1.5, -0.5, -0.5, -0.5, 0.0, 0.0, 1.0, 2.0]\n\n  reference: [-1.5, -0.5, -0.5, -0.5, 0, 0, 1.0, 2.0]   reproduces exactly\n  resulting mean 0.00e+00, variance 1.0000\n  nn.LayerNorm agrees to four decimal places" },
+"x = [2, 4, 4, 4, 5, 5, 7, 9],  d = 8\n\n  mu    = 5.0000                  expected 5\n  var   = 4.0000   sigma = 2.0000  expected 4 and 2\n  x_hat = [-1.5, -0.5, -0.5, -0.5, 0.0, 0.0, 1.0, 2.0]\n\n  expected: [-1.5, -0.5, -0.5, -0.5, 0, 0, 1.0, 2.0]    reproduces exactly\n  resulting mean 0.00e+00, variance 1.0000\n  nn.LayerNorm agrees to four decimal places" },
 
     { t: "h2", n: "05", text: "RMSNorm", id: "rmsnorm" },
 
@@ -113,7 +113,7 @@ EC.receiveLesson({
     { t: "math", tex: "\\text{RMSNorm}(x) = \\gamma \\odot \\frac{x}{\\sqrt{\\frac{1}{d}\\sum_i x_i^2 + \\epsilon}}" },
 
     { t: "out", text:
-"same x = [2, 4, 4, 4, 5, 5, 7, 9]\n\n  mean of squares = 29.0000          reference: 232/8 = 29\n  RMS = sqrt(29)  = 5.3852           reference says 5.385\n  out = [0.3714, 0.7428, 0.7428, 0.7428, 0.9285, 0.9285, 1.2999, 1.6713]\n\n  reference: [0.371, 0.743, 0.743, 0.743, 0.928, 0.928, 1.300, 1.671]  exact\n\n  output mean = 0.9285, NOT 0" },
+"same x = [2, 4, 4, 4, 5, 5, 7, 9]\n\n  mean of squares = 29.0000          by hand: 232/8 = 29\n  RMS = sqrt(29)  = 5.3852           expected 5.385\n  out = [0.3714, 0.7428, 0.7428, 0.7428, 0.9285, 0.9285, 1.2999, 1.6713]\n\n  expected:  [0.371, 0.743, 0.743, 0.743, 0.928, 0.928, 1.300, 1.671]  exact\n\n  output mean = 0.9285, NOT 0" },
 
     { t: "callout", kind: "insight", title: "RMSNorm does not centre, and that turns out not to matter",
       body: [{ t: "p", text: "Drop the mean subtraction and the `beta` shift, and normalise by root-mean-square alone. The output mean is **0.9285** rather than 0 — the vector is rescaled but not recentred. The empirical finding that made RMSNorm standard is that re-centring contributes essentially nothing to training stability; the *rescaling* is what matters. So you get half the parameters (`gamma` only, no `beta`) and one fewer reduction pass over the vector, at equal quality. Every recent LLM — LLaMA, Mistral, Gemma, Qwen — uses it." }] },
@@ -159,6 +159,17 @@ EC.receiveLesson({
 
     { t: "callout", kind: "note", title: "Pre-LN is not strictly better",
       body: [{ t: "p", text: "The trade is real: because the residual stream is never normalised, its magnitude *grows* with depth in a Pre-LN model, and the relative contribution of later blocks shrinks. Some work finds Post-LN reaches slightly better final quality when you can afford to tune the warmup carefully. The reason Pre-LN won is not that it produces better models but that it produces models that train reliably without a schedule you have to get right — which at scale, where a diverged run costs weeks, matters more. Hybrids exist, and some recent models normalise in both places." }] },
+
+    { t: "callout", kind: "trap", title: "Building post-norm blocks for a deep model",
+
+      body: [
+
+        { t: "p", text: "Post-norm transformers need careful warm-up and often diverge when deep, because gradients to early layers are tiny." },
+
+        { t: "p", text: "Use pre-norm blocks with a final LayerNorm for anything deep." }
+
+      ] },
+
 
     { t: "exercise", kind: "Challenge", title: "Measure the block yourself", difficulty: "stretch", minutes: 45,
       requirements: [
@@ -234,7 +245,14 @@ Pre-LN  residual RMS, blocks 1/6/12/18/24: 1.02  1.15  1.32  1.51  1.73`,
           { t: "p", text: "The SwiGLU rule reproduces both published sizes exactly: (8/3)·4096 rounded up to a multiple of 256 is 11008, and (8/3)·5120 gives 13824." },
           { t: "p", text: "In the 24-block stacks, Post-LN gradients at the first FFN were about 5e-7, and Pre-LN gradients about 0.6, a factor of roughly a million. That matches the lesson. The Pre-LN residual stream grows steadily with depth, from RMS 1.02 after block 1 to 1.73 after block 24, because each block adds to an un-normalised sum. Post-LN renormalises after every block, so its RMS stays at exactly 1." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a deep model that would not train without warm-up",
+      body: [
+        { t: "p", text: "**Symptom.** A 24-layer model diverged early in training unless the learning rate warmed up slowly." },
+        { t: "p", text: "**Mechanism.** It used post-LN blocks, where gradients to early layers are very small and updates are unbalanced across depth." },
+        { t: "p", text: "**Fix.** The model switched to pre-LN blocks with a final norm, which trained stably with a short warm-up." }
+      ] }
   ],
 
   takeaways: [

@@ -163,19 +163,133 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Complete the library", difficulty: "advanced", minutes: 50,
       prompt: "Add the backward pass for MaxPool2D — the gradient goes only to the position that was the maximum in each window. Then add a ReLU and a Linear layer, assemble a small network, and train it on a handful of digits to confirm the loss falls. Gradient-check every layer against PyTorch autograd before training anything. Finally, implement the im2col trick: reshape the input so the convolution becomes a single matrix multiply, and measure the speedup against the loop version.",
+      requirements: [
+        "Add the MaxPool2D backward pass",
+        "Add ReLU and Linear layers and train a small network on digits",
+        "Gradient-check every layer against autograd first",
+        "Implement im2col and measure the speedup over the loop version"
+      ],
       hints: [
         "For max pool backward, store the argmax indices during the forward pass.",
         "Gradient-check with a random upstream gradient, not a vector of ones — ones can hide errors that cancel.",
         "im2col builds a (B·H_out·W_out, C·k·k) matrix; the convolution is then that matrix times the reshaped weights."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import time
+import numpy as np
+import torch
+from sklearn.datasets import load_digits
+rng = np.random.default_rng(0)
+
+class Conv2D:
+    def __init__(self, cin, cout, k):
+        self.W = rng.standard_normal((cout, cin, k, k)) * np.sqrt(2 / (cin * k * k)); self.b = np.zeros(cout); self.k = k
+    def forward(self, x):                          # loop version, valid padding, stride 1
+        self.x = x; N, C, H, W = x.shape; k = self.k; Ho, Wo = H - k + 1, W - k + 1
+        out = np.zeros((N, self.W.shape[0], Ho, Wo))
+        for i in range(Ho):
+            for j in range(Wo):
+                out[:, :, i, j] = np.tensordot(x[:, :, i:i+k, j:j+k], self.W, axes=([1, 2, 3], [1, 2, 3]))
+        return out + self.b[None, :, None, None]
+    def forward_im2col(self, x):
+        self.x = x; N, C, H, W = x.shape; k = self.k; Ho, Wo = H - k + 1, W - k + 1
+        cols = np.lib.stride_tricks.sliding_window_view(x, (k, k), axis=(2, 3))     # N,C,Ho,Wo,k,k
+        cols = cols.transpose(0, 2, 3, 1, 4, 5).reshape(N * Ho * Wo, C * k * k)
+        out = cols @ self.W.reshape(self.W.shape[0], -1).T + self.b
+        return out.reshape(N, Ho, Wo, -1).transpose(0, 3, 1, 2)
+    def backward(self, g):
+        x, k = self.x, self.k; dx = np.zeros_like(x); self.dW = np.zeros_like(self.W); self.db = g.sum((0, 2, 3))
+        for i in range(g.shape[2]):
+            for j in range(g.shape[3]):
+                patch = x[:, :, i:i+k, j:j+k]
+                self.dW += np.tensordot(g[:, :, i, j], patch, axes=([0], [0]))
+                dx[:, :, i:i+k, j:j+k] += np.tensordot(g[:, :, i, j], self.W, axes=([1], [0]))
+        return dx
+
+class MaxPool2D:                                   # 2x2, stride 2; ties route to the first maximum
+    def forward(self, x):
+        N, C, H, W = x.shape; xr = x.reshape(N, C, H // 2, 2, W // 2, 2).transpose(0, 1, 2, 4, 3, 5).reshape(N, C, H // 2, W // 2, 4)
+        self.idx, self.shape = xr.argmax(-1), x.shape
+        return xr.max(-1)
+    def backward(self, g):
+        N, C, H, W = self.shape; d = np.zeros((N, C, H // 2, W // 2, 4))
+        np.put_along_axis(d, self.idx[..., None], g[..., None], -1)
+        return d.reshape(N, C, H // 2, W // 2, 2, 2).transpose(0, 1, 2, 4, 3, 5).reshape(N, C, H, W)
+
+class ReLU:
+    def forward(self, x): self.m = x > 0; return x * self.m
+    def backward(self, g): return g * self.m
+
+class Linear:
+    def __init__(self, i, o): self.W = rng.standard_normal((i, o)) * np.sqrt(2 / i); self.b = np.zeros(o)
+    def forward(self, x): self.shape = x.shape; self.x = x.reshape(len(x), -1); return self.x @ self.W + self.b
+    def backward(self, g): self.dW, self.db = self.x.T @ g, g.sum(0); return (g @ self.W.T).reshape(self.shape)
+
+# Gradient checks against autograd, with a RANDOM upstream gradient
+def check(name, layer, x, torch_fn):
+    up = rng.standard_normal(layer.forward(x).shape)
+    dx = layer.backward(up)
+    xt = torch.tensor(x, requires_grad=True); (torch_fn(xt) * torch.tensor(up)).sum().backward()
+    print(f"{name:<10} max |dx - autograd| = {np.abs(dx - xt.grad.numpy()).max():.1e}")
+x = rng.standard_normal((2, 3, 8, 8))
+conv = Conv2D(3, 4, 3)
+check("Conv2D", conv, x, lambda t: torch.nn.functional.conv2d(t, torch.tensor(conv.W), torch.tensor(conv.b)))
+check("MaxPool2D", MaxPool2D(), x, lambda t: torch.nn.functional.max_pool2d(t, 2))
+check("ReLU", ReLU(), x, torch.relu)
+lin = Linear(192, 5)
+check("Linear", lin, x, lambda t: t.reshape(2, -1) @ torch.tensor(lin.W) + torch.tensor(lin.b))
+
+# Train conv -> relu -> pool -> linear on 8x8 digits
+X, y = load_digits(return_X_y=True); X = (X / 16.0).reshape(-1, 1, 8, 8)
+net = [Conv2D(1, 8, 3), ReLU(), MaxPool2D(), Linear(8 * 3 * 3, 10)]
+for epoch in range(6):
+    perm = rng.permutation(1500); tot = 0
+    for s in range(0, 1500, 50):
+        xb, yb = X[perm[s:s+50]], y[perm[s:s+50]]
+        h = xb
+        for L in net: h = L.forward(h)
+        p = np.exp(h - h.max(1, keepdims=True)); p /= p.sum(1, keepdims=True)
+        tot += -np.log(p[np.arange(len(yb)), yb]).sum()
+        g = p; g[np.arange(len(yb)), yb] -= 1; g /= len(yb)
+        for L in reversed(net): g = L.backward(g)
+        for L in net:
+            if hasattr(L, "dW"): L.W -= 0.1 * L.dW; L.b -= 0.1 * L.db
+    print(f"epoch {epoch}: mean loss {tot / 1500:.3f}")
+h = X[1500:]
+for L in net: h = L.forward(h)
+print(f"held-out accuracy: {(h.argmax(1) == y[1500:]).mean():.3f}")
+
+big = rng.standard_normal((16, 16, 32, 32)); c = Conv2D(16, 32, 3)
+t0 = time.perf_counter(); a = c.forward(big); t1 = time.perf_counter(); b = c.forward_im2col(big); t2 = time.perf_counter()
+print(f"\\nloop {1000 * (t1 - t0):.0f} ms   im2col {1000 * (t2 - t1):.0f} ms   speed-up {(t1 - t0) / (t2 - t1):.1f}x   max diff {np.abs(a - b).max():.1e}")`,
+        out: `Conv2D     max |dx - autograd| = 8.9e-16
+MaxPool2D  max |dx - autograd| = 0.0e+00
+ReLU       max |dx - autograd| = 0.0e+00
+Linear     max |dx - autograd| = 1.4e-16
+epoch 0: mean loss 2.055
+epoch 1: mean loss 1.244
+epoch 2: mean loss 0.759
+epoch 3: mean loss 0.521
+epoch 4: mean loss 0.408
+epoch 5: mean loss 0.331
+held-out accuracy: 0.791
+
+loop 23 ms   im2col 13 ms   speed-up 1.8x   max diff 6.2e-15`,
+       
         notes: [
           { t: "p", text: "Max pool backward is where routing matters: the gradient reaches exactly one input per window and every other element gets zero. If ties are possible — and with ReLU outputs, zeros make them common — decide deliberately whether to send the gradient to the first maximum or to split it, because frameworks differ and it will cause a mismatch in your gradient check that has nothing to do with a real bug." },
           { t: "p", text: "Gradient-check with random upstream gradients. Using a vector of ones is a genuine trap: several kinds of indexing error produce gradients that are wrong per-element but sum correctly, so the check passes and the bug survives. Random values break that symmetry. I verified the convolution backward this way and got agreement to around 1e-14, which is float64 round-off — anything much larger than that is a real error, not numerical noise." },
           { t: "p", text: "im2col is the trick every real implementation uses. Once the input is unfolded into a matrix, the convolution is one GEMM call, which is the single most heavily optimised routine in numerical computing. The cost is memory: at stride 1 each input pixel appears in up to `k²` rows, so the unfolded matrix is about nine times the size of the input for a 3×3 kernel. That memory-for-speed trade is why frameworks sometimes choose FFT or Winograd algorithms instead for particular kernel sizes." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a pooling layer whose gradient went everywhere",
+      body: [
+        { t: "p", text: "**Symptom.** A from-scratch CNN trained more slowly than its framework equivalent and its gradient check failed only on the pooling layer." },
+        { t: "p", text: "**Mechanism.** The max-pool backward pass spread the gradient over every position in each window instead of sending it only to the position that was the maximum." },
+        { t: "p", text: "**Fix.** The backward pass routes each window's gradient to the argmax position, and every layer is gradient-checked before training." }
+      ] }
   ],
 
   takeaways: [

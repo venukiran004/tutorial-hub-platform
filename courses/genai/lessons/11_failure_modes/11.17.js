@@ -135,7 +135,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "good", title: "Five of the six are cases where the direction was right and the number was wrong",
       body: [
-        { t: "p", text: "That pattern is worth naming at the end of a module built on measurement. The reference is a good reference: its risk taxonomy, its layered design and its insistence on both error directions all hold up. What did not survive contact with a terminal was mostly **specific numbers** \u2014 a threshold, a multiplier, a latency assumption." },
+        { t: "p", text: "That pattern is worth naming at the end of a module built on measurement. The standard design these lessons tested is a good one: its risk taxonomy, its layered design and its insistence on both error directions all hold up. What did not survive contact with a terminal was mostly **specific numbers** \u2014 a threshold, a multiplier, a latency assumption." },
         { t: "p", text: "The one genuinely structural finding is faithfulness and abstention, where the metric moves the wrong way on the most common failure. That is not a wrong number, it is a wrong denominator, and it is the kind of thing only arithmetic finds." },
         { t: "p", text: "The practical takeaway for using any reference, including this course: **the conceptual framework transfers and the constants do not.** A threshold, a latency and a cost multiplier are properties of your model, your hardware and your traffic, and all three take ten minutes to measure." }
       ] },

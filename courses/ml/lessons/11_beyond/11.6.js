@@ -212,6 +212,17 @@ if inputs are many and homogeneous, or representation matters: MLP / CNN in PyTo
         }
       ] },
 
+    { t: "callout", kind: "trap", title: "A neural network as the default for tabular data",
+
+      body: [
+
+        { t: "p", text: "On medium-sized tabular data, gradient boosting is a strong default that usually needs less tuning. Neural networks often need much more data and effort to match it." },
+
+        { t: "p", text: "Start with gradient boosting, and use a neural network for a specific reason such as embeddings or multimodal inputs." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Backprop by hand again, XOR against width, and digits against depth",
@@ -253,7 +264,14 @@ if inputs are many and homogeneous, or representation matters: MLP / CNN in PyTo
           { t: "p", text: "(c) is the capacity curve on a small problem: it flattens early, and the cost keeps rising." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a neural network that lost to gradient boosting",
+      body: [
+        { t: "p", text: "**Symptom.** A team spent two months tuning a neural network for a tabular credit problem that a default gradient-boosted model beat on day one." },
+        { t: "p", text: "**Mechanism.** On medium-sized tabular data with mixed feature types, boosted trees are a strong default, and the network needed far more data and tuning to compete." },
+        { t: "p", text: "**Fix.** Tabular projects start with a gradient-boosting baseline, and a neural network is pursued only when it brings something specific, such as embeddings or multimodal inputs." }
+      ] }
   ],
 
   takeaways: [

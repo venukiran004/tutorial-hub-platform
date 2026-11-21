@@ -257,6 +257,12 @@ def label(X, t, rng):                   # t=0 launch rule, t=1 downturn rule
 
     { t: "exercise", kind: "practice", title: "Which clock moved?", difficulty: "intro", minutes: 20,
       prompt: "For a model you actually work on — or one you can imagine concretely — answer four questions in writing. First: how long after a prediction does the true label arrive? Be honest; for churn or lending it may be months. Second: if P(Y|X) changed next month, name the signal in your current monitoring that would move, and say how long it would take. Third: if your answer to the second question was 'none' or 'accuracy, eventually', say what you would have to log today to make that number computable later. Fourth: look at a drift alert your team has actually received and decide, with the reasoning written down, whether it was World A or World B.",
+      requirements: [
+        "State how long after a prediction the true label arrives",
+        "Name the monitoring signal that would move if P(Y|X) changed, and how long it would take",
+        "If the answer is none or accuracy, say what must be logged today to compute it later",
+        "Classify one real drift alert as World A or World B, with the reasoning written down"
+      ],
       hints: [
         "The label delay is the single number that decides which signals are even available to you.",
         "If the only answer is accuracy, the real question is what the prediction log has to contain — lesson 16.2.",
@@ -267,8 +273,14 @@ def label(X, t, rng):                   # t=0 launch rule, t=1 downturn rule
           { t: "p", text: "The useful outcome is a label-delay figure and an honest list. Most teams discover two things: the delay is much longer than they assumed, and the only harm-correlated signal they have is one that needs labels they do not have yet." },
           { t: "p", text: "That gap is not solved by a better detector. It is solved by logging enough at prediction time that the measurement becomes possible once the labels land, plus a proxy that is genuinely correlated with harm in the meantime — a human review sample, a complaint rate, a downstream business metric. Picking that proxy is lesson 16.1's four pillars, and the business metric is the one that proves harm." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: eleven months of drift alerts, and the one month nobody was paged",
+      body: [
+        { t: "p", text: "**Symptom.** A lending team's drift detector paged weekly for most of a year. Each investigation found the model's accuracy unchanged, and the alert was eventually routed to a muted channel. Two months later the approval model was found to have been wrong for about a fifth of applicants since a policy change, and nothing had fired." },
+        { t: "p", text: "**Mechanism.** The two events were different clocks. The applicant population had shifted — P(X) moved, the KS test fired, and the decision boundary was unaffected. The policy change moved P(Y|X) with an identical population, so every input-side signal stayed flat: zero errors, steady latency, the same approval rate. The only signal that could show it was accuracy, and labels arrive months after the decision." },
+        { t: "p", text: "**Fix.** Input drift became a ticket rather than a page, and the page moved to the signals that are fast and do indicate harm. The prediction log now stores inputs, score and model version for every decision so accuracy is computable the day labels land, and policy changes are an explicit trigger for a labelled back-test instead of something monitoring is expected to notice." }
+      ] }
   ],
 
   takeaways: [

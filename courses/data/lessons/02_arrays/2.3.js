@@ -785,7 +785,14 @@ def test_scaling_does_not_change_the_verdict():
           why: "Without `optimize`, einsum contracts all three operands simultaneously, which is 200⁴ operations. With it, it multiplies pairwise in the cheapest order — about 4 milliseconds. Always pass it for three or more operands."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: regression coefficients that flipped sign every week",
+      body: [
+        { t: "p", text: "**Symptom.** A pricing model's coefficients for two features swung between large positive and large negative values from one weekly retrain to the next, though predictions barely changed." },
+        { t: "p", text: "**Mechanism.** The two features were nearly collinear. The fit used `np.linalg.inv(X.T @ X)`, which amplified tiny differences in the data into large, opposite coefficients that cancelled out in the prediction." },
+        { t: "p", text: "**Fix.** The model uses `np.linalg.lstsq` with ridge regularisation, one of the redundant features was dropped, and coefficient stability across retrains became a monitored metric." }
+      ] }
   ],
 
   takeaways: [

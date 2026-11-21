@@ -255,7 +255,7 @@ def speculative(K):
       body: [
         { t: "p", text: "The section on this carries the line *\"Speedup: Up to 2-3x (depends on acceptance rate)\"*. That is achievable, and it is not reachable with the pair I used — I got 1.13×. The missing premise is the draft's *size*, not the acceptance rate." },
         { t: "p", text: "Production pairs are 10–20× apart: Llama-2 7B drafting for 70B, or a 1B drafting for a 13B. At a 20× ratio `c = 0.05`, and my measured acceptance of 0.417 would give `(1 + 0.417×4) / (4×0.05 + 1) = 2.23×` — in the advertised range, from the same acceptance rate that produced 1.13× with my draft." },
-        { t: "p", text: "So the quoted speedup is real and the framing is misleading: acceptance is the number everyone measures, and **the size ratio is the number that decides**. I would not have discovered this from the reference; I discovered it from a 0.71× result that had to be explained." }
+        { t: "p", text: "So the quoted speedup is real and the framing is misleading: acceptance is the number everyone measures, and **the size ratio is the number that decides**. I would not have discovered this from the published figures; I discovered it from a 0.71× result that had to be explained." }
       ] },
 
     { t: "h3", text: "Where the draft model comes from" },

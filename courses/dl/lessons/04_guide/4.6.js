@@ -45,7 +45,8 @@ EC.receiveLesson({
         return self.pe(self.emb(x) * math.sqrt(self.d))     # scale, then add PE
 
     def forward(self, src, tgt_in):
-        causal = nn.Transformer.generate_square_subsequent_mask(tgt_in.size(1))
+        T = tgt_in.size(1)                                  # boolean, like the padding masks
+        causal = torch.triu(torch.ones(T, T, dtype=torch.bool), diagonal=1)
         h = self.tr(self.embed(src), self.embed(tgt_in),
                     tgt_mask=causal,
                     src_key_padding_mask=(src == PAD),
@@ -149,21 +150,137 @@ def greedy(src, max_len=12):
     { t: "callout", kind: "good", title: "Test on a task you can verify by eye",
       body: [{ t: "p", text: "Copy and reversal are ideal first targets because you know the correct output for any input, the model cannot fake success, and the expected attention pattern is predictable — a diagonal for copy, an anti-diagonal for reversal. If your transformer cannot learn to reverse a nine-token sequence, the bug is in the masking or the target shift, not in the task's difficulty. I would get this working before pointing the same code at real data, where a subtle masking bug looks like a hard problem rather than a broken model." }] },
 
+    { t: "callout", kind: "trap", title: "Forgetting to shift the decoder input",
+
+      body: [
+
+        { t: "p", text: "If the decoder input is the target itself rather than the target shifted by one, each position sees the token it should predict. Training reaches near-zero loss and inference fails." },
+
+        { t: "p", text: "Feed the decoder `<bos>` plus the target without its last token, and compare teacher-forced with free-running accuracy." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Build it, break it, inspect it", difficulty: "advanced", minutes: 55,
       prompt: "Build and train the model on sequence reversal to above 95 % exact match. Then break it four ways and record the symptom of each: remove the causal mask; remove the target shift; remove `memory_key_padding_mask`; and set `norm_first=False`. Finally, extract cross-attention from every layer and head, and compare the anti-diagonal sharpness across layers.",
+      requirements: [
+        "Train the model on sequence reversal to above 95% exact match",
+        "Remove the causal mask, the target shift and the memory padding mask in turn, and record each symptom",
+        "Set norm_first=False and record the effect",
+        "Compare cross-attention anti-diagonal sharpness across layers"
+      ],
       hints: [
         "Use exact-match accuracy, not per-token — per-token hides most failures.",
         "Hook `decoder.layers[i].multihead_attn` with `need_weights=True` to capture the maps.",
         "Later layers usually show cleaner task structure than earlier ones."
       ],
       solution: {
-        notes: [
-          { t: "p", text: "The no-causal-mask run is the most instructive: training loss collapses towards zero within a couple of hundred steps because each position can read the token it is predicting, and generation is nonsense. If you only watched the loss curve you would conclude the model was working extremely well. That gap between a spectacular training metric and useless output is the signature to recognise — it is the same class of error as leaking test data into a scaler." },
-          { t: "p", text: "The layer comparison usually shows the last decoder layer with the cleanest anti-diagonal and earlier layers more diffuse, which is consistent with the general finding that later layers carry more task-specific structure. Individual heads within a layer also differ — some show the task alignment clearly while others look like noise or attend uniformly, which matches the point in lesson 4.3 that head specialisation is real but looser than the textbook version suggests." },
-          { t: "p", text: "Missing `memory_key_padding_mask` is the subtlest of the four because the model still trains and still reaches reasonable accuracy — it just wastes attention on source padding, and lesson 3.11 measured that leak at over 80 % of attention weight for short sequences in a heavily padded batch. The symptom is degraded accuracy that scales with how much padding your batches carry, which looks like ordinary model error unless you think to group results by sequence length." }
-        ]
-      } }
+        lang: "python", title: "solution.py",
+        code: `import math, time, warnings
+warnings.filterwarnings("ignore", category=UserWarning)         # nested-tensor notices from nn.Transformer
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+PAD, SOS, EOS, V = 0, 1, 2, 20                         # tokens 3..19 are content
 
+class PositionalEncoding(nn.Module):
+    def __init__(self, d, max_len=64):
+        super().__init__(); pos = torch.arange(max_len)[:, None]; i = torch.arange(0, d, 2)
+        pe = torch.zeros(max_len, d); pe[:, 0::2] = torch.sin(pos / 10000 ** (i / d)); pe[:, 1::2] = torch.cos(pos / 10000 ** (i / d))
+        self.register_buffer("pe", pe)
+    def forward(self, x): return x + self.pe[: x.shape[1]]
+
+class Model(nn.Module):
+    def __init__(self, d=64, h=4, ff=256, L=2, norm_first=True, causal=True, mem_mask=True):
+        super().__init__(); self.d, self.causal, self.mem_mask = d, causal, mem_mask
+        self.emb, self.pe = nn.Embedding(V, d, padding_idx=PAD), PositionalEncoding(d)
+        self.tr = nn.Transformer(d, h, L, L, ff, dropout=0.1, batch_first=True, norm_first=norm_first)
+        self.out = nn.Linear(d, V)
+    def embed(self, x): return self.pe(self.emb(x) * math.sqrt(self.d))
+    def forward(self, src, tgt_in):
+        T = tgt_in.size(1)                    # boolean like the padding masks: True = may not attend
+        mask = torch.triu(torch.ones(T, T, dtype=torch.bool), 1) if self.causal else None
+        h = self.tr(self.embed(src), self.embed(tgt_in), tgt_mask=mask, tgt_is_causal=self.causal,
+                    src_key_padding_mask=(src == PAD), tgt_key_padding_mask=(tgt_in == PAD),
+                    memory_key_padding_mask=(src == PAD) if self.mem_mask else None)
+        return self.out(h)
+
+def batch(n, lo=3, hi=9):
+    lens = torch.randint(lo, hi + 1, (n,)); seqs = [torch.randint(3, V, (l,)) for l in lens]
+    src = nn.utils.rnn.pad_sequence(seqs, batch_first=True, padding_value=PAD)
+    tgt = nn.utils.rnn.pad_sequence([torch.cat([torch.tensor([SOS]), s.flip(0), torch.tensor([EOS])]) for s in seqs], batch_first=True, padding_value=PAD)
+    return src, tgt
+
+@torch.no_grad()
+def greedy(model, src, max_len=12):
+    model.eval(); ys = torch.full((src.size(0), 1), SOS)
+    for _ in range(max_len):
+        ys = torch.cat([ys, model(src, ys)[:, -1].argmax(-1, keepdim=True)], 1)
+        if (ys[:, -1] == EOS).all(): break
+    return ys
+
+def exact_match(model, n=500):
+    torch.manual_seed(123); src, tgt = batch(n); ys = greedy(model, src); ok = 0
+    for i in range(n):
+        want = tgt[i][tgt[i] != PAD].tolist(); got = ys[i].tolist()
+        got = got[: got.index(EOS) + 1] if EOS in got else got
+        ok += got == want
+    return ok / n
+
+def train(steps, shift=True, **kw):
+    torch.manual_seed(0); model = Model(**kw); opt = torch.optim.Adam(model.parameters(), 1e-3); t0 = time.time()
+    for step in range(steps):
+        model.train(); src, tgt = batch(64)
+        tgt_in, tgt_out = (tgt[:, :-1], tgt[:, 1:]) if shift else (tgt, tgt)     # no shift: predict the token you can see
+        loss = F.cross_entropy(model(src, tgt_in).reshape(-1, V), tgt_out.reshape(-1), ignore_index=PAD)
+        opt.zero_grad(); loss.backward(); opt.step()
+    return model, loss.item(), time.time() - t0
+
+m1000, loss, _ = train(1000)
+print(f"{'baseline at 1000 steps':<30} training loss {loss:.4f}   exact match {exact_match(m1000):.1%}")
+for name, kw in [("no causal mask", dict(causal=False)), ("no target shift", dict(shift=False)),
+                 ("no memory_key_padding_mask", dict(mem_mask=False)), ("norm_first=False (post-norm)", dict(norm_first=False))]:
+    m, loss, _ = train(1000, **kw)
+    print(f"{name:<30} training loss {loss:.4f}   exact match {exact_match(m):.1%}")
+model, loss, sec = train(5000)
+print(f"\\nbaseline at 5000 steps: training loss {loss:.4f}, exact match {exact_match(model):.1%}  ({sec:.0f}s)")
+
+# Cross-attention per layer: capture the weights by asking each decoder layer's attention for them
+weights = {}
+for i, layer in enumerate(model.tr.decoder.layers):
+    orig = layer.multihead_attn.forward
+    def patched(*a, _orig=orig, _i=i, **k):
+        k.update(need_weights=True, average_attn_weights=False); out = _orig(*a, **k); weights[_i] = out[1]; return out
+    layer.multihead_attn.forward = patched
+torch.manual_seed(7); src, tgt = batch(200, 7, 7); model.eval()
+with torch.no_grad(): model(src, tgt[:, :-1])
+anti = torch.tensor([6 - j for j in range(7)])                      # target position j reads source position 6 - j
+for i, w in weights.items():                                        # w: (batch, heads, tgt_len, src_len)
+    on_anti = torch.stack([w[:, :, j, anti[j]] for j in range(7)], -1).mean((0, 2))
+    print(f"decoder layer {i}: mean weight on the anti-diagonal per head " + " ".join(f"{v:.2f}" for v in on_anti.tolist()))`,
+        out: `baseline at 1000 steps         training loss 0.4431   exact match 62.2%
+no causal mask                 training loss 0.3086   exact match 0.0%
+no target shift                training loss 0.0008   exact match 0.0%
+no memory_key_padding_mask     training loss 0.4410   exact match 62.0%
+norm_first=False (post-norm)   training loss 0.6257   exact match 57.2%
+
+baseline at 5000 steps: training loss 0.0894, exact match 95.4%  (441s)
+decoder layer 0: mean weight on the anti-diagonal per head 0.16 0.24 0.25 0.24
+decoder layer 1: mean weight on the anti-diagonal per head 0.74 0.72 0.80 0.76`,
+       
+        notes: [
+          { t: "p", text: "The two leakage runs are the most instructive. Without the target shift each position is asked to predict the token it is given, and training loss went to 0.0008 while exact match was 0 %. Without the causal mask each position can read the next token from the input; in the reference run its loss after 1,000 steps (0.31) was already lower than the correct model's (0.44), and exact match was again 0 %, because at generation time that next token does not exist. If you only watched the loss curve you would conclude both models were working better than the correct one. That gap between a spectacular training metric and useless output is the signature to recognise — it is the same class of error as leaking test data into a scaler." },
+          { t: "p", text: "The layer comparison usually shows the last decoder layer with the cleanest anti-diagonal and earlier layers more diffuse, which is consistent with the general finding that later layers carry more task-specific structure. Individual heads within a layer also differ — some show the task alignment clearly while others look like noise or attend uniformly, which matches the point in lesson 4.3 that head specialisation is real but looser than the textbook version suggests." },
+          { t: "p", text: "Missing `memory_key_padding_mask` is the subtlest of the four because the model still trains and still reaches reasonable accuracy — in the reference run it made no measurable difference (62.0 % against 62.2 % after 1,000 steps), because these source sequences carry little padding. What it does is waste attention on source padding, and lesson 3.11 measured that leak at over 80 % of attention weight for short sequences in a heavily padded batch. The symptom is degraded accuracy that scales with how much padding your batches carry, which looks like ordinary model error unless you think to group results by sequence length." }
+        ]
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a model that trained perfectly and generated nothing useful",
+      body: [
+        { t: "p", text: "**Symptom.** A sequence-to-sequence transformer reached near-zero training loss and produced garbage at inference." },
+        { t: "p", text: "**Mechanism.** The target sequence was not shifted, so at each position the decoder saw the token it was supposed to predict." },
+        { t: "p", text: "**Fix.** Targets are shifted by one for the decoder input, and a test compares teacher-forced accuracy with free-running accuracy." }
+      ] }
   ],
 
   takeaways: [

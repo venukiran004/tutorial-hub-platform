@@ -183,6 +183,13 @@ jobs:
 
     { t: "exercise", kind: "practice", title: "Measure your own pipeline", difficulty: "core", minutes: 30,
       prompt: "Take a real pipeline and compute its expected cost. List each stage with its duration and its observed failure rate from the last fifty runs, then compute expected minutes for the current order and for cheapest-and-most-likely-first, and multiply the difference by your runs per day. Then check four specifics: does `concurrency` cancel superseded runs; does the cache key include a hash of the requirements and the OS and Python version; is any cloud credential stored as a long-lived secret rather than obtained via OIDC; and if OIDC is in use, does the trust policy pin the ref or only the repository. Finally, find anything in the PR pipeline that is not a function of the diff.",
+      requirements: [
+        "List each stage's duration and failure rate over the last fifty runs",
+        "Compute expected minutes for the current order and for cheapest-and-most-likely-to-fail first",
+        "Check concurrency cancellation, the cache key's contents and any long-lived cloud credentials",
+        "If OIDC is used, check whether the trust policy pins the ref",
+        "Find anything in the PR pipeline that is not a function of the diff"
+      ],
       hints: [
         "Failure rates come from the run history, not from intuition — the stage people think fails most often usually is not.",
         "A cache key with no `hashFiles` is the finding: CI has been testing a frozen dependency set, possibly for months.",
@@ -193,8 +200,14 @@ jobs:
           { t: "p", text: "The two findings that recur are a missing `concurrency` block and a cache key that never invalidates. The first is pure waste and three lines to fix; the second is a correctness problem masquerading as an optimisation, because it means a dependency bump has no effect on anything CI tests." },
           { t: "p", text: "The expected-cost calculation often shows a smaller gain than the concurrency fix, which is worth knowing: ordering is the famous advice and cancelling duplicate runs is usually the bigger number." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: production credentials from a pull request branch",
+      body: [
+        { t: "p", text: "**Symptom.** A contributor's pull request ran a workflow that listed the production model bucket and copied an artifact out. Nobody had approved a deploy." },
+        { t: "p", text: "**Mechanism.** The cloud role's OIDC trust policy pinned the repository but not the branch or environment. Any workflow in the repository could assume the role, including one modified in a pull request branch. Moving from stored keys to OIDC had removed the secret and kept the over-broad grant." },
+        { t: "p", text: "**Fix.** The trust policy now requires the `main` ref and a protected environment, deploy roles are separate from read-only CI roles, and workflows from forks receive no cloud credentials at all. The policy is reviewed like code, because it is the permission." }
+      ] }
   ],
 
   takeaways: [

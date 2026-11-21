@@ -124,18 +124,97 @@ system instruction length: 3137 chars` },
 
     { t: "exercise", kind: "practice", title: "Price the planner", difficulty: "advanced", minutes: 24,
       prompt: "Take a tool-using agent and record the system instruction length with no planner, with BuiltInPlanner and with PlanReActPlanner. Then run a turn with each and count model requests and the total characters sent. Finally, write three questions — one single-lookup, one compound, one needing a tool you have described poorly — and note which planner, if any, changes the tool choice.",
+      requirements: [
+        "Record the system instruction length with no planner, BuiltInPlanner and PlanReActPlanner",
+        "Run a turn with each and count model requests and total characters sent",
+        "Write a single-lookup, a compound and a poorly-described-tool question",
+        "Note which planner, if any, changes the tool choice"
+      ],
       hints: [
         "`llm.seen[0].config.system_instruction` is the assembled instruction.",
         "Multiply by the number of requests in the turn — that is the real cost.",
         "The poorly-described tool is where a planner most often helps."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import asyncio, json, logging, os, warnings
+warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+from google.adk.agents import LlmAgent
+from google.adk.planners import BuiltInPlanner, PlanReActPlanner
+from google.adk.runners import InMemoryRunner
+from google.genai import types
+from local_llm import LocalLlm      # reference run: local Qwen2.5-3B; with a key, put "gemini-3.8-flash" in RecordingLlm's place
+
+class RecordingLlm(LocalLlm):
+    """Records what ADK sends each model request, so the planner's cost is measured rather than guessed."""
+    requests: list = []
+    async def generate_content_async(self, llm_request, stream=False):
+        si = llm_request.config.system_instruction or ""
+        sent = len(str(si)) + sum(len(json.dumps(c.model_dump(exclude_none=True), default=str)) for c in llm_request.contents)
+        self.requests.append({"system_chars": len(str(si)), "chars_sent": sent})
+        async for r in super().generate_content_async(llm_request, stream): yield r
+
+def get_order(order_id: str) -> dict:
+    """Look up one order by its id, e.g. A-77."""
+    return {"order_id": order_id, "status": "shipped", "carrier": "DPD"}
+def get_customer(email: str) -> dict:
+    """Find a customer by email address."""
+    return {"email": email, "orders": ["A-77", "B-12"]}
+def misc(x: str) -> str:
+    """Does stuff."""                                     # a deliberately poor description
+    return "refund window: 14 days"
+
+QUESTIONS = ["What is the status of order A-77?",                                               # single lookup
+             "What's the status of each order for jo@example.com?",                             # compound
+             "How long is the refund window?"]                                                  # only the badly described tool can answer
+
+PLANNERS = {"no planner": None,
+            "BuiltInPlanner": BuiltInPlanner(thinking_config=types.ThinkingConfig(include_thoughts=True)),
+            "PlanReActPlanner": PlanReActPlanner()}
+
+async def main():
+    print(f"{'planner':<17} {'question':<52} {'system chars':>12} {'requests':>9} {'chars sent':>11}  tools called")
+    for pname, planner in PLANNERS.items():
+        for q in QUESTIONS:
+            llm = RecordingLlm(model="local-qwen-3b", requests=[])
+            runner = InMemoryRunner(agent=LlmAgent(name="desk", model=llm, planner=planner, tools=[get_order, get_customer, misc],
+                                                   instruction="Answer customer-service questions using the tools."), app_name="d")
+            sid = (await runner.session_service.create_session(app_name="d", user_id="u")).id
+            calls = []
+            async for e in runner.run_async(user_id="u", session_id=sid, new_message=types.Content(role="user", parts=[types.Part(text=q)])):
+                calls += [p.function_call.name for p in (e.content.parts if e.content else []) if p.function_call]
+            r = llm.requests
+            print(f"{pname:<17} {q[:52]:<52} {r[0]['system_chars']:>12} {len(r):>9} {sum(x['chars_sent'] for x in r):>11}  {calls}")
+    print("\\nBuiltInPlanner only sets thinking_config, which a model without native thinking ignores (the local model here);"
+          "\\non Gemini it changes cost through thinking tokens rather than through the prompt.")
+
+asyncio.run(main())`,
+        out: `planner           question                                             system chars  requests  chars sent  tools called
+no planner        What is the status of order A-77?                              99         2         592  ['get_order']
+no planner        What's the status of each order for jo@example.com?            99         2        1216  ['get_customer', 'get_order', 'get_order', 'get_order']
+no planner        How long is the refund window?                                 99         1         170  []
+BuiltInPlanner    What is the status of order A-77?                              99         2         592  ['get_order']
+BuiltInPlanner    What's the status of each order for jo@example.com?            99         2        1216  ['get_customer', 'get_order', 'get_order', 'get_order']
+BuiltInPlanner    How long is the refund window?                                 99         1         170  []
+PlanReActPlanner  What is the status of order A-77?                            3170         2        6734  ['get_order']
+PlanReActPlanner  What's the status of each order for jo@example.com?          3170         1        3262  []
+PlanReActPlanner  How long is the refund window?                               3170         2        6888  ['misc', 'get_order']
+
+BuiltInPlanner only sets thinking_config, which a model without native thinking ignores (the local model here);
+on Gemini it changes cost through thinking tokens rather than through the prompt.`,
+       
         notes: [
           { t: "p", text: "The numbers are stark: about sixty characters becomes about 3,137 with PlanReAct, and that goes out on every request rather than once. In a turn with two tool calls that is three requests carrying the planner text, and in a fifty-turn conversation it is a substantial share of the bill for reasoning the user never reads." },
           { t: "p", text: "The third question is the useful one. A planner most often improves tool choice where the descriptions are ambiguous — which is a signal to fix the descriptions rather than to pay for reasoning that works around them. When a planner helps, ask first whether better tool descriptions would have helped more, for free." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: thought text in front of customers",
+      body: [
+        { t: "p", text: "**Symptom.** Customers of a support agent began seeing paragraphs of the model's internal reasoning above its answers, including speculation about their account." },
+        { t: "p", text: "**Mechanism.** The agent used `BuiltInPlanner` with `include_thoughts=True` for debugging, and the client rendered every text part of the response. Thought parts are marked as thoughts and are not meant for the user; the client did not check the flag." },
+        { t: "p", text: "**Fix.** The client skips parts marked as thoughts, and thoughts are included only in non-production environments. A rendering test asserts that a response with thought parts shows only the answer." }
+      ] }
   ],
 
   takeaways: [

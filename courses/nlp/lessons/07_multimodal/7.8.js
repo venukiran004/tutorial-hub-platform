@@ -224,7 +224,14 @@ probe suite: 3/7 pass`,
           { t: "p", text: "The probe suite passed 3 of 7: one circle, five circles and the vertical relation. It failed counts 2–4 and left/right. In lesson 7.2 the same model counted three and five correctly when every caption was prefixed 'a picture of', and in 7.1 it got left/right right when the caption said 'to the left of'. That sensitivity is the reason to keep a fixed suite: rerun the identical probes on every model or prompt change and treat any flip as a regression." },
           { t: "p", text: "The images are drawn with PIL so their content is known exactly: counts, colours and positions are ground truth, which makes failures unambiguous. Synthetic flat shapes are easier than photographs in some ways and harder in others, so repeat the probes on your own images." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a metric that preferred the wrong count",
+      body: [
+        { t: "p", text: "**Symptom.** An image-captioning model was tuned to improve CLIPScore and began getting object counts wrong more often." },
+        { t: "p", text: "**Mechanism.** CLIPScore barely distinguishes counts, so tuning toward it did nothing to protect counting and allowed it to degrade." },
+        { t: "p", text: "**Fix.** Evaluation includes targeted checks for counts, colours and relations alongside CLIPScore." }
+      ] }
   ],
 
   takeaways: [

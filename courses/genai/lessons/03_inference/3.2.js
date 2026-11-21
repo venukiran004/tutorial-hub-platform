@@ -358,7 +358,7 @@ configuration                   seq   GB/request   concurrent
         answer: 1,
         why: "The key and value for token 7 are identical at step 8 and at step 50, so caching them turns quadratic recomputation into linear work — measured at 4.94× for 24 tokens after a 128-token prompt, with the ratio growing as the sequence lengthens. Weights are still loaded every step, which is precisely why decode remains memory-bound (3.1). Nothing is compressed and nothing moves to the CPU." },
 
-      { stem: "A reference says Llama-2 7B needs ~1 GB of KV cache at 4,096 tokens. Running the formula gives what?",
+      { stem: "A widely shared figure says Llama-2 7B needs ~1 GB of KV cache at 4,096 tokens. Running the formula gives what?",
         options: ["~1 GB — the usual figure is right", "2.15 GB — about double", "0.5 GB — the usual figure is pessimistic", "It depends on the batch size"],
         answer: 1,
         why: "2 × 32 layers × 32 heads × 128 head_dim × 4096 tokens × 2 bytes is 2.15 GB, and the batch-of-16 figure is 34.36 GB rather than the quoted ~16 GB — both about double. Per-request cache size does not depend on batch size; total does, linearly. The consequence is not academic: a server sized on the quoted figure holds half the intended concurrency and fails as a cliff, because an allocation either fits or does not." },

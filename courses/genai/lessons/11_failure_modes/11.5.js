@@ -180,6 +180,17 @@ Rules:
   <text x="28" y="307" class="s-mono" style="font-size:8px">regenerate on an ungrounded prompt &#183; drop claims on a long-output drift &#183; ABSTAIN when above_threshold = 0</text>
 </svg>` },
 
+    { t: "callout", kind: "trap", title: "Leading with the expensive mitigation",
+
+      body: [
+
+        { t: "p", text: "A faithfulness gate that checks every claim is the mitigation people reach for first, and at hundreds of milliseconds per claim it breaks the latency budget. It gets disabled, and the cheaper layers were never built." },
+
+        { t: "p", text: "Build the cheap layers first — a grounded prompt with an abstention path, citation validation, conservative decoding — and add a gate only for the slice of traffic that needs it." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Order the layers by measured cost, and pick remedies by cause", difficulty: "advanced", minutes: 35,
       body: "Build the layered pipeline, attach the measured cost of each layer, and compute what fraction of hallucinations each layer catches on your own classified set. Then implement remedy selection driven by the diagnosed cause rather than by a fixed preference order.",
       requirements: [

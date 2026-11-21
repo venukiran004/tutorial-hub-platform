@@ -97,7 +97,7 @@ EC.receiveLesson({
       caption: "`nsubjpass` catches the passive voice, where the grammatical subject is the semantic object — *the mouse was chased* has `mouse` as `nsubjpass`." },
 
     { t: "out", text: `  SVO triples: [('cat', 'chased', 'mouse')]
-  reference says: [('cat', 'chased', 'mouse')]` },
+  expected: [('cat', 'chased', 'mouse')]` },
 
     { t: "h2", n: "03", text: "What a parse buys", id: "why" },
 
@@ -173,8 +173,25 @@ EC.receiveLesson({
     { t: "callout", kind: "note", title: "Transformers learn syntax without being taught it",
       body: [{ t: "p", text: "Probing studies consistently find that attention heads in BERT-like models align with dependency relations that nobody supervised — some heads attend from a verb to its subject, others from a determiner to its noun. So for a task where a transformer is already in the pipeline, explicit parsing is often redundant: the model has its own, and it is generally more robust on informal text than a treebank-trained parser. Parsing remains valuable when you need the structure as an **output** rather than as an internal representation, which is exactly the relation-extraction and knowledge-graph case." }] },
 
+    { t: "callout", kind: "trap", title: "Extracting relations without handling the passive",
+
+      body: [
+
+        { t: "p", text: "A subject-verb-object extractor applied to 'X was acquired by Y' records the relation backwards or misses it, because the parse's subject is the company acquired." },
+
+        { t: "p", text: "Handle passive and coordinated dependencies explicitly and test on sentences in both voices." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Extract structure from real text", difficulty: "core", minutes: 35,
       prompt: "Run a parser over a few hundred sentences from a real source and extract subject-verb-object triples. Measure what fraction of sentences yield a triple, and inspect the failures — passives, coordinated subjects, copulas and relative clauses each break the naive extractor differently. Extend it to handle the passive via `nsubjpass`, and to follow conjunctions so *the cat and the dog chased the mouse* yields two triples. Finally, measure the distance between each subject and its verb, and plot the distribution.",
+      requirements: [
+        "Run a parser over a few hundred real sentences and extract subject–verb–object triples",
+        "Measure the fraction of sentences that yield a triple and inspect failures",
+        "Handle the passive via nsubjpass",
+        "Follow conjunctions so coordinated subjects produce several triples"
+      ],
       hints: [
         "`token.children` and `token.head` are the two navigation primitives.",
         "Copulas — *the cat is black* — have no `dobj`; the complement is `attr` or `acomp`.",
@@ -186,8 +203,14 @@ EC.receiveLesson({
           { t: "p", text: "The naive extractor's failures are instructive in a specific way: each one corresponds to a genuine grammatical construction rather than to noise. Passives invert the roles, coordination gives several subjects for one verb, copulas have no direct object at all, and relative clauses embed a second verb with its own arguments. Handling them turns a twenty-line function into something much larger, which is the honest reason rule-based relation extraction is harder than it looks." },
           { t: "p", text: "Worth also running the parser over informal text — social media, chat logs, transcripts — and seeing the quality drop. Treebank-trained parsers assume edited prose, and their accuracy falls sharply without it. That degradation is one of the strongest practical arguments for letting a transformer learn its own syntax rather than depending on an explicit parse." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a relation extractor that missed every passive sentence",
+      body: [
+        { t: "p", text: "**Symptom.** A knowledge-base builder found almost no acquisitions in a news corpus that reported dozens." },
+        { t: "p", text: "**Mechanism.** The extractor looked for subject–verb–object patterns. News stories usually said 'X was acquired by Y', whose subject in the parse is the company being bought, so the pattern either missed or reversed the relation." },
+        { t: "p", text: "**Fix.** The extractor handles passive dependencies and conjunctions, and its output is evaluated on a labelled sample that includes passives." }
+      ] }
   ],
 
   takeaways: [

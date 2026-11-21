@@ -22,7 +22,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The model", id: "model" },
 
-    {"kind": "layers", "title": "The CIFAR-10 model, bottom to top", "caption": "Three stages of convolution and a pooled head — the shape of 2.2 made concrete. Note the two numbers that matter: the spatial size falls 32 → 16 → 8 → 4 while channels rise 3 → 32 → 64 → 128, and the classifier at the top is a single linear layer because global pooling has already removed position.", "items": [{"label": "Linear 128 -> 10", "sub": "1,290 parameters", "tone": "teal", "side": "the head"}, {"label": "Global average pool", "sub": "4 x 4 x 128 -> 128", "tone": "good", "side": "no params"}, {"label": "Conv 64 -> 128, BN, ReLU, pool", "sub": "8 x 8 -> 4 x 4", "tone": "accent", "side": "stage 3"}, {"label": "Conv 32 -> 64, BN, ReLU, pool", "sub": "16 x 16 -> 8 x 8", "tone": "accent", "side": "stage 2"}, {"label": "Conv 3 -> 32, BN, ReLU, pool", "sub": "32 x 32 -> 16 x 16", "tone": "good", "side": "stage 1"}, {"label": "Input 3 x 32 x 32", "sub": "CIFAR-10", "tone": "violet", "side": ""}], "t": "diagram", "id": "dg-2_11-01-0"},
+    {"kind": "layers", "title": "CustomCNN, bottom to top", "caption": "Three blocks of convolution and a pooled head — the shape of 2.2 made concrete. Note the two numbers that matter: the spatial size halves 224 → 112 → 56 → 28 while channels double 64 → 128 → 256, and the head is small because global pooling has already removed position.", "items": [{"label": "Linear 256 -> 128 -> 10", "sub": "34,186 parameters", "tone": "teal", "side": "the head"}, {"label": "Global average pool", "sub": "28 x 28 x 256 -> 256", "tone": "good", "side": "no params"}, {"label": "2 x (Conv 3x3, BN, ReLU) 128 -> 256, pool", "sub": "56 x 56 -> 28 x 28", "tone": "accent", "side": "block 3"}, {"label": "2 x (Conv 3x3, BN, ReLU) 64 -> 128, pool", "sub": "112 x 112 -> 56 x 56", "tone": "accent", "side": "block 2"}, {"label": "2 x (Conv 3x3, BN, ReLU) 3 -> 64, pool", "sub": "224 x 224 -> 112 x 112", "tone": "good", "side": "block 1"}, {"label": "Input 3 x 224 x 224", "sub": "RGB image", "tone": "violet", "side": ""}], "t": "diagram", "id": "dg-2_11-01-0"},
 
 
 
@@ -72,7 +72,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Where the parameters are", id: "params" },
 
-    {"kind": "trace", "title": "Where the parameters are, and why that is the right shape", "caption": "The parameter count **rises** with depth here, which is the opposite of VGG. Each stage doubles its channels, so each convolution's weight tensor roughly quadruples — and yet the head is 1,290 parameters rather than VGG's 124 million, because global average pooling replaced the flatten. The model is 98% convolution by parameter count, and that is the post-2015 shape.", "left": "layer", "codeW": 200, "vars": ["parameters", "share"], "steps": [{"code": "conv 3 -> 32, 3x3", "state": ["896", "1%"], "tone": "good"}, {"code": "conv 32 -> 64, 3x3", "state": ["18,496", "20%"], "tone": "accent"}, {"code": "conv 64 -> 128, 3x3", "state": ["73,856", "77%"], "changed": [0], "tone": "accent"}, {"code": "batch norm layers", "state": ["448", "<1%"], "tone": "good"}, {"code": "linear 128 -> 10", "state": ["1,290", "1%"], "changed": [1], "tone": "violet", "note": "VGG's was 89%"}, {"code": "total", "state": ["94,986", "98% convolutional"], "tone": "teal"}], "t": "diagram", "id": "dg-2_11-02-1"},
+    {"kind": "trace", "title": "Where the parameters are, and why that is the right shape", "caption": "The parameter count **rises** with depth here, which is the opposite of VGG. Each block doubles its channels, so each convolution's weight tensor roughly quadruples — the last convolution alone holds half the model. The head is 34,186 parameters rather than VGG's 124 million, because global average pooling replaced the flatten. The model is 97% convolution by parameter count, and that is the post-2015 shape.", "left": "layer", "codeW": 200, "vars": ["parameters", "share"], "steps": [{"code": "block 1: conv 3->64, 64->64", "state": ["38,720", "3%"], "tone": "good"}, {"code": "block 2: conv 64->128, 128->128", "state": ["221,440", "19%"], "tone": "accent"}, {"code": "block 3: conv 128->256, 256->256", "state": ["885,248", "75%"], "changed": [0], "tone": "accent"}, {"code": "batch norm layers", "state": ["1,792", "<1%"], "tone": "good"}, {"code": "head: linear 256->128->10", "state": ["34,186", "3%"], "changed": [1], "tone": "violet", "note": "VGG's was 89%"}, {"code": "total", "state": ["1,181,386", "97% convolutional"], "tone": "teal"}], "t": "diagram", "id": "dg-2_11-02-1"},
 
 
 
@@ -207,18 +207,95 @@ model.compile(optimizer=tf.keras.optimizers.AdamW(1e-3, weight_decay=0.01),
 
     { t: "exercise", kind: "practice", title: "Build, train, and inspect", difficulty: "intermediate", minutes: 40,
       prompt: "Build CustomCNN and train it on a small image dataset for a few epochs. Log the gradient norm returned by `clip_grad_norm_` at every step and plot it — then set the clip threshold from what you see rather than from the default. Verify the model accepts three different input resolutions and produces the same output shape. Finally, deliberately add `nn.Softmax(dim=1)` as a final layer, keep `CrossEntropyLoss`, and compare the training curve against the correct version.",
+      requirements: [
+        "Train CustomCNN and log the gradient norm every step",
+        "Set the clip threshold from the logged norms",
+        "Verify three input resolutions give the same output shape",
+        "Add a final softmax with CrossEntropyLoss and compare the training curve"
+      ],
       hints: [
         "`clip_grad_norm_` returns the pre-clip norm — capture it rather than discarding it.",
         "For the resolution test, `AdaptiveAvgPool2d` is what makes it work; try replacing it with `Flatten` to see the failure.",
         "The double-softmax model still trains, just badly. Compare loss curves over the same number of steps."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from sklearn.datasets import load_digits
+
+class CustomCNN(nn.Module):                       # as in the lesson
+    def __init__(self, num_classes=10, in_channels=3, final_softmax=False):
+        super().__init__()
+        def block(i, o): return [nn.Conv2d(i, o, 3, padding=1), nn.BatchNorm2d(o), nn.ReLU(inplace=True),
+                                 nn.Conv2d(o, o, 3, padding=1), nn.BatchNorm2d(o), nn.ReLU(inplace=True), nn.MaxPool2d(2, 2)]
+        self.features = nn.Sequential(*block(in_channels, 64), *block(64, 128), *block(128, 256))
+        self.classifier = nn.Sequential(nn.AdaptiveAvgPool2d(1), nn.Flatten(), nn.Dropout(0.3), nn.Linear(256, 128),
+                                        nn.ReLU(inplace=True), nn.Dropout(0.2), nn.Linear(128, num_classes),
+                                        *([nn.Softmax(dim=1)] if final_softmax else []))
+    def forward(self, x): return self.classifier(self.features(x))
+
+# Small image dataset: 8x8 digits upsampled to 3x32x32
+X, y = load_digits(return_X_y=True)
+X = F.interpolate(torch.tensor(X / 16.0, dtype=torch.float32).reshape(-1, 1, 8, 8), size=32, mode="bilinear").repeat(1, 3, 1, 1)
+y = torch.tensor(y); Xtr, ytr, Xva, yva = X[:1500], y[:1500], X[1500:], y[1500:]
+
+def train(final_softmax, clip=float("inf"), epochs=3):
+    torch.manual_seed(0); m = CustomCNN(final_softmax=final_softmax); opt = torch.optim.AdamW(m.parameters(), 1e-3, weight_decay=0.01)
+    norms, losses = [], []
+    for ep in range(epochs):
+        m.train(); perm = torch.randperm(1500)
+        for i in range(0, 1500, 64):
+            idx = perm[i:i + 64]; loss = F.cross_entropy(m(Xtr[idx]), ytr[idx])
+            opt.zero_grad(); loss.backward()
+            norms.append(nn.utils.clip_grad_norm_(m.parameters(), clip).item())   # returns the norm BEFORE clipping
+            opt.step(); losses.append(loss.item())
+    m.eval()
+    with torch.no_grad(): acc = (m(Xva).argmax(1) == yva).float().mean().item()
+    return m, norms, losses, acc
+
+m, norms, losses, acc = train(False)
+q = torch.tensor(norms).quantile(torch.tensor([0.05, 0.5, 0.95])).tolist()
+print(f"gradient norm over {len(norms)} steps: 5th pct {q[0]:.2f}, median {q[1]:.2f}, 95th pct {q[2]:.2f}, max {max(norms):.2f}")
+print(f"a threshold of 1.0 would have rescaled {sum(n > 1.0 for n in norms) / len(norms):.0%} of steps; "
+      f"choose ~the 95th percentile ({q[2]:.1f}) so clipping only catches spikes")
+print(f"validation accuracy: {acc:.3f}")
+
+with torch.no_grad():
+    for side in [32, 48, 96]:
+        print(f"input {side}x{side} -> output {tuple(m(torch.randn(2, 3, side, side)).shape)}")
+
+_, _, sm_losses, sm_acc = train(True)
+print("\\nloss every 20 steps, correct vs extra Softmax before CrossEntropyLoss:")
+print("  correct:       " + " ".join(f"{losses[i]:.2f}" for i in range(0, len(losses), 20)))
+print("  double softmax:" + " ".join(f"{sm_losses[i]:.2f}" for i in range(0, len(sm_losses), 20)))
+print(f"  validation accuracy {acc:.3f} vs {sm_acc:.3f}; the double-softmax loss cannot fall below "
+      f"{-torch.log_softmax(torch.tensor([1.0] + [0.0] * 9), 0)[0]:.3f}")`,
+        out: `gradient norm over 72 steps: 5th pct 0.57, median 1.57, 95th pct 2.44, max 3.72
+a threshold of 1.0 would have rescaled 72% of steps; choose ~the 95th percentile (2.4) so clipping only catches spikes
+validation accuracy: 0.859
+input 32x32 -> output (2, 10)
+input 48x48 -> output (2, 10)
+input 96x96 -> output (2, 10)
+
+loss every 20 steps, correct vs extra Softmax before CrossEntropyLoss:
+  correct:       2.36 0.54 0.10 0.04
+  double softmax:2.30 1.74 1.60 1.48
+  validation accuracy 0.859 vs 0.825; the double-softmax loss cannot fall below 1.461`,
+       
         notes: [
           { t: "p", text: "The gradient norm log is the practically useful part. In my run the norms sat between 5.3 and 7.0 while the threshold was 1.0, meaning every step was scaled down five- to seven-fold — a silent, permanent reduction in effective learning rate that nobody configured deliberately. A clip threshold should sit above the typical norm so it catches spikes only. Plotting the distribution for a few hundred steps and choosing something around the 95th percentile is a reasonable default." },
           { t: "p", text: "The double-softmax experiment is worth doing once. The model still learns, which is what makes it insidious — softmax of a softmax is a valid function, just a very flat one, so gradients are small and progress is slow. There is no error, no warning, and the only symptom is a training curve that looks disappointing. Having seen it once, you recognise it immediately, and it is one of the few bugs that is genuinely hard to find by reading the code." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: clipping that slowed every step",
+      body: [
+        { t: "p", text: "**Symptom.** A CNN trained much more slowly after gradient clipping at 1.0 was added 'for safety'." },
+        { t: "p", text: "**Mechanism.** Typical gradient norms were 5 to 7, so clipping at 1.0 shrank every step, acting as a much smaller learning rate." },
+        { t: "p", text: "**Fix.** The clip threshold is set from the logged distribution of gradient norms, above the normal range, so it only acts on genuine spikes." }
+      ] }
   ],
 
   takeaways: [

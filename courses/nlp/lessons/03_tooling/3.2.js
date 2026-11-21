@@ -291,7 +291,14 @@ antonyms(useful) = ['useless']`,
           { t: "p", text: "Feeding real POS tags changed 6 of 19 lemmas, every one of them a verb: 'were' to 'be', 'running' to 'run', 'rebuilt' to 'rebuild'. With the default noun assumption the lemmatiser is close to a no-op on verbs, which is why it so often looks broken." },
           { t: "p", text: "The hypernym path from battery stops being useful after 'device'. 'instrumentality', 'artifact' and 'whole' are too general to group anything usefully. With no frequency floor, PMI ranks one-off pairs such as 'adequate restoratives'. At a floor of 100 it returns character names and stock phrases. A floor of 5–20 is usually where real collocations appear. WordNet antonyms give a clean list for single adjectives ('good' → 'bad', 'evil'). They do nothing for the scope problem the 3.1 component failed on." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: 'university' and 'universe' counted as one word",
+      body: [
+        { t: "p", text: "**Symptom.** A search-analytics report merged queries about university courses with queries about astronomy." },
+        { t: "p", text: "**Mechanism.** The pipeline used the Porter stemmer, which reduces both words to 'univers'. Stemming applies suffix rules with no notion of meaning." },
+        { t: "p", text: "**Fix.** Analysis uses lemmatisation with part-of-speech tags, and stemming is kept only where recall matters more than precision." }
+      ] }
   ],
 
   takeaways: [

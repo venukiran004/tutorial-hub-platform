@@ -275,6 +275,17 @@ def dpo_loss(policy, ref, batch, beta=0.1):
         { t: "p", text: "The modern compromise is **iterative or online DPO**: generate fresh completions from the current policy, label them with a reward model or a judge, run DPO, repeat. You get DPO\u2019s stability with some of PPO\u2019s exploration, at the cost of reintroducing a scorer and a generation step." }
       ] },
 
+    { t: "callout", kind: "trap", title: "Choosing β without watching the KL or the length",
+
+      body: [
+
+        { t: "p", text: "A small β lets DPO move the policy far from the reference, and the loss keeps improving while the model drifts, often toward longer answers. The training curve looks excellent and the model gets worse." },
+
+        { t: "p", text: "Track the KL to the reference and the mean response length during training, and choose β from a held-out win rate rather than from the loss." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Compute implicit rewards and find your own length bias", difficulty: "advanced", minutes: 40,
       body: "Implement sequence_logprob and the DPO margin, then use them to measure the length bias on your own preference data: plot the implicit reward of the chosen response against its token count, and report the correlation. Also report whether your chosen responses are systematically longer than your rejected ones.",
       requirements: [

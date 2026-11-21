@@ -207,6 +207,17 @@ GROUP  BY c.customer_id, c.name;`,
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "COUNT(*) after a join counts the joined rows",
+
+      body: [
+
+        { t: "p", text: "Counting orders per customer after joining order items counts items, not orders. The number is plausible and too high." },
+
+        { t: "p", text: "Count a distinct key — `COUNT(DISTINCT o.id)` — or aggregate each table to the grain you want before joining." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A monthly status report, at the right grain",
@@ -280,7 +291,14 @@ LIMIT  1;
           why: "After grouping, only grouping columns and aggregates have one value per group. The highest-paid employee per department is a one-whole-row-per-group question: DISTINCT ON, or ROW_NUMBER over the partition."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: two customers merged into one",
+      body: [
+        { t: "p", text: "**Symptom.** Two customers called Alex Smith appeared in a spend report as one person with both their totals." },
+        { t: "p", text: "**Mechanism.** The report grouped by `name`, not by customer id. Grouping is by value, so two entities with the same name became one group." },
+        { t: "p", text: "**Fix.** Reports group by the key and select the name alongside it — `GROUP BY c.id, c.name` — and name-only grouping is flagged in review." }
+      ] }
   ],
 
   takeaways: [

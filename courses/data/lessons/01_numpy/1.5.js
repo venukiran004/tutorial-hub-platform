@@ -648,7 +648,14 @@ def test_rejects_degenerate_input():
       { t: "p", text: "`default_rng` is fast and statistically excellent and completely predictable to anyone who observes enough output. PCG64's state can be recovered from a modest number of consecutive draws." },
       { t: "p", text: "**For tokens, passwords, salts, session identifiers or anything an attacker benefits from guessing, use `secrets`** — `secrets.token_urlsafe(32)` — or `os.urandom`. Those draw from the operating system's cryptographic entropy source." },
       { t: "p", text: "The distinction is the threat model, not the quality of the randomness: reproducibility is exactly the property you want in an experiment and exactly the one that must not exist in a credential." }
-    ]}
+    ]},
+
+    { t: "callout", kind: "scenario", title: "Incident: an experiment that could not be reproduced on the second run",
+      body: [
+        { t: "p", text: "**Symptom.** Two runs of the same training script with the same seed produced different validation scores, and a published comparison could not be re-created." },
+        { t: "p", text: "**Mechanism.** The script seeded `np.random.seed(42)` globally. A data-augmentation library imported later also drew from the global state, and the number of draws it made depended on a file-system listing whose order varied. Every downstream random draw shifted." },
+        { t: "p", text: "**Fix.** Each component takes its own `np.random.default_rng(seed)` generator, the file listing is sorted, and the run records a hash of the predictions so two runs can be compared exactly." }
+      ] }
   ],
 
   takeaways: [

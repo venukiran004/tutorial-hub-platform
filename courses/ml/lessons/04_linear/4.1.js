@@ -285,6 +285,17 @@ for it in range(2000): theta -= 0.02 * (2 / 5) * X.T @ (X @ theta - y)
 
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Inverting XᵀX directly",
+
+      body: [
+
+        { t: "p", text: "Solving the normal equation with an explicit inverse is numerically unstable when features are correlated, and fails outright when one is a combination of others." },
+
+        { t: "p", text: "Use a least-squares solver or QR decomposition, and check the design matrix's rank." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Two features by hand, then check every property",
@@ -345,7 +356,14 @@ print(k, "iterations")                  # 289: x1 and x2 are correlated (r = 0.6
           why: "Any fit whose residuals have non-zero mean or correlate with a feature is not the least-squares fit — a free check on any implementation."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a regression that failed silently on a duplicated column",
+      body: [
+        { t: "p", text: "**Symptom.** A pricing regression returned enormous, opposite-signed coefficients for two features after a data refresh." },
+        { t: "p", text: "**Mechanism.** The refresh added a column that was an exact copy of another, in different units. XᵀX became singular and the solver's result was dominated by numerical noise." },
+        { t: "p", text: "**Fix.** The pipeline checks the rank of the design matrix and removes exact linear dependencies, and the model uses a solver based on least squares rather than an explicit inverse." }
+      ] }
   ],
 
   takeaways: [

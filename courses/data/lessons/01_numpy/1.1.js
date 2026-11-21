@@ -331,6 +331,17 @@ print(f.flags.f_contiguous, f.strides)               # True (8, 8000): columns a
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Choosing a dtype that overflows silently",
+
+      body: [
+
+        { t: "p", text: "NumPy integer arithmetic wraps on overflow without an error, so summing a large int32 column, or multiplying two int16 values, can produce a negative or wrapped number that looks plausible." },
+
+        { t: "p", text: "Choose dtypes from the range of the values and the operations, and use int64 or float64 for sums and products of large values." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Cut a feature matrix to fit in memory",

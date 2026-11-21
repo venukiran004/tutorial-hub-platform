@@ -173,7 +173,14 @@ print(asyncio.run(ask("hello")))`,
 (c) the directory is no longer a package, so it is skipped — silently, with no error.
 (d) yes: the CLI looks for the module-level symbol root_agent, not the agent's name
     field. The name field is what the model and the transfer machinery use (lesson 2.5).`,
-        notes: [{ t: "p", text: "The silent skip in (c) is the single most common 'my agent does not show up' cause, and the reason to run `adk create` once even if you then restructure by hand — it gets the convention right the first time." }] } }
+        notes: [{ t: "p", text: "The silent skip in (c) is the single most common 'my agent does not show up' cause, and the reason to run `adk create` once even if you then restructure by hand — it gets the convention right the first time." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the agent that vanished from the dev UI",
+      body: [
+        { t: "p", text: "**Symptom.** After a refactor that moved agent code into a shared module, `adk web` showed an empty agent list. There was no error in the terminal." },
+        { t: "p", text: "**Mechanism.** The CLI finds agents by convention: a package with an `__init__.py` importing `agent.py`, which defines a module-level `root_agent`. The refactor renamed the variable to `support_agent` and moved the import, so no package matched the rule. The CLI does not report packages that fail to match; it simply lists nothing." },
+        { t: "p", text: "**Fix.** Each agent package re-exports its agent as `root_agent`, and a smoke test runs `adk run` against every package in CI so a convention break fails the build rather than a demo." }
+      ] }
   ],
 
   takeaways: [

@@ -107,6 +107,17 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Why the projection approach dominates now",
       body: [{ t: "p", text: "Contrastive alignment needs hundreds of millions of paired examples and batch sizes in the tens of thousands, which very few organisations can run. The projection approach needs neither: it inherits a vision encoder someone else trained contrastively and an LLM someone else trained on text, and learns only the small map between them. It is the same dynamic as LoRA in lesson 5.6 — freeze the expensive parts, train the connector — and it is why open vision-language models proliferated so quickly after LLaVA showed it worked." }] },
 
+    { t: "callout", kind: "trap", title: "Choosing a dual-encoder for a reasoning task",
+
+      body: [
+
+        { t: "p", text: "Dual encoders such as CLIP never let the modalities interact, so they can retrieve and classify but cannot answer questions that need reasoning about an image." },
+
+        { t: "p", text: "Use a model with cross-modal interaction for question answering and captioning." }
+
+      ] },
+
+
     { t: "exercise", kind: "Challenge", title: "Classify the architectures", difficulty: "core", minutes: 30,
       requirements: [
         "For three multimodal models you have used, identify where the modalities meet and what that permits.",
@@ -191,7 +202,14 @@ CLIP prefers the correct relation`,
           { t: "p", text: "The relational probe went better than the lesson predicts. CLIP put 0.44 on the correct 'left of' caption against 0.33 for its mirror image, so it is not blind to the relation on this clean image. The preference is weak, though, and lesson 7.8's probe suite shows it flipping with a small change of wording. Late fusion compresses the whole image into one vector before seeing the question, so fine relations are fragile rather than absent. Steps 1 and 5 ask about your own models and data; the table shows the reasoning to apply." },
           { t: "p", text: "The images are drawn with PIL so their content is known exactly: counts, colours and positions are ground truth, which makes failures unambiguous. Synthetic flat shapes are easier than photographs in some ways and harder in others, so repeat the probes on your own images." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: using CLIP to answer questions about images",
+      body: [
+        { t: "p", text: "**Symptom.** A team built a visual question-answering feature on CLIP and found it could not answer anything but category questions." },
+        { t: "p", text: "**Mechanism.** CLIP encodes images and text separately and compares them; the modalities never interact, so it cannot reason about an image given a question." },
+        { t: "p", text: "**Fix.** Question answering uses a vision-language model with cross-modal interaction, and CLIP is kept for retrieval and zero-shot classification." }
+      ] }
   ],
 
   takeaways: [

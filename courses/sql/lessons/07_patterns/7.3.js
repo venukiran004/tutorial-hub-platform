@@ -302,7 +302,14 @@ GROUP BY r.cohort, sz.n ORDER BY r.cohort;
           why: "Conflating 'nobody came back' with 'we cannot know yet' makes the newest cohorts look like they collapsed. The horizon check is part of the query."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: retention that improved because of a calendar",
+      body: [
+        { t: "p", text: "**Symptom.** A month-over-month retention figure rose sharply, and the product team credited a new feature." },
+        { t: "p", text: "**Mechanism.** The figure mixed customer age with calendar time. A large cohort of new customers had joined two months earlier, and new customers churn faster, so the rise reflected the cohort mix, not the feature." },
+        { t: "p", text: "**Fix.** Retention is reported by sign-up cohort and customer age, so cohorts are compared at the same age. The feature's effect was then measured on matched cohorts and was small." }
+      ] }
   ],
 
   takeaways: [

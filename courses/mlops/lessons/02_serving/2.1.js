@@ -170,6 +170,12 @@ def healthz():
 
     { t: "exercise", kind: "practice", title: "Decompose and challenge your own endpoint", difficulty: "core", minutes: 30,
       prompt: "Take an online model endpoint you run and do two things. First, add a header reporting the handler's own inference time, hit it five hundred times warm, and compute the ratio of model time to end-to-end p50 — then say which half an optimisation should target. Second, ask of the endpoint what would break if this prediction were computed nightly instead, and answer concretely rather than defensively: name the input that does not exist until request time. If you cannot name one, you have found a batch job wearing an endpoint's operational costs. Finally, measure your own cold start by restarting the service and timing the first request.",
+      requirements: [
+        "Add a header reporting the handler's own inference time and measure 500 warm requests",
+        "Compute model time as a share of end-to-end p50 and say which half an optimisation should target",
+        "Name the input that does not exist until request time, or conclude the endpoint is a batch job",
+        "Restart the service and time the first request"
+      ],
       hints: [
         "Measure the first request separately and discard it from the warm percentiles, or the cold start contaminates your p99.",
         "If the model is under about a millisecond, framework overhead almost certainly dominates and quantisation is the wrong project.",
@@ -180,8 +186,14 @@ def healthz():
           { t: "p", text: "The usual finding is the one measured here: the model is a minority of the request, often a small one, and the team's planned optimisation was aimed at the minority. The header is a permanent fix for that — it turns the question from an argument into a dashboard panel." },
           { t: "p", text: "The second question has a real answer surprisingly often. Scores recomputed per request for entities whose features change daily are the commonest case, and moving them to a nightly table removes an autoscaler, an SLO and a pager rotation at once." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the health check that passed while every request failed",
+      body: [
+        { t: "p", text: "**Symptom.** After a deploy, a scoring service returned 500 on every prediction for twenty minutes. The load balancer kept all replicas in rotation and the dashboard showed them healthy." },
+        { t: "p", text: "**Mechanism.** The health endpoint returned 200 from a handler that never touched the model. The new image pointed at an artifact path that did not exist, so the model failed to load, but the process was up and the probe was satisfied. The same probe had also been hiding the cold start: the first real request on each replica paid the load." },
+        { t: "p", text: "**Fix.** The readiness probe now runs one prediction on a fixed input and checks the model version, with a start period longer than the measured import time, and the service loads the model at startup rather than on first use. A deploy cannot complete until a replica has actually predicted." }
+      ] }
   ],
 
   takeaways: [

@@ -220,6 +220,17 @@ SELECT customer_id, session_no, COUNT(*), MIN(occurred_at), MAX(occurred_at) FRO
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Gaps and islands on data with duplicate dates",
+
+      body: [
+
+        { t: "p", text: "The date-minus-row-number trick assumes one row per date. Two events on the same day give consecutive row numbers for one date, the difference shifts, and a streak is split in the middle." },
+
+        { t: "p", text: "De-duplicate to one row per entity per date before numbering, or use DENSE_RANK over the date." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "Sessions with a funnel, and islands of activity",
@@ -308,7 +319,14 @@ WHERE  rn = 1 ORDER BY customer_id;
           why: "A running sum of a start flag is a run identifier. The same construction numbers streaks, regimes and any other 'find the runs' problem once the boundary flag is defined."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: sessions that never ended",
+      body: [
+        { t: "p", text: "**Symptom.** A sessionisation query reported a single session per user spanning months." },
+        { t: "p", text: "**Mechanism.** The new-session flag was computed against the previous event's time with `LAG`, but events with identical timestamps were ordered arbitrarily, and the gap test used minutes where the column was seconds. No gap ever exceeded the threshold." },
+        { t: "p", text: "**Fix.** The gap uses an explicit interval, `placed_at - LAG(placed_at) > interval '30 minutes'`, ordering includes the event id, and a check reports the distribution of session lengths." }
+      ] }
   ],
 
   takeaways: [

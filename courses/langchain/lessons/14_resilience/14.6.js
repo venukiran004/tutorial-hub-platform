@@ -76,7 +76,7 @@ EC.receiveLesson({
       ["**dead letter**", "None of the above, and the record is complete enough to act on. A human, eventually."],
       ["**page**", "The failure is affecting **many** runs, not one. A human, now."]
     ] },
-    { t: "callout", kind: "warn", title: "The condition is the useful part", body: [
+    { t: "callout", kind: "trap", title: "The condition is the useful part", body: [
       { t: "p", text: "*\u201cRetry then escalate\u201d* is not a policy, because it does not say when the retry is **wrong**. 14.3 measured a retry that succeeded while sending three emails \u2014 no amount of escalation logic would have caught that, because nothing escalated." },
       { t: "p", text: "And the page hop is distinguished by **blast radius**, not severity. One run failing badly is a dead letter; fifty runs failing the same way is an incident, and the difference is a count rather than a judgement." }
     ] },

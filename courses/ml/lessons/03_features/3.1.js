@@ -216,6 +216,17 @@ StandardScaler().fit_transform(S.toarray())                        # 50,000 non-
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Scaling inside the wrong step",
+
+      body: [
+
+        { t: "p", text: "Scaling the whole dataset before splitting, or scaling training and test separately with their own statistics, both distort evaluation — the first leaks, the second makes the test set look different from what the model saw." },
+
+        { t: "p", text: "Fit the scaler on training data inside a Pipeline and apply the same fitted scaler everywhere." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Scale by hand, then break a model with units",
@@ -287,7 +298,14 @@ print([n for n, c in zip(num, raw.coef_) if abs(c) > 1e-9]); print([n for n, c i
           why: "Min-max is defined by the extremes; one extreme owns the axis. Robust scaling gave the same plans −0.47, 0.48 and 1.81."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: income ruled the nearest neighbours",
+      body: [
+        { t: "p", text: "**Symptom.** A customer-similarity model matched people almost entirely by income, ignoring age and tenure." },
+        { t: "p", text: "**Mechanism.** Features were not scaled. Income ranged in tens of thousands and age in tens, so Euclidean distance was effectively a distance in income alone." },
+        { t: "p", text: "**Fix.** Features are standardised inside the pipeline before distances are computed, and a check prints each feature's contribution to the average distance." }
+      ] }
   ],
 
   takeaways: [

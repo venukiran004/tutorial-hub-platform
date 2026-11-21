@@ -441,7 +441,14 @@ output is a MARGIN, not a probability: 3.932`,
           why: "The defaults are sized for tens of thousands of rows. CatBoost's conservative defaults scored 0.730 untouched."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: the model served with more trees than early stopping chose",
+      body: [
+        { t: "p", text: "**Symptom.** A LightGBM model performed worse in production than at the end of training." },
+        { t: "p", text: "**Mechanism.** Early stopping found the best iteration at 300 of 2,000 trees, but the saved model predicted with all 2,000 by default." },
+        { t: "p", text: "**Fix.** Prediction uses `num_iteration=best_iteration`, or the model is retrained with that number of trees, and a test compares saved-model predictions with the validation predictions." }
+      ] }
   ],
 
   takeaways: [

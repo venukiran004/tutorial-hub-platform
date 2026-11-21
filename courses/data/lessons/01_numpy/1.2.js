@@ -554,7 +554,14 @@ def test_metric_responds_to_model_quality_runs():
           why: "Shapes align from the right: `(3,)` pads to `(1, 3)`, and the 1 stretches down all five rows. The 3s match exactly, so the result is `(5, 3)` and each column gets its own multiplier."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a metric computed on a matrix nobody asked for",
+      body: [
+        { t: "p", text: "**Symptom.** A model's reported mean absolute error was implausibly large after a refactor, though every prediction looked right on inspection." },
+        { t: "p", text: "**Mechanism.** Targets arrived with shape `(n, 1)` and predictions with shape `(n,)`. Subtracting them broadcast to an `(n, n)` matrix of every target minus every prediction, and its mean was a large, plausible-looking number. NumPy raised nothing." },
+        { t: "p", text: "**Fix.** The metric function asserts that both inputs have identical shape and flattens explicitly with `ravel()`. The test suite uses non-square inputs, where shape bugs cannot hide." }
+      ] }
   ],
 
   takeaways: [

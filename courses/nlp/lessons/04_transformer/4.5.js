@@ -43,7 +43,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "What masking does to the softmax", id: "softmax" },
 
-    {"kind": "trace", "title": "Masking does not zero one weight — it redistributes all of them", "caption": "One row: *sat* attending to `[The, cat, sat, future]` with scaled scores `[0.40, 0.53, 0.59, 0.95]`. **Masked, the weights are `[0.2987, 0.3401, 0.3612, 0.0000]`; unmasked, they are `[0.1968, 0.2241, 0.2380, 0.3411]`.** So the three legitimate weights each **rose** when the future was masked — **the softmax renormalises over what is left, which is why masking is a change to the denominator rather than a filter on the output.** The reference's `[0.299, 0.340, 0.361, 0.000]` reproduces exactly.", "left": "position", "codeW": 140, "vars": ["score", "masked weight", "unmasked weight"], "steps": [{"code": "The", "state": ["0.40", "0.2987", "0.1968"], "tone": "good"}, {"code": "cat", "state": ["0.53", "0.3401", "0.2241"], "changed": [0, 1, 2], "tone": "good"}, {"code": "sat", "state": ["0.59", "0.3612", "0.2380"], "changed": [0, 1, 2], "tone": "good"}, {"code": "future", "state": ["-inf (was 0.95)", "0.0000", "0.3411"], "changed": [0, 1, 2], "tone": "crit", "note": "its mass went to the others"}], "t": "diagram", "id": "dg-4_5-02-1"},
+    {"kind": "trace", "title": "Masking does not zero one weight — it redistributes all of them", "caption": "One row: *sat* attending to `[The, cat, sat, future]` with scaled scores `[0.40, 0.53, 0.59, 0.95]`. **Masked, the weights are `[0.2987, 0.3401, 0.3612, 0.0000]`; unmasked, they are `[0.1968, 0.2241, 0.2380, 0.3411]`.** So the three legitimate weights each **rose** when the future was masked — **the softmax renormalises over what is left, which is why masking is a change to the denominator rather than a filter on the output.** The hand-computed `[0.299, 0.340, 0.361, 0.000]` reproduces exactly.", "left": "position", "codeW": 140, "vars": ["score", "masked weight", "unmasked weight"], "steps": [{"code": "The", "state": ["0.40", "0.2987", "0.1968"], "tone": "good"}, {"code": "cat", "state": ["0.53", "0.3401", "0.2241"], "changed": [0, 1, 2], "tone": "good"}, {"code": "sat", "state": ["0.59", "0.3612", "0.2380"], "changed": [0, 1, 2], "tone": "good"}, {"code": "future", "state": ["-inf (was 0.95)", "0.0000", "0.3411"], "changed": [0, 1, 2], "tone": "crit", "note": "its mass went to the others"}], "t": "diagram", "id": "dg-4_5-02-1"},
 
 
 
@@ -55,7 +55,7 @@ EC.receiveLesson({
     { t: "p", text: "The worked example takes one row: token *sat* attending to `[The, cat, sat, future]` with scaled scores `[0.40, 0.53, 0.59, 0.95]`. Recomputed:" },
 
     { t: "out", text:
-"after the causal mask   [0.40, 0.53, 0.59, -inf]\nexponentials            [1.4918, 1.6989, 1.8040, 0.0]\nsum                     4.9947\nweights                 [0.2987, 0.3401, 0.3612, 0.0000]\n\nreference says          [0.299, 0.340, 0.361, 0.000]   reproduces exactly\n\nwithout the mask        [0.1968, 0.2241, 0.2380, 0.3411]" },
+"after the causal mask   [0.40, 0.53, 0.59, -inf]\nexponentials            [1.4918, 1.6989, 1.8040, 0.0]\nsum                     4.9947\nweights                 [0.2987, 0.3401, 0.3612, 0.0000]\n\nexpected                [0.299, 0.340, 0.361, 0.000]   reproduces exactly\n\nwithout the mask        [0.1968, 0.2241, 0.2380, 0.3411]" },
 
     { t: "callout", kind: "crit", title: "The future token would have taken the largest share",
       body: [{ t: "p", text: "Unmasked, position 3 receives **34.11%** of the attention — more than any real token in the row. The model would be predicting *sat* partly by looking at what comes after *sat*, which at training time is the answer it is being asked for. It would score beautifully on the training objective and be useless at generation, because at inference that position does not exist yet. The mask is what makes teacher-forced parallel training measure the same thing that sequential inference will do." }] },
@@ -76,7 +76,7 @@ EC.receiveLesson({
 
     { t: "p", text: "In float32, anything below roughly `-1e4` underflows to exactly zero after the exponential, so `-inf` and `-1e9` are equivalent. A merely *large* negative number like `-10` is not: it leaks `4.49e-06` of the weight to a position the model must not see. Small, but it is a leak of exactly the information the mask exists to hide, and it compounds across layers." },
 
-    { t: "callout", kind: "warn", title: "In float16 this becomes a real bug",
+    { t: "callout", kind: "trap", title: "In float16 this becomes a real bug",
       body: [{ t: "p", text: "`-1e9` is outside float16's range and overflows to `-inf`, which happens to be the behaviour you wanted. But masking with float16's finite minimum, `-65504`, returned **`[nan, nan, nan]`** in my test — the intermediate arithmetic overflows and poisons the whole row. NaNs then propagate through every subsequent layer and the loss becomes NaN with no indication of where it started. If you write your own attention and run it in mixed precision, use `torch.finfo(dtype).min` rather than a hard-coded constant, and check for NaNs immediately after the softmax while you still know which operation produced them." }] },
 
     { t: "h2", n: "04", text: "Autoregression is the chain rule", id: "autoregressive" },
@@ -265,9 +265,16 @@ gold tokens (* = model's argmax differs): ' The'* ' plan'* ' raises'* ' spending
         notes: [
           { t: "p", text: "A mask of -10 leaked 1.6e-4 of the weight in both dtypes. -1e4, -inf and finfo.min all gave exactly zero leak. The difference shows on a fully masked row: -inf returned NaN in both float32 and float16, because every term is exp(-inf) and the softmax divides 0 by 0. finfo.min returned a harmless uniform row. On this CPU, finfo.min in float16 did not overflow to NaN as the lesson reports; that failure depends on the kernel and on whether scores are added in half precision. Use finfo(dtype).min and test the fully masked row on your own backend." },
           { t: "p", text: "Scoring 64 known tokens in one teacher-forced pass took 138 ms. Generating them one at a time without a cache took 8.3 s, 60 times longer, in line with the lesson's 74×. A KV cache cut generation to 1.8 s, 4.7 times faster than naive, and produced identical tokens. The cache removes the repeated computation over the prefix, but generation stays sequential, so it can never match the single parallel pass." },
-          { t: "p", text: "On a plausible gold continuation, GPT-2's argmax disagreed with 9 of 11 tokens. The tokens were still reasonable, just not the ones the reference chose. That gap is why teacher-forced loss looks better than free-running generation: in training the model always sees the gold prefix, never its own choices." }
+          { t: "p", text: "On a plausible gold continuation, GPT-2's argmax disagreed with 9 of 11 tokens. The tokens were still reasonable, just not the ones the gold continuation chose. That gap is why teacher-forced loss looks better than free-running generation: in training the model always sees the gold prefix, never its own choices." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a model that could see the next word in training",
+      body: [
+        { t: "p", text: "**Symptom.** A language model reached near-zero training loss quickly and generated nonsense." },
+        { t: "p", text: "**Mechanism.** The causal mask was built for the wrong shape and did not apply, so every position attended to future tokens and copied the answer." },
+        { t: "p", text: "**Fix.** A test feeds a sequence and checks that changing a later token does not change earlier positions' outputs." }
+      ] }
   ],
 
   takeaways: [

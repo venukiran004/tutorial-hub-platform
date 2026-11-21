@@ -57,7 +57,7 @@ EC.receiveLesson({
     { t: "code", lang: "text", title: "No shared data key",
       code: "inner declares 'content'; outer declares 'text'.\n  -> {'text': 'hi', 'steps': ['innerb']}",
       caption: "The `steps` key merged; `content` and `text` never met." },
-    { t: "callout", kind: "warn", title: "Coupled by key name, with no compile-time signal", body: [
+    { t: "callout", kind: "trap", title: "Coupled by key name, with no compile-time signal", body: [
       { t: "p", text: "The inner graph ran and its `content` update went nowhere the parent could see, because the parent has no such key. Nothing raised \u2014 which is 8.2's silent drop operating across a graph boundary." },
       { t: "p", text: "So that is the real cost of subgraphs: two graphs that look independent share a vocabulary. Renaming a key in the inner graph silently stops data reaching the outer one, and the failure appears as a key that is mysteriously unchanged." }
     ] },

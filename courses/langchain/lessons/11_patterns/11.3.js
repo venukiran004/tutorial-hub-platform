@@ -60,7 +60,7 @@ EC.receiveLesson({
     { t: "code", lang: "python", title: "Two keys",
       code: 'class ReActState(TypedDict):\n    messages: Annotated[List[BaseMessage], add_messages]\n    steps: Annotated[int, operator.add]',
       caption: "Messages because the loop is the list; a counter because the router needs it." },
-    { t: "callout", kind: "warn", title: "No `current_tool` or `last_result` key", body: [
+    { t: "callout", kind: "trap", title: "No `current_tool` or `last_result` key", body: [
       { t: "p", text: "The message list already holds both. Duplicating them gives you **two sources of truth that can disagree**, and the message list is the one the model actually reads." },
       { t: "p", text: "8.8's tell applies too: a key that exists only so a router can read back what a node already knew is a `Command` waiting to happen. The step counter is different \u2014 it is genuinely a property of the run that no single node knows." }
     ] },

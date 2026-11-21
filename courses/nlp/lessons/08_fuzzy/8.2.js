@@ -103,6 +103,12 @@ EC.receiveLesson({
       code: 'import jellyfish\n\njellyfish.jaro_similarity("MARTHA", "MARHTA")          # 0.9444\njellyfish.jaro_winkler_similarity("MARTHA", "MARHTA")  # 0.9611\njellyfish.soundex("Smith"), jellyfish.soundex("Smyth") # both S530\njellyfish.metaphone("Smith")\n\nfrom rapidfuzz.distance import JaroWinkler\nJaroWinkler.similarity("MARTHA", "MARHTA")             # the same, in C++',
       caption: "The same two numbers as the hand implementation — and `soundex` gives `Smith` and `Smyth` one key." },
     { t: "p", text: "`jellyfish` is the one to reach for when you want the phonetic functions as well, because **`soundex(\"Smith\")` and `soundex(\"Smyth\")` are both `S530`, which is 8.5’s phonetic blocking key in one call.** `rapidfuzz.distance.JaroWinkler` is the same metric with C++ internals, and it takes a `score_cutoff` — **so a comparison that cannot beat your threshold is abandoned early rather than computed in full**, which matters when the thing you are doing is millions of comparisons." },
+    { t: "callout", kind: "trap", title: "Using Jaro-Winkler on codes with shared prefixes",
+      body: [
+        { t: "p", text: "Jaro-Winkler rewards a shared prefix, so product codes or account numbers that differ only at the end score as near-identical." },
+        { t: "p", text: "Match identifiers exactly, and keep fuzzy matching for descriptive fields." }
+      ] },
+
     { t: "exercise", kind: "Challenge", title: "Implement and calibrate", difficulty: "core", minutes: 30,
       requirements: [
         "Implement Jaro and reproduce 0.9444 for MARTHA/MARHTA before adding the Winkler bonus.",
@@ -195,7 +201,14 @@ prefix bonus crosses 0.9: 'Michael Lee' / 'Michelle Lee'  Jaro 0.864 -> JW 0.918
           { t: "p", text: "On these pairs Jaro-Winkler separates almost nothing: non-matches have median 0.918 and matches 0.915. The prefix bonus is the reason. Five different-entity pairs that share a prefix ('Peter Parker'/'Peter Porter', 'Michael'/'Michelle Lee') were pushed over a 0.9 threshold by it. Jaro-Winkler suits short fields where the start is reliable, such as surnames in a census. It is a poor fit for company names that share common prefixes." },
           { t: "p", text: "The 30 labelled pairs stand in for 'your data'. They were written to include each failure family, so treat the accuracies as a demonstration of the method, not as a benchmark." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: Jaro-Winkler merged two different products",
+      body: [
+        { t: "p", text: "**Symptom.** A catalogue matcher merged two product codes that differed only in their last characters." },
+        { t: "p", text: "**Mechanism.** Jaro-Winkler rewards a shared prefix, and these codes shared a long one, so they scored very high despite naming different products." },
+        { t: "p", text: "**Fix.** Codes are matched exactly, and fuzzy matching is reserved for descriptive fields where prefix agreement means something." }
+      ] }
   ],
 
   takeaways: [

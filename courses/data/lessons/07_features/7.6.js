@@ -630,7 +630,14 @@ def test_more_bins_keep_more_resolution_until_they_do_not():
           why: "Binning gives a linear model a non-linear feature: six coefficients that go high, low, low, high trace the U. A tree found the U on its own and scores 0.70 raw — and 0.67 on the bins, because it could only split at the six edges instead of wherever it wanted."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: an age band that excluded everyone aged exactly 30",
+      body: [
+        { t: "p", text: "**Symptom.** A marketing segment for customers aged 30 to 39 was missing a noticeable number of people." },
+        { t: "p", text: "**Mechanism.** `pd.cut` with bins `[20, 30, 40]` and the default `right=True` put 30 in the 20–30 band. The labels said '30–39', but the edges did not." },
+        { t: "p", text: "**Fix.** Bins are defined with explicit `right=False` and labels generated from the edges, and a test checks the boundary values." }
+      ] }
   ],
 
   takeaways: [

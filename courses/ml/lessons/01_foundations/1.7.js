@@ -260,6 +260,17 @@ shatters(four)     # 14 of 16                        -> the two XOR labellings (
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Adding features without counting the cost in dimensions",
+
+      body: [
+
+        { t: "p", text: "Every feature adds a dimension, and distance-based methods degrade as dimensions grow because distances concentrate. Teams add hundreds of weak features and find a nearest-neighbour model getting worse." },
+
+        { t: "p", text: "Add features with a validation measurement for each group, and prefer models that cope with dimensionality — or reduce it — when features are many and weak." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Compute",
       title: "Bounds, shattering and distances",
@@ -331,7 +342,14 @@ for d in [5, 20, 50, 200]:
           why: "The ratio rose from 0.002 in 1-D to 0.86 in 500-D. Distance-based methods need feature selection or dimensionality reduction first; trees and regularised linear models degrade differently."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a nearest-neighbour model that stopped working in 200 dimensions",
+      body: [
+        { t: "p", text: "**Symptom.** A similarity-search feature worked on a ten-attribute dataset and returned near-random neighbours after a hundred more attributes were added." },
+        { t: "p", text: "**Mechanism.** In high dimensions distances concentrate: the nearest and farthest points become almost equally far away, so 'nearest' carries little information." },
+        { t: "p", text: "**Fix.** Features were reduced to the informative ones and the similarity was learned with an embedding trained on the task. Dimensionality is now treated as a cost, not free information." }
+      ] }
   ],
 
   takeaways: [

@@ -160,6 +160,17 @@ chain.invoke({"input": "hello"}, config={"configurable": {"session_id": "u1"}})
       caption: "**`ChatMessageHistory` and `InMemoryChatMessageHistory` are the same object under two names**, and the old one is what nearly every tutorial and Stack Overflow answer still imports — so a snippet that fails to import is usually this rename rather than a changed API. Nothing about the interface moved." },
     { t: "p", text: "**The in-memory implementation is a development convenience with two properties that rule it out in production:** the conversation dies with the process, and it is per-process, so two replicas behind a load balancer give one user two half-conversations. The Redis, SQL and Postgres implementations share the interface exactly, which makes the change a constructor and nothing else." },
 
+    { t: "callout", kind: "trap", title: "Building new memory on a wrapper that is being retired",
+
+      body: [
+
+        { t: "p", text: "`RunnableWithMessageHistory` still works and is deprecated in favour of LangGraph persistence. New code built on it inherits a migration, and the two approaches store conversations differently, so the migration includes the data." },
+
+        { t: "p", text: "Use graph persistence with a checkpointer for new conversational features (lesson 9.4), and keep the wrapper only where existing code already depends on it." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Wire history, then trim it",
       difficulty: "core", minutes: 26,
       body: "Wire a message store into a chain with RunnableWithMessageHistory and run three turns against one session, then inspect what was stored. Note the deprecation warning and what it points at. Then build a long history and trim it four ways, reporting which messages survive each strategy. Explain which parameter matters most and what each strategy loses.",

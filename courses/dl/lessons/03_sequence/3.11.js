@@ -128,19 +128,104 @@ loss = F.cross_entropy(logits.reshape(-1, V),
 
     { t: "exercise", kind: "practice", title: "Find every padding leak", difficulty: "intermediate", minutes: 35,
       prompt: "Build a batch with very unequal lengths — say 2, 5 and 30 — and trace padding through a full model. Compare `h_n` with and without packing. Compute attention weights with and without masking and record how much weight lands on padding for each sequence. Compute the loss with and without `ignore_index`. Then train a classifier both ways and compare accuracy, paying particular attention to whether the gap depends on how much padding a sequence carries.",
+      requirements: [
+        "Trace a batch with lengths 2, 5 and 30 through a model",
+        "Compare h_n with and without packing",
+        "Measure attention weight on padding with and without masking",
+        "Compare the loss with and without ignore_index, and train a classifier both ways"
+      ],
       hints: [
         "Make the length disparity extreme so the effects are unmistakable.",
         "Report attention leakage per sequence — it should scale with padding fraction.",
         "Group test accuracy by sequence length to see where the unmasked model fails."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.nn.utils.rnn import pack_padded_sequence, pad_sequence
+torch.manual_seed(0)
+PAD = 0
+
+lengths = torch.tensor([2, 5, 30])
+seqs = [torch.randint(1, 20, (n,)) for n in lengths]
+x = pad_sequence(seqs, batch_first=True, padding_value=PAD)          # (3, 30)
+emb, lstm = nn.Embedding(20, 16, padding_idx=PAD), nn.LSTM(16, 32, batch_first=True)
+
+with torch.no_grad():
+    _, (h_pad, _) = lstm(emb(x))
+    _, (h_pack, _) = lstm(pack_padded_sequence(emb(x), lengths, batch_first=True, enforce_sorted=False))
+    h_true = torch.stack([lstm(emb(s)[None])[1][0][0, 0] for s in seqs])
+for i, n in enumerate(lengths.tolist()):
+    print(f"length {n:>2}: |h_n(padded) - h_n(true)| = {(h_pad[0, i] - h_true[i]).abs().max():.3f}   "
+          f"|h_n(packed) - h_n(true)| = {(h_pack[0, i] - h_true[i]).abs().max():.1e}")
+
+q = torch.randn(3, 1, 32); k = torch.randn(3, 30, 32)
+mask = torch.arange(30)[None] < lengths[:, None]                       # True on real tokens
+scores = (q @ k.transpose(1, 2)).squeeze(1) / math.sqrt(32)
+w_unmasked = scores.softmax(-1); w_masked = scores.masked_fill(~mask, float("-inf")).softmax(-1)
+print()
+for i, n in enumerate(lengths.tolist()):
+    print(f"length {n:>2}: attention weight on padding  unmasked {w_unmasked[i][~mask[i]].sum():.1%}   masked {w_masked[i][~mask[i]].sum():.1%}")
+
+logits = torch.randn(3, 30, 20); targets = x.clone()
+print(f"\\nloss averaged over every position: {F.cross_entropy(logits.reshape(-1, 20), targets.reshape(-1)):.3f}"
+      f"   with ignore_index=PAD: {F.cross_entropy(logits.reshape(-1, 20), targets.reshape(-1), ignore_index=PAD):.3f}"
+      f"   (padding is {(~mask).float().mean():.0%} of positions)")
+
+# Train a mean-pooling classifier both ways: pool over every position, or over real tokens only.
+# An LSTM's final state can learn to ignore a consistent pad token (try it: it reaches 100% either way), so the leak
+# that survives training is in pooling, where padding is part of the average. A bag-of-embeddings model shows it plainly.
+class Clf(nn.Module):
+    def __init__(self, careful):
+        super().__init__(); self.careful = careful
+        self.e = nn.Embedding(20, 32, padding_idx=PAD); self.o = nn.Linear(32, 2)
+    def forward(self, x, lens):
+        out = self.e(x)
+        if not self.careful: return self.o(out.mean(1))                          # padding is averaged in
+        m = (torch.arange(x.shape[1])[None] < lens[:, None]).float()[..., None]
+        return self.o((out * m).sum(1) / m.sum(1))
+def batch(n):
+    lens = torch.randint(2, 41, (n,)); s = [torch.randint(1, 20, (l,)) for l in lens]
+    y = torch.tensor([int((t == 7).any()) for t in s])
+    return pad_sequence(s, batch_first=True, padding_value=PAD), lens, y
+for careful in [False, True]:
+    torch.manual_seed(0); m = Clf(careful); opt = torch.optim.Adam(m.parameters(), 3e-3)
+    for _ in range(600):
+        xb, lb, yb = batch(64); loss = F.cross_entropy(m(xb, lb), yb); opt.zero_grad(); loss.backward(); opt.step()
+    with torch.no_grad():                    # the SAME sequences, padded to 40 and to 120 (a batch with one long item)
+        xb, lb, yb = batch(3000)
+        wide = F.pad(xb, (0, 120 - xb.shape[1]), value=PAD)
+        acc40 = (m(xb, lb).argmax(1) == yb).float().mean().item()
+        acc120 = (m(wide, lb).argmax(1) == yb).float().mean().item()
+    print(f"{'masked mean  ' if careful else 'unmasked mean'}: accuracy padded to 40 {acc40:.3f}   same sequences padded to 120 {acc120:.3f}")`,
+        out: `length  2: |h_n(padded) - h_n(true)| = 0.233   |h_n(packed) - h_n(true)| = 3.0e-08
+length  5: |h_n(padded) - h_n(true)| = 0.207   |h_n(packed) - h_n(true)| = 6.0e-08
+length 30: |h_n(padded) - h_n(true)| = 0.000   |h_n(packed) - h_n(true)| = 6.0e-08
+
+length  2: attention weight on padding  unmasked 94.3%   masked 0.0%
+length  5: attention weight on padding  unmasked 90.8%   masked 0.0%
+length 30: attention weight on padding  unmasked 0.0%   masked 0.0%
+
+loss averaged over every position: 3.434   with ignore_index=PAD: 3.323   (padding is 59% of positions)
+unmasked mean: accuracy padded to 40 1.000   same sequences padded to 120 0.690
+masked mean  : accuracy padded to 40 1.000   same sequences padded to 120 1.000`,
+       
         notes: [
           { t: "p", text: "Attention leakage scales with padding fraction, which is the diagnostic signature. For a length-2 sequence padded to 5 I measured 80.3 % of weight on padding; with a length-2 sequence in a batch padded to 30 it would be worse still. That dependence on batch composition is what makes this bug so unpleasant — the same model gives different results depending on which examples happened to be batched together, so it does not reproduce cleanly and looks like random variance." },
-          { t: "p", text: "Grouping accuracy by length is the analysis that identifies the problem. The unmasked model will be roughly fine on the longest sequences in each batch, which carry little padding, and clearly worse on short ones. An aggregate metric averages this into a mild overall deficit that looks like ordinary model error. Any time accuracy correlates with sequence length, padding handling is the first thing to check." },
+          { t: "p", text: "Two results from the reference run are worth knowing. First, a trained LSTM can learn to hold its state through a consistent pad token — an unpacked final state reached 100 % on the toy task, so a padding bug does not always show up in a headline metric. Second, pooling cannot learn its way out, because padding is part of the average: a mean-pooled model scored 100 % when its test sequences were padded to 40 and 69 % when the same sequences were padded to 120, as happens when one long example joins the batch. The masked version scored 100 % both ways. Any time a metric moves with sequence length or batch composition, padding handling is the first thing to check." },
           { t: "p", text: "One subtlety worth noticing: the unmasked model often still reaches decent accuracy, because it learns to exploit the padding signal consistently and padding is a reliable feature at training time. That is exactly why these bugs survive — the model is not broken, it has learned something real about your batching procedure, and the failure surfaces at inference when batch composition differs or when examples arrive one at a time." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a classifier that learned from padding",
+      body: [
+        { t: "p", text: "**Symptom.** A text classifier's accuracy depended on document length in a way that made no sense." },
+        { t: "p", text: "**Mechanism.** Sequences were padded but not packed, so the final hidden state was computed after many padding steps, and short documents' representations were dominated by padding." },
+        { t: "p", text: "**Fix.** Sequences are packed before the RNN, attention and loss are masked, and a test checks that adding padding does not change a prediction." }
+      ] }
   ],
 
   takeaways: [

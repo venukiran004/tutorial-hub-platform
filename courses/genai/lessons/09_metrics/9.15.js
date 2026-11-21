@@ -90,7 +90,7 @@ total = 400 + (25 x 200) = 400 + 5,000 = 5,400 ms`,
 
 
 
-    { t: "callout", kind: "warn", title: "A p50 of 1 s with a p95 of 12 s is a bad experience for one user in twenty",
+    { t: "callout", kind: "trap", title: "A p50 of 1 s with a p95 of 12 s is a bad experience for one user in twenty",
       body: [
         { t: "p", text: "LLM latency distributions have long tails \u2014 variable output length, queueing, cache misses, retries \u2014 and the mean hides them. A mean of 2 s is consistent with almost everyone getting 1 s and one in twenty getting 20 s." },
         { t: "p", text: "One in twenty is not an edge case at volume. At a thousand requests an hour it is fifty people an hour having a bad time, and they are disproportionately the ones who complain and churn." },

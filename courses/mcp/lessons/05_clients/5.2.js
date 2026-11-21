@@ -137,6 +137,12 @@ await toolset.close()`,
 
     { t: "exercise", kind: "practice", title: "Review a real integration", difficulty: "core", minutes: 26,
       prompt: "Pick a third-party MCP server you would plausibly use. Write its configuration three ways: a desktop host JSON entry, a framework toolset with a filter and prefix, and your own client with a session group. For each, list which of the eight decisions in section 03 you have actually made and which the surface decided for you. Then answer the five review questions in section 04 for that server, and finish with a one-line verdict: would you leave it connected while someone tried to talk your agent into misusing it?",
+      requirements: [
+        "Write one third-party server's configuration three ways: desktop JSON, a framework toolset with filter and prefix, and your own client",
+        "For each, list which of the eight decisions in section 03 you made and which the surface made for you",
+        "Answer the five review questions in section 04 for that server",
+        "Give a one-line verdict on leaving it connected while someone tries to misuse your agent"
+      ],
       hints: [
         "Count the server's tools, then count how many you would actually allow.",
         "Check whether the server pins a version anywhere, or whether you would be fetching latest.",
@@ -168,6 +174,13 @@ await toolset.close()`,
         { t: "p", text: "The useful habit: treat a registry the way you treat a package index. It tells you something exists and roughly what it claims to do. What it acts as, what its worst tool can reach, and whether you would notice it changing are still yours to establish." }
       ] },
 
+    { t: "callout", kind: "scenario", title: "Incident: the filesystem server that could read the whole home directory",
+      body: [
+        { t: "p", text: "**Symptom.** A developer asked their desktop assistant to tidy a project's README. In the same session a web page the assistant had fetched asked it to list SSH keys, and it did — printing the contents of `~/.ssh/id_ed25519.pub` and the names of the private key files into the conversation." },
+        { t: "p", text: "**Mechanism.** The desktop configuration launched a filesystem server with the user's home directory as its argument, copied from a blog post. That JSON file has nowhere to filter tools, so every tool the server offered reached the model, and the argument list was the only access boundary there was. The page's text was untrusted input sitting beside a tool that could read anything the user could." },
+        { t: "p", text: "**Why it was missed.** The same server in the team's production agent was wrapped in a toolset with an allow-list of two read-only tools and a prefix, all visible in a pull request. On a laptop the equivalent decisions were never presented, so they were never made." },
+        { t: "p", text: "**Fix.** The entry was scoped to the single project directory and the package pinned to a version instead of fetched with `npx -y` at each start. The team's guidance now treats a desktop config as an execution list to be reviewed like one: what does each entry run, as whom, and what is the worst thing its tools can reach?" }
+      ] }
   ],
 
   takeaways: [

@@ -166,7 +166,14 @@ checker  = LlmAgent(name="checker", model=FLASH, include_contents="none",
 # the bigger change: include_contents="none" on the router and the checker, plus
 # splitting the tool list so each agent's declarations are short. Input tokens
 # dominate the bill; the conversation and the declarations are the input.`,
-        notes: [{ t: "p", text: "The point of the exercise is the last comment. Thinking levels and output caps are worth setting — and the caps have to leave room for the thinking — but on a long conversation with a large toolbox they are rounding errors next to what is being re-sent on every call." }] } }
+        notes: [{ t: "p", text: "The point of the exercise is the last comment. Thinking levels and output caps are worth setting — and the caps have to leave room for the thinking — but on a long conversation with a large toolbox they are rounding errors next to what is being re-sent on every call." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the cost spike from a global thinking setting",
+      body: [
+        { t: "p", text: "**Symptom.** A multi-agent system's model bill tripled in a week with flat traffic." },
+        { t: "p", text: "**Mechanism.** A shared config raised the thinking level to high for every agent so the planner would reason better. The router and classifier, which make one easy decision each and run on every turn, now produced thinking tokens billed as output on every call." },
+        { t: "p", text: "**Fix.** Thinking level is set per agent: lowest for the router and classifier, high only for the planner. Request labels per agent attribute spend, so a change like this shows up in a day rather than on the invoice." }
+      ] }
   ],
 
   takeaways: [

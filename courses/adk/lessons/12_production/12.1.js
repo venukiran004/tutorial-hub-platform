@@ -182,6 +182,12 @@ app.include_router(my_existing_routes)      # the rest of the service
 
     { t: "exercise", kind: "practice", title: "Deploy the same agent three ways", difficulty: "advanced", minutes: 30,
       prompt: "Take an agent with one tool. Run it with adk api_server and drive it from curl. Build the image with adk deploy docker and run the same curl against the container. Then write out — without running it — the full cloud_run command you would use for production, naming every flag and why. Finally, list what breaks if you omit --session_service_uri and how you would notice.",
+      requirements: [
+        "Run the agent with adk api_server and drive it from curl",
+        "Build it with adk deploy docker and run the same curl against the container",
+        "Write the full production cloud_run command and explain every flag",
+        "List what breaks without --session_service_uri and how you would notice"
+      ],
       hints: [
         "Driving the API with curl shows you the surface your client will use.",
         "The Docker step catches a missing dependency in seconds rather than in a cloud build.",
@@ -192,8 +198,14 @@ app.include_router(my_existing_routes)      # the rest of the service
           { t: "p", text: "Curl against `api_server` is worth the ten minutes because it makes the deployment concrete: you see the session endpoints, the run endpoint and the event stream, and you stop thinking of the agent as a Python object and start thinking of it as a service with an interface." },
           { t: "p", text: "Omitting the session service is the interesting answer. Nothing errors. One replica works perfectly. With two, a user's second message may land on a pod that has never heard of them, so history disappears intermittently — and because it is intermittent, the first three bug reports will be about the model being forgetful. You would notice it in a load test with more than one instance, or in production, which is why it belongs on a pre-flight list rather than in your memory." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: conversations that broke at two replicas",
+      body: [
+        { t: "p", text: "**Symptom.** An agent deployed to Cloud Run worked during a quiet launch and began losing conversation history once traffic scaled it to a second instance." },
+        { t: "p", text: "**Mechanism.** The deploy command omitted `--session_service_uri`, so each instance used in-memory sessions. Requests in one conversation landed on different instances, each with a different idea of the history." },
+        { t: "p", text: "**Fix.** The deploy passes a database session URI and an artifact store, and a smoke test after each deploy runs a two-turn conversation that must keep its state." }
+      ] }
   ],
 
   takeaways: [

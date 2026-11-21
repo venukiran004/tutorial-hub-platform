@@ -322,6 +322,17 @@ monthly: the FVA review from the same table`,
         }
       ] },
 
+    { t: "callout", kind: "trap", title: "Publishing a forecast built on stale data",
+
+      body: [
+
+        { t: "p", text: "A forecast pipeline that runs successfully on data that stopped updating produces a confident, outdated forecast." },
+
+        { t: "p", text: "Check the newest data date before forecasting and refuse to publish when it is late." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Investigate",
       title: "An FVA table, queries on the forecast table, and the monitor that lies",
@@ -366,7 +377,14 @@ monthly: the FVA review from the same table`,
           { t: "p", text: "(c) is the monitor that lies unless its reference and its sample size are right, with the null values that say how large the windows must be." }
         ]
       }
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a stale forecast nobody noticed",
+      body: [
+        { t: "p", text: "**Symptom.** A store-sales forecast stopped updating when an upstream table moved, and stores ordered from a three-week-old forecast." },
+        { t: "p", text: "**Mechanism.** The pipeline read from a table that was no longer refreshed. Every step ran successfully on stale data." },
+        { t: "p", text: "**Fix.** The pipeline checks the newest data date before forecasting and refuses to publish when it is late, and the forecast record includes the data date it was built from." }
+      ] }
   ],
 
   takeaways: [

@@ -135,19 +135,85 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Prove the causality violation", difficulty: "intermediate", minutes: 30,
       prompt: "Build a unidirectional and a bidirectional LSTM. Perturb only the last timestep of the input and measure how much each model's output changes at position 0 — confirm one is exactly zero and the other is not. Then train a bidirectional model as a next-token language model and compare its training perplexity against a unidirectional one; explain the gap. Finally, build a many-to-one bidirectional classifier two ways — using `output[:, -1, :]` and using the correct concatenation — and compare accuracy.",
+      requirements: [
+        "Perturb only the last timestep and measure the change at position 0 for uni- and bidirectional LSTMs",
+        "Train a bidirectional next-token model and compare perplexity",
+        "Build a bidirectional classifier with output[:, -1, :] and with the correct concatenation",
+        "Compare their accuracy"
+      ],
       hints: [
         "For the causality test, use the same weights for both perturbed and unperturbed runs.",
         "The bidirectional language model's perplexity will look implausibly good. That is the point.",
         "The correct summary is `torch.cat([h_n[-2], h_n[-1]], dim=1)`."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import math
+import torch
+import torch.nn as nn
+torch.manual_seed(0)
+
+# 1. Causality: perturb only the last timestep, look at output position 0.
+x = torch.randn(2, 10, 8); x2 = x.clone(); x2[:, -1] += 3.0
+for bi in [False, True]:
+    m = nn.LSTM(8, 16, batch_first=True, bidirectional=bi)
+    d = (m(x)[0][:, 0] - m(x2)[0][:, 0]).abs().max().item()
+    print(f"{'bidirectional ' if bi else 'unidirectional'}: change at position 0 = {d:.3e}")
+
+# 2. Next-token LM on a random-token stream: a bidirectional model "predicts" by reading the answer.
+V, T = 20, 30
+class LM(nn.Module):
+    def __init__(self, bi):
+        super().__init__()
+        self.e = nn.Embedding(V, 32); self.r = nn.LSTM(32, 64, batch_first=True, bidirectional=bi)
+        self.o = nn.Linear(128 if bi else 64, V)
+    def forward(self, x): return self.o(self.r(self.e(x))[0])
+for bi in [False, True]:
+    torch.manual_seed(0); m = LM(bi); opt = torch.optim.Adam(m.parameters(), 3e-3)
+    for _ in range(300):
+        s = torch.randint(0, V, (32, T + 1)); loss = nn.functional.cross_entropy(m(s[:, :-1]).reshape(-1, V), s[:, 1:].reshape(-1))
+        opt.zero_grad(); loss.backward(); opt.step()
+    print(f"{'bi' if bi else 'uni'} LM training perplexity: {math.exp(loss.item()):6.2f}   (uniform = {V})")
+
+# 3. Bidirectional classifier: label = first token is 1. output[:, -1] sees the backward direction after ONE step.
+class Clf(nn.Module):
+    def __init__(self, correct):
+        super().__init__()
+        self.correct = correct; self.e = nn.Embedding(5, 16)
+        self.r = nn.LSTM(16, 32, batch_first=True, bidirectional=True); self.o = nn.Linear(64, 2)
+    def forward(self, x):
+        out, (h, _) = self.r(self.e(x))
+        z = torch.cat([h[-2], h[-1]], 1) if self.correct else out[:, -1, :]
+        return self.o(z)
+def data(n):
+    x = torch.randint(1, 5, (n, 60)); y = (x[:, 0] == 1).long(); return x, y
+for correct in [False, True]:
+    torch.manual_seed(0); m = Clf(correct); opt = torch.optim.Adam(m.parameters(), 3e-3)
+    for _ in range(400):
+        x, y = data(64); loss = nn.functional.cross_entropy(m(x), y); opt.zero_grad(); loss.backward(); opt.step()
+    with torch.no_grad():
+        x, y = data(2000); acc = (m(x).argmax(1) == y).float().mean().item()
+    print(f"{'cat(h_n fwd, h_n bwd)' if correct else 'output[:, -1, :]     '}: accuracy {acc:.3f}  (majority {1 - y.float().mean():.3f})")`,
+        out: `unidirectional: change at position 0 = 0.000e+00
+bidirectional : change at position 0 = 2.714e-03
+uni LM training perplexity:  20.03   (uniform = 20)
+bi LM training perplexity:   1.12   (uniform = 20)
+output[:, -1, :]     : accuracy 0.732  (majority 0.732)
+cat(h_n fwd, h_n bwd): accuracy 1.000  (majority 0.732)`,
+       
         notes: [
-          { t: "p", text: "The causality measurement should be exactly 0.000e+00 for the unidirectional model — not small, zero, because there is genuinely no computational path from a later input to an earlier output. The bidirectional model changes by something on the order of 1e-02. Having a hard zero on one side makes this a proof rather than an observation." },
+          { t: "p", text: "The causality measurement should be exactly 0.000e+00 for the unidirectional model — not small, zero, because there is genuinely no computational path from a later input to an earlier output. The bidirectional model changes by a small but non-zero amount — 2.7e-03 in the reference run, for a ten-step sequence. Having a hard zero on one side makes this a proof rather than an observation." },
           { t: "p", text: "The bidirectional language model will report a perplexity far better than any unidirectional model achieves, because it is predicting each token using a representation that has already read that token. It is pure leakage. This matters beyond the toy case: it is the same error as fitting a scaler on the full dataset before splitting, and it produces the same symptom — an offline number that is wonderful and does not survive deployment. Anything implausibly good deserves a check for a path from the label into the features." },
           { t: "p", text: "The `output[:, -1, :]` version will be measurably worse but not catastrophic, which is what makes it survive code review. Half the representation is the backward pass having seen a single token, so you have roughly a unidirectional model carrying some dead weight. Since it still trains and still beats a random baseline, nothing flags it." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a bidirectional model used for live prediction",
+      body: [
+        { t: "p", text: "**Symptom.** A model predicting the next event in a live stream scored excellently offline and badly in production." },
+        { t: "p", text: "**Mechanism.** It was bidirectional, so training and evaluation let each position see the future. In production the future did not exist." },
+        { t: "p", text: "**Fix.** Causal tasks use unidirectional models, and a test perturbs the last input and checks that earlier outputs do not change." }
+      ] }
   ],
 
   takeaways: [

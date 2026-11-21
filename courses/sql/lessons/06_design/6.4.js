@@ -212,6 +212,17 @@ SELECT order_id, TRIM(UNNEST(string_split(products, ','))) AS product, TRIM(UNNE
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Enforcing rules only in the application",
+
+      body: [
+
+        { t: "p", text: "A rule enforced only in application code — a status must be one of three values, an order must have a customer — is broken by the first migration script, support tool or notebook that writes directly." },
+
+        { t: "p", text: "Declare every rule the database can express as a constraint: NOT NULL, CHECK, UNIQUE and FOREIGN KEY." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Design",
       title: "Normalise the course roster",
@@ -294,7 +305,14 @@ CREATE TABLE enrolments (
           why: "The executed check found Asha with two spellings of one country. Third normal form moves country to the customers table, where the customer_id determines it once."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: orders belonging to a deleted customer",
+      body: [
+        { t: "p", text: "**Symptom.** A revenue report contained orders whose customer did not exist, and the join to customers silently dropped them." },
+        { t: "p", text: "**Mechanism.** The application deleted customers without checking for orders, and there was no foreign key to refuse it. A support tool written later took a different path than the application's checks." },
+        { t: "p", text: "**Fix.** A foreign key now prevents the delete, and customer removal is a soft delete. Rules the database can express are declared there, where every path must obey them." }
+      ] }
   ],
 
   takeaways: [

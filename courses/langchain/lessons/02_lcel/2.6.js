@@ -77,7 +77,7 @@ EC.receiveLesson({
         '<text x="12" y="240" class="s-sub">nothing to retry. the primary gets one chance at a transient failure.</text>' +
         '<text x="12" y="268" class="s-sub">RULE: put the retry closest to the thing that is flaky.</text>' +
         '</svg>' },
-    { t: "callout", kind: "warn", title: "They read identically in a diff", body: [
+    { t: "callout", kind: "trap", title: "They read identically in a diff", body: [
       { t: "p", text: "`a.with_retry().with_fallbacks([b])` and `a.with_fallbacks([b]).with_retry()` are the same two method calls in a different order, on one line, in a pull request. Nothing about the second looks wrong." },
       { t: "p", text: "What it does is give a transiently failing primary exactly one chance before permanently preferring the backup \u2014 which means a provider having a two-second blip sends all your traffic to the more expensive fallback, and the retry you configured never runs." }
     ] },

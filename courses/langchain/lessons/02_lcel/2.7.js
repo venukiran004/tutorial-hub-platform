@@ -156,6 +156,12 @@ EC.receiveLesson({
 
     { t: "p", text: "`stream` gives you the **final output** incrementally. `astream_events` gives you **every internal step** \u2014 model tokens, tool calls, retriever hits, each sub-chain starting and ending \u2014 as a structured event stream." },
     { t: "p", text: "Use `stream` when you are rendering an answer. Use `astream_events` when you are rendering **progress**: showing that a retrieval happened, that a tool is running, that the agent is on its third step. Those are the things a user staring at an eight-second agent run actually wants, and `stream` cannot show them because they are not the final output." },
+    { t: "callout", kind: "trap", title: "One ordinary function at the end turns a stream into one chunk",
+      body: [
+        { t: "p", text: "Adding a `RunnableLambda` that tidies the model's output — strips whitespace, fixes a prefix — after a streaming chain makes the whole chain emit a single chunk at the end. The function waits for its complete input. The UI still works, so the regression is noticed only as 'streaming feels slower'." },
+        { t: "p", text: "Post-process inside a generator function that transforms chunks as they arrive, or do the tidying on the client. A test that counts chunks from `stream` catches the regression immediately." }
+      ] },
+
     { t: "exercise", kind: "analysis", title: "Find the step that stops the stream",
       difficulty: "core", minutes: 24,
       body: "Stream a prompt-model-parser chain and record the chunks. Then add a plain RunnableLambda at the end and stream again. Then swap the parser for JsonOutputParser and stream a third time. Report the chunk count and the chunk type for each, and state the rule that predicts them.",

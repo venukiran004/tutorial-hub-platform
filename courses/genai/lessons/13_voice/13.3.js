@@ -113,6 +113,17 @@ EC.receiveLesson({
 
     { t: "p", text: "So the useful artefact is not the ranking but a small search: given a set of candidate optimisations with their millisecond savings, engineering cost and per-call cost delta, what is the cheapest subset that reaches 1,300 ms? 1,100? 1,000? And at what point does no subset reach the target at all \u2014 which is the architecture's floor, and the honest answer to \u201ccan we get to 800 milliseconds?\u201d" },
 
+    { t: "callout", kind: "trap", title: "Optimising the model while waiting out the silence",
+
+      body: [
+
+        { t: "p", text: "Voice teams spend months on a faster model for a 10% gain, while the endpointing silence — often a default copied from a quickstart — accounts for more of the delay than the model does." },
+
+        { t: "p", text: "Measure every component of time to first audio from the end of speech, and tune the endpointing threshold against the interruption rate before buying a faster model." }
+
+      ] },
+
+
     { t: "exercise", kind: "build", title: "Find the cheapest route to each latency target",
       difficulty: "advanced", minutes: 28,
       body: "Given seven candidate optimisations with their savings, engineering weeks and per-call cost deltas, search for the cheapest subset that reaches each of five latency targets. Report the target that cannot be reached at all. Then say what the table is hiding.",

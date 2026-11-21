@@ -54,7 +54,7 @@ ppl = 2 ** -mean`,
         { t: "p", text: "It also explains why single-digit perplexities get quoted for frontier models on standard corpora and why those numbers are not comparable to 164.88. Different corpus, different question \u2014 which is lie number two below." }
       ] },
 
-    { t: "callout", kind: "warn", title: "The base-swap bug, and how to catch it",
+    { t: "callout", kind: "trap", title: "The base-swap bug, and how to catch it",
       body: [
         { t: "p", text: "If you compute the mean in nats and exponentiate with 2, or compute in bits and exponentiate with e, you get a number that is wrong by a factor involving ln 2 \u2014 and it will still look like a plausible perplexity, which is what makes it dangerous." },
         { t: "p", text: "The check is cheap: a uniform distribution over V options must give exactly PPL = V. Feed your function N tokens each with p = 1/1000 and it should return 1000.0. If it returns 1000^(1/ln 2) or 1000^(ln 2), the bases are crossed." },

@@ -298,7 +298,14 @@ end-to-end estimate from [0.99, 0.9, 0.75, 0.7]: 0.47`,
           { t: "p", text: "Ranking the naive extractor's failures by type puts negation first. It is also the most dangerous, because it produces a confident false fact rather than nothing. A missing extraction lowers recall; a negated one asserted as positive corrupts the knowledge base." },
           { t: "p", text: "Multiplying stage accuracies (0.99 × 0.90 × 0.75 × 0.70) gives an end-to-end estimate of 0.47. That figure assumes errors are independent, which they usually are not. Measure end to end on a labelled sample as well, and treat the product as a lower-bound sanity check. Building a Wikidata distant-supervision set needs network access and is not run here." }
         ]
-      } }
+      } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a knowledge graph that recorded the opposite",
+      body: [
+        { t: "p", text: "**Symptom.** A competitor-intelligence graph recorded an acquisition between two companies that had in fact denied it." },
+        { t: "p", text: "**Mechanism.** The rule-based extractor matched 'X did not acquire Y' as an acquisition, because it ignored negation." },
+        { t: "p", text: "**Fix.** The extractor detects negation and modality, extracted relations carry the sentence they came from, and a sample is reviewed before facts enter the graph." }
+      ] }
   ],
 
   takeaways: [

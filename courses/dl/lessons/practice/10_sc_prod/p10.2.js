@@ -270,7 +270,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# PyTorch dynamic quantization\nmodel_quantized = torch.quantization.quantize_dynamic(\n    model, {torch.nn.Linear}, dtype=torch.qint8\n)"
+     "code": "# PyTorch dynamic quantization\n# torch 2.10: torch(.ao).quantization is deprecated in favour of torchao; it still runs\nmodel_quantized = torch.quantization.quantize_dynamic(\n    model, {torch.nn.Linear}, dtype=torch.qint8\n)"
     },
     {
      "t": "p",
@@ -347,7 +347,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Step 1: Prepare model\nmodel.eval()\nmodel.qconfig = torch.quantization.get_default_qconfig('fbgemm')\n\n# Step 2: Insert observers\nmodel_prepared = torch.quantization.prepare(model)\n\n# Step 3: Calibrate with representative data\nwith torch.no_grad():\n    for data in calibration_loader:\n        model_prepared(data)\n\n# Step 4: Convert to quantized model\nmodel_quantized = torch.quantization.convert(model_prepared)"
+     "code": "# Step 1: Prepare model\nmodel.eval()\n# torch 2.10: torch(.ao).quantization is deprecated in favour of torchao; it still runs\nmodel.qconfig = torch.quantization.get_default_qconfig('fbgemm')\n\n# Step 2: Insert observers\nmodel_prepared = torch.quantization.prepare(model)\n\n# Step 3: Calibrate with representative data\nwith torch.no_grad():\n    for data in calibration_loader:\n        model_prepared(data)\n\n# Step 4: Convert to quantized model\nmodel_quantized = torch.quantization.convert(model_prepared)"
     },
     {
      "t": "p",

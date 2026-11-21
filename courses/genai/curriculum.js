@@ -21,7 +21,7 @@
       interview: "The Glassdoor banks, the topic bank and the systems notes, answers hidden until you ask."
     },
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "2.12", "2.13", "2.14", "2.15", "2.16", "2.17", "2.18", "2.19", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "5.13", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "6.8", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "7.9", "7.10", "7.11", "7.12", "7.13", "7.14", "7.15", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "8.10", "8.11", "8.12", "8.13", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "9.9", "9.10", "9.11", "9.12", "9.13", "9.14", "9.15", "9.16", "9.17", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "10.7", "10.8", "10.9", "10.10", "10.11", "10.12", "10.13", "10.14", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "11.9", "11.10", "11.11", "11.12", "11.13", "11.14", "11.15", "11.16", "11.17", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "13.8", "13.9", "13.10", "13.11", "13.12", "13.13", "13.14", "13.15"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "2.12", "2.13", "2.14", "2.15", "2.16", "2.17", "2.18", "2.19", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "5.13", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "6.8", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "7.9", "7.10", "7.11", "7.12", "7.13", "7.14", "7.15", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "8.10", "8.11", "8.12", "8.13", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "9.9", "9.10", "9.11", "9.12", "9.13", "9.14", "9.15", "9.16", "9.17", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "10.7", "10.8", "10.9", "10.10", "10.11", "10.12", "10.13", "10.14", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "11.9", "11.10", "11.11", "11.12", "11.13", "11.14", "11.15", "11.16", "11.17", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "12.8", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "13.8", "13.9", "13.10", "13.11", "13.12", "13.13", "13.14", "13.15"],
 
     modules: [
 
@@ -272,8 +272,8 @@
             summary: "Faithfulness, answer relevancy, context precision and recall — each computed, not just named.", keywords: ["ragas", "faithfulness", "answer relevancy", "context precision", "context recall"] },
           { id: "6.2", title: "Production and Scalability", difficulty: "core", minutes: 28, tier: "must",
             summary: "Index size, update strategy, sharding and the latency budget of a retrieval call.", keywords: ["scalability", "index", "reindex", "sharding", "latency", "throughput"] },
-          { id: "6.3", title: "Additional RAG Topics", difficulty: "core", minutes: 28, tier: "should",
-            summary: "The collection of things that do not fit elsewhere but bite in practice.", keywords: ["metadata", "filtering", "access control", "freshness", "deduplication"] },
+          { id: "6.3", title: "Parsing, History-Aware Retrieval, Filtering and Deduplication", difficulty: "core", minutes: 28, tier: "should",
+            summary: "Four production RAG problems that sit outside retrieval quality: parsing as the stage nobody evaluates, rewriting follow-up questions against the conversation, metadata filtering, and near-duplicate removal.", keywords: ["parsing", "history-aware retrieval", "query rewriting", "metadata filtering", "deduplication", "minhash"] },
           { id: "6.4", title: "Knowledge Graphs and GraphRAG", difficulty: "advanced", minutes: 32, tier: "should",
             summary: "Retrieval over entities and relations, and the questions a vector index cannot answer.", keywords: ["knowledge graph", "graphrag", "entity", "relation", "community", "neo4j"] },
           { id: "6.5", title: "Multimodal RAG", difficulty: "advanced", minutes: 30, tier: "should",
@@ -539,7 +539,9 @@
           { id: "12.6", title: "The Migration Playbook", difficulty: "advanced", minutes: 32, tier: "must",
             summary: "Shadow traffic, paired evaluation and the staged cutover.", keywords: ["migration", "shadow", "cutover", "paired eval", "rollback"] },
           { id: "12.7", title: "A 90-Day Migration", difficulty: "advanced", minutes: 30, tier: "must",
-            summary: "The worked timeline, with what happens in each window.", keywords: ["migration", "timeline", "worked example", "checklist", "risk"] }
+            summary: "The worked timeline, with what happens in each window.", keywords: ["migration", "timeline", "worked example", "checklist", "risk"] },
+          { id: "12.8", title: "The EU AI Act for the Engineer Who Ships", difficulty: "advanced", minutes: 35, tier: "must",
+            summary: "Roles, dated obligations, the compute threshold and machine-readable marking, measured.", keywords: ["EU AI Act", "regulation", "compliance", "watermark", "provenance", "GPAI", "transparency"] }
         ]
       },
 

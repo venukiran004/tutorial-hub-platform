@@ -133,6 +133,12 @@ with torch.no_grad():
 
     { t: "exercise", kind: "practice", title: "Sweep the forget-gate bias", difficulty: "intermediate", minutes: 35,
       prompt: "On a task with a controlled dependency length, sweep the forget-gate bias over −2, −1, 0, 1, 2, 3 and 5 and plot final accuracy against bias. Record the initial mean forget-gate value for each. Then pick the best value and log the mean forget gate through training — does it stay near where you initialised it, or move? Finally, verify that setting only `bias_ih` and leaving `bias_hh` random gives noticeably worse and more variable results than setting both.",
+      requirements: [
+        "Sweep the forget bias over −2 to 5 and plot accuracy",
+        "Record the initial mean forget gate for each",
+        "Log the forget gate through training for the best value",
+        "Set only bias_ih and compare with setting both"
+      ],
       hints: [
         "`sigmoid(bias)` gives the initial gate value; compute `sigmoid(b)^T` for your lag T.",
         "The effective bias is the sum of the two vectors.",
@@ -144,8 +150,14 @@ with torch.no_grad():
           { t: "p", text: "Logging the gate through training usually shows it rising above the initialised value for dimensions carrying the signal and drifting down elsewhere, which is the network learning its own retention policy per dimension. That is the point worth taking away: the initialisation only has to make learning *possible*: once training is underway the gate is data-driven and the bias no longer matters." },
           { t: "p", text: "The single-vector version is worth doing because it is the mistake people actually make. Setting `bias_ih` to 1 while `bias_hh` keeps its uniform random initialisation gives an effective bias of 1 plus noise on the order of ±1/√H, so the gate starts somewhere uncontrolled and varies by seed. It mostly works, which is exactly why it survives — the symptom is run-to-run variance rather than failure." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: forget-gate bias set on only one vector",
+      body: [
+        { t: "p", text: "**Symptom.** An LSTM trained inconsistently across seeds despite the forget-gate bias being set to 1." },
+        { t: "p", text: "**Mechanism.** PyTorch has two bias vectors, `bias_ih` and `bias_hh`. Only one was set; the other kept its random initialisation, so the effective bias varied." },
+        { t: "p", text: "**Fix.** Both bias vectors are set, and the initial mean forget-gate value is logged to confirm it." }
+      ] }
   ],
 
   takeaways: [

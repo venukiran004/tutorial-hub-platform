@@ -181,6 +181,17 @@ print(4 * inside / N)      # 3.1372 — within 0.15 % of π; the error shrinks l
     { t: "callout", kind: "mental", title: "A correct answer beats an elegant wrong one",
       body: [{ t: "p", text: "In an interview, say the brute-force approach and its complexity first, then improve it. Interviewers want to see that you can get *an* answer, that you can see what is being recomputed, and that you can name what the improvement costs. Skipping to the clever version and getting it wrong scores lower than the plain version done right." }] },
 
+    { t: "callout", kind: "trap", title: "Trusting a greedy idea because the examples pass",
+
+      body: [
+
+        { t: "p", text: "Greedy algorithms often pass hand-picked examples and fail on specific inputs, as coin change does with denominations 1, 3 and 4. A sample test suite is rarely adversarial enough to catch it." },
+
+        { t: "p", text: "Check a greedy idea against brute force on random small inputs before trusting it, and use dynamic programming when the greedy-choice property cannot be argued." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Greedy or DP?", difficulty: "advanced", minutes: 20,
       body: [{ t: "p", text: "For each problem decide whether greedy is correct, and if not write the DP: (a) schedule the maximum number of non-overlapping meetings from a list of (start, end); (b) fewest coins for an amount with coins {1, 7, 10}; (c) the maximum sum of a contiguous subarray. Give the paradigm, the complexity, and a test case where the wrong paradigm fails if there is one." }],
       requirements: ["A verdict and a reason for each", "Code for (b) and (c)", "A counter-example for any greedy that fails"],
@@ -195,7 +206,14 @@ def max_subarray(a):
         cur = max(x, cur + x); best = max(best, cur)
     return best
 print(max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))   # 6`,
-        notes: [{ t: "p", text: "(a) is the classic provable greedy; (b) is the coin trap with a different coin set; (c) looks greedy but is a DP with a one-cell table — the state is 'best sum ending here', and reusing it is what makes the pass linear." }] } }
+        notes: [{ t: "p", text: "(a) is the classic provable greedy; (b) is the coin trap with a different coin set; (c) looks greedy but is a DP with a one-cell table — the state is 'best sum ending here', and reusing it is what makes the pass linear." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: a greedy solution that passed every sample test",
+      body: [
+        { t: "p", text: "**Symptom.** A candidate solved a coin-change interview question with a greedy algorithm, passed the three sample cases, and was failed when the interviewer gave denominations of 1, 3 and 4 with a target of 6." },
+        { t: "p", text: "**Mechanism.** Greedy takes 4 then 1 then 1 — three coins — where two coins of 3 are optimal. Greedy is correct only when the problem has the greedy-choice property, and these denominations do not." },
+        { t: "p", text: "**Fix.** The candidate now checks a greedy idea against a small brute-force solution on random inputs before committing, and falls back to dynamic programming when the greedy-choice property cannot be argued." }
+      ] }
   ],
 
   takeaways: [

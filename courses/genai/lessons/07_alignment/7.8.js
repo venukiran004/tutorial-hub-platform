@@ -78,18 +78,18 @@ r = torch.tensor([[1., 0., 1., 0., 0., 1.]])`,
       out: `  rewards      : [1.0, 0.0, 1.0, 0.0, 0.0, 1.0]
   mean         : 0.5000
   std (n-1)    : 0.5477   <- torch default, unbiased
-  std (n)      : 0.5000   <- population, what the reference computed by hand
+  std (n)      : 0.5000   <- population, the hand calculation
 
   advantages (torch, n-1): [0.9129, -0.9129, 0.9129, -0.9129, -0.9129, 0.9129]
   advantages with population std: [1.0, -1.0, 1.0, -1.0, -1.0, 1.0]
 
   ratio: 0.9129 / 1.0 = 0.9127 = sqrt(5/6) = 0.9129`,
       hl: [3, 4, 9, 10],
-      caption: "Both numbers are in the reference. The difference is entirely the n versus n\u22121 denominator." },
+      caption: "Both numbers are correct. The difference is entirely the n versus n\u22121 denominator." },
 
-    { t: "callout", kind: "good", title: "The reference catches its own discrepancy, which is worth noting",
+    { t: "callout", kind: "good", title: "A standard-deviation discrepancy worth noting",
       body: [
-        { t: "p", text: "Its hand calculation uses \\(\\sqrt{\\text{mean}((r-0.5)^2)} = 0.5\\), the population standard deviation, giving clean \u00b11 advantages. Its code prints \u00b10.9129 because `torch.std` uses the unbiased n\u22121 denominator by default, and it adds a parenthetical saying exactly that." },
+        { t: "p", text: "The usual hand calculation uses \\(\\sqrt{\\text{mean}((r-0.5)^2)} = 0.5\\), the population standard deviation, giving clean \u00b11 advantages. Code using `torch.std` prints \u00b10.9129, because `torch.std` uses the unbiased n\u22121 denominator by default." },
         { t: "p", text: "The ratio is \\(\\sqrt{(G-1)/G} = \\sqrt{5/6} = 0.9129\\), so for small G the discrepancy is substantial \u2014 8.7% at G = 6, and 22% at G = 2. At G = 64 it falls below 1%." },
         { t: "p", text: "It does not matter much in practice because the advantage is immediately multiplied by a learning rate, so a uniform 8.7% scaling is absorbed. It matters a great deal when you are checking an implementation against a paper and the numbers do not match \u2014 which is most of why this is worth knowing." }
       ] },

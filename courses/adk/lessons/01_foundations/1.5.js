@@ -182,7 +182,14 @@ resp = LlmResponse(content=types.Content(role="model", parts=[
 ]))
 # sequential chain : 3 model calls, 5 content blocks on the last
 # parallel in one turn: 2 model calls, 5 content blocks on the last — one round trip saved`,
-        notes: [{ t: "p", text: "The saving is a whole model round trip, which on a real model is most of a second. It only works when the tools are genuinely independent: suggest_clothing needs get_forecast's output, so that pair cannot be parallelised, and the model is right to chain them." }] } }
+        notes: [{ t: "p", text: "The saving is a whole model round trip, which on a real model is most of a second. It only works when the tools are genuinely independent: suggest_clothing needs get_forecast's output, so that pair cannot be parallelised, and the model is right to chain them." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the UI that showed the coordinator's answer and lost the specialist's",
+      body: [
+        { t: "p", text: "**Symptom.** Users of a multi-agent support assistant sometimes saw a one-line handoff message as the whole reply, with the actual answer missing." },
+        { t: "p", text: "**Mechanism.** The client stopped reading the event stream at the first event where `is_final_response()` was true. In a multi-agent turn the coordinator's transfer produced a final-looking event before the specialist had answered. There are several 'final' events in such a turn; only the last one from the agent that owns the reply is the answer." },
+        { t: "p", text: "**Fix.** The client now consumes the whole stream for the invocation and renders the last final response, keyed by author. A test runs a transfer and asserts the specialist's text is what the user sees." }
+      ] }
   ],
 
   takeaways: [

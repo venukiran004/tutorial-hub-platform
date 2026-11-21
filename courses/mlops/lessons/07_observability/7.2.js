@@ -154,6 +154,12 @@ est_agg = hist_quantile(agg_bounds, agg_counts, 0.99)`,
 
     { t: "exercise", kind: "practice", title: "Audit your own latency panels", difficulty: "core", minutes: 30,
       prompt: "Find every dashboard panel showing a percentile and check three things. Is the expression `histogram_quantile(0.99, sum(rate(bucket[5m])) by (le))`, or is it an average or a max of per-instance quantiles — the latter is the 46.4% error measured here. Does any panel show `+Inf` or render empty, which means your buckets end before your tail. And compare your bucket boundaries against your measured p50 and p99: if your first boundary is above your p50, your median is reported substantially high. Then check whether a boundary sits exactly on your SLO threshold, and if not, add one.",
+      requirements: [
+        "Check each percentile panel's expression for averaged or max-ed per-instance quantiles",
+        "Look for panels that render empty or show +Inf",
+        "Compare bucket boundaries against measured p50 and p99",
+        "Add a boundary exactly on the SLO threshold if one is missing"
+      ],
       hints: [
         "`avg by (...) (histogram_quantile(...))` is the wrong-order signature; the sum must be inside.",
         "An empty latency panel is more often a bucket problem than a missing metric — check `le=\"+Inf\"` against your largest finite bucket.",
@@ -164,8 +170,14 @@ est_agg = hist_quantile(agg_bounds, agg_counts, 0.99)`,
           { t: "p", text: "The wrong-order aggregation is common because it reads naturally and the numbers look plausible — understating the tail by 46% does not produce an obviously absurd graph, it produces a reassuring one. That is what makes it worth grepping for rather than eyeballing." },
           { t: "p", text: "The bucket-versus-measurement comparison usually finds default boundaries designed for hundred-millisecond web requests on a service whose p50 is a couple of milliseconds, which is the 31.6% p50 error measured here. Re-bucketing loses history, so it is worth doing once, deliberately, with the SLO boundary included." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: p99 was fine, and users were not",
+      body: [
+        { t: "p", text: "**Symptom.** Users reported slow predictions for a week. The p99 dashboard showed about 32 ms throughout, comfortably inside a 50 ms objective." },
+        { t: "p", text: "**Mechanism.** The panel averaged the p99 reported by each replica. One replica was on a degraded node and carried most of the slow requests; the others were fast. A quantile is not a mean, so averaging three p99s understated the pooled tail by almost half, in the reassuring direction." },
+        { t: "p", text: "**Fix.** The panel now aggregates histogram buckets across replicas and takes one quantile, which showed about 60 ms. A bucket boundary was added at 50 ms so the objective is measured rather than interpolated, and per-replica p99 is a separate panel for finding the bad node." }
+      ] }
   ],
 
   takeaways: [

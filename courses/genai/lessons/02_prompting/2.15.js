@@ -198,7 +198,7 @@ if unsupported:
 
     { t: "p", text: "None of these is a reason to omit the line. A prompt instruction raises the bar and costs almost nothing, and \"only answer questions about billing\" does genuinely reduce off-topic answers. The point is to know which lines are **defences** and which are **preferences**, because the first kind belongs in a threat model and the second does not." },
 
-    { t: "callout", kind: "warn", title: "Assume the system prompt is public",
+    { t: "callout", kind: "trap", title: "Assume the system prompt is public",
       body: [
         { t: "p", text: "The practical consequence of the first row: no API keys, no internal URLs, no \"our margin on this product is 40% so push the upsell\", no rules you would not want a competitor or a journalist to read." },
         { t: "p", text: "This is a constraint people resist because the system prompt is such a convenient place to put configuration. It is convenient and it is in the model's context, which is the same place the user's input is — and 2.16 is the lesson about what that implies." }

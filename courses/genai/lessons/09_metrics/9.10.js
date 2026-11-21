@@ -121,7 +121,7 @@ Think step by step, listing each claim and its support, then output JSON:
         { t: "p", text: "The real cost is latency rather than money. A judged suite with reasoning on ten thousand cases is a long serial run unless you parallelise it, which is why judge evaluation tends to be nightly rather than per-commit \u2014 and why 8.10 recommended deterministic checks for the CI gate." }
       ] },
 
-    { t: "callout", kind: "warn", title: "And the uncounted cost is the calibration study",
+    { t: "callout", kind: "trap", title: "And the uncounted cost is the calibration study",
       body: [
         { t: "p", text: "9.12 is the lesson, and the point here is that the calibration is the only part that does not scale. A hundred human labels with thirty doubled is a one-off few hundred dollars, and it is what licenses every number the judge produces afterwards." },
         { t: "p", text: "Skipping it is the common failure and the expensive one. 8.6 measured a judge outputting \u201cgood\u201d for everything reaching **95.1% raw agreement** with humans and \u03ba of exactly **0.000** \u2014 a number that would have passed any review that did not compute \u03ba." },

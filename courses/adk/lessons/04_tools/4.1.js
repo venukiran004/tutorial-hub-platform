@@ -200,7 +200,14 @@ def show(fn):
 #                          with two similar tools it will be chosen wrongly about half the time
 # 3. dict[str, Any]     → "object" with no properties: the model invents keys, and the
 #                          failure is inside your function rather than at the boundary`,
-        notes: [{ t: "p", text: "The hardest to debug in production is the second, because nothing errors: the wrong tool runs successfully and returns a plausible result, and the only symptom is an answer that is subtly about the wrong thing. Type errors at least raise; naming failures do not." }] } }
+        notes: [{ t: "p", text: "The hardest to debug in production is the second, because nothing errors: the wrong tool runs successfully and returns a plausible result, and the only symptom is an answer that is subtly about the wrong thing. Type errors at least raise; naming failures do not." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the refund tool called with a currency the code did not expect",
+      body: [
+        { t: "p", text: "**Symptom.** A refund tool occasionally received amounts in cents and refunded a hundred times too little." },
+        { t: "p", text: "**Mechanism.** The function had no type hints and a one-line docstring, so the declaration described `amount` as an untyped parameter with no unit. The model chose a representation from the conversation, which sometimes mentioned cents." },
+        { t: "p", text: "**Fix.** The parameter is typed, the docstring's Args section states the unit and range, and the currency is a fixed set of values. A test prints the generated declaration and asserts that each parameter has a type and a description." }
+      ] }
   ],
 
   takeaways: [

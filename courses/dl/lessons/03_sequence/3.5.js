@@ -141,19 +141,112 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Implement GRU and test the trade-offs", difficulty: "advanced", minutes: 40,
       prompt: "Implement the GRU equations and verify against `nn.GRU` to 1e-6, noting which convention PyTorch uses for the update gate. Then train RNN, GRU and LSTM on the same sequence task at lengths 20, 50 and 150, with matched hidden sizes, recording accuracy, epochs to convergence and wall-clock time. Finally, match them on *parameter count* rather than hidden size — give the GRU a larger hidden dimension so all three have the same number of parameters — and see whether the comparison changes.",
+      requirements: [
+        "Implement the GRU and verify against nn.GRU to 1e-6",
+        "Train RNN, GRU and LSTM at lengths 20, 50 and 150 with matched hidden sizes",
+        "Record accuracy, epochs to converge and wall-clock time",
+        "Repeat with matched parameter counts"
+      ],
       hints: [
         "PyTorch packs GRU gates as r, z, n, and applies the reset gate inside the tanh to the recurrent term only.",
         "Time forward plus backward, warm up first, and take a median rather than a mean.",
         "For parameter matching, GRU hidden size ≈ LSTM hidden size × 2/√3."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import time
+import torch
+import torch.nn as nn
+torch.manual_seed(0)
+
+# 1. GRU by hand. PyTorch packs r, z, n; h' = (1 - z) * n + z * h  (z keeps the OLD state),
+#    and the reset gate multiplies the hidden term INCLUDING its bias.
+gru = nn.GRU(8, 16, batch_first=True)
+x = torch.randn(4, 10, 8)
+Wi, Wh, bi, bh = gru.weight_ih_l0, gru.weight_hh_l0, gru.bias_ih_l0, gru.bias_hh_l0
+h = torch.zeros(4, 16); outs = []
+for t in range(10):
+    gi, gh = x[:, t] @ Wi.T + bi, h @ Wh.T + bh
+    ir, iz, inn = gi.chunk(3, 1); hr, hz, hn = gh.chunk(3, 1)
+    r, z = torch.sigmoid(ir + hr), torch.sigmoid(iz + hz)
+    n = torch.tanh(inn + r * hn)
+    h = (1 - z) * n + z * h
+    outs.append(h)
+print(f"max diff vs nn.GRU: {(torch.stack(outs, 1) - gru(x)[0]).abs().max():.1e}")
+
+# 2. Same task for all three: label = sign of the signal at t = 0, noise elsewhere.
+def data(n, T):
+    x = torch.zeros(n, T, 2); x[:, :, 1] = torch.randn(n, T); y = (torch.rand(n) > 0.5).long()
+    x[:, 0, 0] = y.float() * 2 - 1; return x, y
+
+class Net(nn.Module):
+    def __init__(self, cell, H):
+        super().__init__(); self.r = cell(2, H, batch_first=True); self.o = nn.Linear(H, 2)
+        with torch.no_grad():                    # memory-favouring init for the gated cells
+            if cell is not nn.RNN:
+                self.r.bias_ih_l0.zero_(); self.r.bias_hh_l0.zero_()
+                self.r.bias_ih_l0[H:2 * H] = 1.0     # LSTM (i, f, g, o): forget gate;  GRU (r, z, n): update gate, z near 1 keeps h
+    def forward(self, x): return self.o(self.r(x)[0][:, -1])
+
+def train(cell, H, T, seed, steps=500):
+    torch.manual_seed(seed); m = Net(cell, H); opt = torch.optim.Adam(m.parameters(), 3e-3); hit = None
+    t0 = time.perf_counter()
+    for s in range(1, steps + 1):
+        xb, yb = data(64, T); loss = nn.functional.cross_entropy(m(xb), yb)
+        opt.zero_grad(); loss.backward(); nn.utils.clip_grad_norm_(m.parameters(), 1.0); opt.step()
+        if s % 50 == 0:
+            with torch.no_grad(): xv, yv = data(500, T); acc = (m(xv).argmax(1) == yv).float().mean().item()
+            if hit is None and acc >= 0.95: hit = s
+    return acc, hit, time.perf_counter() - t0, sum(p.numel() for p in m.parameters())
+
+for label, sizes in [("matched hidden size", {nn.RNN: 32, nn.GRU: 32, nn.LSTM: 32}),
+                     ("matched parameters", {nn.RNN: 64, nn.GRU: 37, nn.LSTM: 32})]:
+    print(f"\\n{label}   (3 seeds, 500 steps each)\\nT     cell  params  solved  median steps-to-95%  seconds/run")
+    for T in [20, 50, 150]:
+        for cell, H in sizes.items():
+            runs = [train(cell, H, T, seed) for seed in (1, 2, 3)]
+            hits = sorted(r[1] for r in runs if r[1] is not None)
+            med = hits[len(hits) // 2] if hits else None
+            print(f"{T:<5} {cell.__name__:<5} {runs[0][3]:>6}  {len(hits)}/3     {str(med):>19}  {sum(r[2] for r in runs) / 3:11.1f}")`,
+        out: `max diff vs nn.GRU: 6.0e-08
+
+matched hidden size   (3 seeds, 500 steps each)
+T     cell  params  solved  median steps-to-95%  seconds/run
+20    RNN     1218  3/3                     300          1.7
+20    GRU     3522  3/3                      50          4.4
+20    LSTM    4674  3/3                      50          1.6
+50    RNN     1218  0/3                    None          4.0
+50    GRU     3522  1/3                     350          9.3
+50    LSTM    4674  2/3                     100          2.3
+150   RNN     1218  0/3                    None         10.3
+150   GRU     3522  0/3                    None         36.3
+150   LSTM    4674  0/3                    None          6.5
+
+matched parameters   (3 seeds, 500 steps each)
+T     cell  params  solved  median steps-to-95%  seconds/run
+20    RNN     4482  3/3                     100          2.2
+20    GRU     4627  3/3                      50          5.9
+20    LSTM    4674  3/3                      50          1.5
+50    RNN     4482  0/3                    None          4.4
+50    GRU     4627  2/3                     400         10.9
+50    LSTM    4674  2/3                     100          3.2
+150   RNN     4482  0/3                    None         16.7
+150   GRU     4627  0/3                    None         37.2
+150   LSTM    4674  0/3                    None          5.7`,
+       
         notes: [
           { t: "p", text: "The parameter-matched comparison is the one worth doing, because comparing at equal hidden size confounds architecture with capacity. Given the same parameter budget the GRU gets a wider state, and the accuracy gap that appears in the naive comparison often closes or reverses. Any claim that one architecture beats another needs to say what was held constant." },
           { t: "p", text: "On wall-clock, expect to be surprised. I measured the GRU slower than the LSTM on CPU across three different shapes — 2.0×, 3.1× and 1.6× — despite 25 % fewer parameters, because PyTorch's LSTM has a better-optimised fused kernel. If your reason for choosing GRU is speed, benchmark it rather than trusting the parameter count; the answer depends on your framework version and hardware, not on the arithmetic." },
           { t: "p", text: "At length 150 both gated cells should comfortably beat the vanilla RNN, which is the result that actually matters. The LSTM-versus-GRU difference will likely be within run-to-run noise, matching what Chung et al. reported in 2014. If you see a large gap, check the seeds and the learning rate before concluding anything about architecture." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: choosing the GRU for speed",
+      body: [
+        { t: "p", text: "**Symptom.** A team switched from LSTM to GRU to speed up training and found epochs took longer." },
+        { t: "p", text: "**Mechanism.** Fewer parameters did not mean faster kernels on their hardware and library version; the LSTM implementation was better optimised." },
+        { t: "p", text: "**Fix.** Architecture choices that claim speed are benchmarked on the target hardware with warm-up and medians." }
+      ] }
   ],
 
   takeaways: [

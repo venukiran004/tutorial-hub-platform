@@ -645,7 +645,14 @@ def test_matches_a_naive_implementation():
       { t: "p", text: "Every `isin`, `intersect1d` and `setdiff1d` call sorts its arguments internally. **If the same lookup table is used repeatedly, that sort is being paid for every call.**" },
       { t: "p", text: "Sorting once and using `searchsorted` turns repeated O((n+m) log m) work into a one-off O(m log m) plus O(n log m) per query — which is what makes the difference at pipeline scale." },
       { t: "p", text: "The same reasoning drives `assume_unique=True`: it skips a deduplication step, is roughly four times faster, and produces silently wrong results if the promise is false. Pass it only where uniqueness is guaranteed by construction." }
-    ]}
+    ]},
+
+    { t: "callout", kind: "scenario", title: "Incident: labels shuffled away from their features",
+      body: [
+        { t: "p", text: "**Symptom.** A model trained to near-random accuracy after a sorting step was added to put records in date order." },
+        { t: "p", text: "**Mechanism.** The code sorted the feature array and the label array separately by date. Each was sorted correctly, but they were sorted with independent keys, so labels no longer matched their rows. Every shape check passed." },
+        { t: "p", text: "**Fix.** The code computes one `order = np.argsort(dates, kind='stable')` and applies it to every parallel array, and a test asserts a known row's label survives the reordering." }
+      ] }
   ],
 
   takeaways: [

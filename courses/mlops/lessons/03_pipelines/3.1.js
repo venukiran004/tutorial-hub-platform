@@ -215,6 +215,13 @@ return {n: Task(n, make(n), needs[n], retries=2) for n in names}` },
 
     { t: "exercise", kind: "practice", title: "Audit your retraining for the six", difficulty: "core", minutes: 30,
       prompt: "Take your retraining process and answer six questions with evidence rather than belief. When a middle step fails, does the log distinguish broken from never-ran? If you re-run after a fix, which steps repeat — and specifically, do the ingests? Which tasks are retried, and is the retry conditional on the exception type or blanket? Can you run the pipeline for a date three weeks ago, and if not, find the `now()` that prevents it. Is the pipeline definition validated in CI, or discovered to be malformed at runtime? And finally, pick your most expensive task and run it twice against the same logical date, then diff the output — if it changed, a retry corrupts your data.",
+      requirements: [
+        "Show that the log distinguishes a failed step from one that never ran",
+        "Identify which steps repeat on a re-run after a fix",
+        "Check whether retries are conditional on the exception type",
+        "Run the pipeline for a date three weeks ago, or find the now() that prevents it",
+        "Run the most expensive task twice for one logical date and diff the output"
+      ],
       hints: [
         "Grep for `datetime.now`, `CURRENT_DATE`, `today()` and `max(ts)` in pipeline code. Each one is a backfill you cannot do.",
         "The run-it-twice test is the only one of the six that cannot be answered by reading the config.",
@@ -225,8 +232,14 @@ return {n: Task(n, make(n), needs[n], retries=2) for n in names}` },
           { t: "p", text: "The two findings that recur: retries are blanket rather than per-exception, so deterministic failures burn three attempts and arrive later with a less useful error; and at least one task is not idempotent, usually one that appends rather than overwrites a partition." },
           { t: "p", text: "The `now()` audit is the highest-value grep in the list. It is the same defect as lesson 1.4's `CURRENT_DATE` window, and finding it in pipeline code usually means the training set has been built from a window relative to the build date all along." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the backfill that produced thirty copies of today",
+      body: [
+        { t: "p", text: "**Symptom.** After an outage, a team backfilled thirty days of a feature pipeline. Every one of the thirty partitions contained the same rows." },
+        { t: "p", text: "**Mechanism.** A task computed its window from `datetime.now()` instead of the run's logical date. Scheduled daily, the two are the same day and the bug is invisible. Backfilled, every run asked for the last 24 hours as of the moment it executed, and wrote that into a partition labelled with a different date." },
+        { t: "p", text: "**Fix.** Tasks take the logical date as a parameter and a lint rule rejects wall-clock calls in task code. A weekly job re-runs one old date and diffs the output against what is stored, which is the only test that keeps backfill working." }
+      ] }
   ],
 
   takeaways: [

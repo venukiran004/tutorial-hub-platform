@@ -263,6 +263,17 @@ the width scales with 1 / sqrt(positives), so at 1 % prevalence a ± 0.02 interv
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
+    { t: "callout", kind: "trap", title: "Promoting on a difference inside the noise",
+
+      body: [
+
+        { t: "p", text: "On a small test set, two models' scores can differ by more than a point and still be indistinguishable. Promoting the higher one is promoting noise, with the deployment risk attached." },
+
+        { t: "p", text: "Bootstrap paired differences on the same rows, and promote only when the interval excludes zero." }
+
+      ] },
+
+
     { t: "exercise",
       kind: "Build",
       title: "A comparison report for three churn models",
@@ -335,7 +346,14 @@ means, table = compare({"logistic": logistic, "gbdt": gbdt, "forest": forest}, X
           why: "The bootstrap on the independent test set agreed with the corrected test (paired CI crossing zero). When two honest methods agree and a third disagrees, the third has an assumption wrong."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a model promoted on a difference smaller than its error bar",
+      body: [
+        { t: "p", text: "**Symptom.** A team replaced a production model with a new one that scored 0.012 higher AUC. Business metrics did not change." },
+        { t: "p", text: "**Mechanism.** On the 300-row test set, the interval on each AUC was about ±0.07. The difference was well within noise, and nobody had computed an interval." },
+        { t: "p", text: "**Fix.** Comparisons use a paired bootstrap on the same rows and require the interval on the difference to exclude zero; the test set was also enlarged." }
+      ] }
   ],
 
   takeaways: [

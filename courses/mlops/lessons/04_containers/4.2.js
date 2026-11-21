@@ -174,6 +174,12 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Measure your own two numbers", difficulty: "intro", minutes: 25,
       prompt: "Without building anything, compute both costs for a repository you work on. First, the build context: `du -sh .` for the whole tree, then sum only the paths your Dockerfile actually copies, and take the ratio. Second, the cache miss: sum the `site-packages` footprint of your serving requirements, which is what a mis-ordered Dockerfile rebuilds on every edit, and compare it to the size of the source you copy. Then read your Dockerfile and check three things — is the install above the source copy, is the copy narrow, and does `requirements.txt` contain anything serving does not import.",
+      requirements: [
+        "Measure the whole tree against the paths the Dockerfile actually copies",
+        "Sum the site-packages footprint of the serving requirements and compare it with the copied source",
+        "Check that the dependency install is above the source copy",
+        "Check that the copy is narrow and that requirements contain nothing serving does not import"
+      ],
       hints: [
         "`du -sh .git .venv node_modules data` usually finds the whole context problem in one command.",
         "For the dependency footprint, `du -sh` each top-level package directory in site-packages rather than trusting the wheel size.",
@@ -184,8 +190,14 @@ EC.receiveLesson({
           { t: "p", text: "The context ratio is usually dominated by one directory — `.venv`, `node_modules`, `.git` or raw data — and a single `.dockerignore` line fixes most of it. Teams are often surprised that the context is larger than the image." },
           { t: "p", text: "The dependency audit tends to find one large library that serving never imports. Removing it is free, and the measurement here puts torch at 446.7 MB, which is 2.4 times the whole scikit-learn serving stack." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the nine-minute build for a one-line change",
+      body: [
+        { t: "p", text: "**Symptom.** Every commit to a model service took about nine minutes to build in CI, including typo fixes in a README. Engineers began batching changes to avoid waiting." },
+        { t: "p", text: "**Mechanism.** The Dockerfile ran `COPY . .` before installing dependencies. A layer's cache key depends on everything beneath it, so any changed file invalidated the copy layer and the install above it, rebuilding a few hundred megabytes of scientific libraries each time. The build context also shipped the data directory and the virtual environment to the daemon." },
+        { t: "p", text: "**Fix.** Requirements are copied and installed first, then only the source package is copied, and a `.dockerignore` excludes data, notebooks and environments. A code-only change now rebuilds one small layer." }
+      ] }
   ],
 
   takeaways: [

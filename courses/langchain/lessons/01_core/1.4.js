@@ -118,7 +118,7 @@ EC.receiveLesson({
       code: 'truncated output                        what was cut      what you get\n\'{"title": "Inception", "rating": 8.\'   cut mid-number    {\'title\': \'Inception\', \'rating\': 8}\n\'{"title": "Inception", "rating": 8.8\'  cut before brace  {\'title\': \'Inception\', \'rating\': 8.8}\n\'{"title": "Inc\'                        cut mid-string    {\'title\': \'Inc\'}\n\'{"a": 1, "b": [1, 2\'                   cut mid-array     {\'a\': 1, \'b\': [1, 2]}',
       caption: "None of these raise. Two of them return a different value from the one the model was producing." },
 
-    { t: "callout", kind: "warn", title: "8.8 became 8, and nothing reported it",
+    { t: "callout", kind: "trap", title: "8.8 became 8, and nothing reported it",
       body: [
         { t: "p", text: "A rating truncated to `8.` parses as `8`. A title truncated mid-word parses as the truncated word. An unclosed array is closed. Every one of these is a **plausible value of the right type**, so no validation downstream will catch it either \u2014 `8` is a perfectly legal rating." },
         { t: "p", text: "The guard is not a better parser. It is to check **why the model stopped**: a `finish_reason` of `length` means the response was cut off and the parsed object should be discarded regardless of how well-formed it looks. Trusting the parse is the mistake, because the parse succeeded." }

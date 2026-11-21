@@ -678,7 +678,14 @@ def test_time_window_not_row_window():
           why: "A rolling window at row `t` includes row `t`. If the target is derived from the value at `t`, the feature already contains it. `.shift(1)` moves the window to end at `t−1`, so everything in it was known before `t` began — one token, and the difference between a backtest and a production model."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a rolling feature that included today's sales",
+      body: [
+        { t: "p", text: "**Symptom.** A demand model built on rolling seven-day sales was excellent in validation and poor in production." },
+        { t: "p", text: "**Mechanism.** The feature was `rolling(7).mean()` without a shift, so each row's window included the day being predicted. At prediction time that day's sales did not exist." },
+        { t: "p", text: "**Fix.** Every window feature is shifted one period — `.shift(1).rolling(7).mean()` — and a test asserts that changing a row's target never changes its own features." }
+      ] }
   ],
 
   takeaways: [

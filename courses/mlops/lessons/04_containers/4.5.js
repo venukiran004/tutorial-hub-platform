@@ -158,6 +158,13 @@ USER appuser` },
 
     { t: "exercise", kind: "practice", title: "Extract a secret from your own image", difficulty: "core", minutes: 30,
       prompt: "Build an image that copies a dummy credential file in, uses it, and removes it with `RUN rm`. Then `docker save` it, extract the tar, and find the credential in one of the layer tars — this takes about three commands and is the only way the lesson lands. Also run `docker history --no-trunc` and look for any ARG or secret that appears in a command string. Then fix it with a BuildKit secret mount and repeat the extraction to confirm the secret is gone. Finally audit a real image: does it run as root, does it drop capabilities, is its root filesystem writable, and does anything in your CI mount the daemon socket.",
+      requirements: [
+        "Build an image that copies a dummy credential in, uses it and removes it with RUN rm",
+        "Save the image, extract it and find the credential in a layer",
+        "Check docker history for secrets in command strings",
+        "Rebuild with a BuildKit secret mount and confirm the secret is gone",
+        "Audit a real image for root, capabilities, a writable root filesystem and daemon-socket mounts"
+      ],
       hints: [
         "`docker save img -o img.tar && tar -xf img.tar` gives you the layer tars; grep across all of them.",
         "`docker history --no-trunc` prints the command strings, which is where an ARG-passed token is visible with no extraction at all.",
@@ -168,8 +175,14 @@ USER appuser` },
           { t: "p", text: "Doing the extraction yourself is what changes behaviour. The measurement in this lesson used synthetic tars to show the mechanism cleanly; against a real image it takes three commands, and the fact that it needs no exploit and no privilege beyond pull access is the part that is hard to un-learn." },
           { t: "p", text: "The `docker history` check often finds something worse than a file, because an ARG-passed token is in the command string and needs no extraction. And the socket audit usually finds one CI job that mounts it, which is a root-on-host grant sitting in a config file nobody has read in a year." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the cloud key in a public base image",
+      body: [
+        { t: "p", text: "**Symptom.** A cloud provider's abuse team notified a company that one of its access keys was mining cryptocurrency. The key had been deleted from the image months earlier." },
+        { t: "p", text: "**Mechanism.** A Dockerfile had copied credentials in to download a model, then removed them with `RUN rm`. A layer is an immutable tar; the deletion only added a whiteout in a later layer. The image was pushed to a public registry, and anyone who pulled it could extract the earlier layer and read the file." },
+        { t: "p", text: "**Fix.** The key was revoked and the image history rebuilt. Builds now use secret mounts, which never enter a layer, and CI scans every layer of every image for credential patterns before push. A running container not having the file proves nothing about the image." }
+      ] }
   ],
 
   takeaways: [

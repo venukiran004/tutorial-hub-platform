@@ -200,6 +200,12 @@ def version(i):
 
     { t: "exercise", kind: "practice", title: "Price your own history", difficulty: "intro", minutes: 25,
       prompt: "Pick the largest data file your team versions. Measure three things rather than estimating them. First: how big is the repository's .git directory today, and how long does a fresh clone take? Second: how many versions of that file exist in history, and what is the marginal cost per version — commit two successive versions into a throwaway repo, run git gc, and subtract. Third: how many people and CI jobs clone this repository per week, and multiply. Then decide whether a pointer scheme would have saved anything, and write down the number rather than the opinion.",
+      requirements: [
+        "Measure the repository's .git size and fresh-clone time",
+        "Measure the marginal packed cost of one more version of the largest data file",
+        "Count clones per week across people and CI, and multiply",
+        "Decide from those numbers whether a pointer scheme would have saved anything"
+      ],
       hints: [
         "Measure after `git gc --aggressive --prune=now`, or you are measuring loose objects rather than history.",
         "A CSV may surprise you: text deltas compressed to 0.6x a single copy here.",
@@ -210,8 +216,14 @@ def version(i):
           { t: "p", text: "The common outcome is that total storage is unremarkable and clone cost is the real bill — which is the shape of the measurement in this lesson, and it means the fix is a pointer rather than a bigger disk." },
           { t: "p", text: "The other common outcome is discovering that nobody can enumerate the versions in history at all, because the file was overwritten in place and committed with the message 'update data'. That is not a storage problem and a pointer will not fix it; it is the missing data fingerprint from 1.2." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: the scikit-learn upgrade that changed predictions without an error",
+      body: [
+        { t: "p", text: "**Symptom.** After a routine dependency bump, a fraud model's scores shifted for a few percent of transactions. The service started cleanly, loaded the model, and logged only a version warning that nobody was reading." },
+        { t: "p", text: "**Mechanism.** The model artifact was a pickle. A pickle stores references to classes and their internal attributes, not a declared computation, so it is coupled to the library version that wrote it. The newer library unpickled the old object and ran it through changed internals. Nothing in the file said which version it expected." },
+        { t: "p", text: "**Fix.** Artifacts are now stored with the library versions and a hash of a fixed prediction vector, and the service refuses to start when the recomputed hash differs. New models are exported to ONNX, whose graph and opset are versioned independently of the training library (lesson 2.3)." }
+      ] }
   ],
 
   takeaways: [

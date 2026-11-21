@@ -122,19 +122,97 @@ loss = nn.CTCLoss(blank=0, zero_infinity=True)(
 
     { t: "exercise", kind: "practice", title: "Train a CTC model", difficulty: "advanced", minutes: 50,
       prompt: "Implement the collapsing function and verify it on cases with and without repeated characters. Then build a small CTC model on a synthetic task: generate variable-length input sequences where each target symbol is stretched over a random number of frames with noise, and train a bidirectional LSTM with CTCLoss to recover the target. Decode greedily (argmax per frame, then collapse) and measure character error rate. Finally, deliberately pass the tensors as `(B, T, C)` and observe what happens.",
+      requirements: [
+        "Implement the collapsing function and test it with and without repeats",
+        "Build a synthetic stretched-sequence task and train a bidirectional LSTM with CTCLoss",
+        "Decode greedily and measure character error rate",
+        "Pass tensors as (B, T, C) and observe the result"
+      ],
       hints: [
         "Test collapsing on 'hello' as a frame sequence — it should give 'helo'.",
         "Bidirectional is fine here; CTC does not require causality.",
         "Targets go in as one concatenated 1-D tensor plus a lengths vector."
       ],
       solution: {
+        lang: "python", title: "solution.py",
+        code: `import itertools
+import torch
+import torch.nn as nn
+torch.manual_seed(0)
+BLANK = 0
+
+def collapse(seq):
+    return [s for s, _ in itertools.groupby(seq) if s != BLANK]
+H, E, L, O = 1, 2, 3, 4                                     # h e l o
+for frames, want in [([H, H, E, L, L, O], [H, E, L, O]),           # no blank between the ls: they merge
+                     ([H, E, L, BLANK, L, O, O], [H, E, L, L, O]),  # blank separates the double l
+                     ([BLANK, BLANK, H, BLANK, BLANK], [H])]:
+    print(f"{frames} -> {collapse(frames)}  {'ok' if collapse(frames) == want else 'WRONG'}")
+
+V = 6                                                       # blank + 5 symbols
+def batch(n):
+    xs, ys, xl, yl = [], [], [], []
+    for _ in range(n):
+        tgt = torch.randint(1, V, (torch.randint(3, 7, ()).item(),))
+        frames = torch.cat([torch.full((torch.randint(2, 5, ()).item(),), s) for s in tgt])
+        x = nn.functional.one_hot(frames, V).float() + 0.3 * torch.randn(len(frames), V)
+        xs.append(x); ys.append(tgt); xl.append(len(frames)); yl.append(len(tgt))
+    return nn.utils.rnn.pad_sequence(xs), torch.cat(ys), torch.tensor(xl), torch.tensor(yl), ys   # x: (T, B, C)
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__(); self.rnn = nn.LSTM(V, 64, bidirectional=True); self.out = nn.Linear(128, V)
+    def forward(self, x): return self.out(self.rnn(x)[0]).log_softmax(-1)      # (T, B, V)
+
+def cer(model):
+    x, _, xl, _, ys = batch(300)
+    with torch.no_grad(): pred = model(x).argmax(-1)
+    errs = tot = 0
+    for b, tgt in enumerate(ys):
+        hyp, ref = collapse(pred[:xl[b], b].tolist()), tgt.tolist()
+        d = list(range(len(hyp) + 1))                         # edit distance
+        for i, r in enumerate(ref, 1):
+            prev, d[0] = d[0], i
+            for j, h in enumerate(hyp, 1): prev, d[j] = d[j], min(d[j] + 1, d[j - 1] + 1, prev + (r != h))
+        errs += d[-1]; tot += len(ref)
+    return errs / tot, (pred == BLANK).float().mean().item()
+
+m = Model(); opt = torch.optim.Adam(m.parameters(), 3e-3); ctc = nn.CTCLoss(blank=BLANK)
+for step in range(1, 801):
+    x, y, xl, yl, _ = batch(32)
+    loss = ctc(m(x), y, xl, yl); opt.zero_grad(); loss.backward(); opt.step()
+    if step in (50, 200, 400, 800):
+        c, blanks = cer(m); print(f"step {step:>3}: loss {loss.item():.3f}  CER {c:.3f}  blank frames {blanks:.0%}")
+
+# The layout mistake: CTCLoss wants (T, B, C). Passing (B, T, C) raises only if a length check happens to fail.
+x, y, xl, yl, _ = batch(32)
+wrong = m(x).transpose(0, 1)                                 # (B, T, C)
+try:
+    print("(B, T, C) loss:", ctc(wrong, y, xl, yl).item())
+except RuntimeError as e:
+    print("(B, T, C) ->", type(e).__name__ + ":", str(e).split("\\n")[0][:90])`,
+        out: `[1, 1, 2, 3, 3, 4] -> [1, 2, 3, 4]  ok
+[1, 2, 3, 0, 3, 4, 4] -> [1, 2, 3, 3, 4]  ok
+[0, 0, 1, 0, 0] -> [1]  ok
+step  50: loss 1.389  CER 0.996  blank frames 100%
+step 200: loss 0.320  CER 0.098  blank frames 54%
+step 400: loss 0.154  CER 0.059  blank frames 60%
+step 800: loss 0.113  CER 0.041  blank frames 60%
+(B, T, C) -> RuntimeError: input_lengths must be of size batch_size`,
+       
         notes: [
           { t: "p", text: "The collapsing test is the one to do first, because the blank's purpose only becomes obvious when you see `hello` collapse to `helo`. Every subsequent confusion about CTC outputs traces back to not having internalised that repeated symbols need a blank between them — including the common observation that a trained CTC model emits blanks on the large majority of frames, which is not a pathology but the expected behaviour." },
           { t: "p", text: "During training you should see the loss fall while greedy decoding produces nothing useful for a while, then rather suddenly start producing recognisable output. That is characteristic: the model first learns to emit blanks everywhere, which is a good local solution since blanks dominate valid alignments, and only then learns to place actual symbols. A CTC loss that falls smoothly while decoded output stays empty is normal early on rather than a sign of failure." },
           { t: "p", text: "The deliberate `(B, T, C)` experiment is worth ten minutes. When B and T are both plausible sizes nothing raises — the loss computes, gradients flow, and training proceeds against a completely meaningless objective. This is the archetypal silent shape bug, and the defence is asserting your tensor layout explicitly before the loss call rather than trusting that an error would have surfaced." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a CTC model that trained on transposed tensors",
+      body: [
+        { t: "p", text: "**Symptom.** A speech model trained with CTC loss never improved, and the loss looked plausible throughout." },
+        { t: "p", text: "**Mechanism.** `CTCLoss` expects time-first tensors, (T, B, C). The code passed batch-first tensors, which the loss accepted as a sequence of a different length." },
+        { t: "p", text: "**Fix.** Shapes are asserted before the loss, and a tiny synthetic task the model must solve runs as a smoke test." }
+      ] }
   ],
 
   takeaways: [

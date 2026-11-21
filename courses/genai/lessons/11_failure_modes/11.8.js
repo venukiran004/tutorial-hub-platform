@@ -100,7 +100,7 @@ EC.receiveLesson({
         ["Ask for JSON", "Schema violations become a new error class", "Validate and retry once"]
       ] },
 
-    { t: "callout", kind: "warn", title: "Reranking is both the biggest saving and the most dangerous lever",
+    { t: "callout", kind: "trap", title: "Reranking is both the biggest saving and the most dangerous lever",
       body: [
         { t: "p", text: "It removes 2,000 tokens, more than any other single change, and it is the lever that buys a **retrieval miss** if you cut too far \u2014 which 11.2 identified as the most common cause of hallucination by a wide margin." },
         { t: "p", text: "So it is the one lever that needs a quality measurement attached rather than a token count. Recall@k before and after, on a labelled set, and the honest version of the change is \u2018we cut to top-3 and recall@3 is 0.94 against recall@8 of 0.96\u2019 rather than \u2018we cut 2,000 tokens\u2019." },

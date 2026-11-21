@@ -277,6 +277,17 @@ restored epoch 11: val acc 0.9316, test acc 0.9337` },
     { t: "callout", kind: "insight", title: "The ordered checklist for overfitting",
       body: [{ t: "p", text: "Training loss falling while validation loss rises means overfitting. In order: (1) more data, or augmentation if there is no more; (2) more regularisation — raise dropout from 0.3 towards 0.5, add or increase weight decay; (3) early stopping with a checkpoint at the best validation loss; (4) reduce capacity — fewer layers or units; (5) batch normalisation if not already present; (6) check for data leakage, because a suspiciously low training loss can mean the answer is in the features; (7) cross-validate, in case the split was unlucky." }] },
 
+    { t: "callout", kind: "trap", title: "Applying weight decay to biases and normalisation parameters",
+
+      body: [
+
+        { t: "p", text: "Passing `weight_decay` to the optimiser for all parameters also shrinks biases and LayerNorm or BatchNorm gains toward zero, which can hurt training without regularising anything useful." },
+
+        { t: "p", text: "Use parameter groups so decay applies to weight matrices and not to biases or normalisation parameters." }
+
+      ] },
+
+
     { t: "exercise", kind: "practice", title: "Read a dropout rate off the gap", difficulty: "core", minutes: 15,
       body: [{ t: "p", text: "Train the Net on the same 5,000 MNIST digits with dropout 0.0, 0.3 and 0.5 for 30 epochs each, and report training, validation and test accuracy. Then answer: at which rate is the train–validation gap smallest, and does that rate also give the best test accuracy?" }],
       requirements: [
@@ -291,7 +302,14 @@ restored epoch 11: val acc 0.9316, test acc 0.9337` },
     print(p, acc(m, Xtr, ytr), acc(m, Xva, yva), acc(m, Xte, yte))
 # in this lesson's run: p=0.0 → 1.000 / 0.936 / 0.942   p=0.3 → 1.000 / 0.947 / 0.948
 # p=0.5 typically lands close to 0.3 on validation, sometimes slightly lower on train`,
-        notes: [{ t: "p", text: "On 5,000 digits the gap is smallest around p = 0.3–0.5 and so is test error, but the two need not coincide in general: a rate high enough to close the gap can also cost capacity and lower everything. The rule is to pick p by validation accuracy, not by the gap." }] } }
+        notes: [{ t: "p", text: "On 5,000 digits the gap is smallest around p = 0.3–0.5 and so is test error, but the two need not coincide in general: a rate high enough to close the gap can also cost capacity and lower everything. The rule is to pick p by validation accuracy, not by the gap." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: dropout left on at inference",
+      body: [
+        { t: "p", text: "**Symptom.** A deployed model's predictions for the same input changed between requests." },
+        { t: "p", text: "**Mechanism.** The serving code never called `model.eval()`, so dropout stayed active and randomly zeroed units on every prediction." },
+        { t: "p", text: "**Fix.** The service puts the model in evaluation mode at load, and a startup test asserts that two predictions on the same input are identical." }
+      ] }
   ],
 
   takeaways: [

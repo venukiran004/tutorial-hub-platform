@@ -171,7 +171,14 @@ summariser = LlmAgent(
     include_contents="none",            # its input is state, not the chat
     output_key="summary",               # the next agent reads {summary}
 )`,
-        notes: [{ t: "p", text: "The pattern to notice: agents that talk to a user need history and a description; agents that are steps in a pipeline need neither, and are better off stateless with their input and output named explicitly in state. Mixing the two shapes — a pipeline step that also sees the whole conversation — is where unpredictable behaviour comes from." }] } }
+        notes: [{ t: "p", text: "The pattern to notice: agents that talk to a user need history and a description; agents that are steps in a pipeline need neither, and are better off stateless with their input and output named explicitly in state. Mixing the two shapes — a pipeline step that also sees the whole conversation — is where unpredictable behaviour comes from." }] } },
+
+    { t: "callout", kind: "scenario", title: "Incident: the specialist nobody could reach",
+      body: [
+        { t: "p", text: "**Symptom.** A billing specialist was added under a coordinator and never received a single question, though billing questions were common." },
+        { t: "p", text: "**Mechanism.** The specialist's `description` was empty. The coordinator's model decides routing from the sub-agents' descriptions, which ADK places in its system instruction; with no description there was nothing to route on, so every billing question stayed with the coordinator, which answered from memory." },
+        { t: "p", text: "**Fix.** Every agent now has a description written for the routing model — what it handles and what it does not — and a check fails construction of any agent with sub-agents whose children lack one." }
+      ] }
   ],
 
   takeaways: [

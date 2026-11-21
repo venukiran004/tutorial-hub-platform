@@ -167,6 +167,12 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "practice", title: "Audit a model with Grad-CAM", difficulty: "intermediate", minutes: 35,
       prompt: "Take a pretrained classifier and generate Grad-CAM heatmaps for twenty validation images — ten it gets right and ten it gets wrong. For each, record the fraction of pixels above half-max and the centre of mass. Compare the two groups: are the failures less concentrated, or concentrated somewhere unexpected? Then pick one image and generate heatmaps for the top five predicted classes, computing pairwise correlations. Finally, repeat the whole thing hooking layer3 instead of layer4 and compare the resolution and the sharpness of what you see.",
+      requirements: [
+        "Generate Grad-CAM heatmaps for ten correct and ten wrong predictions",
+        "Record the fraction above half-max and the centre of mass for each",
+        "Compute heatmaps for one image's top five classes and their pairwise correlations",
+        "Repeat hooking layer3 instead of layer4 and compare resolution"
+      ],
       hints: [
         "Normalise each heatmap by its own max before comparing concentrations.",
         "The centre of mass is a quick numeric proxy for 'is it looking at the middle or the edge?'.",
@@ -178,8 +184,14 @@ EC.receiveLesson({
           { t: "p", text: "The pairwise correlations across the top five classes are the sobering part. For visually similar classes in the same location I measured 0.92 to 0.97, meaning Grad-CAM essentially cannot distinguish them. Read honestly, the heatmap says 'the model looked at the animal' and nothing more — anyone claiming it explains *why* the model chose one fine-grained class over another is over-reading it." },
           { t: "p", text: "Hooking layer3 gives a 14×14 map, so each value covers 16×16 input pixels rather than 32×32. The maps are visibly sharper but often less semantically coherent, because layer3's features are closer to textures than to objects. That trade-off is why layer4 is the default, and seeing both once makes it clear the choice is a real one rather than a convention." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Incident: a classifier that recognised snow, not wolves",
+      body: [
+        { t: "p", text: "**Symptom.** An animal classifier performed well on its test set and failed on photographs from a new source." },
+        { t: "p", text: "**Mechanism.** Grad-CAM showed it attending to the background: most wolf training images had snow, and the model had learned the background." },
+        { t: "p", text: "**Fix.** The training set was rebalanced so backgrounds varied within each class, and Grad-CAM checks on misclassifications became part of evaluation." }
+      ] }
   ],
 
   takeaways: [

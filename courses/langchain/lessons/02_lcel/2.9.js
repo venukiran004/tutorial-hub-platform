@@ -141,6 +141,12 @@ EC.receiveLesson({
       { t: "p", text: "**If two concurrent calls could legitimately differ on it, and it is not part of the question being asked, it is config.** A tenant id differs per call and is not part of the question \u2014 config. The document to summarise differs per call and *is* the question \u2014 input." },
       { t: "p", text: "Getting it wrong in one direction puts operational concerns into your prompt variables, where they leak into the model's context. Getting it wrong in the other direction puts data into config, where it does not reach the prompt template at all and fails as a missing variable." }
     ] },
+    { t: "callout", kind: "trap", title: "Putting per-request values into the chain's input",
+      body: [
+        { t: "p", text: "Passing the model tier or tenant id as an input key works, and it means every prompt must accept and ignore it, every parser must pass it through, and it appears in traces as if it were part of the question. Values that select behaviour rather than form the question belong in config." },
+        { t: "p", text: "The test from the lesson: if two concurrent requests differ on it and it is not part of what the model is asked, it is config — `configurable_fields`, `configurable_alternatives` or `with_config`." }
+      ] },
+
     { t: "exercise", kind: "build", title: "One chain, many behaviours",
       difficulty: "core", minutes: 24,
       body: "Expose a value on a model with configurable_fields and change it at call time without rebuilding the chain. Then register an alternative component with configurable_alternatives and select it from config. Attach a run name, tags and metadata with with_config and confirm they are carried. Finally, classify a list of values into config and input.",

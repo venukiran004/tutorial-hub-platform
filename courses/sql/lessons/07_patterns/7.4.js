@@ -107,7 +107,7 @@ FROM   orders GROUP BY 1 ORDER BY 1;
       caption: "The row-level leak is invisible in the metrics and fatal in production: the model has memorised entities, not learned patterns. The rule is to hash the key of whatever the model must generalise across — customers, patients, devices, documents — and to split by time whenever the task is prediction."
     },
 
-    { t: "callout", kind: "warn", title: "Check the split, not just the proportions", body: [
+    { t: "callout", kind: "trap", title: "Check the split, not just the proportions", body: [
       { t: "p", text: "After any split, run the HAVING query above (no entity in two folds) and a distribution comparison: row counts, entity counts, and the label rate per fold. In the executed grouped split the test fold has 4 orders from 2 customers and a refund rate of 0.25 against 0.00 in train — **on eight customers a grouped split cannot be balanced**, and the check is what tells you so before the model does. On real data, a label rate that differs materially between folds means the hash landed on a skewed subset or the entity groups are very unequal in size; stratify by the label at the entity level in that case." }
     ]},
 
@@ -286,7 +286,14 @@ ORDER BY d;`,
           why: "A seed makes random() repeatable within one engine and row order; a hash makes the assignment a property of the entity."
         }
       ]
-    }
+    },
+
+    { t: "callout", kind: "scenario", title: "Incident: a test set that shared customers with training",
+      body: [
+        { t: "p", text: "**Symptom.** A model's validation score dropped sharply when it was evaluated on genuinely new customers." },
+        { t: "p", text: "**Mechanism.** The split assigned rows randomly, so the same customer's orders landed in both training and validation. The model learned customer identity, which validation rewarded." },
+        { t: "p", text: "**Fix.** The split hashes the customer id, so all of a customer's rows go to one side, and the split is checked for overlap in the key, not only for proportions." }
+      ] }
   ],
 
   takeaways: [
